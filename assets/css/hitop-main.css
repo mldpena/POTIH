@@ -124,13 +124,13 @@ body{
 
 .login-wrapper{
 	width: 543px;
-	min-height: 584px;
+	min-height: 549px;
 }
 .login-panel{
 	background: #fff;
 	box-shadow: 0px 0px 8px -2px #ddd;
 	position: relative;
-	margin-top: 200px;
+	margin-top: 165px;
 	float: left;
 	width: 100%;
 	border-radius: 10px;
