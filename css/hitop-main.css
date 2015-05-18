@@ -1,0 +1,171 @@
+@font-face{
+	font-family: OS-Regular;
+	src: url("../fonts/OpenSans-Regular.ttf");
+}
+@font-face{
+	font-family: OS-Bold;
+	src: url("../fonts/OpenSans-ExtraBold.ttf");
+}
+html{
+	height: 100%;
+	position: relative;
+}
+body{
+	background: #f2f2f2;
+}
+.main-wrapper{
+	width: 1349px;
+}
+.header-nav{
+	width: 100%;
+	float: left;
+	background: #fff;
+	border-bottom: 2px #da251c solid;
+}
+.header-nav > .version{
+	font-family: OS-Regular;
+	font-size: 12px;
+	padding: 8px;
+	text-transform: uppercase;
+}
+.header-nav > .user-creds{
+	font-family: OS-Regular;
+	font-size: 12px;
+}
+.header-nav .user-creds .user-btn{
+	border-radius: 0px !important;
+	border: none !important;
+	padding: 8px;
+	font-size: 12px;
+	font-family: OS-Regular;
+	text-transform: uppercase;
+}
+.header-nav > .user-creds > a .ez-menu{
+	float: left;
+	padding: 8px;
+	text-transform: uppercase;
+}
+.header-nav > .user-creds > a .ez-menu:hover{
+	background: #f2f2f2;
+}
+
+.sidebar{
+	width: 200px;
+	height: 100%;
+	margin-left: 15px;
+
+}
+.sidebar > .sidebar-links-panel{
+	box-shadow: 0px 0px 8px -2px #ddd;
+}
+.sidebar > .sidebar-links-panel .header:first-child{
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+.sidebar > .sidebar-links-panel .header{
+	background: #00923F;
+	font-family: OS-Bold;
+	font-weight: 100;
+	font-size: 12px;
+	text-transform: uppercase;
+	text-align: left;
+	color: #fff;
+	padding: 10px;
+}
+.sidebar > a .sidebar-logo .mainlogo{
+	width: 120px;
+	height: 120px;
+}
+.sidebar > .sidebar-links-panel .link{
+	padding: 10px;
+	font-family: OS-Regular;
+	font-size: 12px;
+	background: #fff;
+	text-align: left;
+	cursor: pointer;
+	border-bottom: 1px #ddd solid;
+}
+.sidebar > .link:hover{
+	background: #f7f7f7;
+}
+
+.main-content{
+	width: 1103px;
+	margin-right: 15px;
+	margin-top: 15px;
+}
+.main-content > .module-title{
+	font-size: 35px;
+	text-align: left;
+	font-family: OS-Regular;
+}
+.main-content > .content-form{
+	background: #fff;
+	box-shadow: 0px 0px 8px -2px #ddd;
+	width: 100%;
+	border-radius: 4px;
+}
+.main-content > .content-form.default{
+	min-height: 600px;
+}
+.main-content > .breadcrumbs-panel{
+	margin-top: 5px;
+}
+.main-content > .breadcrumbs-panel ol{
+	background: #2967ad;
+	font-family: OS-Regular;
+	font-size: 14px;
+	margin-bottom: 15px;
+}
+.main-content > .breadcrumbs-panel ol li a,
+.main-content > .breadcrumbs-panel ol li{
+	color: #fff;
+}
+
+.login-wrapper{
+	width: 543px;
+	min-height: 584px;
+}
+.login-panel{
+	background: #fff;
+	box-shadow: 0px 0px 8px -2px #ddd;
+	position: relative;
+	margin-top: 200px;
+	float: left;
+	width: 100%;
+	border-radius: 10px;
+	padding: 20px;
+	border-bottom: 5px #f2f2f2 solid;
+}
+.login-logo{
+	width: 170px;
+	height: 170px;
+	float: left;
+}
+.login-panel > .login-creds{
+	float: right;
+	font-family: OS-Regular;
+	font-size: 16px;
+	margin-bottom: 15px;
+	margin-right: 15px;
+}
+.login-panel > .login-creds .login-fields{
+	width: 291px;
+}
+.login-panel > .login-creds .login-fields div{
+	margin-top: 15px;
+}
+.footer{
+	margin-top: 15px;
+	padding: 15px; 
+	font-family: OS-Regular;
+	font-weight: 100;
+	font-size: 13px;
+	background: #fff;
+	border-top: 2px #07438C solid;
+	float: left;
+	width: 100%;
+}
+.form-control-mod{
+	width: auto;
+}
