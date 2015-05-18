@@ -1,21 +1,3 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Hi-Top Inventory System</title>
-	<style type="text/css">
-		body{
-			background: url('<?= base_url().IMG ?>blur-bg.jpg') no-repeat center center fixed; 
-			-webkit-background-size: cover;
-			-moz-background-size: cover;
-			-o-background-size: cover;
-			background-size: cover;
-		}
-		.main-wrapper{
-			width: auto;
-		}
-	</style>
-</head>
-<body>
 <div align="center">
 	<div class="login-wrapper">
 		<div class="login-panel">
@@ -24,13 +6,13 @@
 				<div class="login-fields pull-right">
 					<div class="input-group input-group-lg">
 						<span class="input-group-addon"><i class="fa fa-user"></i></span>
-						<input type="text" class="form-control" placeholder="Username">
+						<input type="text" class="form-control" placeholder="Username" id="username">
 					</div>
 					<div class="input-group input-group-lg">
 						<span class="input-group-addon"><i class="fa fa-lock" style="width:15px;"></i></span>
-						<input type="password" class="form-control" placeholder="Password">
+						<input type="password" class="form-control" placeholder="Password" id="password">
 					</div>
-					<div class="pull-right"><a href="#"><button class="btn btn-primary">Login</button></a></div>
+					<div class="pull-right"><a href="#"><button class="btn btn-primary" i>Login</button></a></div>
 				</div>
 			</div>
 		</div>
