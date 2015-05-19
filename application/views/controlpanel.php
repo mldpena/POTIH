@@ -7,9 +7,11 @@
 			<li><a href="controlpanel.php">Home</a></li>
 			<li class="active">Data</li>
 		</ol>
-	</div>
-	<div class="content-form default">
-		
+	</div>	
+	<div class="content-form">
+		<div class="form-header">Sample</div>
+		<div class="form-body default">
+		</div>
 	</div>
 </div>
 	

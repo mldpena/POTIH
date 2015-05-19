@@ -15,15 +15,13 @@ html{
 
 
 /*Wrapper Settings*/
-#login-body{
-	background: url('../img/blur-bg.jpg') no-repeat center center fixed; 
+body{
+	background: #f2f2f2;
+/*	background: url('../img/main-bg.jpg') no-repeat center center fixed; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
-	background-size: cover;
-}
-#main-body{
-	background: #f2f2f2;
+	background-size: cover;*/
 }
 #login-body .main-wrapper{
 	width: auto;
@@ -36,18 +34,20 @@ html{
 .header-nav{
 	width: 100%;
 	float: left;
-	background: #fff;
-	border-bottom: 2px #da251c solid;
+	background: #e74c3c;
+	border-bottom: 2px rgba(214, 68, 55, 0.4) solid;
 }
 .header-nav > .version{
 	font-family: OS-Regular;
 	font-size: 12px;
 	padding: 8px;
 	text-transform: uppercase;
+	color: #fff;
 }
 .header-nav > .user-creds{
 	font-family: OS-Regular;
 	font-size: 12px;
+	color: #fff;
 }
 .header-nav .user-creds .user-btn{
 	border-radius: 0px !important;
@@ -56,14 +56,19 @@ html{
 	font-size: 12px;
 	font-family: OS-Regular;
 	text-transform: uppercase;
+	color: #fff;
+	background: #e74c3c;
 }
 .header-nav > .user-creds > a .ez-menu{
 	float: left;
 	padding: 8px;
 	text-transform: uppercase;
+	color: #fff;
 }
-.header-nav > .user-creds > a .ez-menu:hover{
-	background: #f2f2f2;
+.header-nav > .user-creds > a .ez-menu:hover,
+.header-nav .user-creds .user-btn:active,
+.header-nav .user-creds .user-btn:focus{
+	background: #bf1e18;
 }
 
 
@@ -72,16 +77,24 @@ html{
 	width: 200px;
 	height: 100%;
 	margin-left: 15px;
-
+	margin-top: 10px;
 }
-.sidebar > .sidebar-links-panel{
+.sidebar > .sidebar-links-panel .sidebar-group:first-child{
+	margin-top: 0px;
+}
+.sidebar > .sidebar-links-panel .sidebar-group{
+	margin-top: 15px;
+	border: 1px solid transparent;
+	border-color: #ddd;
 	box-shadow: 0px 0px 8px -2px #ddd;
+	border-radius: 4px;
+	background: #fff;
 }
-.sidebar > .sidebar-links-panel .header:first-child{
-	border-top-left-radius: 4px;
-	border-top-right-radius: 4px;
+.sidebar > .sidebar-links-panel .sidebar-group .header:first-child{
+	border-top-left-radius: 2px;
+	border-top-right-radius: 2px;
 }
-.sidebar > .sidebar-links-panel .header{
+.sidebar > .sidebar-links-panel .sidebar-group .header{
 	background: #00923F;
 	font-family: OS-Bold;
 	font-weight: 100;
@@ -95,17 +108,16 @@ html{
 	width: 120px;
 	height: 120px;
 }
-.sidebar > .sidebar-links-panel .link{
-	padding: 10px;
+.sidebar > .sidebar-links-panel .sidebar-group .link{
+	padding: 8px 10px;
 	font-family: OS-Regular;
 	font-size: 12px;
-	background: #fff;
 	text-align: left;
 	cursor: pointer;
-	border-bottom: 1px #ddd solid;
 }
-.sidebar > .link:hover{
+.sidebar > .sidebar-links-panel .sidebar-group .link:hover{
 	background: #f7f7f7;
+	border-left: 2px #00923F solid; 
 }
 
 
@@ -121,33 +133,56 @@ html{
 	font-family: OS-Regular;
 }
 .main-content > .content-form{
-	background: #fff;
 	box-shadow: 0px 0px 8px -2px #ddd;
+	float: left;
 	width: 100%;
 	border-radius: 4px;
-}
-.main-content > .content-form.default{
-	min-height: 600px;
-}
-.main-content > .breadcrumbs-panel{
-	margin-top: 5px;
+	border: 1px solid transparent;
+	border-color: #ddd;
 }
 .main-content > .breadcrumbs-panel ol{
-	background: #2967ad;
+	background: #fff;
 	font-family: OS-Regular;
 	font-size: 14px;
 	margin-bottom: 15px;
+	border: 1px solid transparent;
+	border-color: #ddd;
 }
-.main-content > .breadcrumbs-panel ol li a,
-.main-content > .breadcrumbs-panel ol li{
-	color: #fff;
+.main-content > .content-form .form-header{
+	padding: 12px 15px;
+	font-size: 14px;
+	background: #F5F5F5;
+	border-bottom: 1px solid transparent;
+	border-color: #ddd;
+	float: left;
+	width: 100%;
+	font-family: OS-Regular;
+	border-top-left-radius: 4px;
+	border-top-right-radius: 4px;
+}
+.main-content > .content-form .form-body{
+	float: left;
+	width: 100%;
+	background: #fff;
+	border-bottom-left-radius: 4px;
+	border-bottom-right-radius: 4px;
+	padding: 15px 0px;
+}
+.main-content > .content-form .form-body.default{
+	min-height: 600px;
 }
 
-
+.sub-panel{
+	padding: 4px 15px;
+	border-top: 1px #ddd solid;
+	border-bottom: 1px #ddd solid;
+	background: #f2f2f2;
+	text-align: center;
+}
 /*Login*/
 .login-wrapper{
 	width: 543px;
-	min-height: 549px;
+	min-height: 553px;
 }
 .login-panel{
 	background: #fff;
@@ -190,9 +225,40 @@ html{
 	border-top: 2px #07438C solid;
 	float: left;
 	width: 100%;
+	text-align: center;
 }
 
 /*Bootstrap Mods*/
-.form-control-mod{
+.form-control.mod{
 	width: auto;
+	display: inline-block;
+}
+.btn{
+	font-family: OS-Regular;
+}
+
+/*Special Classes*/
+.max-row{
+	float: left;
+	margin-top: 15px;
+	padding-left: 15px;
+	padding-right: 15px;
+	width: 100%;
+}
+.lblmsg{
+	text-align: center;
+	font-size: 22px;
+	font-family: OS-Regular;
+}
+.danger{
+	color: #E74C3C;
+}
+.success{
+	color: #00923F;
+}
+.info{
+	color: #2E8ECE;
+}
+.warning{
+	color: #ddae13;
 }
