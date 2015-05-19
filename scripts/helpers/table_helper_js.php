@@ -5,8 +5,7 @@
 		var count = object.get_row_count() - 1;
 
 		if (count > 0) {
-			var id =  object.getvalue_by_rowindex_tdclass(count, 
-												object_array["id"].td_class);
+			var id =  object.getvalue_by_rowindex_tdclass(count,object_array["id"].td_class);
 			if (id == 0) {
 				ok = false;
 			};

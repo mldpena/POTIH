@@ -13,5 +13,5 @@
 <script type="text/javascript" src="<?= base_url().JS ?>jquery.timepicker.min.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>chosen.jquery.js"></script>
 <?php if(isset($script)) { require_once(SCRIPTS.$script); } ?>
-<?php require_once(SCRIPTS.'helpers/table_helper.php') ?>
-<?php require_once(SCRIPTS.'helpers/error_helper.php') ?>
+<?php require_once(SCRIPTS.'helpers/table_helper_js.php') ?>
+<?php require_once(SCRIPTS.'helpers/error_helper_js.php') ?>

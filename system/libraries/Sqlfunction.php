@@ -8,7 +8,7 @@ class CI_Sqlfunction{
 		$ci->load->library('encrypt');
 	}
 
-	public function executeQuery($query,$dataArray)
+	public function execute_query($query,$dataArray)
 	{
 		$ci =& get_instance();
 		$data = array();
@@ -49,7 +49,7 @@ class CI_Sqlfunction{
 		return $data;		
 	}
 
-	function executeTransaction($queryArray, $dataArray = array())
+	function execute_transaction($queryArray, $dataArray = array())
 	{
 		$ci =& get_instance();
 		$data = array();
