@@ -37,10 +37,24 @@
  */
 if ( ! function_exists('xss_clean'))
 {
-	function xss_clean($str, $is_image = FALSE)
+	function xss_clean($str = '', $is_image = FALSE)
 	{
 		$CI =& get_instance();
-		return $CI->security->xss_clean($str, $is_image);
+		$clean_data = '';
+
+		if (!array($str)) 
+		{
+			$clean_data = $CI->security->xss_clean($str, $is_image);
+		}
+		else
+		{
+			$clean_data = array();
+			foreach ($str as $key => $value) {
+				$clean_data[$key] = $CI->security->xss_clean($value, $is_image);
+			}
+		}
+		
+		return $clean_data;
 	}
 }
 

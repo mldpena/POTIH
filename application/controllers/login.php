@@ -2,37 +2,30 @@
 
 class Login extends CI_Controller {
 
-	private function loadLibraries(){
+	private function _load_libraries()
+	{
 		$this->load->model('login_model');
 	}
 
-	public function index(){	
-		$this->loadLibraries();
-		// $isLogout = $this->uri->segment(2);
+	public function index()
+	{	
+		$this->_load_libraries();
 
-		// if ($isLogout == "logout") {
-		// 	$this->myfunction->deleteSessionCookies();
-		// }
-
-		// if (isset($_COOKIE['username']) && isset($_COOKIE['fullname']) && isset($_COOKIE['temp']) && isset($_COOKIE['permissions'])) {
-		// 	$check = $this->sqlfunction->checkUserExist();
-		// 	if ($check == 'success') {
-		// 		$this->myfunction->relocate('controlpanel');
-		// 	}
-		// }
-
-		if (isset($_POST['data'])) {
-			$this->ajaxRequest();
+		if (isset($_POST['data'])) 
+		{
+			$this->_ajax_request();
 			exit();
 		}
 
+		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
 		$data['page'] 	= 'login';
 		$data['script'] = 'login_js.php';
 
 		$this->load->view('master', $data);
 	}
 
-	public function _remap(){
+	public function _remap()
+	{
         $param_offset = 1;
         $method = 'index';
 	    $params = array_slice($this->uri->rsegment_array(), $param_offset);
@@ -40,16 +33,18 @@ class Login extends CI_Controller {
 	    call_user_func_array(array($this, $method), $params);
 	} 
 
-	private function ajaxRequest(){
-		$postData 	= array();
+	private function _ajax_request()
+	{
+		$post_data 	= array();
 		$fnc 		= '';
 
-		$postData 	= json_decode($_POST['data'],true);
-		$fnc 		= $postData['fnc'];
+		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
+		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) {
-			case 'check_login':
-				$this->checkLogin($postData);
+		switch ($fnc) 
+		{
+			case 'check_user':
+				$this->_check_user($post_data);
 				break;
 
 			default:
@@ -59,21 +54,10 @@ class Login extends CI_Controller {
 
 	}
 
-	private function checkLogin($param){
-		$data = $this->login_model->checkUserCredential($param);
+	private function _check_user($param)
+	{
+		$data = $this->login_model->check_user_credential($param);
 		echo json_encode($data);
 	}
-	
-	// private function getUserBranchList($param)
-	// {
-	// 	$data = $this->sqlfunction->getUserBranchList($param['userid']);
-	// 	echo json_encode($data);
-	// }
-
-	// private function verifyUser($param)
-	// {
-	// 	$data = $this->login_model->finalVerifyUser($param);
-	// 	echo json_encode($data);
-	// }
 
 }

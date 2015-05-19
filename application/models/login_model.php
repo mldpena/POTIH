@@ -7,5 +7,8 @@ class Login_Model extends CI_Model {
 		parent::__construct();
 	}
 
-	
+	public function check_user_credential($param)
+	{
+
+	}
 }
