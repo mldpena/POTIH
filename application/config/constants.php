@@ -44,6 +44,9 @@ define('IMG','assets/img/');
 define('JS','assets/js/');
 define('BOWER','assets/bower_components/');
 
+/* ENCRYPTION AND DECRYPTION*/
+define('SALT', 'T!S!D!T_33_HELLO_WORLD');
+define('KEY', 'TSDT_THE_BEST');
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

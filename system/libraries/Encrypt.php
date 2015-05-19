@@ -176,6 +176,12 @@ class CI_Encrypt {
 		return $dec;
 	}
 
+	function encode_md5($string)
+	{
+		$string = base64_encode($string);
+		$string.= SALT;
+		return md5(trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, SALT, $string, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)))));
+	}
 	// --------------------------------------------------------------------
 
 	/**

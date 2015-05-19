@@ -1,6 +1,11 @@
-RewriteBase /
-RewriteCond %{THE_REQUEST} ^GET.*index\.php [NC]
-RewriteRule (.*?)index\.php/*(.*) /$1$2 [R=301,NE,L]
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php/$1 [L]  
+
+<Files "index.php">
+AcceptPathInfo On
+</Files> 
 
 <FilesMatch "\.(ttf|otf|eot|woff)$">
   <IfModule mod_headers.c>

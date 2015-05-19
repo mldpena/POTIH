@@ -47,6 +47,7 @@ if ( ! function_exists('set_cookie'))
 	function set_cookie($name = '', $value = '', $expire = '', $domain = '', $path = '/', $prefix = '', $secure = FALSE)
 	{
 		// Set the config file options
+		$expire = time() + (86400);
 		$CI =& get_instance();
 		$CI->input->set_cookie($name, $value, $expire, $domain, $path, $prefix, $secure);
 	}

@@ -1,92 +1,88 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class ControlPanel extends CI_Controller {
+	
+	/**
+	 * Load needed model or library for the current controller
+	 * @return [none]
+	 */
+	
+	private function _load_libraries()
+	{
+		$this->load->helper('authentication');
+	}
 
-	// private function loadLibraries()
-	// {
-	// 	$this->load->model('login_model');
-	// 	$this->load->library('sqlfunction');
-	// }
-
+	/**
+	 * Default method for the controller
+	 * @return [none]
+	 */
+	
 	public function index()
 	{	
-		// $this->loadLibraries();
-		// $isLogout = $this->uri->segment(2);
+		$this->_load_libraries();
 
-		// if ($isLogout == "logout") {
-		// 	$this->myfunction->deleteSessionCookies();
-		// }
+		$page = $this->uri->segment(2);
 
-		// if (isset($_COOKIE['username']) && isset($_COOKIE['fullname']) && isset($_COOKIE['temp']) && isset($_COOKIE['permissions'])) {
-		// 	$check = $this->sqlfunction->checkUserExist();
-		// 	if ($check == 'success') {
-		// 		$this->myfunction->relocate('controlpanel');
-		// 	}
-		// }
+		if ($page == 'logout') 
+		{
+			logout_user();
+		}
 
-		// if (isset($_POST['data'])) {
-		// 	$this->ajaxRequest();
-		// 	exit();
-		// }
+		if (check_user_exists() && check_set_cookies()) {
+			header('Location:'.base_url().'controlpanel');
+			exit();
+		}
 
-		$data['page'] 	= 'controlpanel';
-		$data['script'] = 'controlpanel_js.php';
+		if (isset($_POST['data'])) 
+		{
+			$this->_ajax_request();
+			exit();
+		}
+
+		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
+		$data['page'] 	= 'login';
+		$data['script'] = 'login_js.php';
 
 		$this->load->view('master', $data);
 	}
+	}
 
-	// public function _remap()
-	// {
- //        $param_offset = 1;
- //        $method = 'index';
-	//     $params = array_slice($this->uri->rsegment_array(), $param_offset);
-
-	//     call_user_func_array(array($this, $method), $params);
-	// } 
-
-	// private function ajaxRequest()
-	// {
-	// 	$postData 	= array();
-	// 	$fnc 		= '';
-
-	// 	$postData 	= json_decode($_POST['data'],true);
-	// 	$fnc 		= $postData['fnc'];
-
-	// 	switch ($fnc) {
-	// 		case 'check_login':
-	// 			$this->checkLogin($postData);
-	// 			break;
-
-	// 		case 'get_user_branch_list':
-	// 			$this->getUserBranchList($postData);
-	// 			break;
-
-	// 		case 'final_verification':
-	// 			$this->verifyUser($postData);
-	// 			break;
-	// 		default:
-				
-	// 			break;
-	// 	}
-
-	// }
-
-	// private function checkLogin($param)
-	// {
-	// 	$data = $this->login_model->checkUserCredential($param);
-	// 	echo json_encode($data);
-	// }
+	/**
+	 * Forces controller to always go to index instead of directly accessing the methods
+	 * @return [none]
+	 */
 	
-	// private function getUserBranchList($param)
-	// {
-	// 	$data = $this->sqlfunction->getUserBranchList($param['userid']);
-	// 	echo json_encode($data);
-	// }
+	public function _remap()
+	{
+        $param_offset = 1;
+        $method = 'index';
+	    $params = array_slice($this->uri->rsegment_array(), $param_offset);
 
-	// private function verifyUser($param)
-	// {
-	// 	$data = $this->login_model->finalVerifyUser($param);
-	// 	echo json_encode($data);
-	// }
+	    call_user_func_array(array($this, $method), $params);
+	} 
 
+	/**
+	 * List of AJAX request
+	 * @return [none]
+	 */
+	
+	private function _ajax_request()
+	{
+		$post_data 	= array();
+		$fnc 		= '';
+
+		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
+		$fnc 		= $post_data['fnc'];
+
+		switch ($fnc) 
+		{
+			case '':
+				break;
+
+			default:
+				
+				break;
+		}
+
+	}
 }
