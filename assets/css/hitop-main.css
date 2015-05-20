@@ -1,15 +1,14 @@
 /*Hi-Top CSS by Gian Carlo Egamino - Version 1.0*/
-
-@font-face{
-	font-family: OS-Regular;
-	src: url("../fonts/OpenSans-Regular.ttf");
+@font-face {
+    font-family: R-Bold;
+    src: url("../fonts/Roboto-Bold.ttf");
 }
-@font-face{
-	font-family: OS-Bold;
-	src: url("../fonts/OpenSans-ExtraBold.ttf");
+@font-face {
+    font-family: R-Regular;
+    src: url("../fonts/Roboto-Regular.ttf");
 }
 *{
-	font-family: OS-Regular;
+	font-family: R-Regular;
 }
 html{
 	height: 100%;
@@ -36,14 +35,14 @@ body{
 	border-bottom: 2px rgba(214, 68, 55, 0.4) solid;
 }
 .header-nav > .version{
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	font-size: 12px;
 	padding: 8px;
 	text-transform: uppercase;
 	color: #fff;
 }
 .header-nav > .user-creds{
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	font-size: 12px;
 	color: #fff;
 }
@@ -52,7 +51,7 @@ body{
 	border: none !important;
 	padding: 8px;
 	font-size: 12px;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	text-transform: uppercase;
 	color: #fff;
 	background: #e74c3c;
@@ -94,7 +93,7 @@ body{
 }
 .sidebar > .sidebar-links-panel .sidebar-group .header{
 	background: #00923F;
-	font-family: OS-Bold;
+	font-family: R-Bold;
 	font-weight: 100;
 	font-size: 12px;
 	text-transform: uppercase;
@@ -114,7 +113,7 @@ body{
 }
 .sidebar > .sidebar-links-panel .sidebar-group a .link{
 	padding: 8px 10px;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	font-size: 12px;
 	text-align: left;
 	cursor: pointer;
@@ -134,7 +133,7 @@ body{
 .main-content > .module-title{
 	font-size: 35px;
 	text-align: left;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 }
 .main-content > .content-form{
 	box-shadow: 0px 0px 8px -2px #ddd;
@@ -146,7 +145,7 @@ body{
 }
 .main-content > .breadcrumbs-panel ol{
 	background: #fff;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	font-size: 14px;
 	margin-bottom: 15px;
 	border: 1px solid transparent;
@@ -160,7 +159,7 @@ body{
 	border-color: #ddd;
 	float: left;
 	width: 100%;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 }
@@ -183,6 +182,8 @@ body{
 	background: #f2f2f2;
 	text-align: center;
 	margin-top: 15px;
+	width: 100%;
+	float: left;
 }
 /*Login*/
 .login-wrapper{
@@ -207,7 +208,7 @@ body{
 }
 .login-panel > .login-creds{
 	float: right;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	font-size: 16px;
 	margin-bottom: 15px;
 	margin-right: 15px;
@@ -223,7 +224,7 @@ body{
 .footer{
 	margin-top: 15px;
 	padding: 15px; 
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	font-weight: 100;
 	font-size: 13px;
 	background: #fff;
@@ -239,7 +240,7 @@ body{
 	display: inline-block;
 }
 .btn{
-	font-family: OS-Regular;
+	font-family: R-Regular;
 }
 
 /*Special Classes*/
@@ -253,7 +254,7 @@ body{
 .lblmsg{
 	text-align: center;
 	font-size: 22px;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 }
 .danger{
 	color: #E74C3C;
@@ -267,7 +268,25 @@ body{
 .warning{
 	color: #ddae13;
 }
-/*.txt-data{
-	font-family: OS-Regular;
-	font-size: 20px;
-}*/
+.txt-data{
+	font-family: R-Regular;
+	font-size: 22px;
+}
+.tbl-filters table td,
+.tbl-form table td{
+	padding: 3px;
+}
+.tbl-form.max table{
+	width: 100%;
+}
+.tbl-filters table td select{
+	width: 182px;
+}
+.tbl-checkbtn{
+	float: left;
+	margin-left: 5px;
+}
+.tbl-checkbtn div{
+	float: left;
+	margin-right: 5px;
+}

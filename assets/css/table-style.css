@@ -1,25 +1,35 @@
-tbody{
-	/*border: 1px #fcc7f5 solid;*/
+/*Table Style CSS by Gian Egamino*/
+.tbl table:first-child{
+	border: 1px #ddd solid;
 }
 .tbl table:first-child td{
 	border-collapse: collapse;
 	padding: 8px;
 	text-align: left;
 	font-size: 12px;
+	border: 1px #ddd solid;
 }
 .tbl table:first-child .tableheader td{
-	background: #2e8ece;
+	background: #5C7375;
 	color: #fff;
-	font-family: OS-Regular;
+	font-family: R-Regular;
 	font-size: 14px;
+	border: none;
 }
 .tbl table:first-child tr:hover{
-	background: #a5dcff;
+	background: #FCF4D4;
 	cursor: pointer;
+}
+.tbl tr:nth-child(odd){
+	background: #fff;
+}
+.tbl tr:nth-child(even){
+	background: #F4F2F2;
 }
 .tbl table:last-child{
 	margin-top: 15px;
 	margin-bottom: 15px;
+	border: 1px #ddd solid;
 }
 .tbl table:last-child td{
 	padding: 5px;
@@ -74,14 +84,8 @@ tbody{
 .tbl table:last-child td input[type*="button"]:focus,
 .tbl table:last-child td input[type*="button"].focus, 
 .tbl table:last-child td input[type*="button"]:active{
-	background: #9b1a95;
-	border-color: #7f167a;
-}
-.tbl tr:nth-child(odd){
-	background: #e5f9ff;
-}
-.tbl tr:nth-child(even){
-	background: #d6eeff;
+	background: #247cb7;
+	border-color: #247cb7;
 }
 .tddelete, 
 .tdview,
