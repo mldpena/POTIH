@@ -29,9 +29,13 @@ class Login extends CI_Controller {
 			logout_user();
 		}
 
-		if (check_user_exists() && check_set_cookies()) {
-			header('Location:'.base_url().'controlpanel');
-			exit();
+		if (check_set_cookies()) 
+		{
+			if (check_user_exists()) 
+			{
+				header('Location:'.base_url().'controlpanel');
+				exit();
+			}
 		}
 
 		if (isset($_POST['data'])) 

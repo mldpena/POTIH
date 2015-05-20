@@ -8,6 +8,9 @@
 	font-family: OS-Bold;
 	src: url("../fonts/OpenSans-ExtraBold.ttf");
 }
+*{
+	font-family: OS-Regular;
+}
 html{
 	height: 100%;
 	position: relative;
@@ -17,17 +20,12 @@ html{
 /*Wrapper Settings*/
 body{
 	background: #f2f2f2;
-/*	background: url('../img/main-bg.jpg') no-repeat center center fixed; 
-	-webkit-background-size: cover;
-	-moz-background-size: cover;
-	-o-background-size: cover;
-	background-size: cover;*/
 }
 #login-body .main-wrapper{
 	width: auto;
 }
 .main-wrapper{
-	width: 1349px;
+	/*width: 1366px;*/
 }
 
 /*Navigation Bar*/
@@ -74,7 +72,7 @@ body{
 
 /*Sidebar*/
 .sidebar{
-	width: 200px;
+	width: 18.7%;
 	height: 100%;
 	margin-left: 15px;
 	margin-top: 10px;
@@ -108,14 +106,20 @@ body{
 	width: 120px;
 	height: 120px;
 }
-.sidebar > .sidebar-links-panel .sidebar-group .link{
+.sidebar > .sidebar-links-panel .sidebar-group a{
+	color: #000;
+}
+.sidebar > .sidebar-links-panel .sidebar-group a{
+	text-decoration: none;
+}
+.sidebar > .sidebar-links-panel .sidebar-group a .link{
 	padding: 8px 10px;
 	font-family: OS-Regular;
 	font-size: 12px;
 	text-align: left;
 	cursor: pointer;
 }
-.sidebar > .sidebar-links-panel .sidebar-group .link:hover{
+.sidebar > .sidebar-links-panel .sidebar-group a .link:hover{
 	background: #f7f7f7;
 	border-left: 2px #00923F solid; 
 }
@@ -123,7 +127,7 @@ body{
 
 /*Main Content*/
 .main-content{
-	width: 1103px;
+	width: 78%;
 	margin-right: 15px;
 	margin-top: 15px;
 }
@@ -166,7 +170,7 @@ body{
 	background: #fff;
 	border-bottom-left-radius: 4px;
 	border-bottom-right-radius: 4px;
-	padding: 15px 0px;
+	padding-bottom: 15px;
 }
 .main-content > .content-form .form-body.default{
 	min-height: 600px;
@@ -178,6 +182,7 @@ body{
 	border-bottom: 1px #ddd solid;
 	background: #f2f2f2;
 	text-align: center;
+	margin-top: 15px;
 }
 /*Login*/
 .login-wrapper{
@@ -262,3 +267,7 @@ body{
 .warning{
 	color: #ddae13;
 }
+/*.txt-data{
+	font-family: OS-Regular;
+	font-size: 20px;
+}*/

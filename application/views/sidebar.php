@@ -7,35 +7,10 @@
 	<div class="sidebar-links-panel">
 		<div class="sidebar-group">
 			<div class="header">Data</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-		</div>
-		<div class="sidebar-group">
-			<div class="header">Data</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-		</div>
-		<div class="sidebar-group">
-			<div class="header">Data</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-		</div>
-		<div class="sidebar-group">
-			<div class="header">Data</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
-			<div class="link">Sample Link</div>
+			<a href="<?= base_url() ?>product/list"><div class="link">Product</div></a>
+			<a href="<?= base_url() ?>material/list"><div class="link">Material Type</div></a>
+			<a href="<?= base_url() ?>subgroup/list"><div class="link">Sub Grouping</div></a>
+			<a href="<?= base_url() ?>user/list"><div class="link">User</div></a>
 		</div>
 	</div>
 </div>

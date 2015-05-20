@@ -35,7 +35,8 @@ class Login_Model extends CI_Model {
 		{
 			$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
 						FROM user_permission AS U 
-						LEFT JOIN branch AS B ON B.`id` = U.`branch_id`";
+						LEFT JOIN branch AS B ON B.`id` = U.`branch_id`
+						WHERE B.`is_show` = 1";
 
 			$result_branch = $this->db->query($query);
 

@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class ControlPanel extends CI_Controller {
+class Material extends CI_Controller {
 	
 	/**
 	 * Load needed model or library for the current controller
@@ -32,11 +32,24 @@ class ControlPanel extends CI_Controller {
 			exit();
 		}
 
+		switch ($page) 
+		{
+			case 'list':
+				$page = 'material_list';
+				break;
+			
+			default:
+				# code...
+				break;
+		}
+
+		
+
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
 		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= 'controlpanel';
-		$data['script'] = 'controlpanel_js.php';
+		$data['page'] 	= $page;
+		$data['script'] = $page.'_js.php';
 
 		$this->load->view('master', $data);
 	}

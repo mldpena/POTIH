@@ -6,7 +6,7 @@ if (!function_exists('check_user_credentials'))
 	{
 		$isset_cookies = check_set_cookies();
 
-		if (!$isset) 
+		if (!$isset_cookies) 
 		{
 			logout_user();
 		}
@@ -33,7 +33,6 @@ if (!function_exists('check_set_cookies'))
 
 		if (!isset($_COOKIE['username']) || !isset($_COOKIE['fullname']) || !isset($_COOKIE['temp']) || !isset($_COOKIE['branch'])) 
 		{
-			delete_user_cookies();
 			$isset = false;
 		}
 
