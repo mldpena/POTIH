@@ -10,7 +10,7 @@
 				<div class="row">
 					<div class="header-nav">
 						<div class="version pull-left">
-							Hi-Top - Version 1.0 <?= isset($branch) ? 'Branch : '.$branch : '' ?>
+							Hi-Top - Version 1.0 <?= isset($branch) ? ' | Branch : '.$branch : '' ?>
 						</div>
 						<?php
 							if ($page != 'login') {

@@ -9,6 +9,7 @@ class Product extends CI_Controller {
 	
 	private function _load_libraries()
 	{
+		$this->load->model('product_model');
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 	}
@@ -36,14 +37,16 @@ class Product extends CI_Controller {
 		{
 			case 'list':
 				$page = 'product_list';
+				/* Temporary */
+				$data['branch_list'] 	= get_name_list_from_table(true,'branch');
+				$data['material_list'] 	= get_name_list_from_table(true,'material_type');
+				$data['subgroup_list'] 	= get_name_list_from_table(true,'subgrouping');
 				break;
 			
 			default:
-				# code...
+
 				break;
 		}
-
-		
 
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
@@ -83,7 +86,8 @@ class Product extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case '':
+			case 'get_product_list':
+				$this->_get_product_list($post_data);
 				break;
 
 			default:
@@ -91,5 +95,11 @@ class Product extends CI_Controller {
 				break;
 		}
 
+	}
+
+	private function _get_product_list($param)
+	{
+		$response = $this->product_model->get_product_list($param);
+		echo json_encode($response);
 	}
 }

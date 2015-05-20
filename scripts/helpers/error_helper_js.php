@@ -1,7 +1,7 @@
 <script type="text/javascript">
 	function build_message_box(id,string,status)
 	{
-		var dom = "<div class='alert alert-"+status+"' role='alert'>"+string+"</div>";
+		var dom = "<div class='lblmsg " + status + "'>"+string+"</div>";
 		$('#'+id).html(dom);
 	}
 

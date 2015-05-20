@@ -7,10 +7,12 @@ if (!function_exists('get_branch_name'))
 		$CI =& get_instance();
 		$CI->load->helper('cookie');
 		$CI->load->library('encrypt');
+		$CI->load->library('constants/branch_const');
 
 		
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
-		$query 		= "SELECT `name` FROM branch WHERE `is_show` = 1 AND `id` = ?"; 
+		$query 		= "SELECT CONCAT(`code`,' - ',`name`) AS 'name' 
+							FROM branch WHERE `is_show` = ".BRANCH_CONST::ACTIVE." AND `id` = ?";
 		$result 	= $CI->db->query($query,$branch_id);
 		$row		= $result->row();
 		$name 		= $row->name;
@@ -18,7 +20,10 @@ if (!function_exists('get_branch_name'))
 
 		return $name;
 	}
+}
 
+if (!function_exists('get_user_fullname')) 
+{
 	function get_user_fullname()
 	{
 		$CI =& get_instance();
@@ -27,6 +32,33 @@ if (!function_exists('get_branch_name'))
 
 		$full_name 	= $CI->encrypt->decode(get_cookie('fullname'));
 		return $full_name;
+	}
+}
+
+if (!function_exists('get_name_list_from_table')) 
+{
+	function get_name_list_from_table($is_option = false, $table = '')
+	{
+		$CI =& get_instance();
+
+		$data_list = (!$is_option) ? array() : '';
+
+		$query = "SELECT CONCAT(`code`,' - ',`name`) AS 'name', `id`
+					FROM $table WHERE `is_show` = 1"; 
+
+		$result = $CI->db->query($query);
+
+		if ($result->num_rows() > 0) {
+			foreach ($result->result() as $row) {
+				if (!$is_option) {
+					$data_list[$row->id] = $row->name;
+				}else{
+					$data_list .= "<option value='".$row->id."'>".$row->name."</option>";
+				}
+			}
+		}
+
+		return $data_list;
 	}
 }
 

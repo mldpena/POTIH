@@ -3,10 +3,11 @@
 class Login_Model extends CI_Model {
 
 	/**
-	 * Load Encrypt Class for encryption
+	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
+		$this->load->library('constants/login_const');
 		$this->load->helper('cookie');
 		parent::__construct();
 	}
@@ -24,7 +25,7 @@ class Login_Model extends CI_Model {
 		$password 	= $this->encrypt->encode_md5($param['pass']);
 		$query_data = array($user_name,$password);
 		
-		$query 	= "SELECT `id` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = 1";
+		$query 	= "SELECT `id` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
@@ -36,7 +37,7 @@ class Login_Model extends CI_Model {
 			$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
 						FROM user_permission AS U 
 						LEFT JOIN branch AS B ON B.`id` = U.`branch_id`
-						WHERE B.`is_show` = 1";
+						WHERE B.`is_show` = ".LOGIN_CONST::ACTIVE;
 
 			$result_branch = $this->db->query($query);
 
@@ -78,7 +79,7 @@ class Login_Model extends CI_Model {
 		$password 	= $this->encrypt->encode_md5($param['pass']);
 		$query_data = array($user_name,$password);
 
-		$query 	= "SELECT `username`, `id`, `full_name` FROM user WHERE `username` = ? AND `password` = ?";
+		$query 	= "SELECT `username`, `id`, `full_name` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
