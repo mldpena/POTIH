@@ -1,8 +1,8 @@
 <div class="main-content pull-right">
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
-			<li><a href="controlpanel.php">Home</a></li>
-			<li class="active"><a href="#">Product List</a></li>
+			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
+			<li class="active"><a href="<?= base_url() ?>product/list">Product List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

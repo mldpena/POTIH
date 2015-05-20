@@ -1,4 +1,7 @@
 /*Table Style CSS by Gian Egamino*/
+.tbl.max table{
+	width: 100%;
+}
 .tbl table:first-child{
 	border: 1px #ddd solid;
 }

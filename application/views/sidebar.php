@@ -11,6 +11,7 @@
 			<a href="<?= base_url() ?>material/list"><div class="link">Material Type</div></a>
 			<a href="<?= base_url() ?>subgroup/list"><div class="link">Sub Grouping</div></a>
 			<a href="<?= base_url() ?>user/list"><div class="link">User</div></a>
+			<a href="<?= base_url() ?>damage/list"><div class="link">Damage</div></a>
 		</div>
 	</div>
 </div>

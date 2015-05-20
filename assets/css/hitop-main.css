@@ -129,6 +129,7 @@ body{
 	width: 78%;
 	margin-right: 15px;
 	margin-top: 15px;
+	min-height: 534px;
 }
 .main-content > .module-title{
 	font-size: 35px;
@@ -142,14 +143,15 @@ body{
 	border-radius: 4px;
 	border: 1px solid transparent;
 	border-color: #ddd;
+	margin-top: 15px;
 }
 .main-content > .breadcrumbs-panel ol{
 	background: #fff;
 	font-family: R-Regular;
 	font-size: 14px;
-	margin-bottom: 15px;
 	border: 1px solid transparent;
 	border-color: #ddd;
+	margin-bottom: 0px;
 }
 .main-content > .content-form .form-header{
 	padding: 12px 15px;
@@ -171,10 +173,6 @@ body{
 	border-bottom-right-radius: 4px;
 	padding-bottom: 15px;
 }
-.main-content > .content-form .form-body.default{
-	min-height: 600px;
-}
-
 .sub-panel{
 	padding: 4px 15px;
 	border-top: 1px #ddd solid;
@@ -272,8 +270,32 @@ body{
 	font-family: R-Regular;
 	font-size: 22px;
 }
+.user-check-group{
+	width: 100%;
+	float: left;
+}
+.user-check-group > .input{
+	float: left;
+	text-align: right !important;
+	width: 38%;
+	margin-top: -2px;
+}
+.user-check-group > .text{
+	float: right;
+	text-align: left !important;
+	width: 61%;
+}
+.divider-line{
+	float: left;
+	margin-top: 15px;
+	width: 100%;
+	border-top: 1px #ddd solid;
+}
+
+/*Table Form Fields*/
 .tbl-filters table td,
-.tbl-form table td{
+.tbl-form table td,
+.tbl-total table td{
 	padding: 3px;
 }
 .tbl-form.max table{
@@ -285,8 +307,21 @@ body{
 .tbl-checkbtn{
 	float: left;
 	margin-left: 5px;
+	margin-top: 3px;
 }
-.tbl-checkbtn div{
+.tbl-checkbtn input{
 	float: left;
 	margin-right: 5px;
+}
+.tbl.user td{
+	vertical-align: top;
+}
+.tbl-total table td{
+	font-size: 20px;
+	font-family: R-Bold;
+}
+.action-btn{
+	vertical-align: top;
+	text-align: center !important;
+	width: 40px;
 }
