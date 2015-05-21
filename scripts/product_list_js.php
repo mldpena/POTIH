@@ -1,5 +1,7 @@
 <script type="text/javascript">
 	var flag = 0;
+	var global_product_id = 0;
+	var global_row_index = 0;
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -32,7 +34,7 @@
         header_title: "Material Code",
         edit: [spnmaterialcode],
         disp: [spnmaterialcode],
-        td_class: "tablerow column_click column_hover"
+        td_class: "tablerow column_click column_hover tdmaterial"
     };
 
 	var spnproduct = document.createElement('span');
@@ -40,7 +42,7 @@
         header_title: "Product",
         edit: [spnproduct],
         disp: [spnproduct],
-        td_class: "tablerow column_click column_hover"
+        td_class: "tablerow column_click column_hover tdproduct"
     };
 
 	var spntype = document.createElement('span');
@@ -48,7 +50,7 @@
         header_title: "Type",
         edit: [spntype],
         disp: [spntype],
-        td_class: "tablerow column_click column_hover"
+        td_class: "tablerow column_click column_hover tdtype"
     };
 
     var spnmaterial = document.createElement('span');
@@ -56,7 +58,7 @@
         header_title: "Material Type",
         edit: [spnmaterial],
         disp: [spnmaterial],
-        td_class: "tablerow column_click column_hover"
+        td_class: "tablerow column_click column_hover tdmaterial_type"
     };
 
     var spnsubgroup = document.createElement('span');
@@ -64,7 +66,7 @@
         header_title: "Sub Group",
         edit: [spnsubgroup],
         disp: [spnsubgroup],
-        td_class: "tablerow column_click column_hover"
+        td_class: "tablerow column_click column_hover tdsubgroup"
     };
 
     var spninv = document.createElement('span');
@@ -72,7 +74,7 @@
         header_title: "Inv",
         edit: [spninv],
         disp: [spninv],
-        td_class: "tablerow column_click column_hover"
+        td_class: "tablerow column_click column_hover tdinv"
     };
 
     var imgDelete = document.createElement('i');
@@ -98,6 +100,7 @@
 
 	$('#tbl').hide();
 	refresh_table();
+
 	$('#datefrom, #dateto').datepicker();
     $('#datefrom, #dateto').datepicker("option","dateFormat", "yy-mm-dd" );
 
@@ -105,28 +108,86 @@
     	refresh_table();
     });
 
+    $('.column_click').live('click',function(){
+
+    	var token_val			= '<?= $token ?>';
+    	var global_row_index 	= $(this).parent().index();
+    	var global_product_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+
+    	var arr = 	{ 
+						fnc 	 	: 'get_product_details', 
+						product_id 	: global_product_id
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_1',response.error,'danger');
+				}
+				else
+				{
+
+					$('#new_itemcode').val(response.data['material_code']);
+					$('#new_product').val(response.data['product']);
+					$('#new_min').val(response.data['min_inv']);
+					$('#new_max').val(response.data['max_inv']);
+					$('#material_id').val(response.data['material_id']);
+					$('#subgroup_id').val(response.data['subgroup_id']);
+					if (response.data['type'] == 0) 
+					{
+						$('#new_nonstack').attr('checked','checked');
+					};
+
+					$('#material_text').html(response.data['material_type']);
+					$('#subgroup_text').html(response.data['subgroup']);
+
+					$('#createProductModal').modal('show');
+				}
+			}       
+		});
+    });
+	
+	$('.tddelete').live('click',function(){
+		global_row_index 	= $(this).parent().index();
+		global_product_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+
+		$('#deleteProductModal').modal('show');
+	});
+
     $('#save').click(function(){
     	if (flag == 1) { return; };
 		flag = 1;
 
 		var token_val		= '<?= $token ?>';
+		var row_index 		= global_row_index;
+		var product_id_val 	= global_product_id;
 		var itemcode_val 	= $('#new_itemcode').val();
 		var product_val 	= $('#new_product').val();
 		var min_inv_val 	= $('#new_min').val();
 		var max_inv_val 	= $('#new_max').val();
 		var material_val	= $('#material_id').val() == '' ? 0 : $('#material_id').val();
 		var subgroup_val	= $('#subgroup_id').val() == '' ? 0 : $('#subgroup_id').val();
+		var material_text 	= $('#material_text').html();
+		var subgroup_text 	= $('#subgroup_text').html();
 		var is_nonstack_val = $('#new_nonstack').is(':checked') ? 0 : 1;
+		var fnc_val 		= product_id_val == 0 ? 'insert_new_product' : 'update_product_details';
 
 		var arr = 	{ 
-						fnc 	 : 'insert_new_product', 
+						fnc 	 : fnc_val, 
 						code 	 : itemcode_val,
 						product  : product_val,
 						subgroup : subgroup_val,
 						material : material_val,
 						min_inv  : min_inv_val,
 						max_inv  : max_inv_val,
-						is_nonstack : is_nonstack_val
+						is_nonstack : is_nonstack_val,
+						product_id : product_id_val
 					};
 
 		$.ajax({
@@ -142,7 +203,29 @@
 				}
 				else
 				{
-					$('#createProductModal').modal('hide');
+					if (myjstbl.get_row_count() - 1 == 0) 
+					{
+  						$("#tbl").show();
+            		};
+
+            		if (product_id_val == 0) 
+            		{
+            			myjstbl.add_new_row();
+        				row_index = myjstbl.get_row_count() - 1;
+        				myjstbl.setvalue_to_rowindex_tdclass([response.id],row_index, colarray["id"].td_class);
+        				myjstbl.setvalue_to_rowindex_tdclass([row_index],row_index, colarray["number"].td_class);
+            		}
+
+            		var type_name = (is_nonstack_val == 0) ? 'Non - Stack' : 'Stack';
+
+            		myjstbl.setvalue_to_rowindex_tdclass([itemcode_val],row_index,colarray["material_code"].td_class);
+        			myjstbl.setvalue_to_rowindex_tdclass([product_val],row_index,colarray["name"].td_class);
+        			myjstbl.setvalue_to_rowindex_tdclass([type_name],row_index, colarray["type"].td_class);
+        			myjstbl.setvalue_to_rowindex_tdclass([material_text],row_index, colarray["material"].td_class);
+        			myjstbl.setvalue_to_rowindex_tdclass([subgroup_text],row_index, colarray["subgroup"].td_class);
+        			myjstbl.setvalue_to_rowindex_tdclass([0],row_index, colarray["inv"].td_class);
+
+        			$('#createProductModal').modal('hide');
 					build_message_box('messagebox_1','Product successfully saved!','success');
 				}
 
@@ -152,6 +235,51 @@
 
     });
 	
+	$('#delete').click(function(){
+		if (flag == 1) { return; };
+		flag = 1;
+
+		var token_val		= '<?= $token ?>';
+		var row_index 		= global_row_index;
+		var product_id_val 	= global_product_id;
+
+		var arr = 	{ 
+						fnc 	 	: 'delete_product', 
+						product_id 	: product_id_val
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_3',response.error,'danger');
+				}
+				else
+				{
+					myjstbl.delete_row(row_index);
+					
+					recompute_row_count(myjstbl,colarray);
+
+					if (myjstbl.get_row_count() == 1) 
+					{
+						$('#tbl').hide();
+					}
+
+					$('#deleteProductModal').modal('hide');
+
+					build_message_box('messagebox_1','Product successfully deleted!','success');
+				}
+
+				flag = 0;
+			}       
+		});
+	});
+
 	$('#new_itemcode').blur(function(){
 		var is_nonstack = $('#new_nonstack').is(':checked');
 
@@ -194,10 +322,12 @@
 		});
 	});
 
-    $('#createProductModal').live('hidden.bs.modal', function (e) {
+    $('#createProductModal, #deleteProductModal').live('hidden.bs.modal', function (e) {
 		$('.modal-fields').val('');
 		$('.modal-fields').html('');
 		$('.modal-fields').removeAttr('checked');
+		global_row_index 	= 0;
+		global_product_id 	= 0;
 	});
 
 
@@ -233,6 +363,8 @@
 						orderby  : orderby_val
 					};
 
+		$('#loadingimg').show();
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -261,6 +393,8 @@
 
 					$('#tbl').show();
 				}
+
+				$('#loadingimg').hide();
 
 				flag = 0;
 			}       

@@ -98,6 +98,18 @@ class Product extends CI_Controller {
 				$this->_insert_new_product($post_data);
 				break;
 
+			case 'get_product_details':
+				$this->_get_product_details($post_data);
+				break;
+
+			case 'update_product_details':
+				$this->_update_product_details($post_data);
+				break;
+
+			case 'delete_product':
+				$this->_delete_product($post_data);
+				break;
+
 			default:
 				
 				break;
@@ -120,6 +132,24 @@ class Product extends CI_Controller {
 	private function _insert_new_product($param)
 	{
 		$response = $this->product_model->insert_new_product($param);
+		echo json_encode($response);
+	}
+
+	private function _get_product_details($param)
+	{
+		$response = $this->product_model->get_product_details($param);
+		echo json_encode($response);
+	}
+
+	private function _update_product_details($param)
+	{
+		$response = $this->product_model->update_product_details($param);
+		echo json_encode($response);
+	}
+
+	private function _delete_product($param)
+	{
+		$response = $this->product_model->delete_product($param);
 		echo json_encode($response);
 	}
 }

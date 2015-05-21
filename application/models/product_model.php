@@ -13,6 +13,50 @@ class Product_Model extends CI_Model {
 		parent::__construct();
 	}
 
+	public function get_product_details($param)
+	{
+		extract($param);
+
+		$response = array();
+
+		$response['error'] = '';
+
+		$product_id = $this->encrypt->decode($product_id);
+
+		$query = "SELECT P.`material_code`, P.`description`, P.`type`, P.`min_inv`, P.`max_inv`,
+						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup',
+						P.`material_type_id`, P.`subgroup_id`
+						FROM product AS P
+						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE." 
+						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND P.`id` = ?";
+
+		$result = $this->db->query($query,$product_id);
+
+		if ($result->num_rows() == 1) 
+		{
+			$row = $result->row();
+
+			$response['data']['type'] 			= $row->type;
+			$response['data']['material_code'] 	= $row->material_code;
+			$response['data']['product'] 		= $row->description;
+			$response['data']['min_inv'] 		= $row->min_inv;
+			$response['data']['max_inv'] 		= $row->max_inv;
+			$response['data']['material_type'] 	= $row->material_type;
+			$response['data']['material_id'] 	= $row->material_type_id;
+			$response['data']['subgroup'] 		= $row->subgroup;
+			$response['data']['subgroup_id'] 	= $row->subgroup_id;
+		}
+		else
+		{
+			$response['error'] = 'Product not found!';
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
 	public function get_product_material_subgroup($param)
 	{
 		extract($param);
@@ -88,6 +132,66 @@ class Product_Model extends CI_Model {
 		else
 		{
 			$response['id'] = $result['id'];
+		}
+
+		return $response;
+	}
+
+	public function update_product_details($param)
+	{
+		extract($param);
+		$date_today = date('Y-m-d h:i:s');
+		$user_id	= $this->encrypt->decode(get_cookie('temp'));
+		$product_id = $this->encrypt->decode($product_id);
+		$response 	= array();
+		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$min_inv,$max_inv,$date_today,$user_id,$product_id);
+		$response['error'] = '';
+
+		$query = "UPDATE `product`
+					SET
+					`material_code` = ?,
+					`description` = ?,
+					`type` = ?,
+					`material_type_id` = ?,
+					`subgroup_id` = ?,
+					`min_inv` = ?,
+					`max_inv` = ?,
+					`last_modified_date` =?,
+					`last_modified_by` = ?
+					WHERE `id` = ?";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+		{
+			$response['error'] = 'Unable to save product!';
+		}
+		else
+		{
+			$response['id'] = $result['id'];
+		}
+
+		return $response;
+
+	}
+
+	public function delete_product($param)
+	{
+		extract($param);
+
+		$response = array();
+
+		$response['error'] = '';
+
+		$product_id = $this->encrypt->decode($product_id);
+
+		$query 	= "UPDATE `product` SET `is_show` = ".PRODUCT_CONST::DELETED." WHERE `id` = ?";
+
+		$result = $this->sql->execute_query($query,$product_id);
+
+		if ($result['error'] != '') 
+		{
+			$response['error'] = 'Unable to delete product!';
 		}
 
 		return $response;
