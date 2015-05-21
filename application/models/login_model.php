@@ -20,9 +20,9 @@ class Login_Model extends CI_Model {
 	
 	public function check_user_credential($param)
 	{
+		extract($param);
 		$response 	= array();
-		$user_name 	= $param['user'];
-		$password 	= $this->encrypt->encode_md5($param['pass']);
+		$password 	= $this->encrypt->encode_md5($password);
 		$query_data = array($user_name,$password);
 		
 		$query 	= "SELECT `id` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
@@ -73,10 +73,9 @@ class Login_Model extends CI_Model {
 	
 	public function set_user_session($param)
 	{
+		extract($param);
 		$response 	= array();
-		$user_name 	= $param['user'];
-		$branch_id	= $param['branch'];
-		$password 	= $this->encrypt->encode_md5($param['pass']);
+		$password 	= $this->encrypt->encode_md5($password);
 		$query_data = array($user_name,$password);
 
 		$query 	= "SELECT `username`, `id`, `full_name` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;

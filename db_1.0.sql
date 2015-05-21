@@ -1,8 +1,8 @@
 CREATE DATABASE  IF NOT EXISTS `dbs_hitop` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `dbs_hitop`;
--- MySQL dump 10.13  Distrib 5.6.23, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: dbs_hitop
+-- Host: 127.0.0.1    Database: dbs_hitop
 -- ------------------------------------------------------
 -- Server version	5.5.27
 
@@ -58,12 +58,13 @@ CREATE TABLE `material_type` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `code` varchar(10) DEFAULT '',
   `name` varchar(45) DEFAULT '',
+  `is_show` int(1) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -72,6 +73,7 @@ CREATE TABLE `material_type` (
 
 LOCK TABLES `material_type` WRITE;
 /*!40000 ALTER TABLE `material_type` DISABLE KEYS */;
+INSERT INTO `material_type` VALUES (1,'T','TIGER BRONZE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(2,'S','STAINLESS STEEL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'R','BRASS',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'C','COPPER',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(5,'A','ALUMINUM',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(6,'B','BI / BLACK IRON',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(7,'G','GALVANIZED',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1);
 /*!40000 ALTER TABLE `material_type` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -84,12 +86,12 @@ DROP TABLE IF EXISTS `product`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `product` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `item_code` varchar(20) DEFAULT '0',
+  `material_code` varchar(20) DEFAULT '0',
   `description` varchar(80) DEFAULT '',
   `type` int(1) DEFAULT '0',
-  `material_type` bigint(20) DEFAULT '0',
-  `subgrouping` bigint(20) DEFAULT '0',
-  `is_show` int(1) DEFAULT '0',
+  `material_type_id` bigint(20) DEFAULT '0',
+  `subgroup_id` bigint(20) DEFAULT '0',
+  `is_show` int(1) DEFAULT '1',
   `min_inv` int(11) DEFAULT '0',
   `max_inv` int(11) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
@@ -97,7 +99,7 @@ CREATE TABLE `product` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -106,35 +108,38 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
+INSERT INTO `product` VALUES (1,'AA112233','SAMPLE',1,5,1,1,1,100,'2015-05-21 05:00:52','2015-05-21 05:00:52',1,1),(2,'AA112244','SAMPLE',1,5,1,1,1,20,'2015-05-21 05:02:56','2015-05-21 05:02:56',1,1),(3,'AA223344','SAMPLE',1,5,1,1,2,30,'2015-05-21 05:03:25','2015-05-21 05:03:25',1,1),(4,'AC','SAMPLE COIL',1,5,2,1,1,3,'2015-05-21 06:03:17','2015-05-21 06:03:17',1,1);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `subgrouping`
+-- Table structure for table `subgroup`
 --
 
-DROP TABLE IF EXISTS `subgrouping`;
+DROP TABLE IF EXISTS `subgroup`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `subgrouping` (
+CREATE TABLE `subgroup` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `code` varchar(10) DEFAULT '',
   `name` varchar(45) DEFAULT '',
+  `is_show` int(1) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `subgrouping`
+-- Dumping data for table `subgroup`
 --
 
-LOCK TABLES `subgrouping` WRITE;
-/*!40000 ALTER TABLE `subgrouping` DISABLE KEYS */;
-/*!40000 ALTER TABLE `subgrouping` ENABLE KEYS */;
+LOCK TABLES `subgroup` WRITE;
+/*!40000 ALTER TABLE `subgroup` DISABLE KEYS */;
+INSERT INTO `subgroup` VALUES (1,'A','ANGEL BEAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(2,'C','COIL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'E','EMBROSSED / CHECKERED PLATE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'F','FLAT BAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1);
+/*!40000 ALTER TABLE `subgroup` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -167,7 +172,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','tvq~KrF4sXKBnqIZGs8r5ZAvqbK9jkpuN2oGXUD4tBBHSKEztvY3yjOHoWYEw1q7S0.QTtdUfRc68cy.qssG.Q--','09263188835',1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1);
+INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','83703b5229462cb6bfaf425152e46a8c','09263188835',1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -214,4 +219,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-19 15:33:04
+-- Dump completed on 2015-05-21  2:09:07

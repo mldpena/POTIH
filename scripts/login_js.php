@@ -33,9 +33,9 @@
 		var password_val 	= $("#password").val();
 
 		var arr = 	{ 
-						fnc: 'check_user', 
-						user: username_val, 
-						pass: password_val
+						fnc : 'check_user', 
+						user_name : username_val, 
+						password : password_val
 					};
 
 		$.ajax({
@@ -82,9 +82,9 @@
 
 		var arr = 	{ 
 						fnc : 'set_branch_user_session', 
-						user : username_val, 
-						pass : password_val,
-						branch : branch_val 
+						user_name : username_val, 
+						password : password_val,
+						branch_id : branch_val 
 					};
 
 

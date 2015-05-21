@@ -11,11 +11,12 @@
 			<div class="max-row tbl-filters" align="center">
 				<table>
 					<tr>
-						<td>Item Code:</td>
+						<td>Material Code:</td>
 						<td><input type="text" class="form-control" id="itemcode"></td>
 						<td>Type:</td>
 						<td>
 							<select class="form-control" id="type">
+								<option value="0">ALL</option>
 								<option value="1">Stack</option>
 								<option value="2">Non - Stack</option>
 							</select>
@@ -26,7 +27,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Item Name:</td>
+						<td>Material Name:</td>
 						<td><input type="text" class="form-control" id="product"></td>
 						<td>Material Type:</td>
 						<td>
@@ -60,7 +61,7 @@
 					<option value="1">Item Code</option>
 					<option value="2">Item Name</option>
 				</select>
-				<input type="button" class="btn btn-success" value="Search">
+				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
 				<button class="btn btn-primary" data-toggle="modal" data-target="#createProductModal">Create New Product</button>
@@ -87,26 +88,26 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<div class="checkbox pull-right" id="new_check_nonstack">
-						<input type="checkbox" value="">Non-stack Item
+						<input type="checkbox" class="modal-fields" value="" id="new_nonstack">Non-stack Item
 					</div>
 				</div>
 				<div class="form-group">
-					Item Code:
-					<input type="text" class="form-control" id="new_itemcode">
+					Material Code:
+					<input type="text" class="form-control modal-fields" id="new_itemcode" maxlength="8">
 				</div>
 				<div class="form-group">
-					Item Description:
-					<textarea class="form-control" rows="4" id="new_product"></textarea>
+					Material Description:
+					<textarea class="form-control modal-fields" rows="4" id="new_product"></textarea>
 				</div>
 				<div class="form-group">
 					<div class="row">
 						<div class="col-xs-6">
 							Minimum Inventory:
-							<input type="text" class="form-control" id="new_min">
+							<input type="text" class="form-control modal-fields" id="new_min">
 						</div>
 						<div class="col-xs-6">
 							Maximum Inventory:
-							<input type="text" class="form-control" id="new_max">
+							<input type="text" class="form-control modal-fields" id="new_max">
 						</div>
 					</div>
 				</div>
@@ -114,20 +115,21 @@
 					<div class="row">
 						<div class="col-xs-6">
 							Material Type:
-							<div class="txt-data" id="material_text"></div>
-							<input type="hidden" id="material_id" value="">
+							<div class="txt-data modal-fields" id="material_text"></div>
+							<input type="hidden" class="modal-fields" id="material_id" value="0">
 						</div>
 						<div class="col-xs-6">
 							Subgrouping:
-							<div class="txt-data" id="subgroup_text"></div>
-							<input type="hidden" id="subgroup_id" value="">
+							<div class="txt-data modal-fields" id="subgroup_text"></div>
+							<input type="hidden" class="modal-fields" id="subgroup_id" value="0">
 						</div>
 					</div>
 				</div>
+				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary">Save changes</button>
+				<button type="button" class="btn btn-primary" id="save">Save</button>
 			</div>
 		</div>
 	</div>

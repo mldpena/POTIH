@@ -37,7 +37,7 @@ if (!function_exists('get_user_fullname'))
 
 if (!function_exists('get_name_list_from_table')) 
 {
-	function get_name_list_from_table($is_option = false, $table = '')
+	function get_name_list_from_table($is_option = false, $table = '', $include_all = false)
 	{
 		$CI =& get_instance();
 
@@ -48,6 +48,14 @@ if (!function_exists('get_name_list_from_table'))
 
 		$result = $CI->db->query($query);
 
+		if ($include_all) {
+			if (!$is_option) {
+				$data_list[0] = 'ALL';
+			}else{
+				$data_list .= "<option value='0'>ALL</option>";
+			}
+		}
+		
 		if ($result->num_rows() > 0) {
 			foreach ($result->result() as $row) {
 				if (!$is_option) {

@@ -103,3 +103,7 @@
 	border-collapse: collapse;
 	width: 100%;
 }
+
+.tdid, .tdheader_id, .tdwaybillid, .tdwaybillheader_id{
+	display: none;
+}

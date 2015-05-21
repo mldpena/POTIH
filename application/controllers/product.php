@@ -38,9 +38,9 @@ class Product extends CI_Controller {
 			case 'list':
 				$page = 'product_list';
 				/* Temporary */
-				$data['branch_list'] 	= get_name_list_from_table(true,'branch');
-				$data['material_list'] 	= get_name_list_from_table(true,'material_type');
-				$data['subgroup_list'] 	= get_name_list_from_table(true,'subgrouping');
+				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch');
+				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;
 			
 			default:
@@ -90,6 +90,14 @@ class Product extends CI_Controller {
 				$this->_get_product_list($post_data);
 				break;
 
+			case 'get_material_and_subgroup':
+				$this->_get_product_material_and_subgroup($post_data);
+				break;
+
+			case 'insert_new_product':
+				$this->_insert_new_product($post_data);
+				break;
+
 			default:
 				
 				break;
@@ -100,6 +108,18 @@ class Product extends CI_Controller {
 	private function _get_product_list($param)
 	{
 		$response = $this->product_model->get_product_list($param);
+		echo json_encode($response);
+	}
+
+	private function _get_product_material_and_subgroup($param)
+	{
+		$response = $this->product_model->get_product_material_subgroup($param);
+		echo json_encode($response);
+	}
+
+	private function _insert_new_product($param)
+	{
+		$response = $this->product_model->insert_new_product($param);
 		echo json_encode($response);
 	}
 }

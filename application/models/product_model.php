@@ -8,13 +8,218 @@ class Product_Model extends CI_Model {
 	public function __construct() {
 		$this->load->library('encrypt');
 		$this->load->library('constants/product_const');
+		$this->load->library('sql');
 		$this->load->helper('cookie');
 		parent::__construct();
 	}
 
+	public function get_product_material_subgroup($param)
+	{
+		extract($param);
+		$response 	= array();
+		$response['error']			= '';
+		$response['material_name']	= '';
+		$response['material_id'] 	= 0;
+		$response['subgroup_name'] 	= '';
+		$response['subgroup_id'] 	= 0;
+		
+
+		$query = "SELECT `name`, `id` 
+					FROM material_type WHERE `code` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
+
+		$result = $this->db->query($query,$code[0]);
+
+		if ($result->num_rows() == 1) 
+		{
+			$row = $result->row();
+			$response['material_name']	= $row->name;
+			$response['material_id'] 	= $row->id;
+		}
+
+		$result->free_result();
+
+		$query = "SELECT `name`, `id` 
+					FROM subgroup WHERE `code` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
+
+		$result = $this->db->query($query,$code[1]);
+		if ($result->num_rows() == 1) 
+		{
+			$row = $result->row();
+			$response['subgroup_name']	= $row->name;
+			$response['subgroup_id'] 	= $row->id;
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	public function insert_new_product($param)
+	{
+		extract($param);
+		$date_today = date('Y-m-d h:i:s');
+		$user_id	= $this->encrypt->decode(get_cookie('temp'));
+
+		$response 	= array();
+		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$min_inv,$max_inv,$date_today,$date_today,$user_id,$user_id);
+		$response['error'] = '';
+
+ 		$query = "INSERT INTO `product`
+					(`material_code`,
+					`description`,
+					`type`,
+					`material_type_id`,
+					`subgroup_id`,
+					`min_inv`,
+					`max_inv`,
+					`date_created`,
+					`last_modified_date`,
+					`created_by`,
+					`last_modified_by`)
+					VALUES
+					(?,?,?,?,?,?,?,?,?,?,?);";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+		{
+			$response['error'] = 'Unable to save product!';
+		}
+		else
+		{
+			$response['id'] = $result['id'];
+		}
+
+		return $response;
+	}
+
 	public function get_product_list($param)
 	{
-		$response = array();
+		$response 	= array();
+		$response['rowcnt'] = 0;
+		$conditions = "";
+		$order_field = "";
+		$query_data = array();
+
+		extract($param);
+
+		if (!empty($code)) 
+		{
+			$conditions .= " AND P.`code` LIKE ?";
+			array_push($query_data,'%'.$code.'%');
+		}
+
+		if (!empty($product)) 
+		{
+			$conditions .= " AND P.`description` LIKE ?";
+			array_push($query_data,'%'.$product.'%');
+		}
+
+		if ($subgroup != PRODUCT_CONST::ALL_OPTION) 
+		{
+			$conditions .= " AND P.`subgroup_id` = ?";
+			array_push($query_data,$subgroup);
+		}
+
+		if ($material != PRODUCT_CONST::ALL_OPTION) 
+		{
+			$conditions .= " AND P.`material_type_id` = ?";
+			array_push($query_data,$material);
+		}
+
+		if (!empty($datefrom))
+		{
+			$conditions .= " AND P.`date_created` >= ?";
+			array_push($query_data,$datefrom.' 00:00:00');
+		}
+
+		if (!empty($dateto))
+		{
+			$conditions .= " AND P.`date_created` <= ?";
+			array_push($query_data,$datefrom.' 23:59:59');
+		}
+
+		if ($type != PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type = PRODUCT_CONST::STACK;
+					break;
+				
+				case 2:
+					$type = PRODUCT_CONST::NON_STACK;
+					break;
+			}
+
+			$conditions .= " AND P.`type` = ?";
+			array_push($query_data,$type);
+		}
+
+		/* For product branch inventory table*/
+		/*if ($invstat != PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($invstat) {
+				case PRODUCT_CONST::POSITIVE_INV:
+
+					break;
+				
+				case PRODUCT_CONST::NEGATIVE_INV:
+
+					break;
+
+				case PRODUCT_CONST::ZERO_INV:
+
+					break;
+			}
+		}*/
+
+		switch ($orderby) 
+		{
+			case PRODUCT_CONST::ORDER_BY_NAME:
+				$order_field = "P.`description`";
+				break;
+			
+			case PRODUCT_CONST::ORDER_BY_CODE:
+				$order_field = "P.`material_code`";
+				break;
+		}
+
+		
+
+		$query = "SELECT P.`id`, P.`material_code`, P.`description`,
+						CASE 
+							WHEN P.`type` = ".PRODUCT_CONST::NON_STACK." THEN 'Non - Stack'
+							WHEN P.`type` = ".PRODUCT_CONST::STACK." THEN 'Stack'
+						END AS 'type',
+						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup'
+						FROM product AS P
+						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." $conditions
+						ORDER BY $order_field";
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($this->encrypt->encode($row->id));
+				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row->material_code);
+				$response['data'][$i][] = array($row->description);
+				$response['data'][$i][] = array($row->type);
+				$response['data'][$i][] = array($row->material_type);
+				$response['data'][$i][] = array($row->subgroup);
+				$response['data'][$i][] = array(0);
+				$response['data'][$i][] = array('');
+				$i++;
+			}
+		}
 
 		return $response;
 	}

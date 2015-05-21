@@ -26,7 +26,7 @@ class CI_Sql{
 		for ($i=0; $i < 5; $i++) { 
 			$CI->db->trans_start();
 			$CI->db->query($query,$dataArray);
-			$data['id'] = $CI->db->insert_id();
+			$data['id'] = $CI->encrypt->encode($CI->db->insert_id());
 			$CI->db->trans_complete();
 			if ($CI->db->trans_status() === FALSE){
 				$data['id'] = 0;
