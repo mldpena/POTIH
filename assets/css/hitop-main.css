@@ -239,6 +239,7 @@ body{
 }
 .btn{
 	font-family: R-Regular;
+	vertical-align: top;
 }
 
 /*Special Classes*/
@@ -301,9 +302,6 @@ body{
 .tbl-form.max table{
 	width: 100%;
 }
-.tbl-filters table td select{
-	width: 182px;
-}
 .tbl-checkbtn{
 	float: left;
 	margin-left: 5px;
@@ -320,8 +318,10 @@ body{
 	font-size: 20px;
 	font-family: R-Bold;
 }
-.action-btn{
-	vertical-align: top;
-	text-align: center !important;
-	width: 40px;
-}
+
+/*Mozilla Firefox Override CSS*/
+/*@-moz-document url-prefix() {
+	.tbl-filters table td select{
+		width: 100%;
+	}
+}*/

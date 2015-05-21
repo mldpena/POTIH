@@ -1,5 +1,5 @@
 /*Table Style CSS by Gian Egamino*/
-.tbl.max table{
+.tbl.max table:first-child{
 	width: 100%;
 }
 .tbl table:first-child{
@@ -93,8 +93,9 @@
 .tddelete, 
 .tdview,
 .tdupdate{
-	width: 30px !important;
-	vertical-align: middle !important;
+	vertical-align: top;
+	text-align: center !important;
+	width: 40px;
 }
 .tddelete .fa-close{
 	color: #e74c3c;
@@ -103,7 +104,6 @@
 	border-collapse: collapse;
 	width: 100%;
 }
-
 .tdid, .tdheader_id, .tdwaybillid, .tdwaybillheader_id{
 	display: none;
 }
