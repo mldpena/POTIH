@@ -71,7 +71,7 @@
 			</div>
 			<div class="max-row">
 				<center>
-					<div id="tbl" class="tbl"></div>
+					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>
 		</div>
