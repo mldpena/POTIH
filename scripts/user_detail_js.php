@@ -67,4 +67,37 @@
 		});
 
 	});
+
+	if ("<?= $this->uri->segment(3) ?>" != '') 
+	{
+
+		var token_val		= '<?= $token ?>';
+		var user_id_val 	= "<?= $this->uri->segment(3) ?>";
+
+		var arr = 	{ 
+						fnc 		: fnc_val, 
+						user_id 	: user_id_val, 
+					};
+
+		$.ajax({
+			type: "POST",
+			url: "",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_1',response.error,'danger');
+				}
+				else
+				{
+					
+				}
+
+				flag = 0;
+			}       
+		});
+	};
 </script>

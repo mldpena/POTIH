@@ -108,6 +108,13 @@
 		}
 	});
 
+	$('.column_click').live('click',function(){
+		var row_index 	= $(this).parent().index();
+		var user_id 	= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray['id'].td_class)[0];
+
+		window.open('<?= base_url() ?>user/view/' + user_id);
+	});
+
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
 		global_user_id 		= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];

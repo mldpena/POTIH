@@ -75,6 +75,12 @@ class User_Model extends CI_Model {
 		return $response;
 	}
 
+	/**
+	 * Delete user account. Only set is_show to 0 and update modified date and user
+	 * @param  $param [array]
+	 * @return $response [json array]
+	 */
+	
 	public function delete_user($param)
 	{
 		extract($param);
@@ -104,6 +110,12 @@ class User_Model extends CI_Model {
 		return $response;
 	}
 
+	/**
+	 * Get user list
+	 * @param  $param [array]
+	 * @return $response [json array]
+	 */
+	
 	public function get_user_list($param)
 	{
 		extract($param);
@@ -182,6 +194,44 @@ class User_Model extends CI_Model {
 				$i++;
 			}
 		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	/**
+	 * 
+	 * @param  [type] $param [description]
+	 * @return [type]        [description]
+	 */
+	
+	public function get_user_details($param)
+	{
+		extract($param);
+
+		$user_id = $this->encrypt->decode($user_id);
+
+		$response = array();
+
+		$response['error'] = '';
+
+		$query = "SELECT `code`, `full_name`, `is_active`, `username`, `password`, `contact_number`
+					FROM `user` 
+					WHERE `is_show` = ".USER_CONST::ACTIVE." AND `id` = ?";
+
+		$result = $this->db->query($query);
+
+		if ($result->num_rows() != 1) 
+		{
+			$response['error'] = 'Account does not exists!';
+		}
+		else
+		{
+			$row = 
+		}
+
+		$result->free_result();
 
 		return $response;
 	}

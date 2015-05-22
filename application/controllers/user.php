@@ -100,6 +100,10 @@ class User extends CI_Controller {
 				$this->_delete_user($post_data);
 				break;
 
+			case 'get_user_details':
+				$this->_get_user_details($post_data);
+				break;
+
 			default:
 				
 				break;
@@ -122,6 +126,12 @@ class User extends CI_Controller {
 	private function _delete_user($param)
 	{
 		$response = $this->user_model->delete_user($param);
+		echo json_encode($response);
+	}
+
+	private function _get_user_details($param)
+	{
+		$response = $this->user_model->get_user_details($param);
 		echo json_encode($response);
 	}
 
