@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class SubGroup extends CI_Controller {
+class Subgroup extends CI_Controller {
 	
 	/**
 	 * Load needed model or library for the current controller
@@ -9,8 +9,10 @@ class SubGroup extends CI_Controller {
 	
 	private function _load_libraries()
 	{
+		
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->model('subgroup_model');
 	}
 
 	/**
@@ -83,7 +85,23 @@ class SubGroup extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case '':
+		
+			case 'search_subgroup_list' :
+				$this->_search_subgroup_list($post_data);
+				break;
+
+			case 'insert_subgroup' :
+				$this->_add_subgroup($post_data);
+				break;
+
+			case 'get_subgroup_details' :
+				$this->_get_subgroup_details($post_data);
+				break;
+			case 'edit_subgroup' :
+				$this->_update_subgroup_details($post_data);
+				break;
+			case 'delete_subgroup' :
+				$this->_delete_subgroup_details($post_data);
 				break;
 
 			default:
@@ -92,4 +110,35 @@ class SubGroup extends CI_Controller {
 		}
 
 	}
+
+
+		private function _search_subgroup_list($param)
+	{
+		$response = $this->subgroup_model->search_subgroup_list($param);
+		echo json_encode($response);
+	}
+		private function _add_subgroup($param)
+	{
+		$response = $this->subgroup_model->add_subgroup($param);
+		echo json_encode($response);
+	}
+	private function _get_subgroup_details($param)
+	{
+		$response = $this->subgroup_model->get_subgroup($param);
+		echo json_encode($response);
+	}
+	private function _update_subgroup_details($param)
+	{
+		$response = $this->subgroup_model->update_subgroup($param);
+		echo json_encode($response);
+	}
+
+	private function _delete_subgroup_details($param)
+	{
+		$response = $this->subgroup_model->delete_subgroup($param);
+		echo json_encode($response);
+	}
+
+
+
 }

@@ -9,8 +9,10 @@ class Material extends CI_Controller {
 	
 	private function _load_libraries()
 	{
+		
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->model('material_model');
 	}
 
 	/**
@@ -83,7 +85,20 @@ class Material extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case '':
+			case 'insert_material':
+				$this->_add_new_material($post_data);
+				break;
+			case 'search_material_list' :
+				$this->_search_material_list($post_data);
+				break;
+			case 'get_material_details' :
+				$this->_get_material_details($post_data);
+				break;
+			case 'edit_material' :
+				$this->_update_material_details($post_data);
+				break;
+			case 'delete_material' :
+				$this->_delete_material_details($post_data);
 				break;
 
 			default:
@@ -92,4 +107,34 @@ class Material extends CI_Controller {
 		}
 
 	}
+
+		private function _add_new_material($param)
+	{
+		$response = $this->material_model->add_new_material($param);
+		echo json_encode($response);
+	}
+
+		private function _search_material_list($param)
+	{
+		$response = $this->material_model->search_material_list($param);
+		echo json_encode($response);
+	}
+		private function _get_material_details($param)
+	{
+		$response = $this->material_model->get_material($param);
+		echo json_encode($response);
+
+	}
+		private function _update_material_details($param)
+	{
+		$response = $this->subgroup_model->update_material($param);
+		echo json_encode($response);
+	}
+
+	private function _delete_material_details($param)
+	{
+		$response = $this->material_model->delete_material($param);
+		echo json_encode($response);
+	}
+
 }
