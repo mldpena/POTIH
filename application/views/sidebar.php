@@ -12,6 +12,9 @@
 			<a href="<?= base_url() ?>subgroup/list"><div class="link">Sub Grouping</div></a>
 			<a href="<?= base_url() ?>user/list"><div class="link">User</div></a>
 			<a href="<?= base_url() ?>damage/list"><div class="link">Damage</div></a>
+			<a href="<?= base_url() ?>productreturn/list"><div class="link">Return</div></a>
+			<a href="<?= base_url() ?>purchaseorder/list"><div class="link">Purchase Order</div></a>
+			<a href="<?= base_url() ?>purchasereceive/list"><div class="link">Purchase Receive</div></a>
 		</div>
 	</div>
 </div>

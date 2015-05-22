@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchaseorder/list">Purchase Order List</a></li>
+			<li class="active"><a href="<?= base_url() ?>purchasereceive/list">Purchase Receive List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Purchase Order List</div>
+		<div class="form-header">Purchase Receive List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>
@@ -37,7 +37,17 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Status:</td>
+						<td>Delivery Status:</td>
+						<td colspan="3">
+							<select class="form-control">
+								<option>Sample</option>
+								<option>Sample</option>
+								<option>Sample</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td>Supplier:</td>
 						<td colspan="3">
 							<select class="form-control">
 								<option>Sample</option>
@@ -60,8 +70,8 @@
 				<input type="button" class="btn btn-success" value="Search">
 			</div>
 			<div class="max-row">
-				<a href="<?= base_url() ?>purchaseorder/detail">
-					<button class="btn btn-primary">Create New Purchase Order</button>
+				<a href="<?= base_url() ?>purchasereceive/detail">
+					<button class="btn btn-primary">Create New Purchase Receive</button>
 				</a>
 			</div>
 			<div class="max-row">

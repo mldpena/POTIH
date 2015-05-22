@@ -1,4 +1,8 @@
 /*Table Style CSS by Gian Egamino*/
+.tbl.single table:last-child{
+	margin-top: 0px;
+	margin-bottom: 0px;
+}
 .tbl.max table:first-child{
 	width: 100%;
 }

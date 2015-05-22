@@ -243,6 +243,9 @@ body{
 }
 
 /*Special Classes*/
+#loadingimg{
+	width: 50px;
+}
 .max-row{
 	float: left;
 	margin-top: 15px;
@@ -318,7 +321,23 @@ body{
 	font-size: 20px;
 	font-family: R-Bold;
 }
+.tbl-po{
+	width: 100%;
+	height: 194px;
+	overflow-y: auto; 
+}
 
+
+/*Module Classes*/
+.po-container{
+	width: 400px;
+}
+.po-container > .po-chkbx{
+	width: 47%;
+	background: #417a94;
+	color: #fff;
+	padding: 10px;
+}
 /*Mozilla Firefox Override CSS*/
 /*@-moz-document url-prefix() {
 	.tbl-filters table td select{
