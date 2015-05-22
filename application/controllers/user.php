@@ -9,6 +9,7 @@ class User extends CI_Controller {
 	
 	private function _load_libraries()
 	{
+		$this->load->model('user_model');
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 	}
@@ -37,17 +38,17 @@ class User extends CI_Controller {
 			case 'list':
 				$page = 'user_list';
 				break;
-
-			case 'detail':
-				$page = 'user_detail';
-				break;
 			
+			case 'add':
+			case 'view':
+				$page = 'user_detail';
+				$data['branch_list'] = get_name_list_from_table(TRUE,'branch');
+				break;
+
 			default:
-				# code...
+
 				break;
 		}
-
-		
 
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
@@ -87,7 +88,16 @@ class User extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case '':
+			case 'insert_new_user':
+				$this->_insert_new_user($post_data);
+				break;
+
+			case 'get_user_list':
+				$this->_get_user_list($post_data);
+				break;
+
+			case 'delete_user':
+				$this->_delete_user($post_data);
 				break;
 
 			default:
@@ -96,4 +106,23 @@ class User extends CI_Controller {
 		}
 
 	}
+
+	private function _insert_new_user($param)
+	{
+		$response = $this->user_model->insert_new_user($param);
+		echo json_encode($response);
+	}
+
+	private function _get_user_list($param)
+	{
+		$response = $this->user_model->get_user_list($param);
+		echo json_encode($response);
+	}
+
+	private function _delete_user($param)
+	{
+		$response = $this->user_model->delete_user($param);
+		echo json_encode($response);
+	}
+
 }

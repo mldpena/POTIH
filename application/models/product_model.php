@@ -143,6 +143,7 @@ class Product_Model extends CI_Model {
 		$date_today = date('Y-m-d h:i:s');
 		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$product_id = $this->encrypt->decode($product_id);
+
 		$response 	= array();
 		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$min_inv,$max_inv,$date_today,$user_id,$product_id);
 		$response['error'] = '';
@@ -179,15 +180,22 @@ class Product_Model extends CI_Model {
 	{
 		extract($param);
 
-		$response = array();
-
-		$response['error'] = '';
-
+		$date_today = date('Y-m-d h:i:s');
+		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$product_id = $this->encrypt->decode($product_id);
 
-		$query 	= "UPDATE `product` SET `is_show` = ".PRODUCT_CONST::DELETED." WHERE `id` = ?";
+		$response = array();
+		$response['error'] = '';
 
-		$result = $this->sql->execute_query($query,$product_id);
+		$query_data = array($date_today,$user_id,$product_id);
+		$query 	= "UPDATE `product` 
+					SET 
+					`is_show` = ".PRODUCT_CONST::DELETED.",
+					`last_modified_date` = ?,
+					`last_modified_by` = ?
+					WHERE `id` = ?";
+
+		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
 		{

@@ -25,7 +25,9 @@ class Login_Model extends CI_Model {
 		$password 	= $this->encrypt->encode_md5($password);
 		$query_data = array($user_name,$password);
 		
-		$query 	= "SELECT `id` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
+		$response['error']		= '';
+		
+		$query 	= "SELECT `id`,`is_active` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
@@ -34,30 +36,39 @@ class Login_Model extends CI_Model {
 		}
 		else
 		{
-			$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
+			$row = $result->row();
+
+			if ($row->is_active == LOGIN_CONST::INACTIVE) 
+			{
+				$response['error'] = 'Account currently deactivated!';
+			}
+			else
+			{
+				$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
 						FROM user_permission AS U 
 						LEFT JOIN branch AS B ON B.`id` = U.`branch_id`
 						WHERE B.`is_show` = ".LOGIN_CONST::ACTIVE;
 
-			$result_branch = $this->db->query($query);
+				$result_branch = $this->db->query($query);
 
-			if ($result_branch->num_rows() == 0)
-			{
-				$response['error'] = 'No branch exists for your account!';
-			}
-			else
-			{
-				$branches = array();
-				foreach($result_branch->result() as $row) 
+				if ($result_branch->num_rows() == 0)
 				{
-					$branches[$row->branch_id] = $row->branch_name;
+					$response['error'] = 'No branch exists for your account!';
 				}
+				else
+				{
+					$branches = array();
+					foreach($result_branch->result() as $row) 
+					{
+						$branches[$row->branch_id] = $row->branch_name;
+					}
 
-				$response['error']		= '';
-				$response['branches'] 	= $branches;
+					$response['branches'] 	= $branches;
 
-				$result_branch->free_result();
+					$result_branch->free_result();
+				}
 			}
+			
 		}
 
 		$result->free_result();
@@ -78,7 +89,12 @@ class Login_Model extends CI_Model {
 		$password 	= $this->encrypt->encode_md5($password);
 		$query_data = array($user_name,$password);
 
-		$query 	= "SELECT `username`, `id`, `full_name` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
+		$response['error']	= '';
+
+		$query 	= "SELECT `username`, `id`, `full_name`, `is_active`
+						FROM user 
+						WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
+
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
@@ -89,12 +105,18 @@ class Login_Model extends CI_Model {
 		{
 			$row = $result->row();
 
-			set_cookie('username',$this->encrypt->encode($row->username));
-			set_cookie('fullname',$this->encrypt->encode($row->full_name));
-			set_cookie('temp',$this->encrypt->encode($row->id));
-			set_cookie('branch',$this->encrypt->encode($branch_id));
-
-			$response['error']	= '';
+			if ($row->is_active == LOGIN_CONST::INACTIVE) 
+			{
+				$response['error'] = 'Account currently deactivated!';
+			}
+			else
+			{
+				set_cookie('username',$this->encrypt->encode($row->username));
+				set_cookie('fullname',$this->encrypt->encode($row->full_name));
+				set_cookie('temp',$this->encrypt->encode($row->id));
+				set_cookie('branch',$this->encrypt->encode($branch_id));
+			}
+			
 		}
 
 		$result->free_result();

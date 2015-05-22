@@ -3,7 +3,7 @@
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
 			<li><a href="<?= base_url() ?>user/list">User List</a></li>
-			<li class="active"><a href="<?= base_url() ?>user/detail">User Information</a></li>
+			<li class="active"><a href="<?= base_url() ?>user/add">User Information</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -18,43 +18,45 @@
 						<table>
 							<tr>
 								<td>Branches:</td>
-								<td colspan="3"><input type="text" class="form-control" placeholder="Select a Branch"></td>
+								<td colspan="3">
+									<select id="branches" class="form-control" multiple="multiple" data-placeholder="Select a Branch"><?= $branch_list ?></select>
+								</td>
 							</tr>
 							<tr>
 								<td>User Code:</td>
-								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control" id="user_code"></td>
 								<td>Username:</td>
-								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control" id="user_name"></td>
 							</tr>
 							<tr>
 								<td>Full Name:</td>
-								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control" id="full_name"></td>
 								<td>Password:</td>
-								<td><input type="password" class="form-control"></td>
+								<td><input type="password" class="form-control" id="password"></td>
 							</tr>
 							<tr>
 								<td>Status:</td>
 								<td>
 									<div class="tbl-checkbtn">
-										<input type="checkbox">
+										<input type="checkbox" id="is_active">
 										<span>Active</span>
 									</div>
 								</td>
 								<td>Contact No.:</td>
-								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control" id="contact"></td>
 							</tr>
 						</table>
+						<div id="messagebox_1"></div>
 					</div>
 				</div>
 			</div>
 			<div class="max-row" align="right">
-				<input type="button" class="btn btn-success" value='Save'>
+				<input type="button" class="btn btn-success" value='Save' id="save">
 				<input type="button" class="btn btn-info" value='Show Advanced Info' id="show-info-btn">
 			</div>
 		</div>
 	</div>
-
-	<div class="content-form" id="show-info">
+	<div class="content-form" id="show-info" style="display:none;">
 		<div class="form-header">User Permissions</div>
 		<div class="form-body">
 			<div class="max-row">

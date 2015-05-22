@@ -9,109 +9,54 @@
 		<div class="form-header">User List</div>
 		<div class="form-body">
 			<div class="sub-panel">
-				Search: 
-				<input type="text" class="form-control form-control mod">
-				Order By:
-				<select class="form-control form-control mod">
-					<option>Date</option>
-					<option>Name</option>
+				Search : 
+				<input type="text" id="search_string" class="form-control mod">
+				Status :
+				<select class="form-control mod" id="status">
+					<option value="0">ALL</option>
+					<option value="1">Active</option>
+					<option value="2">Inactive</option>
 				</select>
-				<input type="button" class="btn btn-primary" value="ASC">
-				<input type="button" class="btn btn-success" value="Search">
+				Order By :
+				<select id="order_by" class="form-control mod">
+					<option value="1">Code</option>
+					<option value="2">Name</option>
+				</select>
+				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
+				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<a href="<?= base_url() ?>user/detail">
-					<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">Create New User</button>
+				<a href="<?= base_url() ?>user/add">
+					<button class="btn btn-primary" data-toggle="modal">Create New User</button>
 				</a>
 			</div>
 			<div class="max-row">
-				<div class="lblmsg danger">
-					Message not good!
-				</div>
+				<div id="messagebox_1"></div>
 			</div>
 			<div class="max-row">
 				<center>
-					<!-- This table is a sample from JS table Layout -->
-					<div class="tbl">
-						<table class="tblstyle">
-							<tr class="tableheader">
-								<td>#</td>
-								<td>User Code</td>
-								<td>Name</td>
-								<td>User Name</td>
-								<td>Contact No.</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-						</table>
-						<table>
-							<tr>
-								<td><input type="button" value="Previous"></td>
-								<td><input type="text"></td>
-								<td><input type="button" value="Next"></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>1 / 10</td>
-								<td></td>
-							</tr>
-						</table>
-					</div>
+					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
+					<div id="tbl" class="tbl max"></div>
 				</center>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal for delete confirmation -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Delete User</h4>
+			</div>
+			<div class="modal-body">
+				Are you sure you want to delete this user?
+				<div id="messagebox_2"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" id="delete">Delete</button>
 			</div>
 		</div>
 	</div>

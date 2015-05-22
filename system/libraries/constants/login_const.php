@@ -7,6 +7,7 @@
 	{
 		const ACTIVE 	= 1;
 		const DELETED 	= 0;
+		const INACTIVE = 0;
 	}
 
 ?>
