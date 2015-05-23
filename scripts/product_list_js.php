@@ -111,8 +111,8 @@
     $('.column_click').live('click',function(){
 
     	var token_val			= '<?= $token ?>';
-    	var global_row_index 	= $(this).parent().index();
-    	var global_product_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+    	global_row_index 	= $(this).parent().index();
+    	global_product_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
 
     	var arr = 	{ 
 						fnc 	 	: 'get_product_details', 
@@ -386,7 +386,7 @@
 					}
 					else
 					{
-						myjstbl.mypage.set_last_page( Math.ceil(Number(rowcnt) / Number(myjstbl.mypage.filter_number)));
+						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
 					}
 
 					myjstbl.insert_multiplerow_with_value(1,response.data);

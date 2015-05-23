@@ -53,6 +53,8 @@ class User_Model extends CI_Model {
 		}
 		else
 		{
+			$insert_id = $this->encrypt->decode($result['id']);
+
 			$query_permissions = "INSERT INTO `user_permission`
 						(`branch_id`,
 						`user_id`,
@@ -62,7 +64,7 @@ class User_Model extends CI_Model {
 
 			foreach ($branches as $key => $value) 
 			{
-				$query_permissions_data = array($key,$result['id'],100);
+				$query_permissions_data = array($value,$insert_id,100);
 				$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
 
 				if ($result_permissions['error'] != '') 
@@ -93,6 +95,7 @@ class User_Model extends CI_Model {
 		$response['error'] = '';
 
 		$query_data = array($date_today,$user_last_modified_id,$user_id);
+
 		$query 	= "UPDATE `user` 
 					SET 
 					`is_show` = ".USER_CONST::DELETED.",
@@ -107,6 +110,69 @@ class User_Model extends CI_Model {
 			$response['error'] = 'Unable to delete user!';
 		}
 
+		return $response;
+	}
+	
+	public function update_user($param)
+	{
+		extract($param);
+		$date_today = date('Y-m-d h:i:s');
+		$user_id 	= $this->encrypt->decode($this->uri->segment(3));
+		$password 	= $this->encrypt->encode_md5($password);
+		$user_last_modified_id = $this->encrypt->decode(get_cookie('temp'));
+
+		$response 	= array();
+		$query_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$date_today,$user_last_modified_id,$user_id);
+		$response['error'] = '';
+
+		$query = "UPDATE`user`
+					SET
+					`code` = ?,
+					`full_name` = ?,
+					`username` = ?,
+					`password` = ?,
+					`contact_number` = ?,
+					`is_active` = ?,
+					`last_modified_date` = ?,
+					`last_modified_by` = ?
+					WHERE `id` = ?;";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+		{
+			$response['error'] = 'Unable to save user!';
+		}	
+		else
+		{
+			$query_delete_previous_permissions = "DELETE FROM user_permission WHERE `user_id` = ?";
+			$result_delete_previous_permissions = $this->sql->execute_query($query_delete_previous_permissions,$user_id);
+
+			if ($result_delete_previous_permissions['error'] != '') 
+			{
+				$response['error'] = 'Unable to delete permissions!';
+			}
+			else
+			{
+				$query_permissions = "INSERT INTO `user_permission`
+										(`branch_id`,
+										`user_id`,
+										`permission_code`)
+										VALUES
+										(?,?,?)";
+
+				foreach ($branches as $key => $value) 
+				{
+					$query_permissions_data = array($value,$user_id,100);
+					$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
+
+					if ($result_permissions['error'] != '') 
+					{
+						$response['error'] = 'Unable to insert permissions!';
+					}
+				}
+			}
+		}
 		return $response;
 	}
 
@@ -220,7 +286,7 @@ class User_Model extends CI_Model {
 					FROM `user` 
 					WHERE `is_show` = ".USER_CONST::ACTIVE." AND `id` = ?";
 
-		$result = $this->db->query($query);
+		$result = $this->db->query($query,$user_id);
 
 		if ($result->num_rows() != 1) 
 		{
@@ -228,7 +294,32 @@ class User_Model extends CI_Model {
 		}
 		else
 		{
-			$row = 
+			$row = $result->row();
+
+			$response['user_code'] 	= $row->code;
+			$response['username'] 	= $row->username;
+			$response['full_name'] 	= $row->full_name;
+			$response['is_active'] 	= $row->is_active;
+			$response['contact'] 	= $row->contact_number;
+
+			$query_branches = "SELECT DISTINCT(UP.`branch_id`) AS 'branch_id'
+								FROM user_permission AS UP
+								LEFT JOIN branch AS B ON B.`id` = UP.`branch_id`
+								WHERE B.`is_show` = ".USER_CONST::ACTIVE." AND `user_id` = ?";
+			
+			$result_branches = $this->db->query($query_branches,$user_id);
+
+			if ($result_branches->num_rows() == 0) 
+			{
+				$response['error'] = 'No branch assigned to this account!';
+			}
+			else
+			{
+				foreach ($result_branches->result() as $row) 
+				{
+					$response['branches'][] = $row->branch_id;
+				}
+			}
 		}
 
 		$result->free_result();

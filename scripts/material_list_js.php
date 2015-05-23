@@ -31,18 +31,18 @@
 
     var spnmaterialcode = document.createElement('span');
 	colarray['code'] = { 
-        header_title: "Material code",
+        header_title: "Material Code",
         edit: [spnmaterialcode],
         disp: [spnmaterialcode],
         td_class: "tablerow column_click column_hover tdcode"
     };
 
-	var spnproduct = document.createElement('span');
+	var spnname = document.createElement('span');
 	colarray['name'] = { 
-        header_title: "Material name",
-        edit: [spnproduct],
-        disp: [spnproduct],
-        td_class: "tablerow column_click column_hover tdproduct"
+        header_title: "Material Name",
+        edit: [spnname],
+        disp: [spnname],
+        td_class: "tablerow column_click column_hover tdname"
     };
    
     var imgDelete = document.createElement('i');
@@ -69,18 +69,16 @@
 	$('#tbl').hide();
 	refresh_table();
 
-
 	 $('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
 		global_material_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
 
-		$('#deleteModal').modal('show');
+		$('#deleteMaterialModal').modal('show');
 	});
    
 
 	$('#search').click(function(){
     	refresh_table();
-    	
     });
   
 
@@ -88,20 +86,19 @@
     	if (flag == 1) { return; };
 		flag = 1;
 
-
 		var token_val	     	= '<?= $token ?>';
 		var row_index 		    = global_row_index;
 		var material_id_val	    = global_material_id;
 		var code_val 			= $('#code').val();
 		var name_val 		    = $('#name').val();
-	    var fnc_val 			= material_id_val == 0 ? 'insert_material' : 'edit_material';
+	    var fnc_val 			= material_id_val == 0 ? 'insert_new_material' : 'edit_material';
 		
 	   	 	
 		var arr = 	{ 
 						fnc 	 : fnc_val, 
 						code 	 : code_val,
 						name     : name_val,
-			     material_id     : material_id_val
+			     		material_id : material_id_val
 					};
 
 		$.ajax({
@@ -130,13 +127,11 @@
         				myjstbl.setvalue_to_rowindex_tdclass([row_index],row_index, colarray["number"].td_class);
             		}
 
-            	
-
             		myjstbl.setvalue_to_rowindex_tdclass([code_val],row_index,colarray["code"].td_class);
         			myjstbl.setvalue_to_rowindex_tdclass([name_val],row_index,colarray["name"].td_class);
         		
 
-        			$('#myModal').modal('hide');
+        			$('#createMaterialModal').modal('hide');
 
 					build_message_box('messagebox_1','Material successfully saved!','success');
 				}
@@ -147,18 +142,18 @@
 
     });
 
-     $('.column_click').live('click',function(){
+    $('.column_click').live('click',function(){
 
     	var token_val			= '<?= $token ?>';
-    	var global_row_index 	= $(this).parent().index();
-    	var global_material_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+    	global_row_index 	= $(this).parent().index();
+    	global_material_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
 
     	var arr = 	{ 
 						fnc 	 	: 'get_material_details', 
 						material_id : global_material_id
 					};
 
-			$.ajax({
+		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
 			data: 'data=' + JSON.stringify(arr) + token_val,
@@ -174,21 +169,19 @@
 
 					$('#code').val(response.data['code']);
 					$('#name').val(response.data['name']);
-					
-					$('#myModal').modal('show');
+					$('#createMaterialModal').modal('show');
 				}
 			}       
 		});
-
 	});
 
-$('#delete').click(function(){
+	$('#delete').click(function(){
 		if (flag == 1) { return; };
 		flag = 1;
 
 		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
-		var material_id_val 	= global_material_id;
+		var material_id_val = global_material_id;
 
 		var arr = 	{ 
 						fnc 	 	: 'delete_material', 
@@ -208,7 +201,6 @@ $('#delete').click(function(){
 				else
 				{
 					myjstbl.delete_row(row_index);
-					
 					recompute_row_count(myjstbl,colarray);
 
 					if (myjstbl.get_row_count() == 1) 
@@ -216,7 +208,7 @@ $('#delete').click(function(){
 						$('#tbl').hide();
 					}
 
-					$('#deleteModal').modal('hide');
+					$('#deleteMaterialModal').modal('hide');
 
 					build_message_box('messagebox_1','Material successfully deleted!','success');
 				}
@@ -225,13 +217,15 @@ $('#delete').click(function(){
 			}       
 		});
 	});
-	$('#myModal, #deleteModal').live('hidden.bs.modal', function (e) {
+
+	$('#createMaterialModal, #deleteMaterialModal').live('hidden.bs.modal', function (e) {
 		$('.modal-fields').val('');
 		$('.modal-fields').html('');
 		$('.modal-fields').removeAttr('checked');
 		global_row_index 	= 0;
 		global_material_id 	= 0;
 	});
+
 	function refresh_table()
 	{
 
@@ -241,14 +235,14 @@ $('#delete').click(function(){
 		var token_val	= '<?= $token ?>';
 		var search_val 	= $('#searchstring').val();
 		var order_val 	= $('#orderby').val();
-		
-
 
 		var arr = 	{ 
 						fnc 	 : 'search_material_list', 
 						search 	 : search_val,
 						orderby  : order_val
 					};
+
+		$('#loadingimg').show();
 
 		$.ajax({
 			type: "POST",
@@ -279,6 +273,8 @@ $('#delete').click(function(){
 					$('#tbl').show();
 				}
 
+				$('#loadingimg').hide();
+				
 				flag = 0;
 			}       
 		});

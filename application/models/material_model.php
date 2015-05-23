@@ -13,12 +13,6 @@ class Material_Model extends CI_Model {
 		parent::__construct();
 	}
 
-
-	/**
-	 * Check user name and password in database for verification
-	 * @param  $param [array]
-	 * @return $response [array]
-	 */
 	public function add_new_material($param)
 	{
 		extract($param);
@@ -52,8 +46,9 @@ class Material_Model extends CI_Model {
 
 		return $response;
 	}
-	public function search_material_list($param){
 
+	public function search_material_list($param)
+	{
 		extract($param);
 		$response 	= array();
 		$response['rowcnt'] = 0;
@@ -67,20 +62,18 @@ class Material_Model extends CI_Model {
 			array_push($query_data,'%'.$search.'%');
 		}
 
-		switch ($orderby) {
-			case 1:
-				$order_field= " `code`";
+		switch ($orderby) 
+		{
+			case MATERIAL_CONST::ORDER_BY_CODE:
+				$order_field = " `code`";
 				break;
-			case 2:
-				$order_field= " `name`";
-				break;
-			
-			default:
-				# code...
+
+			case  MATERIAL_CONST::ORDER_BY_NAME:
+				$order_field = " `name`";
 				break;
 		}
 
-		$query = "SELECT `id`, `code`, `name` from material_type where `is_show` = 1  $conditions ORDER BY $order_field";
+		$query = "SELECT `id`, `code`, `name` from material_type where `is_show` = ".MATERIAL_CONST::ACTIVE." $conditions ORDER BY $order_field";
 					
 		$result = $this->db->query($query,$query_data);
 
@@ -100,8 +93,11 @@ class Material_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+
 		return $response;
 	}
+
 	public function update_material($param)
 	{
 		extract($param);
@@ -117,7 +113,7 @@ class Material_Model extends CI_Model {
 					SET
 					`code` = ?,
 					`name` = ?,
-					`last_modified_date` =?,
+					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
 
@@ -135,7 +131,9 @@ class Material_Model extends CI_Model {
 		return $response;
 
 	}
-	public function get_material($param){
+
+	public function get_material_details($param)
+	{
 
 		extract($param);
 
@@ -145,9 +143,8 @@ class Material_Model extends CI_Model {
 
 		$material_id = $this->encrypt->decode($material_id);
 
-		$query = "SELECT `code`, `name` from material_type where `is_show` = 1 AND  id= ?";
+		$query = "SELECT `code`, `name` from material_type where `is_show` = ".MATERIAL_CONST::ACTIVE." AND  id = ?";
 						
-
 		$result = $this->db->query($query,$material_id);
 
 		if ($result->num_rows() == 1) 
@@ -156,7 +153,6 @@ class Material_Model extends CI_Model {
 
 			$response['data']['code'] 	= $row->code;
 			$response['data']['name'] 	= $row->name;
-			
 		}
 		else
 		{
@@ -167,6 +163,7 @@ class Material_Model extends CI_Model {
 
 		return $response;
 	}
+
 	public function delete_material($param)
 	{
 		extract($param);
@@ -181,7 +178,7 @@ class Material_Model extends CI_Model {
 		$query_data = array($date_today,$user_id,$material_id);
 		$query 	= "UPDATE `material_type` 
 					SET 
-					`is_show` =".MATERIAL_CONST::DELETED.",
+					`is_show` = ".MATERIAL_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";

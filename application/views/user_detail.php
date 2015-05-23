@@ -38,7 +38,7 @@
 								<td>Status:</td>
 								<td>
 									<div class="tbl-checkbtn">
-										<input type="checkbox" id="is_active">
+										<input type="checkbox" id="is_active" checked="checked">
 										<span>Active</span>
 									</div>
 								</td>

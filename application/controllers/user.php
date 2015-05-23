@@ -104,6 +104,10 @@ class User extends CI_Controller {
 				$this->_get_user_details($post_data);
 				break;
 
+			case 'update_user':
+				$this->_update_user($post_data);
+				break;
+
 			default:
 				
 				break;
@@ -132,6 +136,12 @@ class User extends CI_Controller {
 	private function _get_user_details($param)
 	{
 		$response = $this->user_model->get_user_details($param);
+		echo json_encode($response);
+	}
+
+	private function _update_user($param)
+	{
+		$response = $this->user_model->update_user($param);
 		echo json_encode($response);
 	}
 

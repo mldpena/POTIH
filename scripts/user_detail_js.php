@@ -75,7 +75,7 @@
 		var user_id_val 	= "<?= $this->uri->segment(3) ?>";
 
 		var arr = 	{ 
-						fnc 		: fnc_val, 
+						fnc 		: 'get_user_details', 
 						user_id 	: user_id_val, 
 					};
 
@@ -93,7 +93,18 @@
 				}
 				else
 				{
-					
+					$('#user_code').val(response.user_code);
+					$('#user_name').val(response.username);
+					$('#full_name').val(response.full_name);
+					$('#password').val('******');
+					$('#contact').val(response.contact);
+					$('#branches').val(response.branches);
+					$('#branches').trigger("liszt:updated");
+
+					if (response.is_active == 0) 
+					{
+						$('#is_active').removeAttr('checked');
+					};
 				}
 
 				flag = 0;

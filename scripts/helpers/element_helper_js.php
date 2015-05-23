@@ -2,9 +2,10 @@
 	function fill_dropdown_option(id,data,is_chosen)
 	{
 		var options = "";
-		$.each(data, function(key,value){
-			options += "<option value = '" + key + "'>" + value + "</option>";
-		});
+
+		for (var i = 0; i < data.length; i++) {
+			options += "<option value = '" + data[i]['id'] + "'>" + data[i]['value'] + "</option>";
+		};
 
 		clear_dropdown_option(id,options,is_chosen);
 	}

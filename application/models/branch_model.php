@@ -1,26 +1,53 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Subgroup_Model extends CI_Model {
+class Branch_Model extends CI_Model {
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->library('constants/subgroup_const');
+		$this->load->library('constants/branch_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 		parent::__construct();
 	}
 
+	public function add_new_branch($param)
+	{
+		extract($param);
+		$date_today = date('Y-m-d h:i:s');
+		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 
-	/**
-	 * Check user name and password in database for verification
-	 * @param  $param [array]
-	 * @return $response [array]
-	 */
+		$response 	= array();
+		$query_data = array($code,$name,$date_today,$date_today,$user_id,$user_id);
+		$response['error'] = '';
 
-	public function search_subgroup_list($param)
+ 		$query = "INSERT INTO `branch`
+					(`code`,
+					`name`,
+					`date_created`,
+					`last_modified_date`,
+					`created_by`,
+					`last_modified_by`)
+					VALUES
+					(?,?,?,?,?,?)";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+		{
+			$response['error'] = 'Unable to save branch!';
+		}
+		else
+		{
+			$response['id'] = $result['id'];
+		}
+
+		return $response;
+	}
+
+	public function search_branch_list($param)
 	{
 		extract($param);
 		$response 	= array();
@@ -35,17 +62,18 @@ class Subgroup_Model extends CI_Model {
 			array_push($query_data,'%'.$search.'%');
 		}
 
-		switch ($orderby) {
-			case SUBGROUP_CONST::ORDER_BY_CODE:
+		switch ($orderby) 
+		{
+			case BRANCH_CONST::ORDER_BY_CODE:
 				$order_field = " `code`";
 				break;
 
-			case SUBGROUP_CONST::ORDER_BY_NAME:
+			case  BRANCH_CONST::ORDER_BY_NAME:
 				$order_field = " `name`";
 				break;
 		}
 
-		$query = "SELECT `id`, `code`, `name` from subgroup where `is_show` = ".SUBGROUP_CONST::ACTIVE." $conditions ORDER BY $order_field";
+		$query = "SELECT `id`, `code`, `name` from branch where `is_show` = ".BRANCH_CONST::ACTIVE." $conditions ORDER BY $order_field";
 					
 		$result = $this->db->query($query,$query_data);
 
@@ -70,122 +98,21 @@ class Subgroup_Model extends CI_Model {
 		return $response;
 	}
 
-	public function add_new_subgroup($param)
-	{
-
-		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
-
-		$response 	= array();
-		$query_data = array($code,$name,$date_today,$date_today,$user_id,$user_id);
-		$response['error'] = '';
-
- 		$query = "INSERT INTO `subgroup`
-					(`code`,
-					`name`,
-					`date_created`,
-					`last_modified_date`,
-					`created_by`,
-					`last_modified_by`)
-					VALUES
-					(?,?,?,?,?,?)";
-
-		$result = $this->sql->execute_query($query,$query_data);
-
-		if ($result['error'] != '') 
-		{
-			$response['error'] = 'Unable to save sub group!';
-		}
-		else
-		{
-			$response['id'] = $result['id'];
-		}
-
-		return $response;
-
-	}
-
-	public function get_subgroup_details($param)
-	{
-		extract($param);
-
-		$response = array();
-
-		$response['error'] = '';
-
-		$subgroup_id = $this->encrypt->decode($subgroup_id);
-
-		$query = "SELECT `code`, `name` from subgroup where `is_show` = ".SUBGROUP_CONST::ACTIVE." AND  id = ?";
-						
-
-		$result = $this->db->query($query,$subgroup_id);
-
-		if ($result->num_rows() == 1) 
-		{
-			$row = $result->row();
-			$response['data']['code'] 	= $row->code;
-			$response['data']['name'] 	= $row->name;
-		}
-		else
-		{
-			$response['error'] = 'Subgroup not found!';
-		}
-
-		$result->free_result();
-
-		return $response;
-	}
-
-	public function update_subgroup($param)
+	public function update_branch($param)
 	{
 		extract($param);
 		$date_today = date('Y-m-d h:i:s');
 		$user_id	= $this->encrypt->decode(get_cookie('temp'));
-		$subgroup_id = $this->encrypt->decode($subgroup_id);
+		$branch_id = $this->encrypt->decode($branch_id);
 
 		$response 	= array();
-		$query_data = array($code,$name,$date_today,$user_id,$subgroup_id);
+		$query_data = array($code,$name,$date_today,$user_id,$branch_id);
 		$response['error'] = '';
 
-		$query = "UPDATE `subgroup`
+		$query = "UPDATE `branch`
 					SET
 					`code` = ?,
 					`name` = ?,
-					`last_modified_date` =?,
-					`last_modified_by` = ?
-					WHERE `id` = ?";
-
-		$result = $this->sql->execute_query($query,$query_data);
-
-		if ($result['error'] != '') 
-		{
-			$response['error'] = 'Unable to save subgroup!';
-		}
-		else
-		{
-			$response['id'] = $result['id'];
-		}
-
-		return $response;
-
-	}
-	
-	public function delete_subgroup($param)
-	{
-		extract($param);
-
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
-		$subgroup_id = $this->encrypt->decode($subgroup_id);
-
-		$response = array();
-		$response['error'] = '';
-
-		$query_data = array($date_today,$user_id,$subgroup_id);
-		$query 	= "UPDATE `subgroup` 
-					SET 
-					`is_show` =".SUBGROUP_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -194,7 +121,73 @@ class Subgroup_Model extends CI_Model {
 
 		if ($result['error'] != '') 
 		{
-			$response['error'] = 'Unable to delete subgroup!';
+			$response['error'] = 'Unable to save branch!';
+		}
+		else
+		{
+			$response['id'] = $result['id'];
+		}
+
+		return $response;
+
+	}
+
+	public function get_branch_details($param)
+	{
+
+		extract($param);
+
+		$response = array();
+
+		$response['error'] = '';
+
+		$branch_id = $this->encrypt->decode($branch_id);
+
+		$query = "SELECT `code`, `name` from branch where `is_show` = ".BRANCH_CONST::ACTIVE." AND  id = ?";
+						
+		$result = $this->db->query($query,$branch_id);
+
+		if ($result->num_rows() == 1) 
+		{
+			$row = $result->row();
+
+			$response['data']['code'] 	= $row->code;
+			$response['data']['name'] 	= $row->name;
+		}
+		else
+		{
+			$response['error'] = 'Branch not found!';
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	public function delete_branch($param)
+	{
+		extract($param);
+
+		$date_today = date('Y-m-d h:i:s');
+		$user_id	= $this->encrypt->decode(get_cookie('temp'));
+		$branch_id = $this->encrypt->decode($branch_id);
+
+		$response = array();
+		$response['error'] = '';
+
+		$query_data = array($date_today,$user_id,$branch_id);
+		$query 	= "UPDATE `branch` 
+					SET 
+					`is_show` = ".BRANCH_CONST::DELETED.",
+					`last_modified_date` = ?,
+					`last_modified_by` = ?
+					WHERE `id` = ?";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+		{
+			$response['error'] = 'Unable to delete branch!';
 		}
 
 		return $response;

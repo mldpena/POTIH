@@ -47,9 +47,9 @@ class Login_Model extends CI_Model {
 				$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
 						FROM user_permission AS U 
 						LEFT JOIN branch AS B ON B.`id` = U.`branch_id`
-						WHERE B.`is_show` = ".LOGIN_CONST::ACTIVE;
+						WHERE B.`is_show` = ".LOGIN_CONST::ACTIVE." AND U.`user_id` = ?";
 
-				$result_branch = $this->db->query($query);
+				$result_branch = $this->db->query($query,$row->id);
 
 				if ($result_branch->num_rows() == 0)
 				{
@@ -57,10 +57,14 @@ class Login_Model extends CI_Model {
 				}
 				else
 				{
+					$i = 0;
 					$branches = array();
+
 					foreach($result_branch->result() as $row) 
 					{
-						$branches[$row->branch_id] = $row->branch_name;
+						$branches[$i]['id'] 	= $row->branch_id;
+						$branches[$i]['value'] 	= $row->branch_name;
+						$i++;
 					}
 
 					$response['branches'] 	= $branches;

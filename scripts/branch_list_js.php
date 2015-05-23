@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	var flag = 0;
-	var global_subgroup_id = 0;
+	var global_branch_id = 0;
 	var global_row_index = 0;
 
 	var tab = document.createElement('table');
@@ -20,6 +20,7 @@
 		headertd_class : "tdheader_id"
     };
 
+
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -28,19 +29,19 @@
         td_class: "tablerow tdnumber"
     };
 
-    var spnsubgroupcode = document.createElement('span');
+    var spnbranchcode = document.createElement('span');
 	colarray['code'] = { 
-        header_title: "Sub Group Code",
-        edit: [spnsubgroupcode],
-        disp: [spnsubgroupcode],
+        header_title: "Branch Code",
+        edit: [spnbranchcode],
+        disp: [spnbranchcode],
         td_class: "tablerow column_click column_hover tdcode"
     };
 
-	var spnsubgroupname = document.createElement('span');
+	var spnname = document.createElement('span');
 	colarray['name'] = { 
-        header_title: "Sub Group Name",
-        edit: [spnsubgroupname],
-        disp: [spnsubgroupname],
+        header_title: "Branch Name",
+        edit: [spnname],
+        disp: [spnname],
         td_class: "tablerow column_click column_hover tdname"
     };
    
@@ -67,112 +68,39 @@
 
 	$('#tbl').hide();
 	refresh_table();
-	
-	$('#search').click(function(){
-    	refresh_table();	
-    });
-   
-    $('.tddelete').live('click',function(){
+
+	 $('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_subgroup_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+		global_branch_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
 
-		$('#deleteSubgroupModal').modal('show');
+		$('#deleteBranchModal').modal('show');
 	});
-	
-	$('.column_click').live('click',function(){
+   
 
-    	var token_val		= '<?= $token ?>';
-    	global_row_index 	= $(this).parent().index();
-    	global_subgroup_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
-
-    	var arr = 	{ 
-						fnc 	 	: 'get_subgroup_details', 
-						subgroup_id : global_subgroup_id
-					};
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-				{
-					build_message_box('messagebox_1',response.error,'danger');
-				}
-				else
-				{
-					$('#code').val(response.data['code']);
-					$('#name').val(response.data['name']);
-					$('#createSubgroupModal').modal('show');
-				}
-			}       
-		});
-	});
-
-	$('#delete').click(function(){
-		if (flag == 1) { return; };
-		flag = 1;
-
-		var token_val		= '<?= $token ?>';
-		var row_index 		= global_row_index;
-		var subgroup_id_val = global_subgroup_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_subgroup', 
-						subgroup_id	: subgroup_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-				{
-					build_message_box('messagebox_3',response.error,'danger');
-				}
-				else
-				{
-					myjstbl.delete_row(row_index);
-					
-					recompute_row_count(myjstbl,colarray);
-
-					if (myjstbl.get_row_count() == 1) 
-					{
-						$('#tbl').hide();
-					}
-
-					$('#deleteModal').modal('hide');
-
-					build_message_box('messagebox_1','Sub Group successfully deleted!','success');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
+	$('#search').click(function(){
+    	refresh_table();
+    });
+  
 
 	$('#save').click(function(){
     	if (flag == 1) { return; };
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
-		var row_index 		= global_row_index;
-		var subgroup_id_val 	= global_subgroup_id;
-		var code_val 	= $('#code').val();
-		var name_val 	= $('#name').val();
-	   	var fnc_val 	= subgroup_id_val == 0 ? 'insert_new_subgroup' : 'edit_subgroup';
+		var token_val	     	= '<?= $token ?>';
+		var row_index 		    = global_row_index;
+		var branch_id_val	    = global_branch_id;
+		var code_val 			= $('#code').val();
+		var name_val 		    = $('#name').val();
+	    var fnc_val 			= branch_id_val == 0 ? 'insert_new_branch' : 'edit_branch';
 		
 	   	 	
 		var arr = 	{ 
 						fnc 	 : fnc_val, 
 						code 	 : code_val,
 						name     : name_val,
-				 		subgroup_id : subgroup_id_val
+			     		branch_id : branch_id_val
 					};
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -191,7 +119,7 @@
   						$("#tbl").show();
             		};
 
-            		if (subgroup_id_val == 0) 
+            		if (branch_id_val == 0) 
             		{
             			myjstbl.add_new_row();
         				row_index = myjstbl.get_row_count() - 1;
@@ -200,11 +128,12 @@
             		}
 
             		myjstbl.setvalue_to_rowindex_tdclass([code_val],row_index,colarray["code"].td_class);
-        			myjstbl.setvalue_to_rowindex_tdclass([name_val],row_index,colarray["name"].td_class);    		
+        			myjstbl.setvalue_to_rowindex_tdclass([name_val],row_index,colarray["name"].td_class);
+        		
 
-        			$('#createSubgroupModal').modal('hide');
+        			$('#createBranchModal').modal('hide');
 
-					build_message_box('messagebox_1','Subgroup successfully saved!','success');
+					build_message_box('messagebox_1','Branch successfully saved!','success');
 				}
 
 				flag = 0;
@@ -213,16 +142,92 @@
 
     });
 
-  	$('#createSubgroupModal, #deleteSubgroupModal').live('hidden.bs.modal', function (e) {
+    $('.column_click').live('click',function(){
+
+    	var token_val			= '<?= $token ?>';
+    	global_row_index 	= $(this).parent().index();
+    	global_branch_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+
+    	var arr = 	{ 
+						fnc 	 	: 'get_branch_details', 
+						branch_id 	: global_branch_id
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_1',response.error,'danger');
+				}
+				else
+				{
+					$('#code').val(response.data['code']);
+					$('#name').val(response.data['name']);
+					$('#createBranchModal').modal('show');
+				}
+			}       
+		});
+	});
+
+	$('#delete').click(function(){
+		if (flag == 1) { return; };
+		flag = 1;
+
+		var token_val		= '<?= $token ?>';
+		var row_index 		= global_row_index;
+		var branch_id_val 	= global_branch_id;
+
+		var arr = 	{ 
+						fnc 	 	: 'delete_branch', 
+						branch_id 	: branch_id_val
+					};
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_3',response.error,'danger');
+				}
+				else
+				{
+					myjstbl.delete_row(row_index);
+					recompute_row_count(myjstbl,colarray);
+
+					if (myjstbl.get_row_count() == 1) 
+					{
+						$('#tbl').hide();
+					}
+
+					$('#deleteBranchModal').modal('hide');
+
+					build_message_box('messagebox_1','Branch successfully deleted!','success');
+				}
+
+				flag = 0;
+			}       
+		});
+	});
+
+	$('#createBranchModal, #deleteBranchModal').live('hidden.bs.modal', function (e) {
 		$('.modal-fields').val('');
 		$('.modal-fields').html('');
 		$('.modal-fields').removeAttr('checked');
 		global_row_index 	= 0;
-		global_subgroup_id 	= 0;
+		global_branch_id 	= 0;
 	});
-	
+
 	function refresh_table()
 	{
+
 		if (flag == 1) { return; };
 		flag = 1;
 
@@ -231,13 +236,13 @@
 		var order_val 	= $('#orderby').val();
 
 		var arr = 	{ 
-						fnc 	 : 'search_subgroup_list', 
-						search 	 :  search_val,
+						fnc 	 : 'search_branch_list', 
+						search 	 : search_val,
 						orderby  : order_val
 					};
 
 		$('#loadingimg').show();
-		
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -249,7 +254,7 @@
 				if (response.rowcnt == 0) 
 				{
 					$('#tbl').hide();
-					build_message_box('messagebox_1','No material found!','info');
+					build_message_box('messagebox_1','No branch found!','info');
 				}
 				else
 				{
@@ -268,7 +273,7 @@
 				}
 
 				$('#loadingimg').hide();
-
+				
 				flag = 0;
 			}       
 		});

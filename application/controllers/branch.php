@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Subgroup extends CI_Controller {
+class Branch extends CI_Controller {
 	
 	/**
 	 * Load needed model or library for the current controller
@@ -12,7 +12,7 @@ class Subgroup extends CI_Controller {
 		
 		$this->load->helper('authentication');
 		$this->load->helper('query');
-		$this->load->model('subgroup_model');
+		$this->load->model('branch_model');
 	}
 
 	/**
@@ -37,7 +37,7 @@ class Subgroup extends CI_Controller {
 		switch ($page) 
 		{
 			case 'list':
-				$page = 'subgroup_list';
+				$page = 'branch_list';
 				break;
 			
 			default:
@@ -85,25 +85,24 @@ class Subgroup extends CI_Controller {
 
 		switch ($fnc) 
 		{
-		
-			case 'search_subgroup_list' :
-				$this->_search_subgroup_list($post_data);
+			case 'insert_new_branch':
+				$this->_add_new_branch($post_data);
 				break;
 
-			case 'insert_new_subgroup' :
-				$this->_add_new_subgroup($post_data);
+			case 'search_branch_list' :
+				$this->_search_branch_list($post_data);
 				break;
 
-			case 'get_subgroup_details' :
-				$this->_get_subgroup_details($post_data);
+			case 'get_branch_details' :
+				$this->_get_branch_details($post_data);
 				break;
 
-			case 'edit_subgroup' :
-				$this->_update_subgroup_details($post_data);
+			case 'edit_branch' :
+				$this->_update_branch_details($post_data);
 				break;
 
-			case 'delete_subgroup' :
-				$this->_delete_subgroup_details($post_data);
+			case 'delete_branch' :
+				$this->_delete_branch_details($post_data);
 				break;
 
 			default:
@@ -113,37 +112,34 @@ class Subgroup extends CI_Controller {
 
 	}
 
-
-	private function _search_subgroup_list($param)
+	private function _add_new_branch($param)
 	{
-		$response = $this->subgroup_model->search_subgroup_list($param);
+		$response = $this->branch_model->add_new_branch($param);
 		echo json_encode($response);
 	}
 
-	private function _add_new_subgroup($param)
+	private function _search_branch_list($param)
 	{
-		$response = $this->subgroup_model->add_new_subgroup($param);
+		$response = $this->branch_model->search_branch_list($param);
 		echo json_encode($response);
 	}
 	
-	private function _get_subgroup_details($param)
+	private function _get_branch_details($param)
 	{
-		$response = $this->subgroup_model->get_subgroup_details($param);
+		$response = $this->branch_model->get_branch_details($param);
+		echo json_encode($response);
+	}
+	
+	private function _update_branch_details($param)
+	{
+		$response = $this->branch_model->update_branch($param);
 		echo json_encode($response);
 	}
 
-	private function _update_subgroup_details($param)
+	private function _delete_branch_details($param)
 	{
-		$response = $this->subgroup_model->update_subgroup($param);
+		$response = $this->branch_model->delete_branch($param);
 		echo json_encode($response);
 	}
-
-	private function _delete_subgroup_details($param)
-	{
-		$response = $this->subgroup_model->delete_subgroup($param);
-		echo json_encode($response);
-	}
-
-
 
 }

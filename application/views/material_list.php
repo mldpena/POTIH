@@ -19,59 +19,55 @@
 				<input type="button" class="btn btn-success" value="Search " id="search">
 			</div>
 			<div class="max-row">
-				<button class="btn btn-primary" data-toggle="modal" data-target="#myModal">Create New Material Type</button>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#createMaterialModal">Create New Material Type</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>
 			<div class="max-row">
 				<center>
+					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl"></div>
 				</center>
 			</div>
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="createMaterialModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabelCreate"></h4>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabelCreate">Add New Material Type</h4>
 			</div>
 			<div class="modal-body">
-				<input type = "hidden" id ="bid" value = "0" />
-				<input type = "hidden" id="bindex" value = "0"/>
-			<div class="form-group">
-				<label>Code</label>
-				<input type="text" class="form-control nexttab" id='code'>	
+				<div class="form-group">
+					<label>Code</label>
+					<input type="text" class="form-control modal-fields" id='code'>	
+				</div>
+				<div class="form-group">
+					<label>Name:</label>
+					<input type="text" class="form-control modal-fields" id='name'>
+				</div>
+				<div id = "messagebox_2"></div>
 			</div>
-
-			<div class="form-group">
-				<label>Name:</label>
-				<input type="text" class="form-control nexttab" id='name'>
-			</div>
-			
-		</div>
-		<div class="modal-footer">
-				<center><div id = "messagebox_2"></div></center>
+			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" class="btn btn-primary" id="save">Save</button>
 			</div>
 		</div>
 	</div>
 </div>
-
 <!-- Modal for delete confirmation -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteMaterialModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Product</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Material Type</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this product?
+				Are you sure you want to delete this material type?
 				<div id="messagebox_3"></div>
 			</div>
 			<div class="modal-footer">

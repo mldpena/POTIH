@@ -52,7 +52,9 @@
 				}
 				else
 				{
+
 					fill_dropdown_option('branch',response.branches);
+
 					if (response.branches.length >= 2) 
 					{
 						$('#myModal').modal('show');

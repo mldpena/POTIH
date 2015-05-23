@@ -18,8 +18,8 @@
 
 	function clear_message_box()
 	{
-		$('messageobx_1').html('');
-		$('messageobx_2').html('');
-		$('messageobx_3').html('');
+		$('#messagebox_1').html('');
+		$('#messagebox_2').html('');
+		$('#messagebox_3').html('');
 	}
 </script>
