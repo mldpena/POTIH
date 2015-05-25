@@ -9,6 +9,7 @@
 }
 *{
 	font-family: R-Regular;
+	font-weight: normal;
 }
 html{
 	height: 100%;
@@ -18,12 +19,12 @@ html{
 
 /*Wrapper Settings*/
 body{
-	/*background: #f2f2f2;*/
-	background: url("../img/main-bg.jpg") no-repeat center center fixed; 
+	background: #f2f2f2;
+/*	background: url("../img/main-bg.jpg") no-repeat center center fixed; 
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
-	background-size: cover;
+	background-size: cover;*/
 }
 #login-body .main-wrapper{
 	width: auto;
