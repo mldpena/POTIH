@@ -25,6 +25,21 @@
 		</style>
 <?php
 		break;
+		case 'controlpanel':
+?>
+		<style type="text/css">
+			.sidebar{
+				display: none;
+			}
+			.main-content{
+				width: 100%;
+				float: left;
+				margin: -15px 0 0 0;
+				padding: 0px 15px 15px 15px;
+			}
+		</style>
+<?php
+		break;
 	}
 ?>
 	
