@@ -106,10 +106,16 @@ body{
 	text-align: left;
 	color: #fff;
 	padding: 10px;
+	float: left;
+	width: 100%;
 }
 .sidebar > a .sidebar-logo .mainlogo{
 	width: 120px;
 	height: 120px;
+}
+.sidebar > .sidebar-links-panel .sidebar-group{
+	float: left;
+	width: 100%;
 }
 .sidebar > .sidebar-links-panel .sidebar-group a{
 	color: #000;
@@ -117,18 +123,33 @@ body{
 .sidebar > .sidebar-links-panel .sidebar-group a{
 	text-decoration: none;
 }
+.sidebar > .sidebar-links-panel .sidebar-group a .link img{
+	width: 20px;
+	height: 20px;
+	float: left;
+}
+.sidebar > .sidebar-links-panel .sidebar-group a .link div{
+	float: left;
+	padding-top: 1px;
+	margin-left: 5px;
+}
 .sidebar > .sidebar-links-panel .sidebar-group a .link{
 	padding: 8px 10px;
 	font-family: R-Regular;
 	font-size: 12px;
 	text-align: left;
 	cursor: pointer;
+	float: left;
+	width: 100%;
 }
 .sidebar > .sidebar-links-panel .sidebar-group a .link:hover{
 	background: #f7f7f7;
 	border-left: 2px #00923F solid; 
 }
-
+.sidebar > .sidebar-links-panel .sidebar-group{
+	display: none;
+}
+/*Control Panel*/
 .cpanel-header{
 	background: #fff;
 	margin-bottom: 15px;
@@ -139,7 +160,6 @@ body{
 	border-bottom-right-radius: 10px;
 	border-bottom-left-radius: 10px;
 }
-/*Control Panel*/
 .cpanel-header > img{
 	width: 100px;
 	height: 100px;
