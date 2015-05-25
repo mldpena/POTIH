@@ -1,8 +1,8 @@
 CREATE DATABASE  IF NOT EXISTS `dbs_hitop` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `dbs_hitop`;
--- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.23, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: dbs_hitop
+-- Host: localhost    Database: dbs_hitop
 -- ------------------------------------------------------
 -- Server version	5.5.27
 
@@ -195,6 +195,65 @@ LOCK TABLES `product_branch_inventory` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `purchase_detail`
+--
+
+DROP TABLE IF EXISTS `purchase_detail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `purchase_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `headid` bigint(20) DEFAULT '0',
+  `quantity` int(9) DEFAULT '0',
+  `product_id` bigint(20) DEFAULT '0',
+  `memo` varchar(150) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `purchase_detail`
+--
+
+LOCK TABLES `purchase_detail` WRITE;
+/*!40000 ALTER TABLE `purchase_detail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `purchase_detail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `purchase_head`
+--
+
+DROP TABLE IF EXISTS `purchase_head`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `purchase_head` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `reference_number` int(11) DEFAULT '0',
+  `branch_id` bigint(20) DEFAULT '0',
+  `entry_date` datetime DEFAULT NULL,
+  `supplier` varchar(100) DEFAULT '',
+  `memo` varchar(150) DEFAULT '',
+  `is_show` int(1) DEFAULT '1',
+  `is_used` int(1) DEFAULT '0',
+  `created_by` bigint(20) DEFAULT '0',
+  `last_modified_by` bigint(20) DEFAULT '0',
+  `date_created` datetime DEFAULT '0000-00-00 00:00:00',
+  `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `purchase_head`
+--
+
+LOCK TABLES `purchase_head` WRITE;
+/*!40000 ALTER TABLE `purchase_head` DISABLE KEYS */;
+/*!40000 ALTER TABLE `purchase_head` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `return_detail`
 --
 
@@ -361,4 +420,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-24 22:26:43
+-- Dump completed on 2015-05-25 11:23:13
