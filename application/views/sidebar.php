@@ -16,7 +16,7 @@
 			<a href="<?= base_url() ?>purchaseorder/list"><div class="link">Purchase Order</div></a>
 			<a href="<?= base_url() ?>purchasereceive/list"><div class="link">Purchase Receive</div></a>
 			<a href="<?= base_url() ?>damage/list"><div class="link">Damage</div></a>
-			<a href="<?= base_url() ?>productreturn/list"><div class="link">Return</div></a>
+			<a href="<?= base_url() ?>return/list"><div class="link">Return</div></a>
 		</div>
 	</div>
 </div>

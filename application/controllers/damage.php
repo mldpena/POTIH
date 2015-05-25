@@ -46,7 +46,8 @@ class Damage extends CI_Controller {
 				break;
 			
 			default:
-				# code...
+				echo 'Invalid URL';
+				exit();
 				break;
 		}
 

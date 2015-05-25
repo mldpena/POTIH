@@ -51,7 +51,7 @@
    	
    	var spnqty = document.createElement('span');
    	var txtqty = document.createElement('input');
-    txtqty.setAttribute('class','form-control');
+    txtqty.setAttribute('class','form-control txtqty');
 	colarray['qty'] = { 
         header_title: "Qty",
         edit: [txtqty],
@@ -149,8 +149,9 @@
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 				};
 
-				add_new_row(myjstbl,colarray,'txtproduct');
+				add_new_row(myjstbl,colarray);
 				bind_product_autocomplete();
+				recompute_total_qty(myjstbl,colarray,'total_qty');
 			}       
 		});
 	}
@@ -206,6 +207,10 @@
 		bind_product_autocomplete();
 	});
 
+	$('.txtqty').live('blur',function(e){
+		recompute_total_qty(myjstbl,colarray,'total_qty');
+	});
+
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
 		global_detail_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
@@ -214,11 +219,6 @@
 		{
 			$('#deleteDamageDetailModal').modal('show');
 		};
-	});
-
-	$('#deleteDamageDetailModal').live('hidden.bs.modal', function (e) {
-		global_row_index 	= 0;
-		global_detail_id 	= 0;
 	});
 
 	$('#delete').click(function(){
@@ -248,6 +248,7 @@
 				{
 					myjstbl.delete_row(row_index);
 					recompute_row_count(myjstbl,colarray);
+					recompute_total_qty(myjstbl,colarray,'total_qty');
 					$('#deleteDamageDetailModal').modal('hide');
 				}
 
@@ -289,6 +290,11 @@
 				flag = 0;
 			}       
 		});
+	});
+
+	$('#deleteDamageDetailModal').live('hidden.bs.modal', function (e) {
+		global_row_index 	= 0;
+		global_detail_id 	= 0;
 	});
 
 	function bind_product_autocomplete()
