@@ -69,7 +69,7 @@
 	$('#tbl').hide();
 	refresh_table();
 
-	 $('.tddelete').live('click',function(){
+	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
 		global_branch_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
 

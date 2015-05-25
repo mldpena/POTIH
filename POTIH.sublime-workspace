@@ -4,8 +4,52 @@
 		"selected_items":
 		[
 			[
+				"dis",
+				"disabled"
+			],
+			[
+				"create",
+				"create_reference_number"
+			],
+			[
+				"resl",
+				"result_detail"
+			],
+			[
 				"for",
-				"for	for (…) {…}"
+				"foreach	foreach …"
+			],
+			[
+				"arra",
+				"array"
+			],
+			[
+				"qe",
+				"query_detail"
+			],
+			[
+				"prodc",
+				"product_id"
+			],
+			[
+				"product",
+				"product_id"
+			],
+			[
+				"head",
+				"headid"
+			],
+			[
+				"res",
+				"response"
+			],
+			[
+				"damage",
+				"damage_head_id"
+			],
+			[
+				"ar",
+				"array"
 			],
 			[
 				"bra",
@@ -13,10 +57,6 @@
 			],
 			[
 				"arr",
-				"arr_branches"
-			],
-			[
-				"ar",
 				"arr_branches"
 			],
 			[
@@ -60,20 +100,12 @@
 				"branches"
 			],
 			[
-				"res",
-				"response"
-			],
-			[
 				"quer",
 				"query_branches"
 			],
 			[
 				"contact",
 				"contact_number"
-			],
-			[
-				"create",
-				"createSubgroupModal"
 			],
 			[
 				"subgr",
@@ -114,10 +146,6 @@
 			[
 				"curre",
 				"currently"
-			],
-			[
-				"dis",
-				"display"
 			],
 			[
 				"sp",
@@ -190,10 +218,6 @@
 			[
 				"reset",
 				"reset_remaining_zero"
-			],
-			[
-				"product",
-				"productid"
 			],
 			[
 				"class",
@@ -490,35 +514,91 @@
 			[
 				"dete",
 				"detail_index"
-			],
-			[
-				"tdd",
-				"tddata"
-			],
-			[
-				"detail_",
-				"detail_index"
-			],
-			[
-				"desc",
-				"desc_array"
-			],
-			[
-				"sms_",
-				"sms_from"
-			],
-			[
-				"ema",
-				"email_config"
-			],
-			[
-				"smt",
-				"smtp_timeout"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "application/controllers/damage.php",
+			"settings":
+			{
+				"buffer_size": 2206,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "application/views/damage_detail.php",
+			"settings":
+			{
+				"buffer_size": 1647,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "scripts/damage_detail_js.php",
+			"settings":
+			{
+				"buffer_size": 4852,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "application/views/damage_list.php",
+			"settings":
+			{
+				"buffer_size": 3441,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "application/models/damage_model.php",
+			"settings":
+			{
+				"buffer_size": 2714,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "application/models/branch_model.php",
+			"settings":
+			{
+				"buffer_size": 4219,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "application/controllers/product.php",
+			"settings":
+			{
+				"buffer_size": 3357,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "system/libraries/constants/damage_const.php",
+			"settings":
+			{
+				"buffer_size": 180,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "scripts/product_list_js.php",
+			"settings":
+			{
+				"buffer_size": 10980,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "scripts/branch_list_js.php",
+			"settings":
+			{
+				"buffer_size": 6821,
+				"line_ending": "Windows"
+			}
+		}
 	],
 	"build_system": "",
 	"build_system_choices":
@@ -555,18 +635,28 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
-	"expanded_folders":
-	[
-		"/C/xampp/htdocs/POTIH",
-		"/C/xampp/htdocs/POTIH/application",
-		"/C/xampp/htdocs/POTIH/application/models"
-	],
 	"file_history":
 	[
-		"/C/xampp/htdocs/POTIH/application/models/login_model.php",
+		"/C/xampp/htdocs/POTIH/system/helpers/query_helper.php",
+		"/C/xampp/htdocs/nelsoft_jaca/scripts/dispatch_js.php",
 		"/C/xampp/htdocs/nelsoft_jaca/system/libraries/Sqlfunction.php",
-		"/C/xampp/htdocs/POTIH/scripts/login_js.php",
+		"/C/xampp/htdocs/POTIH/system/libraries/Sql.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/branch.php",
+		"/C/xampp/htdocs/POTIH/application/views/includes.php",
+		"/C/xampp/htdocs/POTIH/application/views/footer.php",
+		"/C/xampp/htdocs/POTIH/scripts/helpers/table_helper.js",
+		"/C/xampp/htdocs/POTIH/scripts/helpers/element_helper.js",
+		"/C/xampp/htdocs/POTIH/scripts/helpers/error_helper.js",
 		"/C/xampp/htdocs/POTIH/scripts/helpers/element_helper_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/helpers/error_helper_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/helpers/table_helper_js.php",
+		"/C/xampp/htdocs/nelsoft_jaca/scripts/segregationdetail_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/branch_list_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/login_js.php",
+		"/C/xampp/htdocs/POTIH/system/libraries/constants/subgroup_const.php",
+		"/C/xampp/htdocs/POTIH/application/models/subgroup_model.php",
+		"/C/xampp/htdocs/POTIH/application/models/login_model.php",
+		"/C/xampp/htdocs/nelsoft_jaca/system/libraries/Unit_test.php",
 		"/C/xampp/htdocs/nelsoft_jaca/application/models/login_model.php",
 		"/C/xampp/htdocs/nelsoft_jaca/application/models/branch_model.php",
 		"/C/xampp/htdocs/POTIH/POTIH.sublime-project",
@@ -587,12 +677,8 @@
 		"/C/Users/MARK/AppData/Roaming/Sublime Text 3/Installed Packages/Package Control.sublime-package",
 		"/C/xampp/htdocs/POTIH/assets/fonts/install-a-new-font.txt",
 		"/C/xampp/htdocs/POTIH/application/models/material_model.php",
-		"/C/xampp/htdocs/POTIH/application/models/subgroup_model.php",
 		"/C/xampp/htdocs/POTIH/application/models/branch_model.php",
-		"/C/xampp/htdocs/POTIH/scripts/branch_list_js.php",
-		"/C/xampp/htdocs/POTIH/scripts/helpers/error_helper_js.php",
 		"/C/xampp/htdocs/POTIH/system/libraries/constants/branch_const.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/branch.php",
 		"/C/xampp/htdocs/POTIH/application/views/material_list.php",
 		"/C/xampp/htdocs/POTIH/scripts/subgroup_list_js.php",
 		"/C/xampp/htdocs/POTIH/scripts/material_list_js.php",
@@ -607,14 +693,12 @@
 		"/C/xampp/htdocs/POTIH/application/views/user_detail.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/user.php",
 		"/C/xampp/htdocs/POTIH/application/models/product_model.php",
-		"/C/xampp/htdocs/POTIH/system/libraries/Sql.php",
 		"/C/xampp/htdocs/nelsoft_jaca/scripts/userdetail_js.php",
 		"/C/xampp/htdocs/nelsoft_jaca/application/models/user_model.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/productreturn.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/purchaseorder.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/purchasereceive.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/subgroup.php",
-		"/C/xampp/htdocs/POTIH/system/libraries/constants/subgroup_const.php",
 		"/C/xampp/htdocs/POTIH/system/libraries/constants/user_const.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/product.php",
 		"/C/xampp/htdocs/POTIH/system/libraries/constants/login_const.php",
@@ -626,7 +710,6 @@
 		"/C/xampp/htdocs/POTIH/assets/css/table-style.css",
 		"/C/xampp/htdocs/POTIH/application/views/internal_css.php",
 		"/C/xampp/htdocs/nelsoft_jaca/application/views/internal_css.php",
-		"/C/xampp/htdocs/POTIH/system/helpers/query_helper.php",
 		"/C/xampp/htdocs/POTIH/index.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/controlpanel.php",
 		"/C/xampp/htdocs/POTIH/POTIH_design/materialtype.php",
@@ -638,7 +721,6 @@
 		"/C/xampp/htdocs/POTIH/system/libraries/tcpdf/fonts/pdfazapfdingbats.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/login.php",
 		"/C/xampp/htdocs/POTIH/POTIH_design/sidebar.php",
-		"/C/xampp/htdocs/POTIH/application/views/footer.php",
 		"/C/xampp/htdocs/POTIH/POTIH_design/controlpanel.php",
 		"/C/xampp/htdocs/POTIH/POTIH_design/index.php",
 		"/C/xampp/htdocs/POTIH/application/views/login.php",
@@ -649,7 +731,6 @@
 		"/C/xampp/htdocs/POTIH/system/helpers/security_helper.php",
 		"/C/xampp/htdocs/POTIH/application/views/master.php",
 		"/C/xampp/htdocs/nelsoft_jaca/scripts/login_js.php",
-		"/C/xampp/htdocs/POTIH/application/views/includes.php",
 		"/C/xampp/htdocs/POTIH/system/core/Controller.php",
 		"/C/xampp/htdocs/nelsoft_jaca/scripts/functions_js.php",
 		"/C/xampp/htdocs/POTIH/scripts/helpers/error_helper.php",
@@ -683,14 +764,7 @@
 		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/js/my_js_lib_1.4.js",
 		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/sales.php",
 		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/product_report_bs.php",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/stock_delivery.php",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/stock_delivery_bs.php",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/saleslist_bs.php",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/sales_bs.php",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/stock_deliveryfrom.php",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/saleslist_detailed_excel.php",
-		"/C/Users/MARK/Downloads/sales(2015-04-24)(6).xls",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/saleslist_excel.php"
+		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/stock_delivery.php"
 	],
 	"find":
 	{
@@ -709,6 +783,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"if",
+			"data",
 			";",
 			"zend_extension",
 			"debug",
@@ -834,8 +910,6 @@
 			"tab_region",
 			"colarray_small",
 			"_getFromZipArchive",
-			"zip",
-			"reader",
 			"zip"
 		],
 		"highlight": true,
@@ -884,8 +958,296 @@
 	"groups":
 	[
 		{
+			"selected": 4,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "application/controllers/damage.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2206,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2085,
+								2085
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1368.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "application/views/damage_detail.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1647,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								334,
+								334
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 114.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "scripts/damage_detail_js.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4852,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4839,
+								4839
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2671.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "application/views/damage_list.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3441,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1194,
+								1194
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 171.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "application/models/damage_model.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2714,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								928,
+								928
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 413.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "application/models/branch_model.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 4219,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1934,
+								2182
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 570.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "application/controllers/product.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3357,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "system/libraries/constants/damage_const.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 180,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								42,
+								42
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "scripts/product_list_js.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 10980,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								10819,
+								10874
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 6726.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "scripts/branch_list_js.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6821,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4648,
+								5502
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 3376.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -942,8 +1304,52 @@
 		"selected_items":
 		[
 			[
+				"branch",
+				"application\\models\\branch_model.php"
+			],
+			[
+				"query",
+				"system\\helpers\\query_helper.php"
+			],
+			[
+				"product",
+				"scripts\\product_list_js.php"
+			],
+			[
+				"sql",
+				"system\\libraries\\Sql.php"
+			],
+			[
+				"branc",
+				"application\\controllers\\branch.php"
+			],
+			[
+				"inc",
+				"application\\views\\includes.php"
+			],
+			[
+				"footer",
+				"application\\views\\footer.php"
+			],
+			[
+				"include",
+				"application\\views\\includes.php"
+			],
+			[
+				"table_he",
+				"scripts\\helpers\\table_helper_js.php"
+			],
+			[
 				"login",
-				"application\\models\\login_model.php"
+				"scripts\\login_js.php"
+			],
+			[
+				"damage",
+				"application\\views\\damage_list.php"
+			],
+			[
+				"sub",
+				"system\\libraries\\constants\\subgroup_const.php"
 			],
 			[
 				"eleme",
@@ -952,10 +1358,6 @@
 			[
 				"cont",
 				"application\\views\\controlpanel.php"
-			],
-			[
-				"branc",
-				"application\\views\\branch_list.php"
 			],
 			[
 				"view",
@@ -990,20 +1392,8 @@
 				"scripts\\helpers\\error_helper_js.php"
 			],
 			[
-				"branch",
-				"scripts\\branch_list_js.php"
-			],
-			[
-				"sub",
-				"scripts\\subgroup_list_js.php"
-			],
-			[
 				"mater",
 				"scripts\\material_list_js.php"
-			],
-			[
-				"product",
-				"scripts\\product_list_js.php"
 			],
 			[
 				"material",
@@ -1040,10 +1430,6 @@
 			[
 				"user_l",
 				"scripts\\user_list_js.php"
-			],
-			[
-				"sql",
-				"system\\libraries\\Sql.php"
 			],
 			[
 				"elemet",
@@ -1122,10 +1508,6 @@
 				"application\\views\\internal_css.php"
 			],
 			[
-				"query",
-				"system\\helpers\\query_helper.php"
-			],
-			[
 				"inde",
 				"index.php"
 			],
@@ -1152,10 +1534,6 @@
 			[
 				"aut",
 				"system\\helpers\\authentication_helper.php"
-			],
-			[
-				"footer",
-				"application\\views\\footer.php"
 			],
 			[
 				"header",

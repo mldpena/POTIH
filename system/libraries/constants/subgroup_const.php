@@ -1,6 +1,6 @@
 <?php
 	/**
-	* List of constants for login model
+	* List of constants for subgroup model
 	*/
 
 	class SubGroup_Const

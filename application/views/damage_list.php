@@ -12,129 +12,59 @@
 				<table>
 					<tr>
 						<td>Date From:</td>
-						<td><input type="text" class="form-control"></td>
+						<td><input type="text" class="form-control" id="date_from"></td>
 						<td>Date To:</td>
-						<td><input type="text" class="form-control"></td>
+						<td><input type="text" class="form-control" id="date_to"></td>
 					</tr>
 					<tr>
 						<td>Location:</td>
-						<td colspan="3"><input type="text" class="form-control"></td>
+						<td colspan="3"><select class="form-control" id="branch_list"><?= $branch_list ?></select></td>
 					</tr>
 				</table>
 			</div>
 			<div class="sub-panel">
 				Search: 
-				<input type="text" class="form-control form-control mod">
+				<input type="text" class="form-control form-control mod" id="search_string">
 				Order By:
-				<select class="form-control form-control mod">
-					<option>Date</option>
-					<option>Name</option>
+				<select class="form-control form-control mod" id="order_by">
+					<option value="1">Reference #</option>
+					<option value="2">Location</option>
+					<option value="3">Entry Date</option>
 				</select>
-				<input type="button" class="btn btn-primary" value="ASC">
-				<input type="button" class="btn btn-success" value="Search">
+				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
+				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<a href="<?= base_url() ?>damage/detail">
+				<a href="<?= base_url() ?>damage/add">
 					<button class="btn btn-primary">Create New Damage Entry</button>
 				</a>
 			</div>
 			<div class="max-row">
-				<div class="lblmsg warning">
-					Message not good!
-				</div>
+				<div id="messagebox_1"></div>
 			</div>
 			<div class="max-row">
 				<center>
-					<!-- This table is a sample from JS table Layout -->
-					<div class="tbl">
-						<table class="tblstyle">
-							<tr class="tableheader">
-								<td></td>
-								<td>Location</td>
-								<td>Date</td>
-								<td>Entry Number</td>
-								<td>Request by</td>
-								<td>Amount</td>
-								<td style="width:245px;">Memo</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-								<td>Sample</td>
-							</tr>
-						</table>
-						<table>
-							<tr>
-								<td><input type="button" value="Previous"></td>
-								<td><input type="text"></td>
-								<td><input type="button" value="Next"></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>1 / 10</td>
-								<td></td>
-							</tr>
-						</table>
-					</div>
+					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
+					<div class="tbl max" id="tbl"></div>
 				</center>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="deleteDamageModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Delete Damage Entry</h4>
+			</div>
+			<div class="modal-body">
+				Are you sure you want to delete this damage entry?
+				<div id="messagebox_2"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" id="delete">Delete</button>
 			</div>
 		</div>
 	</div>

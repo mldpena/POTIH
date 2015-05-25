@@ -90,23 +90,13 @@
 	root.appendChild(myjstbl.mypage.pagingtable);
 
 	$('#tbl').hide();
+	
 	refresh_table();
+	bind_asc_desc('order_type');
 
 	$('#search').click(function(){
     	refresh_table();
     });
-
-	$('#order_type').click(function(){
-		var value = $(this).val();
-		if (value == 'ASC') 
-		{
-			$(this).val('DESC');
-		}
-		else
-		{
-			$(this).val('ASC');
-		}
-	});
 
 	$('.column_click').live('click',function(){
 		var row_index 	= $(this).parent().index();

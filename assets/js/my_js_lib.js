@@ -90,7 +90,7 @@ function my_autocomplete(sel, url, func)
 	
 }
 var request;
-function my_autocomplete_add(sel, url_ac, options ){
+function my_autocomplete_add(token_val,sel, url_ac, options ){
 	//fnc_callback(this,label, value, ret_datas, error)
 	//error = "not selected" or customized error
 	var enable_add = typeof options.enable_add !== 'undefined' ? options.enable_add : false;
@@ -108,12 +108,12 @@ function my_autocomplete_add(sel, url_ac, options ){
             delay: 0,
 			source: function(req, add){
 
-				var arr = 	{ fnc : 'autocomplete', term : req.term }
+				var arr = 	{ fnc : 'autocomplete_product', term : req.term }
 				if (request) { request.abort(); };
 				request = $.ajax({
 		            type: "POST",
 		            dataType : 'JSON',
-		            data: 'data=' + JSON.stringify(arr),
+		            data: 'data=' + JSON.stringify(arr) + token_val,
 		            success: function(data) {
 		            	var suggestions = [];
 						$.each(data, function(i, val){ suggestions.push(val); });

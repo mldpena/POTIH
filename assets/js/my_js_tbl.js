@@ -178,7 +178,7 @@ function my_table (tab, colarray, options) {
 	this.setvalue_to_rowindex = setvalue_to_rowindex_fnc;
 	this.setrow_font_color = setrow_font_color_fnc;
 	this.clean_table = clean_table_fnc;
-	
+	this.fire_tab_when_entered_table = fire_tab_when_entered_table_fnc;
 	this.clear_events = clear_events_fnc;
 }
 
@@ -322,12 +322,36 @@ function edit_row_fnc(row_index)
 	}
 	
 	var tabid = this.tab.id;
-/*	$.getScript("../assets/js/my_js_lib.js", function(){
-		fire_tab_when_entered_table(tabid);
-		//fire_tab_when_entered("input");
-		//fire_tab_when_entered("select");
-	});*/
-	
+	this.fire_tab_when_entered_table(tabid,row_index);
+}
+
+function fire_tab_when_entered_table_fnc(tab, row_index){
+    var row = this.tbo.childNodes[row_index];
+    if(row == null) return;
+    
+    var i_num = 0;
+    for(var i in this.colarray) {
+		var cell = row.childNodes[i_num];
+		for(var j=0; j<cell.childNodes.length; j++)
+		{
+			var elem = cell.childNodes[j];
+			if( (elem.tagName.toUpperCase() == "INPUT" || elem.tagName.toUpperCase() == "SELECT") 
+                && elem.type.toUpperCase() != "BUTTON" && elem.type.toUpperCase() != "SUBMIT" )
+            {
+                $(elem).unbind("keypress");
+                $(elem).keypress( function (evt) {
+                    if (evt.keyCode == 13) {
+                        iname = $(this).val();
+                        if (iname !== 'Submit'){
+                            next_focus(this);
+                            return false;
+                        }
+                    }
+                });
+            }
+		}
+		i_num++;
+	}
 }
 
 function delete_row_fnc(row_index)
@@ -371,14 +395,10 @@ function insert_row_with_value_fnc(row_index, value_arr, bool, options)
 	
 	bool = typeof bool !== 'undefined' ? bool : true;
 	
-/*	if(bool){
+	if(bool){
 		var tabid = this.tab.id;
-		$.getScript("../assets/js/my_js_lib.js", function(){
-			fire_tab_when_entered_table(tabid);
-			//fire_tab_when_entered("input");
-			//fire_tab_when_entered("select");
-		});
-	}*/
+		this.fire_tab_when_entered_table(tabid,row_index);
+	}
 	
 }
 

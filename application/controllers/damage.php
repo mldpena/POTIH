@@ -11,6 +11,7 @@ class Damage extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->model('damage_model');
 	}
 
 	/**
@@ -36,9 +37,11 @@ class Damage extends CI_Controller {
 		{
 			case 'list':
 				$page = 'damage_list';
+				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
 				break;
 
-			case 'detail':
+			case 'add':
+			case 'view':
 				$page = 'damage_detail';
 				break;
 			
@@ -87,7 +90,40 @@ class Damage extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case '':
+			case 'create_reference_number':
+				$this->_create_reference_number($post_data);
+				break;
+
+			case 'get_damage_details':
+				$this->_get_damage_details();
+				break;
+
+			case 'autocomplete_product':
+				$this->_get_produc_list($post_data);
+				break;
+
+			case 'insert_damage_detail':
+				$this->_insert_damage_detail($post_data);
+				break;
+
+			case 'update_damage_detail':
+				$this->_update_damage_detail($post_data);
+				break;
+
+			case 'delete_damage_detail':
+				$this->_delete_damage_detail($post_data);
+				break;
+
+			case 'save_damage_head':
+				$this->_save_damage_head($post_data);
+				break;
+
+			case 'search_damage_list':
+				$this->_search_damage_list($post_data);
+				break;
+
+			case 'delete_damage_head':
+				$this->_delete_damage_head($post_data);
 				break;
 
 			default:
@@ -95,5 +131,59 @@ class Damage extends CI_Controller {
 				break;
 		}
 
+	}
+
+	private function _create_reference_number($param)
+	{
+		$response = get_next_number('damage_head','reference_number');
+		echo json_encode($response);
+	}
+
+	private function _get_damage_details()
+	{
+		$response = $this->damage_model->get_damage_details();
+		echo json_encode($response);
+	}
+
+	private function _get_produc_list($param)
+	{
+		$response = get_product_list_autocomplete($param);
+		echo json_encode($response);
+	}
+
+	private function _insert_damage_detail($param)
+	{
+		$response = $this->damage_model->insert_damage_detail($param);
+		echo json_encode($response);
+	}
+
+	private function _update_damage_detail($param)
+	{
+		$response = $this->damage_model->update_damage_detail($param);
+		echo json_encode($response);
+	}
+
+	private function _delete_damage_detail($param)
+	{
+		$response = $this->damage_model->delete_damage_detail($param);
+		echo json_encode($response);
+	}
+
+	private function _save_damage_head($param)
+	{
+		$response = $this->damage_model->update_damage_head($param);
+		echo json_encode($response);
+	}
+
+	private function _search_damage_list($param)
+	{
+		$response = $this->damage_model->search_damage_list($param);
+		echo json_encode($response);
+	}
+
+	private function _delete_damage_head($param)
+	{
+		$response = $this->damage_model->delete_damage_head($param);
+		echo json_encode($response);
 	}
 }

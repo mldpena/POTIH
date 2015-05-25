@@ -1,6 +1,8 @@
 <script type="text/javascript">
 	var flag = 0;
 
+	$('#username').focus();
+	
 	$('#password').live('keydown',function(e){
 		if (e.keyCode == 13) 
 		{
