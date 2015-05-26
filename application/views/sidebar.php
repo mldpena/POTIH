@@ -46,7 +46,7 @@
 		<div class="sidebar-group" id="purchase-group">
 			<div class="header subgroup-toggle">
 				<div>Purchase</div>
-				<div id="subgroup-toggle"><i class="fa fa-plus-square"></i></div>
+				<div><i class="fa fa-plus-square"></i></div>
 			</div>
 			<div class="link-menu">
 				<a href="<?= base_url() ?>purchaseorder/list">
