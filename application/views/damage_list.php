@@ -35,9 +35,9 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<a href="<?= base_url() ?>damage/add">
-					<button class="btn btn-primary">Create New Damage Entry</button>
+				<a href="<?= base_url() ?>damage/add">Create New Damage Entry</button>
 				</a>
+				<button class="btn btn-primary">
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
