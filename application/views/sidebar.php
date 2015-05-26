@@ -1,16 +1,5 @@
-<script type="text/javascript">
-	$(function(){
-		var currentUrl = window.location.href;
-		$(".sidebar-group a[href='"+currentUrl+"'] .link").css({
-			"background" : "#ecffe8",
-			"border-left" : "2px #00923F solid"
-		});
-
-		$(".sidebar-group a[href='"+currentUrl+"']").parent().css("display", "block");
-	})
-</script>
 <div class="sidebar pull-left" align="center">
-	<a href="controlpanel.php">
+	<a href="<?= base_url() ?>controlpanel">
 		<div class="sidebar-logo">
 			<img src="<?= base_url().IMG ?>hitop-main.png" class="mainlogo">
 		</div>

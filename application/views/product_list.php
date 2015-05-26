@@ -36,10 +36,10 @@
 						<td>Inventory Status:</td>
 						<td>
 							<select class="form-control" id="invstatus">
-								<option value="1">ALL</option>
-								<option value="2">With Inventory</option>
-								<option value="3">Negative Inventory</option>
-								<option value="4">Zero Inventory</option>
+								<option value="0">ALL</option>
+								<option value="1">With Inventory</option>
+								<option value="2">Negative Inventory</option>
+								<option value="3">Zero Inventory</option>
 							</select>
 						</td>
 					</tr>

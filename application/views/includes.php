@@ -7,6 +7,9 @@
 <link rel="stylesheet" type="text/css" href="<?= base_url().CSS ?>jquery.timepicker.css">
 <?php require_once('internal_css.php'); ?>
 
+<script type="text/javascript"> 
+	var current_url = "<?= base_url().$this->uri->segment(1).'/list' ?>" 
+</script>
 <script type="text/javascript" src="<?= base_url().JS ?>jquery-1.8.0.min.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>jquery-ui-1.8.23.custom.min.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>bootstrap.js"></script>
@@ -15,5 +18,6 @@
 <script type="text/javascript" src="<?= base_url().JS ?>my_js_lib.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>my_js_tbl.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>my_js_tblpaging.js"></script>   
+<script type="text/javascript" src="<?= base_url().JS ?>sidebar.js"></script>   
 
 

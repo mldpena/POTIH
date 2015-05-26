@@ -207,13 +207,14 @@ class Product_Model extends CI_Model {
 
 	public function get_product_list($param)
 	{
+		extract($param);
+
 		$response 	= array();
 		$response['rowcnt'] = 0;
+
 		$conditions = "";
 		$order_field = "";
-		$query_data = array();
-
-		extract($param);
+		$query_data = array($branch);
 
 		if (!empty($code)) 
 		{
@@ -268,23 +269,22 @@ class Product_Model extends CI_Model {
 			array_push($query_data,$type);
 		}
 
-		/* For product branch inventory table*/
-		/*if ($invstat != PRODUCT_CONST::ALL_OPTION) 
+		if ($invstat != PRODUCT_CONST::ALL_OPTION) 
 		{
 			switch ($invstat) {
 				case PRODUCT_CONST::POSITIVE_INV:
-
+					$conditions .= " AND PBI.`inventory` > 0";
 					break;
 				
 				case PRODUCT_CONST::NEGATIVE_INV:
-
+					$conditions .= " AND PBI.`inventory` < 0";
 					break;
 
 				case PRODUCT_CONST::ZERO_INV:
-
+					$conditions .= " AND PBI.`inventory` = 0";
 					break;
 			}
-		}*/
+		}
 
 		switch ($orderby) 
 		{
@@ -304,10 +304,11 @@ class Product_Model extends CI_Model {
 							WHEN P.`type` = ".PRODUCT_CONST::NON_STACK." THEN 'Non - Stack'
 							WHEN P.`type` = ".PRODUCT_CONST::STACK." THEN 'Stack'
 						END AS 'type',
-						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup'
+						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', COALESCE(PBI.`inventory`,0) AS 'inventory'
 						FROM product AS P
 						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
 						WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." $conditions
 						ORDER BY $order_field";
 
@@ -327,7 +328,7 @@ class Product_Model extends CI_Model {
 				$response['data'][$i][] = array($row->type);
 				$response['data'][$i][] = array($row->material_type);
 				$response['data'][$i][] = array($row->subgroup);
-				$response['data'][$i][] = array(0);
+				$response['data'][$i][] = array(number_format($row->inventory,0));
 				$response['data'][$i][] = array('');
 				$i++;
 			}

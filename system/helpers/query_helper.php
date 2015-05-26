@@ -107,12 +107,13 @@ if (!function_exists('get_product_list_autocomplete'))
 		$CI->load->library('constants/product_const');
 
 		$data 		= array();
+		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
 		$term 		= '%'.$term.'%';
-		$query_data = array($term,$term);
+		$query_data = array($branch_id,$term,$term);
 
 		$query = "SELECT P.`description`, P.`id`, P.`material_code`, COALESCE(PBI.`inventory`,0) AS 'inventory'
 					FROM product AS P
-					LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id`
+					LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
 					WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND (P.`description` LIKE ? OR P.`material_code` LIKE ?)
 					LIMIT 10";
 
