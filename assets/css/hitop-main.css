@@ -96,12 +96,21 @@ body{
 }
 .sidebar > .sidebar-links-panel .sidebar-group .header{
 	background: #00923F;
-	font-size: 14px;
+	font-size: 12px;
 	text-align: left;
 	color: #fff;
 	padding: 10px;
 	float: left;
 	width: 100%;
+	text-transform: uppercase;
+	cursor: pointer;
+}
+.sidebar > .sidebar-links-panel .sidebar-group .header div:first-child{
+	float: left;
+}
+.sidebar > .sidebar-links-panel .sidebar-group .header i{
+	float: right;
+	margin-top: 2px;
 }
 .sidebar > a .sidebar-logo .mainlogo{
 	width: 120px;
@@ -111,23 +120,29 @@ body{
 	float: left;
 	width: 100%;
 }
-.sidebar > .sidebar-links-panel .sidebar-group a{
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu{
+	display: none;
+}
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu.active-tab{
+	display: block;
+}
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu a{
 	color: #000;
 }
-.sidebar > .sidebar-links-panel .sidebar-group a{
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu a{
 	text-decoration: none;
 }
-.sidebar > .sidebar-links-panel .sidebar-group a .link img{
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link img{
 	width: 20px;
 	height: 20px;
 	float: left;
 }
-.sidebar > .sidebar-links-panel .sidebar-group a .link div{
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link div{
 	float: left;
 	padding-top: 1px;
 	margin-left: 5px;
 }
-.sidebar > .sidebar-links-panel .sidebar-group a .link{
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link{
 	padding: 8px 10px;
 	font-family: R-Regular;
 	font-size: 12px;
@@ -136,12 +151,12 @@ body{
 	float: left;
 	width: 100%;
 }
-.sidebar > .sidebar-links-panel .sidebar-group a .link:hover{
+.sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link:hover{
 	background: #f7f7f7;
 	border-left: 2px #00923F solid; 
 }
 .sidebar > .sidebar-links-panel .sidebar-group{
-	display: none;
+	/*display: none;*/
 }
 /*Control Panel*/
 .cpanel-header{
@@ -165,7 +180,7 @@ body{
 	padding-top: 15px;
 	margin-left: 15px;
 	font-size: 50px;
-	font-weight: 300;
+	color: #565656;
 }
 .main-content.cpanel > .content-form .form-header{
 	padding: 12px 15px;
@@ -346,7 +361,7 @@ body{
 }
 .lblmsg{
 	text-align: center;
-	font-size: 22px;
+	font-size: 18px;
 	font-family: R-Regular;
 }
 .danger{
@@ -409,7 +424,7 @@ body{
 	vertical-align: top;
 }
 .tbl-total table td{
-	font-size: 20px;
+	font-size: 15px;
 	font-family: R-Bold;
 }
 .tbl-po{
@@ -429,6 +444,14 @@ body{
 	color: #fff;
 	padding: 10px;
 }
+
+/*CHOSEN AUTOCOMPLETE*/
+/*.ui-autocomplete li a, .ui-autocomplete li a span{
+	width: 100% !important;
+}
+.ui-autocomplete li a span{
+	padding: 4px 0 0 4px !important;
+}*/
 /*Mozilla Firefox Override CSS*/
 /*@-moz-document url-prefix() {
 	.tbl-filters table td select{

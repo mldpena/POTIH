@@ -93,8 +93,12 @@
 			<div class="max-row tbl-total" align="right">
 				<table>
 					<tr>
-						<td>Total Amount:</td>
-						<td><span>0.00</span></td>
+						<td>Last Modified Date:</td>
+						<td><span>2015-05-19</span></td>
+					</tr>
+					<tr>
+						<td align="right">Date Created:</td>
+						<td><span>2015-05-19</span></td>
 					</tr>
 				</table>
 			</div>

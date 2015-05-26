@@ -97,7 +97,7 @@
 .tddelete, 
 .tdview,
 .tdupdate{
-	vertical-align: top;
+	vertical-align: center;
 	text-align: center !important;
 	width: 40px;
 }
