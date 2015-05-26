@@ -17,8 +17,8 @@
 						<td>
 							<select class="form-control" id="type">
 								<option value="0">ALL</option>
-								<option value="1">Stack</option>
-								<option value="2">Non - Stack</option>
+								<option value="1">Stock</option>
+								<option value="2">Non - Stock</option>
 							</select>
 						</td>
 						<td>Branch:</td>
@@ -49,9 +49,9 @@
 							<select class="form-control" id="subgroup"><?= $subgroup_list ?></select>
 						</td>
 						<td>Date To:</td>
-						<td><input type="text" class="form-control" id="datefrom"></td>
+						<td><input type="text" class="form-control" id="date_from"></td>
 						<td>Date From:</td>
-						<td><input type="text" class="form-control" id="datefrom"></td>
+						<td><input type="text" class="form-control" id="date_to"></td>
 					</tr>
 				</table>
 			</div>
@@ -89,7 +89,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<div class="checkbox pull-right" id="new_check_nonstack">
-						<input type="checkbox" class="modal-fields" value="" id="new_nonstack">Non-stack Item
+						<input type="checkbox" class="modal-fields" value="" id="new_nonstack">Non-stock Item
 					</div>
 				</div>
 				<div class="form-group">
@@ -104,11 +104,11 @@
 					<div class="row">
 						<div class="col-xs-6">
 							Minimum Inventory:
-							<input type="text" class="form-control modal-fields" id="new_min">
+							<input type="text" class="form-control modal-fields" id="new_min" value="1">
 						</div>
 						<div class="col-xs-6">
 							Maximum Inventory:
-							<input type="text" class="form-control modal-fields" id="new_max">
+							<input type="text" class="form-control modal-fields" id="new_max" value="1">
 						</div>
 					</div>
 				</div>

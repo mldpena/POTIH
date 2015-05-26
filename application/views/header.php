@@ -25,7 +25,7 @@
 										<li><a href="<?= base_url() ?>login/logout">Logout</a></li>
 									</ul>
 								</div>
-								<a href="<?= base_url() ?>controlpanel"><div class="ez-menu pull-right">Control Panel</div></a>
+								<a href="<?= base_url() ?>controlpanel"><div class="ez-menu pull-right">Home</div></a>
 							</div>
 						<?php
 							}

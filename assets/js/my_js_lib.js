@@ -101,8 +101,8 @@ function my_autocomplete_add(token_val,sel, url_ac, options ){
 	var fnc_callback = typeof options.fnc_callback !== 'undefined' ? options.fnc_callback : "";
 	var fnc_render = typeof options.fnc_render !== 'undefined' ? options.fnc_render : "";
 
-	$(sel).unbind( "autocomplete" );
-	$(sel).live("focus", function (event) {
+	$(sel).live("keypress, click", function (event) {
+		$(this).autocomplete('destroy');
 		$(this).autocomplete({
             autoFocus: true,
             delay: 0,

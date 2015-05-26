@@ -101,8 +101,8 @@
 	$('#tbl').hide();
 	refresh_table();
 
-	$('#datefrom, #dateto').datepicker();
-    $('#datefrom, #dateto').datepicker("option","dateFormat", "yy-mm-dd" );
+	$('#date_from, #date_to').datepicker();
+    $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
     $('#search').click(function(){
     	refresh_table();
@@ -322,10 +322,22 @@
 		});
 	});
 
+	$('#new_nonstack').click(function(){
+		if ($(this).is(':checked')) 
+		{
+			$('#material_id').val(0);
+			$('#subgroup_id').val(0);
+			$('#material_text').html('');
+			$('#subgroup_text').html('');
+		};
+	});
+
     $('#createProductModal, #deleteProductModal').live('hidden.bs.modal', function (e) {
 		$('.modal-fields').val('');
 		$('.modal-fields').html('');
 		$('.modal-fields').removeAttr('checked');
+		$('#new_min').val(1);
+		$('#new_max').val(1);
 		global_row_index 	= 0;
 		global_product_id 	= 0;
 	});
@@ -342,8 +354,8 @@
 		var subgroup_val 	= $('#subgroup').val();
 		var type_val 		= $('#type').val();
 		var material_val	= $('#material').val();
-		var datefrom_val	= $('#material').val();
-		var dateto_val		= $('#material').val();
+		var datefrom_val	= $('#date_from').val();
+		var dateto_val		= $('#date_to').val();
 		var branch_val		= $('#branch').val();
 		var inv_val			= $('#invstatus').val();
 		var orderby_val		= $('#orderby').val();

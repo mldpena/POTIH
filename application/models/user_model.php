@@ -265,18 +265,11 @@ class User_Model extends CI_Model {
 
 		return $response;
 	}
-
-	/**
-	 * 
-	 * @param  [type] $param [description]
-	 * @return [type]        [description]
-	 */
 	
 	public function get_user_details($param)
 	{
-		extract($param);
 
-		$user_id = $this->encrypt->decode($user_id);
+		$user_id = $this->encrypt->decode($this->uri->segment(3));
 
 		$response = array();
 
@@ -308,7 +301,7 @@ class User_Model extends CI_Model {
 								WHERE B.`is_show` = ".USER_CONST::ACTIVE." AND `user_id` = ?";
 			
 			$result_branches = $this->db->query($query_branches,$user_id);
-
+			
 			if ($result_branches->num_rows() == 0) 
 			{
 				$response['error'] = 'No branch assigned to this account!';

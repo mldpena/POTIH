@@ -1,6 +1,6 @@
 <div class="cpanel-header">
 	<img src="<?= base_url().IMG ?>hitop-main.png">
-	<div class="title">Control Panel</div>
+	<div class="title">Hi - Top Merchandising, Inc.</div>
 </div>
 <div class="main-content cpanel">
 	<div class="content-form">

@@ -72,11 +72,9 @@
 	{
 
 		var token_val		= '<?= $token ?>';
-		var user_id_val 	= "<?= $this->uri->segment(3) ?>";
 
 		var arr = 	{ 
-						fnc 		: 'get_user_details', 
-						user_id 	: user_id_val, 
+						fnc 		: 'get_user_details'
 					};
 
 		$.ajax({

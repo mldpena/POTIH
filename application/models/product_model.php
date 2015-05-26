@@ -257,11 +257,11 @@ class Product_Model extends CI_Model {
 			switch ($type) 
 			{
 				case 1:
-					$type = PRODUCT_CONST::STACK;
+					$type = PRODUCT_CONST::STOCK;
 					break;
 				
 				case 2:
-					$type = PRODUCT_CONST::NON_STACK;
+					$type = PRODUCT_CONST::NON_STOCK;
 					break;
 			}
 
@@ -297,12 +297,10 @@ class Product_Model extends CI_Model {
 				break;
 		}
 
-		
-
 		$query = "SELECT P.`id`, P.`material_code`, P.`description`,
 						CASE 
-							WHEN P.`type` = ".PRODUCT_CONST::NON_STACK." THEN 'Non - Stack'
-							WHEN P.`type` = ".PRODUCT_CONST::STACK." THEN 'Stack'
+							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
+							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock'
 						END AS 'type',
 						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', COALESCE(PBI.`inventory`,0) AS 'inventory'
 						FROM product AS P
