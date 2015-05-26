@@ -165,7 +165,7 @@ body{
 	padding-top: 15px;
 	margin-left: 15px;
 	font-size: 50px;
-	font-weight: 300;
+	color: #565656;
 }
 .main-content.cpanel > .content-form .form-header{
 	padding: 12px 15px;
@@ -346,7 +346,7 @@ body{
 }
 .lblmsg{
 	text-align: center;
-	font-size: 22px;
+	font-size: 18px;
 	font-family: R-Regular;
 }
 .danger{
@@ -409,7 +409,7 @@ body{
 	vertical-align: top;
 }
 .tbl-total table td{
-	font-size: 20px;
+	font-size: 15px;
 	font-family: R-Bold;
 }
 .tbl-po{
@@ -429,6 +429,14 @@ body{
 	color: #fff;
 	padding: 10px;
 }
+
+/*CHOSEN AUTOCOMPLETE*/
+/*.ui-autocomplete li a, .ui-autocomplete li a span{
+	width: 100% !important;
+}
+.ui-autocomplete li a span{
+	padding: 4px 0 0 4px !important;
+}*/
 /*Mozilla Firefox Override CSS*/
 /*@-moz-document url-prefix() {
 	.tbl-filters table td select{
