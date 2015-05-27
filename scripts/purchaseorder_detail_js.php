@@ -137,13 +137,13 @@
 				{
 					$('#reference_no').val('PD' + response.reference_number);
 					$('#memo').val(response.memo);
-					$('#supplier').val(response.memo);
-					
+					$('#supplier').val(response.supplier_name);
+					$('#orderfor').val(response.orderfor);
 					if (response.entry_date != '') 
 					{
 						$('#date').val(response.entry_date);
 					};
-				//$('#orderfor').val(response.for_branchid);
+				
 				}
 				
 				if (response.detail_error == '') 

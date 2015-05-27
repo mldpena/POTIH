@@ -44,8 +44,8 @@
 				Order By:
 				<select class="form-control form-control mod" id="order_by">
 					<option value="1">Reference #</option>
-					<option value="2">Location</option>
-					<option value="3">Entry Date</option>
+					<option value="2">Memo</option>
+					<option value="3">Supplier</option>
 				</select>
 				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
 				<input type="button" class="btn btn-success" value="Search" id="search">
