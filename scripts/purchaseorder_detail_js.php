@@ -20,7 +20,6 @@
 		headertd_class : "tdheader_id"
     };
 
-
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -115,7 +114,6 @@
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("setDate", new Date());
-    	$('#create_reference_number').attr('disabled','disabled');
 
 		var token_val		= '<?= $token ?>';
 
@@ -159,40 +157,10 @@
 	}
 	else
 	{
-		$('input, textarea').not('#create_reference_number').attr('disabled','disabled');
+		$('input, textarea').attr('disabled','disabled');
 		
 	}
 
-		
-	$('#create_reference_number').click(function(){
-		if (flag == 1) { return; };
-		flag = 1;
-
-		var token_val		= '<?= $token ?>';
-
-		var arr = 	{ 
-						fnc 	 	: 'create_reference_number'
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-				{
-					build_message_box('messagebox_1',response.error,'danger');
-				}
-				else
-				{
-					window.location = '<?= base_url() ?>purchaseorder/add/'+response.id;
-				}
-
-				flag = 0;
-			}       
-		});
-	});
 	$('.txtmemo').live('keydown',function(e){
 		if (e.keyCode == 13) {
 			insert_and_update_purchaseorder_detail($(this));
@@ -223,6 +191,7 @@
 			$('#deletePurchaseOrderModal').modal('show');
 		};
 	});
+
 	$('#delete').click(function(){
 		if (flag == 1) { return; };
 		flag = 1;
@@ -258,6 +227,7 @@
 			}       
 		});
 	});
+
 	$('#save').click(function(){
 		if (flag == 1) { return; };
 		flag = 1;
@@ -289,7 +259,7 @@
 				}
 				else
 				{
-					window.location = "<?= base_url() ?>purchaseorder/add/";
+					window.location = "<?= base_url() ?>purchase/list";
 				}
 
 				flag = 0;
@@ -301,6 +271,7 @@
 		global_row_index 	= 0;
 		global_detail_id 	= 0;
 	});
+	
 	function bind_product_autocomplete()
 	{
 		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>damage', {

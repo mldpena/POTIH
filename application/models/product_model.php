@@ -44,6 +44,30 @@ class Product_Model extends CI_Model {
 			$response['data']['material_id'] 	= $row->material_type_id;
 			$response['data']['subgroup'] 		= $row->subgroup;
 			$response['data']['subgroup_id'] 	= $row->subgroup_id;
+
+			$query_inventory = "SELECT PBI.`id`, COALESCE(CONCAT(B.`code`,' - ',B.`name`),'') AS 'branch', COALESCE(B.`id`,0) AS 'branch_id',
+									PBI.`min_inv`, PBI.`max_inv`
+									FROM product_branch_inventory AS PBI 
+									LEFT JOIN branch AS B ON B.`id` = PBI.`branch_id`
+									WHERE B.`is_show` = ".PRODUCT_CONST::ACTIVE." AND PBI.`product_id` = ?";
+
+			$result_inventory = $this->db->query($query_inventory,$product_id);
+
+			if ($result_inventory->num_rows() != 0) 
+			{
+				$i = 0;
+				foreach ($result_inventory->result() as $row) 
+				{
+					$response['branch_inventory'][$i][] = array($this->encrypt->encode($row->id));
+					$response['branch_inventory'][$i][] = array($i+1);
+					$response['branch_inventory'][$i][] = array($row->branch,$row->branch_id);
+					$response['branch_inventory'][$i][] = array($row->min_inv);
+					$response['branch_inventory'][$i][] = array($row->max_inv);
+					$i++;
+				}
+			}
+
+			$result_inventory->free_result();
 		}
 		else
 		{
@@ -168,21 +192,40 @@ class Product_Model extends CI_Model {
 		$product_id = $this->encrypt->decode($product_id);
 
 		$response 	= array();
-		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$min_inv,$max_inv,$date_today,$user_id,$product_id);
+		$query 		= array();
+		$query_data = array();
 		$response['error'] = '';
 
-		$query = "UPDATE `product`
-					SET
-					`material_code` = ?,
-					`description` = ?,
-					`type` = ?,
-					`material_type_id` = ?,
-					`subgroup_id` = ?,
-					`last_modified_date` =?,
-					`last_modified_by` = ?
-					WHERE `id` = ?";
+		$query_product = "UPDATE `product`
+						SET
+						`material_code` = ?,
+						`description` = ?,
+						`type` = ?,
+						`material_type_id` = ?,
+						`subgroup_id` = ?,
+						`last_modified_date` =?,
+						`last_modified_by` = ?
+						WHERE `id` = ?";
 
-		$result = $this->sql->execute_query($query,$query_data);
+		$query_product_data = array($code,$product,$is_nonstack,$material,$subgroup,$date_today,$user_id,$product_id);
+		array_push($query,$query_product);
+		array_push($query_data,$query_product_data);
+
+		for ($i=0; $i < count($min_max_values); $i++) 
+		{ 
+			$inventory_id = $this->encrypt->decode($min_max_values[$i][0]);
+
+			$query_inventory_data = array();
+			$query_inventory = "UPDATE product_branch_inventory
+								SET `min_inv` = ?,
+									`max_inv` = ?
+								WHERE `id` = ?";
+
+			array_push($query,$query_inventory);		
+			array_push($query_data,array($min_max_values[$i][2],$min_max_values[$i][3],$inventory_id));
+		}
+
+		$result = $this->sql->execute_transaction($query,$query_data);
 
 		if ($result['error'] != '') 
 		{

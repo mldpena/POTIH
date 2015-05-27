@@ -40,6 +40,7 @@
 
 $route['default_controller'] = "login";
 $route['return/(:any)'] = 'productreturn';
+$route['purchase/(:any)'] = 'purchaseorder';
 $route['404_override'] = '';
 
 

@@ -147,11 +147,11 @@
 
 		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
-		var purchase_id_val 	= global_purchase_id;
+		var purchase_id_val = global_purchase_id;
 
 		var arr = 	{ 
 						fnc 	 	: 'delete_purchaseorder_head', 
-						purchase_id 	: purchase_id_val
+						purchase_id : purchase_id_val
 					};
 		$.ajax({
 			type: "POST",
@@ -187,9 +187,39 @@
 	$('.column_click').live('click',function(){
 		
 		var row_index 	= $(this).parent().index();
-		var purchase_id 	= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray['id'].td_class)[0];
+		var purchase_id = myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray['id'].td_class)[0];
 
-		window.open('<?= base_url() ?>purchaseorder/view/' + purchase_id);
+		window.open('<?= base_url() ?>purchase/view/' + purchase_id);
+	});
+
+	$('#create_new').click(function(){
+		if (flag == 1) { return; };
+		flag = 1;
+
+		var token_val		= '<?= $token ?>';
+
+		var arr = 	{ 
+						fnc 	 	: 'create_reference_number'
+					};
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_1',response.error,'danger');
+				}
+				else
+				{
+					window.location = '<?= base_url() ?>purchase/view/'+response.id;
+				}
+
+				flag = 0;
+			}       
+		});
 	});
 
 	$('#deletePurchaseOrderModal').live('hidden.bs.modal', function (e) {
@@ -219,8 +249,7 @@
 						date_from		: date_from_val,
 						date_to 		: date_to_val,
 						branch 			: branch_val,
-						for_branch 		:for_branch_val	
-						
+						for_branch 		: for_branch_val	
 					};
 
 		$('#loadingimg').show();
@@ -233,7 +262,7 @@
 				myjstbl.clear_table();
 				clear_message_box();
 
-			if (response.rowcnt == 0) 
+				if (response.rowcnt == 0) 
 				{
 					$('#tbl').hide();
 					build_message_box('messagebox_1','No purchase order found!','info');

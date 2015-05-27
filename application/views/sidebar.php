@@ -49,7 +49,7 @@
 				<div><i class="fa fa-plus-square"></i></div>
 			</div>
 			<div class="link-menu">
-				<a href="<?= base_url() ?>purchaseorder/list">
+				<a href="<?= base_url() ?>purchase/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>purchaseorder.png">
 						<div>Purchase Order</div>

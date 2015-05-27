@@ -192,7 +192,8 @@
 			data: 'data=' + JSON.stringify(arr) + token_val,
 			success: function(response) {
 				clear_message_box();
-
+				myjstbl_min_max.clear_table();
+				
 				if (response.error != '') 
 				{
 					build_message_box('messagebox_1',response.error,'danger');
@@ -205,6 +206,7 @@
 					$('#new_max').val(response.data['max_inv']);
 					$('#material_id').val(response.data['material_id']);
 					$('#subgroup_id').val(response.data['subgroup_id']);
+
 					if (response.data['type'] == 0) 
 					{
 						$('#new_nonstack').attr('checked','checked');
@@ -212,6 +214,8 @@
 
 					$('#material_text').html(response.data['material_type']);
 					$('#subgroup_text').html(response.data['subgroup']);
+
+					myjstbl_min_max.insert_multiplerow_with_value(1,response.branch_inventory);
 
 					$('#createProductModal').modal('show');
 				}

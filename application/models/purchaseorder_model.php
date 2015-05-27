@@ -7,7 +7,7 @@ class Purchaseorder_Model extends CI_Model {
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->library('constants/return_const');
+		$this->load->library('constants/purchase_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 		parent::__construct();
@@ -24,7 +24,7 @@ class Purchaseorder_Model extends CI_Model {
 
 		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`,`branch_id`,`supplier`,`for_branchid`
 					FROM `purchase_head`
-					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
+					WHERE `is_show` = ".PURCHASE_CONST::ACTIVE." AND `id` = ?";
 
 		$result_head = $this->db->query($query_head,$purchase_head_id);
 
@@ -55,9 +55,9 @@ class Purchaseorder_Model extends CI_Model {
 						COALESCE(PBI.`inventory`,0) AS 'inventory'
 					FROM `purchase_head` AS PH
 					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id`
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".RETURN_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_CONST::ACTIVE."
 					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
-					WHERE PH.`is_show` = ".RETURN_CONST::ACTIVE." AND PD.`headid` = ?";
+					WHERE PH.`is_show` = ".PURCHASE_CONST::ACTIVE." AND PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$query_detail_data);
 
@@ -186,7 +186,7 @@ class Purchaseorder_Model extends CI_Model {
 					`memo` = ?,
 					`supplier` = ?,
 					`for_branchid`=?,
-					`is_used` = ".RETURN_CONST::USED.",
+					`is_used` = ".PURCHASE_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -225,13 +225,13 @@ class Purchaseorder_Model extends CI_Model {
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($branch != RETURN_CONST::ALL_OPTION) 
+		if ($branch != PURCHASE_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND PD.`branch_id` = ?";
 			array_push($query_data,$branch);
 		}
 
-		if ($for_branch != RETURN_CONST::ALL_OPTION) 
+		if ($for_branch != PURCHASE_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND PD.`for_branchid` = ?";
 			array_push($query_data,$for_branch);
@@ -245,15 +245,15 @@ class Purchaseorder_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case RETURN_CONST::ORDER_BY_REFERENCE:
+			case PURCHASE_CONST::ORDER_BY_REFERENCE:
 				$order_field = "PD.`reference_number`";
 				break;
 			
-			case RETURN_CONST::ORDER_BY_LOCATION:
+			case PURCHASE_CONST::ORDER_BY_LOCATION:
 				$order_field = "PD.`memo`";
 				break;
 
-			case RETURN_CONST::ORDER_BY_DATE:
+			case PURCHASE_CONST::ORDER_BY_DATE:
 				$order_field = "PD.`supplier`";
 				break;
 		}
@@ -262,9 +262,9 @@ class Purchaseorder_Model extends CI_Model {
 		$query = "SELECT PD.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', CONCAT('PD',PD.`reference_number`) AS 'reference_number',
 					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(PD.`is_used` = 0, 'Unused', PD.`memo`) AS 'memo', PD.`supplier`
 					FROM purchase_head AS PD
-					LEFT JOIN branch AS B ON B.`id` = PD.`branch_id` AND B.`is_show` = ".RETURN_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = PD.`for_branchid` AND B.`is_show` = ".RETURN_CONST::ACTIVE."
-					WHERE PD.`is_show` = ".RETURN_CONST::ACTIVE." $conditions
+					LEFT JOIN branch AS B ON B.`id` = PD.`branch_id` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
+					LEFT JOIN branch AS B2 ON B2.`id` = PD.`for_branchid` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
+					WHERE PD.`is_show` = ".PURCHASE_CONST::ACTIVE." $conditions
 					ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);
@@ -309,7 +309,7 @@ class Purchaseorder_Model extends CI_Model {
 		$query_data = array($date_today,$user_id,$purchase_head_id);
 		$query 	= "UPDATE `purchase_head` 
 					SET 
-					`is_show` = ".RETURN_CONST::DELETED.",
+					`is_show` = ".PURCHASE_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";

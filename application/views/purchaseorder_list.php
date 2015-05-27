@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchaseorder/list">Purchase Order List</a></li>
+			<li class="active"><a href="<?= base_url() ?>purchase/list">Purchase Order List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -30,9 +30,10 @@
 						<td>Status:</td>
 						<td colspan="3">
 							<select class="form-control">
-								<option>Sample</option>
-								<option>Sample</option>
-								<option>Sample</option>
+								<option value="0">ALL</option>
+								<option value="1">Incomplete</option>
+								<option value="2">Complete</option>
+								<option value="3">No Received</option>
 							</select>
 						</td>
 					</tr>
@@ -51,9 +52,7 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<a href="<?= base_url() ?>purchaseorder/add">
-					<button class="btn btn-primary">Create New Purchase Order</button>
-				</a>
+				<button class="btn btn-primary" id="create_new">Create New Purchase Order</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -72,10 +71,10 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Return Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this return entry?
+				Are you sure you want to delete this purchase entry?
 				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

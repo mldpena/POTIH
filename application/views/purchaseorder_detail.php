@@ -14,7 +14,6 @@
 					<tr>
 						<td>Reference #:</td>
 						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
-						<td><input type="button" class="btn btn-success" value="Create Reference #" id="create_reference_number"></td>
 					</tr>
 					<tr>
 						<td>Supplier:</td>
@@ -28,9 +27,7 @@
 						<td>Order For:</td>
 						<td colspan="1">
 							<select class="form-control" id="orderfor" ><?= $branch_list ?></select>
-							
 						</td>
-						
 					</tr>
 					<tr>
 						<td valign="top">Memo:</td>
@@ -41,7 +38,6 @@
 			<div class="divider-line"></div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
-				</div>
 			</div>
 			<div class="max-row">
 				<center>
@@ -58,20 +54,21 @@
 			</div>
 			<div class="max-row" align="right">
 				<input type="button" class="btn btn-primary" value="Print" id="print">
-				<input type="button" class="btn btn-success" value="Save" id= "save">
+				<input type="button" class="btn btn-success" value="Save" id="save">
 			</div>
 		</div>
 	</div>
 </div>
+
 <div class="modal fade" id="deletePurchaseOrderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Return Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this return entry?
+				Are you sure you want to delete this purchase entry?
 				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
