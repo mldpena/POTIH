@@ -86,7 +86,62 @@
 		td_class: "tablerow column_hover tddelete"
 	};
 
+
+	var tab_min_max = document.createElement('table');
+	tab_min_max.className = "tblstyle";
+	tab_min_max.id = "table_min_max_id";
+	tab_min_max.setAttribute("style","border-collapse:collapse;");
+	tab_min_max.setAttribute("class","border-collapse:collapse;");
+    
+    var colarray_min_max = [];
+	
+	var spnid = document.createElement('span');
+	colarray_min_max['id'] = { 
+        header_title: "",
+        edit: [spnid],
+        disp: [spnid],
+        td_class: "tablerow tdid",
+		headertd_class : "tdheader_id"
+    };
+
+    var spnnumber = document.createElement('span');
+	colarray_min_max['number'] = { 
+        header_title: "",
+        edit: [spnnumber],
+        disp: [spnnumber],
+        td_class: "tablerow tdnumber"
+    };
+
+    var spnbranch = document.createElement('span');
+    var spnbranchid = document.createElement('span');
+    spnbranchid.setAttribute('style','display:none');
+	colarray_min_max['branch'] = { 
+        header_title: "Branch",
+        edit: [spnbranch,spnbranchid],
+        disp: [spnbranch,spnbranchid],
+        td_class: "tablerow column_hover tdbranch"
+    };
+
+	var txtmininv = document.createElement('input');
+	txtmininv.setAttribute('class','form-control');
+	colarray_min_max['min_inv'] = { 
+        header_title: "Min. Inv.",
+        edit: [txtmininv],
+        disp: [txtmininv],
+        td_class: "tablerow column_hover tdmin"
+    };
+
+	var txtmaxinv = document.createElement('input');
+	txtmaxinv.setAttribute('class','form-control');
+	colarray_min_max['max_inv'] = { 
+        header_title: "Max. Inv.",
+        edit: [txtmaxinv],
+        disp: [txtmaxinv],
+        td_class: "tablerow column_hover tdmax"
+    };
+
 	var myjstbl;
+	var myjstbl_min_max;
 
 	var root = document.getElementById("tbl");
 	myjstbl = new my_table(tab, colarray, {	ispaging : true, 
@@ -98,19 +153,31 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
+	var root_min_max = document.getElementById("tbl_min_max");
+	myjstbl_min_max = new my_table(tab_min_max, colarray_min_max, {	ispaging : false, 
+											tdhighlight_when_hover : "tablerow",
+											iscursorchange_when_hover : true,
+											isdeleteicon_when_hover : false
+							});
+
+	root_min_max.appendChild(myjstbl_min_max.tab);
+
 	$('#tbl').hide();
+	//Call refresh function after loading the page
 	refresh_table();
 
 	$('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
+    //Event for calling search function
     $('#search').click(function(){
     	refresh_table();
     });
 
+    //Event for edit product
     $('.column_click').live('click',function(){
-
-    	var token_val			= '<?= $token ?>';
+    	//Assign values to global variables to be used for saving
+    	var token_val		= '<?= $token ?>';
     	global_row_index 	= $(this).parent().index();
     	global_product_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
 
@@ -132,7 +199,6 @@
 				}
 				else
 				{
-
 					$('#new_itemcode').val(response.data['material_code']);
 					$('#new_product').val(response.data['product']);
 					$('#new_min').val(response.data['min_inv']);
@@ -153,13 +219,39 @@
 		});
     });
 	
+	//Event for delete popup
 	$('.tddelete').live('click',function(){
+		//Assign values to global variables for deleting
 		global_row_index 	= $(this).parent().index();
 		global_product_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
 
 		$('#deleteProductModal').modal('show');
 	});
 
+	//Event for create product popup
+	$('#create_product').click(function(){
+		if (flag == 1) { return };
+		flag = 1;
+
+		var token_val = '<?= $token ?>';
+		var arr = 	{ 
+						fnc : 'get_branch_list_for_min_max'
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+				myjstbl_min_max.clear_table();
+				myjstbl_min_max.insert_multiplerow_with_value(1,response.data);
+				flag = 0;
+			}       
+		});
+	});
+
+	//Event for saving and updating product
     $('#save').click(function(){
     	if (flag == 1) { return; };
 		flag = 1;
@@ -176,7 +268,18 @@
 		var material_text 	= $('#material_text').html();
 		var subgroup_text 	= $('#subgroup_text').html();
 		var is_nonstack_val = $('#new_nonstack').is(':checked') ? 0 : 1;
+		var min_max_values 	= [];
 		var fnc_val 		= product_id_val == 0 ? 'insert_new_product' : 'update_product_details';
+
+		//Get list of min and max values
+		for (var i = 1; i < myjstbl_min_max.get_row_count(); i++) {
+			var branch_inventory_id = myjstbl_min_max.getvalue_by_rowindex_tdclass(i, colarray_min_max["id"].td_class)[0];
+			var branch_id = myjstbl_min_max.getvalue_by_rowindex_tdclass(i, colarray_min_max["branch"].td_class)[1];
+			var min_inv = myjstbl_min_max.getvalue_by_rowindex_tdclass(i, colarray_min_max["min_inv"].td_class)[0];
+			var max_inv = myjstbl_min_max.getvalue_by_rowindex_tdclass(i, colarray_min_max["max_inv"].td_class)[0];
+
+			min_max_values.push([branch_inventory_id,branch_id,min_inv,max_inv]);
+		};
 
 		var arr = 	{ 
 						fnc 	 : fnc_val, 
@@ -187,7 +290,8 @@
 						min_inv  : min_inv_val,
 						max_inv  : max_inv_val,
 						is_nonstack : is_nonstack_val,
-						product_id : product_id_val
+						product_id : product_id_val,
+						min_max_values : min_max_values
 					};
 
 		$.ajax({
@@ -203,11 +307,13 @@
 				}
 				else
 				{
+					//Set the inserted data in js table
 					if (myjstbl.get_row_count() - 1 == 0) 
 					{
   						$("#tbl").show();
             		};
 
+            		//If new data, add new row to table and update its content
             		if (product_id_val == 0) 
             		{
             			myjstbl.add_new_row();
@@ -235,6 +341,7 @@
 
     });
 	
+	//Event for confirming delete action
 	$('#delete').click(function(){
 		if (flag == 1) { return; };
 		flag = 1;
@@ -280,6 +387,7 @@
 		});
 	});
 
+	//Event for detecting material type and subgroup after losing focus in material code
 	$('#new_itemcode').blur(function(){
 		var is_nonstack = $('#new_nonstack').is(':checked');
 
@@ -322,6 +430,7 @@
 		});
 	});
 
+	//Event for clicking non stack checkbox. Will delete current ids for subgroup and material type
 	$('#new_nonstack').click(function(){
 		if ($(this).is(':checked')) 
 		{
@@ -332,6 +441,7 @@
 		};
 	});
 
+	//Callback function for modals. Will reset values to default
     $('#createProductModal, #deleteProductModal').live('hidden.bs.modal', function (e) {
 		$('.modal-fields').val('');
 		$('.modal-fields').html('');
@@ -342,7 +452,7 @@
 		global_product_id 	= 0;
 	});
 
-
+    //Function for refreshing table content
 	function refresh_table()
 	{
 		if (flag == 1) { return; };

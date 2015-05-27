@@ -15,25 +15,10 @@ class CI_Sql{
 		$data['id'] = 0;
 		$data['errmsg'] = '';
 
-		if (is_array($query)) {
-			$temp = "";
-			for ($i=0; $i < count($query); $i++) { 
-				$temp .= $query.";";
-			}
-			$query = $temp;	
-		}
-
 		for ($i=0; $i < 5; $i++) { 
-			$CI->db->trans_start();
 			$CI->db->query($query,$dataArray);
 			$data['id'] = $CI->encrypt->encode($CI->db->insert_id());
-			$CI->db->trans_complete();
-			if ($CI->db->trans_status() === FALSE){
-				$data['id'] = 0;
-				continue;
-			}
-			else
-			{
+			if ($CI->db->_error_number() == 0){
 				break;
 			}
 		}

@@ -83,13 +83,18 @@ if (!function_exists('get_next_number'))
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
 		$next_value = $default_value + 1;
 		$query 		= array();
+		$query_data = array();
 
 		array_push($query,"SET @invoiceno_d = 0;");
-		array_push($query,"SELECT COAlESCE(MAX(`$field` + 0),$default_value) INTO @invoiceno_d FROM `$table_name` WHERE `is_show` = 1 FOR UPDATE;");
-		$invoiceno_variable = "IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1)";
-		array_push($query,"INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`) VALUES($invoiceno_variable,NOW(),$user_id,$user_id,$branch_id)");
+		array_push($query_data,array());
 
-		$data = $CI->sql->execute_transaction($query);
+		array_push($query,"SELECT COAlESCE(MAX(`$field` + 0),$default_value) INTO @invoiceno_d FROM `$table_name` WHERE `is_show` = 1 FOR UPDATE;");
+		array_push($query_data,array());
+
+		array_push($query,"INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`) VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1),NOW(),?,?,?)");
+		array_push($query_data,array($user_id,$user_id,$branch_id));
+
+		$data = $CI->sql->execute_transaction($query,$query_data);
 
 		return $data;
 	}

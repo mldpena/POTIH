@@ -110,6 +110,10 @@ class Product extends CI_Controller {
 				$this->_delete_product($post_data);
 				break;
 
+			case 'get_branch_list_for_min_max':
+				$this->_get_branch_list();
+				break;
+
 			default:
 				
 				break;
@@ -150,6 +154,24 @@ class Product extends CI_Controller {
 	private function _delete_product($param)
 	{
 		$response = $this->product_model->delete_product($param);
+		echo json_encode($response);
+	}
+
+	private function _get_branch_list()
+	{
+		$i = 0;
+		$response = array();
+		$branch_list = get_name_list_from_table(FALSE,'branch');
+	
+		foreach ($branch_list as $key => $value) {
+			$response['data'][$i][] = array(0);		
+			$response['data'][$i][] = array($i+1);		
+			$response['data'][$i][] = array($value,$key);		
+			$response['data'][$i][] = array(1);		
+			$response['data'][$i][] = array(1);	
+			$i++;		
+		}
+
 		echo json_encode($response);
 	}
 }

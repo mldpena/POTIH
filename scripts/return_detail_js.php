@@ -71,7 +71,7 @@
     var txtmemo = document.createElement('input');
     txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
-        header_title: "Memo",
+        header_title: "Remarks",
         edit: [txtmemo],
         disp: [spnmemo],
         td_class: "tablerow column_click column_hover tdmemo"
@@ -115,7 +115,6 @@
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("setDate", new Date());
-    	$('#create_reference_number').attr('disabled','disabled');
 
 		var token_val		= '<?= $token ?>';
 
@@ -158,38 +157,8 @@
 	}
 	else
 	{
-		$('input, textarea').not('#create_reference_number').attr('disabled','disabled');
+		$('input, textarea').attr('disabled','disabled');
 	}
-
-	$('#create_reference_number').click(function(){
-		if (flag == 1) { return; };
-		flag = 1;
-
-		var token_val		= '<?= $token ?>';
-
-		var arr = 	{ 
-						fnc 	 	: 'create_reference_number'
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-				{
-					build_message_box('messagebox_1',response.error,'danger');
-				}
-				else
-				{
-					window.location = '<?= base_url() ?>return/view/'+response.id;
-				}
-
-				flag = 0;
-			}       
-		});
-	});
 
 	$('.txtmemo').live('keydown',function(e){
 		if (e.keyCode == 13) {

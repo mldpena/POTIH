@@ -153,6 +153,36 @@
 		window.open('<?= base_url() ?>damage/view/' + damage_id);
 	});
 
+	$('#create_new').click(function(){
+		if (flag == 1) { return; };
+		flag = 1;
+
+		var token_val		= '<?= $token ?>';
+
+		var arr = 	{ 
+						fnc 	 	: 'create_reference_number'
+					};
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_1',response.error,'danger');
+				}
+				else
+				{
+					window.location = '<?= base_url() ?>damage/view/'+response.id;
+				}
+
+				flag = 0;
+			}       
+		});
+	});
+	
 	$('#deleteDamageModal').live('hidden.bs.modal', function (e) {
 		global_row_index 	= 0;
 		global_damage_id 	= 0;

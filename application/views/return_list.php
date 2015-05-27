@@ -35,9 +35,7 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<a href="<?= base_url() ?>return/add">
-					<button class="btn btn-primary">Create New Return Entry</button>
-				</a>
+				<button class="btn btn-primary" id="create_new">Create New Return Entry</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>

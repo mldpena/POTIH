@@ -32,7 +32,7 @@
 								<td>Full Name:</td>
 								<td><input type="text" class="form-control" id="full_name"></td>
 								<td>Password:</td>
-								<td><input type="password" class="form-control" id="password"></td>
+								<td><input type="password" class="form-control" id="password" value="123456"></td>
 							</tr>
 							<tr>
 								<td>Status:</td>

@@ -14,7 +14,6 @@
 					<tr>
 						<td>Reference Number:</td>
 						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
-						<td><input type="button" class="btn btn-success" value="Create Reference #" id="create_reference_number"></td>
 					</tr>
 					<tr>
 						<td>Date:</td>

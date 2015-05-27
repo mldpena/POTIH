@@ -14,7 +14,6 @@
 					<tr>
 						<td>Return #:</td>
 						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
-						<td><input type="button" class="btn btn-success" value="Create Reference #" id="create_reference_number"></td>
 					</tr>
 					<tr>
 						<td>Customer:</td>
@@ -25,7 +24,7 @@
 						<td><input type="text" class="form-control" id="date"></td>
 					</tr>
 					<tr>
-						<td valign="top">Memo:</td>
+						<td valign="top">Reference #:</td>
 						<td><textarea class="form-control" rows="3" id="memo"></textarea></td>
 					</tr>
 				</table>

@@ -64,7 +64,7 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<button class="btn btn-primary" data-toggle="modal" data-target="#createProductModal">Create New Product</button>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#createProductModal" id="create_product">Create New Product</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -101,16 +101,7 @@
 					<textarea class="form-control modal-fields" rows="4" id="new_product"></textarea>
 				</div>
 				<div class="form-group">
-					<div class="row">
-						<div class="col-xs-6">
-							Minimum Inventory:
-							<input type="text" class="form-control modal-fields" id="new_min" value="1">
-						</div>
-						<div class="col-xs-6">
-							Maximum Inventory:
-							<input type="text" class="form-control modal-fields" id="new_max" value="1">
-						</div>
-					</div>
+					<div id="tbl_min_max" class="tbl max"></div>
 				</div>
 				<div class="form-group">
 					<div class="row">

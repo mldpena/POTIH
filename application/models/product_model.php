@@ -23,7 +23,7 @@ class Product_Model extends CI_Model {
 
 		$product_id = $this->encrypt->decode($product_id);
 
-		$query = "SELECT P.`material_code`, P.`description`, P.`type`, P.`min_inv`, P.`max_inv`,
+		$query = "SELECT P.`material_code`, P.`description`, P.`type`,
 						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup',
 						P.`material_type_id`, P.`subgroup_id`
 						FROM product AS P
@@ -40,8 +40,6 @@ class Product_Model extends CI_Model {
 			$response['data']['type'] 			= $row->type;
 			$response['data']['material_code'] 	= $row->material_code;
 			$response['data']['product'] 		= $row->description;
-			$response['data']['min_inv'] 		= $row->min_inv;
-			$response['data']['max_inv'] 		= $row->max_inv;
 			$response['data']['material_type'] 	= $row->material_type;
 			$response['data']['material_id'] 	= $row->material_type_id;
 			$response['data']['subgroup'] 		= $row->subgroup;
@@ -105,7 +103,7 @@ class Product_Model extends CI_Model {
 		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 
 		$response 	= array();
-		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$min_inv,$max_inv,$date_today,$date_today,$user_id,$user_id);
+		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$date_today,$date_today,$user_id,$user_id);
 		$response['error'] = '';
 
  		$query = "INSERT INTO `product`
@@ -114,14 +112,12 @@ class Product_Model extends CI_Model {
 					`type`,
 					`material_type_id`,
 					`subgroup_id`,
-					`min_inv`,
-					`max_inv`,
 					`date_created`,
 					`last_modified_date`,
 					`created_by`,
 					`last_modified_by`)
 					VALUES
-					(?,?,?,?,?,?,?,?,?,?,?);";
+					(?,?,?,?,?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -132,6 +128,33 @@ class Product_Model extends CI_Model {
 		else
 		{
 			$response['id'] = $result['id'];
+			$product_id 	= $this->encrypt->decode($result['id']);
+			$query_inventory_data = array();
+
+			$query_inventory = "INSERT INTO `product_branch_inventory`
+						(`branch_id`,
+						`product_id`,
+						`inventory`,
+						`min_inv`,
+						`max_inv`)
+						VALUES";
+
+			$bind_values = "";
+
+			for ($i=0; $i < count($min_max_values); $i++) 
+			{ 
+				$bind_values .= ",(?,?,0,?,?)";	
+				array_push($query_inventory_data,$min_max_values[$i][1],$product_id,$min_max_values[$i][2],$min_max_values[$i][3]);
+			}
+
+			$query_inventory .= substr($bind_values,1);
+
+			$result_inventory = $this->sql->execute_query($query_inventory,$query_inventory_data);
+
+			if ($result_inventory['error'] != '') 
+			{
+				$response['error'] = 'Unable to save branch inventory!';
+			}
 		}
 
 		return $response;
@@ -155,8 +178,6 @@ class Product_Model extends CI_Model {
 					`type` = ?,
 					`material_type_id` = ?,
 					`subgroup_id` = ?,
-					`min_inv` = ?,
-					`max_inv` = ?,
 					`last_modified_date` =?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -326,7 +347,7 @@ class Product_Model extends CI_Model {
 						ORDER BY $order_field";
 
 		$result = $this->db->query($query,$query_data);
-		echo $this->db->last_query();
+
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
