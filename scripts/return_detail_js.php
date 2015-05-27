@@ -137,7 +137,7 @@
 				{
 					$('#reference_no').val('RD' + response.reference_number);
 					$('#memo').val(response.memo);
-					$('#customer_name').val(response.memo);
+					$('#customer_name').val(response.customer_name);
 
 					if (response.entry_date != '') 
 					{

@@ -38,7 +38,7 @@ class Product extends CI_Controller {
 			case 'list':
 				$page = 'product_list';
 				/* Temporary */
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch');
+				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
 				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
 				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;

@@ -22,7 +22,7 @@ class Return_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
+		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`
 					FROM `return_head`
 					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
 
@@ -39,7 +39,7 @@ class Return_Model extends CI_Model {
 			$response['reference_number'] 	= $row->reference_number;
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
-
+			$response['customer_name'] 		= $row->customer;
 			$branch_id = $row->branch_id;
 		}
 

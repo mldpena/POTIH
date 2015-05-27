@@ -216,7 +216,7 @@
         				myjstbl.setvalue_to_rowindex_tdclass([row_index],row_index, colarray["number"].td_class);
             		}
 
-            		var type_name = (is_nonstack_val == 0) ? 'Non - Stack' : 'Stack';
+            		var type_name = (is_nonstack_val == 0) ? 'Non - Stock' : 'Stock';
 
             		myjstbl.setvalue_to_rowindex_tdclass([itemcode_val],row_index,colarray["material_code"].td_class);
         			myjstbl.setvalue_to_rowindex_tdclass([product_val],row_index,colarray["name"].td_class);

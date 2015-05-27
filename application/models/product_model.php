@@ -212,13 +212,27 @@ class Product_Model extends CI_Model {
 		$response 	= array();
 		$response['rowcnt'] = 0;
 
-		$conditions = "";
-		$order_field = "";
-		$query_data = array($branch);
+		$conditions 		= "";
+		$order_field 		= "";
+		$group_by 			= "";
+		$inventory_join 	= "";
+		$inventory_column 	= "PBI.`inventory`";
+		$query_data = array();
+
+		if ($branch != PRODUCT_CONST::ALL_OPTION) 
+		{
+			$inventory_join = " AND PBI.`branch_id` = ?";
+			array_push($query_data,$branch);
+		}
+		else
+		{
+			$inventory_column = "SUM(PBI.`inventory`)";
+			$group_by = "GROUP BY P.`id`";
+		}
 
 		if (!empty($code)) 
 		{
-			$conditions .= " AND P.`code` LIKE ?";
+			$conditions .= " AND P.`material_code` LIKE ?";
 			array_push($query_data,'%'.$code.'%');
 		}
 
@@ -302,16 +316,17 @@ class Product_Model extends CI_Model {
 							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
 							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock'
 						END AS 'type',
-						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', COALESCE(PBI.`inventory`,0) AS 'inventory'
+						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', COALESCE($inventory_column,0) AS 'inventory'
 						FROM product AS P
 						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
-						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
+						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` $inventory_join
 						WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." $conditions
+						$group_by
 						ORDER BY $order_field";
 
 		$result = $this->db->query($query,$query_data);
-
+		echo $this->db->last_query();
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
