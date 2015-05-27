@@ -10,6 +10,7 @@
 *{
 	font-family: R-Regular;
 	font-weight: normal;
+	font-size: 15px;
 }
 html{
 	height: 100%;
@@ -67,6 +68,7 @@ body{
 	padding: 8px;
 	text-transform: uppercase;
 	color: #fff;
+	font-size: 12px;
 }
 .header-nav > .user-creds > a .ez-menu:hover,
 .header-nav .user-creds .user-btn:active,
@@ -141,11 +143,11 @@ body{
 	float: left;
 	padding-top: 1px;
 	margin-left: 5px;
+	font-family: R-Regular;
+	font-size: 12px;
 }
 .sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link{
 	padding: 8px 10px;
-	font-family: R-Regular;
-	font-size: 12px;
 	text-align: left;
 	cursor: pointer;
 	float: left;
@@ -228,7 +230,7 @@ body{
 }
 .main-content.cpanel > .content-form .form-body a .each-btn .btn-title{
 	margin-top: 10px;
-	font-size: 11px;
+	font-size: 12px;
 }
 /*Main Content*/
 .main-content{
@@ -346,6 +348,7 @@ body{
 .btn{
 	font-family: R-Regular;
 	vertical-align: top;
+	font-size: 15px;
 }
 
 /*Special Classes*/
