@@ -1,6 +1,8 @@
--- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
+CREATE DATABASE  IF NOT EXISTS `dbs_hitop` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `dbs_hitop`;
+-- MySQL dump 10.13  Distrib 5.6.23, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: dbs_hitop
+-- Host: localhost    Database: dbs_hitop
 -- ------------------------------------------------------
 -- Server version	5.5.27
 
@@ -32,7 +34,7 @@ CREATE TABLE `branch` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -41,7 +43,7 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (1,'01','Manila',1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(2,'02','Makati',1,'2015-05-24 02:26:23','2015-05-24 02:34:10',1,1),(3,'03','Pasay',1,'2015-05-26 04:26:38','2015-05-26 04:26:38',1,1);
+INSERT INTO `branch` VALUES (1,'01','Manila',1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(2,'02','Makati',1,'2015-05-24 02:26:23','2015-05-24 02:34:10',1,1),(3,'03','Pasay',1,'2015-05-26 04:26:38','2015-05-26 04:26:38',1,1),(4,'04','Valenzuela',1,'2015-05-26 03:45:00','2015-05-26 03:45:00',1,1),(6,'05','Bambang',1,'2015-05-27 07:16:11','2015-05-27 07:16:11',1,1);
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -56,7 +58,7 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`branch_AFTER_INSERT` AFTER INSERT ON `branch` 
 FOR EACH ROW
 BEGIN
-	CALL process_initialize_branch_inventory(0,NEW.`id`);
+	CALL process_initialize_branch_inventory(NEW.`id`);
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -214,7 +216,7 @@ DROP TABLE IF EXISTS `material_type`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `material_type` (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `code` varchar(10) DEFAULT '',
   `name` varchar(45) DEFAULT '',
   `is_show` int(1) DEFAULT '1',
@@ -223,7 +225,7 @@ CREATE TABLE `material_type` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -251,14 +253,12 @@ CREATE TABLE `product` (
   `material_type_id` bigint(20) DEFAULT '0',
   `subgroup_id` bigint(20) DEFAULT '0',
   `is_show` int(1) DEFAULT '1',
-  `min_inv` int(11) DEFAULT '0',
-  `max_inv` int(11) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -267,27 +267,9 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
+INSERT INTO `product` VALUES (1,'BJ014L20','BI Tube 1/4\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:29:49','2015-05-26 12:29:49',1,1),(2,'BJ056L20','BI Tube 5/16\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:30:14','2015-05-26 12:30:14',1,1),(3,'BJ038A20','BI Tube 3/8\" (1.0mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:41','2015-05-26 12:34:41',1,1),(4,'BJ012C20','BI Tube 1/2\" (1.6mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:52','2015-05-26 12:34:52',1,1),(5,'BJ058B19','BI Tube 5/8\" (1.2mm) x 19 Ft.',1,6,6,1,'2015-05-26 12:35:11','2015-05-26 12:35:11',1,1),(6,'BJ058B20','BI Tube 5/8\" (1.2mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:35:21','2015-05-26 12:35:21',1,1),(7,'BC06004F','Hot Rolled COIL 6.0mm x 4 Ft.',1,6,2,1,'2015-05-26 12:38:46','2015-05-26 12:38:46',1,1),(8,'BC05004F','Hot Rolled COIL 5.0mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:38:58','2015-05-26 12:38:58',1,1),(9,'BC04504F','Hot Rolled COIL 4.5mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:39:18','2015-05-26 12:39:18',1,1),(10,'SS304CUT','SS-304  CUTTINGS',0,0,0,1,'2015-05-26 12:47:26','2015-05-26 12:47:26',1,1),(11,'SS316CUT','SS-316  CUTTINGS',0,0,0,1,'2015-05-26 12:47:36','2015-05-26 12:47:36',1,1),(12,'ALUMNCUT','ALUMINUM  CUTTING',0,0,0,1,'2015-05-26 12:50:35','2015-05-26 12:50:35',1,1),(13,'MATLABOR','LABOR ONLY, MAT.  FROM CUSTOMER',0,0,0,1,'2015-05-26 12:52:17','2015-05-26 12:52:17',1,1),(14,'COPPRCUT','COPPER  CUTTINGS',0,0,0,1,'2015-05-26 12:52:27','2015-05-26 12:52:27',1,1),(21,'AC112233','sample product',1,5,2,1,'2015-05-27 07:13:05','2015-05-27 08:44:40',1,1);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
-/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
-/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
-/*!50003 SET @saved_col_connection = @@collation_connection */ ;
-/*!50003 SET character_set_client  = utf8 */ ;
-/*!50003 SET character_set_results = utf8 */ ;
-/*!50003 SET collation_connection  = utf8_general_ci */ ;
-/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
-/*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`product_AFTER_INSERT` AFTER INSERT ON `product` 
-FOR EACH ROW
-BEGIN
-	CALL process_initialize_branch_inventory(NEW.`id`,0);
-END */;;
-DELIMITER ;
-/*!50003 SET sql_mode              = @saved_sql_mode */ ;
-/*!50003 SET character_set_client  = @saved_cs_client */ ;
-/*!50003 SET character_set_results = @saved_cs_results */ ;
-/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `product_branch_inventory`
@@ -301,8 +283,10 @@ CREATE TABLE `product_branch_inventory` (
   `branch_id` bigint(20) DEFAULT '0',
   `product_id` bigint(20) DEFAULT '0',
   `inventory` int(11) DEFAULT '0',
+  `min_inv` int(7) DEFAULT '1',
+  `max_inv` int(7) DEFAULT '1',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -311,6 +295,7 @@ CREATE TABLE `product_branch_inventory` (
 
 LOCK TABLES `product_branch_inventory` WRITE;
 /*!40000 ALTER TABLE `product_branch_inventory` DISABLE KEYS */;
+INSERT INTO `product_branch_inventory` VALUES (1,1,1,0,1,1),(2,2,1,0,1,1),(3,3,1,0,1,1),(4,1,2,0,1,1),(5,2,2,0,1,1),(6,3,2,0,1,1),(7,1,3,0,1,1),(8,2,3,0,1,1),(9,3,3,0,1,1),(10,1,4,0,1,1),(11,2,4,0,1,1),(12,3,4,0,1,1),(13,1,5,0,1,1),(14,2,5,0,1,1),(15,3,5,0,1,1),(16,1,6,0,1,1),(17,2,6,0,1,1),(18,3,6,0,1,1),(19,1,7,0,1,1),(20,2,7,0,1,1),(21,3,7,0,1,1),(22,1,8,0,1,1),(23,2,8,0,1,1),(24,3,8,0,1,1),(25,1,9,0,1,1),(26,2,9,0,1,1),(27,3,9,0,1,1),(28,1,10,0,1,1),(29,2,10,0,1,1),(30,3,10,0,1,1),(31,1,11,0,1,1),(32,2,11,0,1,1),(33,3,11,0,1,1),(34,1,12,0,1,1),(35,2,12,0,1,1),(36,3,12,0,1,1),(37,1,13,0,1,1),(38,2,13,0,1,1),(39,3,13,0,1,1),(40,1,14,0,1,1),(41,2,14,0,1,1),(42,3,14,0,1,1),(43,4,1,0,1,1),(44,4,2,0,1,1),(45,4,3,0,1,1),(46,4,4,0,1,1),(47,4,5,0,1,1),(48,4,6,0,1,1),(49,4,7,0,1,1),(50,4,8,0,1,1),(51,4,9,0,1,1),(52,4,10,0,1,1),(53,4,11,0,1,1),(54,4,12,0,1,1),(55,4,13,0,1,1),(56,4,14,0,1,1),(57,1,21,0,1,1),(58,2,21,0,1,1),(59,3,21,0,1,1),(60,4,21,0,1,1),(61,6,1,0,1,1),(62,6,2,0,1,1),(63,6,3,0,1,1),(64,6,4,0,1,1),(65,6,5,0,1,1),(66,6,6,0,1,1),(67,6,7,0,1,1),(68,6,8,0,1,1),(69,6,9,0,1,1),(70,6,10,0,1,1),(71,6,11,0,1,1),(72,6,12,0,1,1),(73,6,13,0,1,1),(74,6,14,0,1,1),(75,6,21,0,1,1);
 /*!40000 ALTER TABLE `product_branch_inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -357,6 +342,7 @@ CREATE TABLE `purchase_head` (
   `memo` varchar(150) DEFAULT '',
   `is_show` int(1) DEFAULT '1',
   `is_used` int(1) DEFAULT '0',
+  `is_imported` int(1) DEFAULT '0',
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
@@ -534,7 +520,7 @@ CREATE TABLE `subgroup` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -543,7 +529,7 @@ CREATE TABLE `subgroup` (
 
 LOCK TABLES `subgroup` WRITE;
 /*!40000 ALTER TABLE `subgroup` DISABLE KEYS */;
-INSERT INTO `subgroup` VALUES (1,'A','ANGEL BEAR',1,'2015-05-20 00:00:00','2015-05-23 05:39:04',1,1),(2,'C','COIL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'E','EMBROSSED / CHECKERED PLATE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'F','FLAT BAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1);
+INSERT INTO `subgroup` VALUES (1,'A','ANGEL BEAR',1,'2015-05-20 00:00:00','2015-05-23 05:39:04',1,1),(2,'C','COIL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'E','EMBROSSED / CHECKERED PLATE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'F','FLAT BAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(5,'H','HEXAGON BAR',1,'2015-05-26 12:18:49','2015-05-26 12:18:49',1,1),(6,'J','ROUND TUBE',1,'2015-05-26 12:19:00','2015-05-26 12:19:00',1,1),(7,'K','SQUARE TUBE',1,'2015-05-26 12:19:12','2015-05-26 12:19:12',1,1),(8,'L','RECTANGULAR TUBE',1,'2015-05-26 12:19:26','2015-05-26 12:19:26',1,1),(9,'M','MESH - IMPORTED',1,'2015-05-26 12:19:38','2015-05-26 12:19:38',1,1),(10,'N','PIPE',1,'2015-05-26 12:19:48','2015-05-26 12:19:48',1,1),(11,'P','PERFORATED SHEET',1,'2015-05-26 12:20:07','2015-05-26 12:20:07',1,1),(12,'Q','SQUARE BAR',1,'2015-05-26 12:20:26','2015-05-26 12:20:26',1,1),(13,'R','ROUND BAR',1,'2015-05-26 12:20:41','2015-05-26 12:20:41',1,1),(14,'S','SHEETS AND PLATES - PLAIN',1,'2015-05-26 12:20:54','2015-05-26 12:20:54',1,1),(15,'U','WIRE',1,'2015-05-26 12:21:04','2015-05-26 12:21:04',1,1),(16,'V','WIELDING ROD / ELECTRODE',1,'2015-05-26 12:21:27','2015-05-26 12:21:27',1,1),(17,'W','WEDLED WIRE SCREEN - IMPORTED',1,'2015-05-26 12:21:47','2015-05-26 12:21:47',1,1),(18,'X','EXPANDED METAL',1,'2015-05-26 12:22:21','2015-05-26 12:22:21',1,1);
 /*!40000 ALTER TABLE `subgroup` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -578,7 +564,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','83703b5229462cb6bfaf425152e46a8c','09263188835',1,1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(3,'02','Gian Egamino','gegamino','9ee83e747fa1b06311eccb0af875076f','09263188835',1,1,'2015-05-22 04:56:20','2015-05-22 05:41:26',1,1),(4,'03','Rigel Pesit','rigel','f3e97dcba0a308db57b1aeaee5a43d4c','1234567',1,1,'2015-05-23 06:26:20','2015-05-24 02:43:24',1,1),(5,'04','Kryzza Garra','kryzza','f3e97dcba0a308db57b1aeaee5a43d4c','1234567',1,1,'2015-05-23 06:31:47','2015-05-24 03:23:32',1,4);
+INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','83703b5229462cb6bfaf425152e46a8c','09263188835',1,1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(3,'02','Gian Egamino','gegamino','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,0,'2015-05-22 04:56:20','2015-05-26 03:47:06',1,1),(5,'04','Kryzza Garra','kryzza','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,1,'2015-05-23 06:31:47','2015-05-26 03:43:31',1,1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -595,7 +581,7 @@ CREATE TABLE `user_permission` (
   `user_id` bigint(20) DEFAULT '0',
   `permission_code` int(5) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -604,7 +590,7 @@ CREATE TABLE `user_permission` (
 
 LOCK TABLES `user_permission` WRITE;
 /*!40000 ALTER TABLE `user_permission` DISABLE KEYS */;
-INSERT INTO `user_permission` VALUES (1,1,1,100),(4,1,3,100),(8,2,3,100),(15,1,5,100),(16,2,5,100);
+INSERT INTO `user_permission` VALUES (1,1,1,100),(17,1,5,100),(18,2,5,100),(21,1,3,100),(22,2,3,100);
 /*!40000 ALTER TABLE `user_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -683,7 +669,7 @@ BEGIN
 		IF (table_name_d = 'RETURN HEAD') THEN
 				FETCH cursor_return INTO cursor_product_id, cursor_quantity;
 		ELSEIF (table_name_d = 'DAMAGE HEAD') THEN
-				FETCH cursor_return INTO cursor_product_id, cursor_quantity;
+				FETCH cursor_damage INTO cursor_product_id, cursor_quantity;
 		END IF;
 		IF done THEN
 			LEAVE read_loop;
@@ -717,7 +703,6 @@ DELIMITER ;
 /*!50003 SET sql_mode              = '' */ ;
 DELIMITER ;;
 CREATE DEFINER=`root`@`localhost` PROCEDURE `process_initialize_branch_inventory`(
-	IN `product_id_d` BIGINT,
     IN `branch_id_d` BIGINT
 )
 BEGIN
@@ -728,9 +713,6 @@ BEGIN
 			INSERT INTO product_branch_inventory(`branch_id`,`product_id`)
             SELECT branch_id_d, `id` FROM product;
         END IF;
-    ELSE
-		INSERT INTO product_branch_inventory(`branch_id`,`product_id`)
-		SELECT `id`, product_id_d FROM branch;
     END IF;
 END ;;
 DELIMITER ;
@@ -748,4 +730,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-05-26  2:21:39
+-- Dump completed on 2015-05-27 20:50:44
