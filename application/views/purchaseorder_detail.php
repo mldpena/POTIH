@@ -3,7 +3,7 @@
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
 			<li class="active"><a href="<?= base_url() ?>purchaseorder/list">Purchase Order List</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchaseorder/add">Purchase Order Detail</a></li>
+			<li class="active"><a href="<?= base_url() ?>purchaseorder/detail">Purchase Order Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

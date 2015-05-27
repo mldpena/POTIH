@@ -61,12 +61,12 @@
         td_class: "tablerow column_click column_hover tddate"
     };
 
-    var spnforbranch = document.createElement('span');
+    var spnsupplier= document.createElement('span');
 	colarray['supplier'] = { 
         header_title: "Supplier",
-        edit: [spnforbranch],
-        disp: [spnforbranch],
-        td_class: "tablerow column_click column_hover tdforbranch"
+        edit: [spnsupplier],
+        disp: [spnsupplier],
+        td_class: "tablerow column_click column_hover tdsupplier"
     };
 
     var spnmemo = document.createElement('span');
@@ -74,7 +74,7 @@
         header_title: "Memo",
         edit: [spnmemo],
         disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tddate"
+        td_class: "tablerow column_click column_hover tdmemo"
     };
     var spntotalqty = document.createElement('span');
 	colarray['total_qty'] = { 
@@ -185,6 +185,7 @@
 	});
 
 	$('.column_click').live('click',function(){
+		
 		var row_index 	= $(this).parent().index();
 		var purchase_id 	= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray['id'].td_class)[0];
 
@@ -208,7 +209,7 @@
 		var date_from_val 	= $('#date_from').val();
 		var date_to_val 	= $('#date_to').val();
 		var branch_val 		= $('#branch_list').val();
-		var for_branch_val		= $('#for_branch').val();
+		var for_branch_val  = $('#for_branch').val();
 
 		var arr = 	{ 
 						fnc 	 		: 'search_purchaseorder_list', 

@@ -22,7 +22,7 @@ class Purchaseorder_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`,`branch_id`
+		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`,`branch_id`,`supplier`,`for_branchid`
 					FROM `purchase_head`
 					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
 
@@ -39,6 +39,9 @@ class Purchaseorder_Model extends CI_Model {
 			$response['reference_number'] 	= $row->reference_number;
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
+			$response['supplier_name'] 		= $row->supplier;
+			$response['orderfor'] 		= $row->for_branchid;
+		
 		
 
 
@@ -236,7 +239,7 @@ class Purchaseorder_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(PD.`reference_number`,' ',PD.`memo`,' ',PD.`supplier`) LIKE ?";
+			$conditions .= " AND CONCAT('PD',PD.`reference_number`,' ',PD.`memo`,' ',PD.`supplier`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -247,16 +250,16 @@ class Purchaseorder_Model extends CI_Model {
 				break;
 			
 			case RETURN_CONST::ORDER_BY_LOCATION:
-				$order_field = "B.`name`";
+				$order_field = "PD.`memo`";
 				break;
 
 			case RETURN_CONST::ORDER_BY_DATE:
-				$order_field = "PD.`entry_date`";
+				$order_field = "PD.`supplier`";
 				break;
 		}
 
 
-		$query = "SELECT PD.`id`, COALESCE(B.`name`,'') AS 'location',COALESCE(B2.`name`,'') AS 'forbranch', CONCAT('PD',PD.`reference_number`) AS 'reference_number',
+		$query = "SELECT PD.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', CONCAT('PD',PD.`reference_number`) AS 'reference_number',
 					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(PD.`is_used` = 0, 'Unused', PD.`memo`) AS 'memo', PD.`supplier`
 					FROM purchase_head AS PD
 					LEFT JOIN branch AS B ON B.`id` = PD.`branch_id` AND B.`is_show` = ".RETURN_CONST::ACTIVE."
@@ -281,6 +284,7 @@ class Purchaseorder_Model extends CI_Model {
 				$response['data'][$i][] = array($row->entry_date);
 				$response['data'][$i][] = array($row->supplier);
 				$response['data'][$i][] = array($row->memo);
+		
 				$response['data'][$i][] = array('');
 				$response['data'][$i][] = array('');
 				$response['data'][$i][] = array('');
@@ -319,5 +323,6 @@ class Purchaseorder_Model extends CI_Model {
 
 		return $response;
 	}
+
 
 }

@@ -48,6 +48,7 @@ class PurchaseOrder extends CI_Controller {
 				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
 
 				break;
+
 			
 			default:
 				# code...
@@ -124,6 +125,7 @@ class PurchaseOrder extends CI_Controller {
 			case 'delete_purchaseorder_head':
 				$this->_delete_purchaseorder_head($post_data);
 				break;
+				
 		
 
 			default:
