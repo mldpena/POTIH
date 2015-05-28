@@ -70,7 +70,7 @@
     var txtmemo = document.createElement('input');
     txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
-        header_title: "Memo",
+        header_title: "Remarks",
         edit: [txtmemo],
         disp: [spnmemo],
         td_class: "tablerow column_click column_hover tdmemo"
@@ -133,7 +133,7 @@
 				}
 				else
 				{
-					$('#reference_no').val('PD' + response.reference_number);
+					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
 					$('#supplier').val(response.supplier_name);
 					$('#orderfor').val(response.orderfor);
@@ -175,7 +175,6 @@
 	$('.imgedit').live('click',function(){
 		var row_index = $(this).parent().parent().index();
 		myjstbl.edit_row(row_index);
-		bind_product_autocomplete();
 	});
 
 	$('.txtqty').live('blur',function(e){
@@ -277,7 +276,6 @@
 		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>damage', {
 			enable_add : false,
 			fnc_callback : function(x, label, value, ret_datas, error){
-		        
 				var row_index = $(x).parent().parent().index();
 				if (error.length > 0) {
 					myjstbl.setvalue_to_rowindex_tdclass(['',0],row_index,colarray["product"].td_class);
@@ -292,7 +290,6 @@
 					myjstbl.setvalue_to_rowindex_tdclass([ret_datas[2]],row_index,colarray["code"].td_class);
 					myjstbl.setvalue_to_rowindex_tdclass([ret_datas[3]],row_index,colarray["inventory"].td_class);
 				}
-				
 			},
 			fnc_render : function(ul, item){
 				return my_autocomplete_render_fnc(ul, item, "code_name", [2,1], 

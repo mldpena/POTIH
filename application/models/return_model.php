@@ -22,7 +22,7 @@ class Return_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`
+		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`
 					FROM `return_head`
 					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
 
@@ -48,11 +48,11 @@ class Return_Model extends CI_Model {
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, 
 						COALESCE(PBI.`inventory`,0) AS 'inventory'
-					FROM `return_head` AS RH
-					LEFT JOIN `return_detail` AS RD ON RD.`headid` = RH.`id`
+					FROM `return_detail` AS RD
+					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".RETURN_CONST::ACTIVE."
 					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
-					WHERE RH.`is_show` = ".RETURN_CONST::ACTIVE." AND RD.`headid` = ?";
+					WHERE RD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$query_detail_data);
 

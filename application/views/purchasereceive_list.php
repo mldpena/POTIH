@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchasereceive/list">Purchase Receive List</a></li>
+			<li class="active"><a href="<?= base_url() ?>poreceive/list">Purchase Receive List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -70,9 +70,7 @@
 				<input type="button" class="btn btn-success" value="Search">
 			</div>
 			<div class="max-row">
-				<a href="<?= base_url() ?>purchasereceive/detail">
-					<button class="btn btn-primary">Create New Purchase Receive</button>
-				</a>
+				<button class="btn btn-primary" id="create_new">Create New Purchase Receive</button>
 			</div>
 			<div class="max-row">
 				<div class="lblmsg warning">

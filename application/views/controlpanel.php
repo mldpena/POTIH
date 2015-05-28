@@ -45,13 +45,13 @@
 			Purchase
 		</div>
 		<div class="form-body default">
-			<a href="<?= base_url() ?>purchaseorder/list">
+			<a href="<?= base_url() ?>purchase/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>purchaseorder.png">
 					<div class="btn-title">Purchase Order</div>
 				</div>
 			</a>
-			<a href="<?= base_url() ?>purchasereceive/list">
+			<a href="<?= base_url() ?>poreceive/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>purchasereceive.png">
 					<div class="btn-title">Purchase Receive</div>

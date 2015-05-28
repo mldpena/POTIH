@@ -22,7 +22,7 @@ class Damage_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
+		$query_head = "SELECT CONCAT('DD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
 					FROM `damage_head`
 					WHERE `is_show` = ".DAMAGE_CONST::ACTIVE." AND `id` = ?";
 
@@ -48,11 +48,11 @@ class Damage_Model extends CI_Model {
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, 
 						COALESCE(PBI.`inventory`,0) AS 'inventory'
-					FROM `damage_head` AS DH
-					LEFT JOIN `damage_detail` AS DD ON DD.`headid` = DH.`id`
+					FROM `damage_detail` AS DD
+					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
-					WHERE DH.`is_show` = ".DAMAGE_CONST::ACTIVE." AND DD.`headid` = ?";
+					WHERE DD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$query_detail_data);
 

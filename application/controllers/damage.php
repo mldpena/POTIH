@@ -46,12 +46,8 @@ class Damage extends CI_Controller {
 				break;
 			
 			default:
-				echo 'Invalid URL';
-				exit();
 				break;
 		}
-
-		
 
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();

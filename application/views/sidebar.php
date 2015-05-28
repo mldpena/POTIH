@@ -55,7 +55,7 @@
 						<div>Purchase Order</div>
 					</div>
 				</a>
-				<a href="<?= base_url() ?>purchasereceive/list">
+				<a href="<?= base_url() ?>poreceive/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>purchasereceive.png">
 						<div>Purchase Receive</div>

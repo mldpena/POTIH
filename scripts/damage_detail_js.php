@@ -134,7 +134,7 @@
 				}
 				else
 				{
-					$('#reference_no').val('DD' + response.reference_number);
+					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
 
 					if (response.entry_date != '') 
@@ -173,7 +173,6 @@
 	$('.imgedit').live('click',function(){
 		var row_index = $(this).parent().parent().index();
 		myjstbl.edit_row(row_index);
-		bind_product_autocomplete();
 	});
 
 	$('.txtqty').live('blur',function(e){
@@ -286,7 +285,6 @@
 					myjstbl.setvalue_to_rowindex_tdclass([ret_datas[2]],row_index,colarray["code"].td_class);
 					myjstbl.setvalue_to_rowindex_tdclass([ret_datas[3]],row_index,colarray["inventory"].td_class);
 				}
-				
 			},
 			fnc_render : function(ul, item){
 				return my_autocomplete_render_fnc(ul, item, "code_name", [2,1], 

@@ -11,6 +11,7 @@ class PurchaseReceive extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->model('purchase_receive_model');
 	}
 
 	/**
@@ -38,7 +39,7 @@ class PurchaseReceive extends CI_Controller {
 				$page = 'purchasereceive_list';
 				break;
 
-			case 'detail':
+			case 'view':
 				$page = 'purchasereceive_detail';
 				break;
 			
@@ -87,7 +88,12 @@ class PurchaseReceive extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case '':
+			case 'create_reference_number':
+				$this->_create_reference_number($post_data);
+				break;
+
+			case 'get_purchase_receive_details':
+				$this->_get_purchase_receive_details();
 				break;
 
 			default:
@@ -96,4 +102,17 @@ class PurchaseReceive extends CI_Controller {
 		}
 
 	}
+
+	private function _create_reference_number($param)
+	{
+		$response = get_next_number('purchase_receive_head','reference_number');
+		echo json_encode($response);
+	}
+
+	private function _get_purchase_receive_details()
+	{
+		$response = $this->purchase_receive_model->get_purchase_receive_details();
+		echo json_encode($response);
+	}
+
 }

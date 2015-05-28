@@ -22,7 +22,7 @@ class Purchaseorder_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT `reference_number`, COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`,`branch_id`,`supplier`,`for_branchid`
+		$query_head = "SELECT CONCAT('PO',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`,`branch_id`,`supplier`,`for_branchid`
 					FROM `purchase_head`
 					WHERE `is_show` = ".PURCHASE_CONST::ACTIVE." AND `id` = ?";
 
@@ -53,11 +53,11 @@ class Purchaseorder_Model extends CI_Model {
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
 						COALESCE(PBI.`inventory`,0) AS 'inventory'
-					FROM `purchase_head` AS PH
-					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id`
+					FROM `purchase_detail` AS PD
+					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".PURCHASE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_CONST::ACTIVE."
 					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
-					WHERE PH.`is_show` = ".PURCHASE_CONST::ACTIVE." AND PD.`headid` = ?";
+					WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$query_detail_data);
 
