@@ -71,4 +71,18 @@
 			</a>
 		</div>
 	</div>
+	<div class="content-form">
+		<div class="form-header">
+			Report
+		</div>
+		<div class="form-body default">
+			<a href="<?= base_url() ?>purchaseinventory/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<div class="btn-title">Purchase Inventory Warning</div>
+				</div>
+			</a>
+			
+		</div>
+	</div>
 </div>

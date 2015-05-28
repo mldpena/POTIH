@@ -87,6 +87,10 @@ class Login extends CI_Controller {
 			case 'set_branch_user_session':
 				$this->_set_branch_user_session($post_data);
 				break;
+			case 'update_first_login':
+				$this->_update_first_login($post_data);
+				break;
+		
 
 			default:
 				
@@ -117,5 +121,10 @@ class Login extends CI_Controller {
 		$response = $this->login_model->set_user_session($param);
 		echo json_encode($response);
 	}
-
+	private function _update_first_login($param)
+	{
+		$response = $this->login_model->update_firstlogin($param);
+		echo json_encode($response);
+	}
+	
 }

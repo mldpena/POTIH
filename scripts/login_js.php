@@ -13,7 +13,13 @@
 
 	$('#submit').live('click',function(){
 		$(this).attr('disabled','disabled');
-		check_user_login();
+ 	
+
+		 
+		 check_user_login();
+		
+
+
 	});
 
 	$('#proceed').live('click',function(){
@@ -54,6 +60,13 @@
 				}
 				else
 				{
+					if(response.is_first_login == 0)
+					{
+						 
+						 alert("Please be informed that you can change your password!");
+						 update_firstlogin();
+		
+					}
 
 					fill_dropdown_option('branch',response.branches);
 
@@ -64,12 +77,18 @@
 					else
 					{
 						flag = 0;
-						set_branch_session();
+							
+							
+		 				
+						 set_branch_session();
+					
+
 					}
 					
 				}
 
 				flag = 0;
+
 			}       
 		});
 	}
@@ -92,6 +111,7 @@
 					};
 
 
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -104,13 +124,57 @@
 				}
 				else
 				{
+
 					build_message_box('messagebox_1','Connected!','success');
 					window.location = '<?= base_url() ?>controlpanel';
 					$('#myModal').hide();
+
+
 				}
 
 				flag = 0;
 			}       
 		});
 	}
+
+	function update_firstlogin()
+	{
+		if (flag == 0) { return; };
+		flag = 0;
+		
+
+		var token_val		= '<?= $token ?>';
+		var username_val	= $("#username").val();
+		var password_val 	= $("#password").val();
+		var branch_val		= $('#branch').val();
+
+		var arr = 	{ 
+						fnc : 'update_first_login', 
+						user_name : username_val, 
+						password : password_val,
+						branch_id : branch_val 
+					};
+
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+			
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_2',response.error,'danger');
+				}
+				else
+				{
+					flag = 0;
+			}       
+				
+
+				flag = 0;
+			}       
+		});
+	}
+	
 </script>

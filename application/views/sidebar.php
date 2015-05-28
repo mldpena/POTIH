@@ -75,5 +75,20 @@
 				</a>
 			</div>
 		</div>
+		<div class="sidebar-group" id="report-group">
+			<div class="header subgroup-toggle">
+				<div>Report</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
+				<a href="<?= base_url() ?>purchaseinventory/list">
+					<div class="link">
+					
+						<div>Purchase Inventory Warning</div>
+					</div>
+				</a>
+				
+			</div>
+		</div>
 	</div>
 </div>

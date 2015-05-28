@@ -24,16 +24,17 @@ class Login_Model extends CI_Model {
 		$response 	= array();
 		$password 	= $this->encrypt->encode_md5($password);
 		$query_data = array($user_name,$password);
-		
+
 		$response['error']		= '';
 		
-		$query 	= "SELECT `id`,`is_active` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
+		$query 	= "SELECT `id`,`is_active`, `is_first_login` FROM user WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
 		{
 			$response['error'] = 'Invalid User Name / Password!';
 		}
+
 		else
 		{
 			$row = $result->row();
@@ -60,19 +61,22 @@ class Login_Model extends CI_Model {
 					$i = 0;
 					$branches = array();
 
-					foreach($result_branch->result() as $row) 
+					foreach($result_branch->result() as $row_branches) 
 					{
-						$branches[$i]['id'] 	= $row->branch_id;
-						$branches[$i]['value'] 	= $row->branch_name;
+						$branches[$i]['id'] 	= $row_branches->branch_id;
+						$branches[$i]['value'] 	= $row_branches->branch_name;
+
 						$i++;
 					}
 
 					$response['branches'] 	= $branches;
+					$response['is_first_login'] =  $row->is_first_login;
 
 					$result_branch->free_result();
 				}
-			}
 			
+			}
+		
 		}
 
 		$result->free_result();
@@ -95,7 +99,7 @@ class Login_Model extends CI_Model {
 
 		$response['error']	= '';
 
-		$query 	= "SELECT `username`, `id`, `full_name`, `is_active`
+		$query 	= "SELECT `username`, `id`, `full_name`, `is_active`,`is_first_login`
 						FROM user 
 						WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
 
@@ -128,4 +132,27 @@ class Login_Model extends CI_Model {
 		return $response;
 	}
 
-}
+	public function update_firstlogin($param)
+	{
+		extract($param);
+		$response 	= array();
+		$password 	= $this->encrypt->encode_md5($password);
+		$query_data = array($user_name,$password);
+
+		$response['error']	= '';
+
+		$query 	=	"UPDATE `user`
+					SET
+					`is_first_login` = 1
+
+					WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
+
+		$result = $this->db->query($query,$query_data);
+
+		
+		return $response;
+	}
+
+
+
+}	
