@@ -13,14 +13,14 @@
 	border-collapse: collapse;
 	padding: 8px;
 	text-align: left;
-	font-size: 12px;
+	font-size: 14px;
 	border: 1px #ddd solid;
 }
 .tbl table:first-child .tableheader td{
 	background: #5C7375;
 	color: #fff;
 	font-family: R-Regular;
-	font-size: 17px;
+	font-size: 16px;
 	border: none;
 }
 .tbl table:first-child tr:hover{

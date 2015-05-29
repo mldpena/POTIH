@@ -10,7 +10,6 @@
 *{
 	font-family: R-Regular;
 	font-weight: normal;
-	font-size: 15px;
 }
 html{
 	height: 100%;
@@ -79,7 +78,7 @@ body{
 
 /*Sidebar*/
 .sidebar{
-	width: 14.7%;
+	width: 18.7%;
 	height: 100%;
 	margin-left: 15px;
 	margin-top: 10px;
@@ -98,7 +97,7 @@ body{
 }
 .sidebar > .sidebar-links-panel .sidebar-group .header{
 	background: #00923F;
-	font-size: 12px;
+	font-size: 14px;
 	text-align: left;
 	color: #fff;
 	padding: 10px;
@@ -144,7 +143,7 @@ body{
 	padding-top: 1px;
 	margin-left: 5px;
 	font-family: R-Regular;
-	font-size: 12px;
+	font-size: 13px;
 }
 .sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link{
 	padding: 8px 10px;
@@ -213,12 +212,13 @@ body{
 .main-content.cpanel > .content-form .form-body a .each-btn{
 	float: left;
 	border: 1px #ddd solid;
-	width: 115.3px;
-	height: 110px;
+	width: 129.6px;
+	height: 119px;
 	margin-left: 15px;
 	margin-top: 15px;
 	background: #f2f2f2;
 	border-radius: 4px;
+	padding: 0px 5px;
 }
 .main-content.cpanel > .content-form .form-body a .each-btn:hover{
 	background: #f9f9f9;
@@ -229,12 +229,12 @@ body{
 	margin-top: 10px;
 }
 .main-content.cpanel > .content-form .form-body a .each-btn .btn-title{
-	margin-top: 10px;
-	font-size: 12px;
+	margin-top: 5px;
+	font-size: 13px;
 }
 /*Main Content*/
 .main-content{
-	width: 82%;
+	width: 78%;
 	margin-right: 15px;
 	margin-top: 15px;
 	min-height: 534px;
@@ -350,7 +350,6 @@ body{
 	vertical-align: top;
 	font-size: 15px;
 }
-
 /*Special Classes*/
 #loadingimg{
 	width: 50px;
