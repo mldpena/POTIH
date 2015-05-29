@@ -120,7 +120,7 @@ class Purchaseinventory_Model extends CI_Model {
 						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` $inventory_join
-						WHERE PBI.`inventory`  > PBI.`max_inv`|| PBI.`inventory`  <  PBI.`min_inv`  AND   P.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						WHERE PBI.`inventory`  > PBI.`max_inv` OR PBI.`inventory`  <  PBI.`min_inv`  AND   P.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						$conditions
 						$group_by
 						ORDER BY $order_field";
