@@ -2,6 +2,7 @@
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
+	var token_val = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -17,6 +18,15 @@
         edit: [spnid],
         disp: [spnid],
         td_class: "tablerow tdid",
+		headertd_class : "tdheader_id"
+    };
+
+    var spnpodetailid = document.createElement('span');
+	colarray['podetailid'] = { 
+        header_title: "",
+        edit: [spnpodetailid],
+        disp: [spnpodetailid],
+        td_class: "tablerow tdid tdpodetailid",
 		headertd_class : "tdheader_id"
     };
 
@@ -71,19 +81,19 @@
     };
 
     var spnmemo = document.createElement('span');
-    var txtmemo = document.createElement('input');
-    txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
         header_title: "Remarks",
-        edit: [txtmemo],
+        edit: [spnmemo],
         disp: [spnmemo],
         td_class: "tablerow column_click column_hover tdmemo"
     };
 
     var spnqtyrecv = document.createElement('span');
+    var txtqtyrecv = document.createElement('input');
+    txtqtyrecv.setAttribute('class','form-control txtqtyrecv');
 	colarray['qtyrecv'] = { 
         header_title: "Qty Recv",
-        edit: [spnqtyrecv],
+        edit: [txtqtyrecv],
         disp: [spnqtyrecv],
         td_class: "tablerow column_click column_hover tdqtyrecv"
     };
@@ -128,7 +138,7 @@
     var chkdetails = document.createElement('input');
     chkdetails.setAttribute('type','checkbox');
     chkdetails.setAttribute('class','form-control chkdetails');
-	colarray_po_list['number'] = { 
+	colarray_po_list['check'] = { 
         header_title: "",
         edit: [chkdetails],
         disp: [chkdetails],
@@ -187,10 +197,8 @@
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("setDate", new Date());
 
-		var token_val		= '<?= $token ?>';
-
 		var arr = 	{ 
-						fnc 	 	: 'get_purchase_receive_details'
+						fnc : 'get_purchase_receive_details'
 					};
 		$.ajax({
 			type: "POST",
@@ -205,7 +213,7 @@
 				}
 				else
 				{
-					$('#reference_no').val('PR' + response.reference_number);
+					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
 
 					if (response.entry_date != '') 
@@ -218,6 +226,11 @@
 				{
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 				};
+
+				if (response.po_list_error == '') 
+				{
+					myjstbl_po_list.insert_multiplerow_with_value(1,response.po_lists);
+				};
 			}       
 		});
 	}
@@ -225,4 +238,103 @@
 	{
 		$('input, textarea').attr('disabled','disabled');
 	}
+
+	$('.chkdetails').live('click',function(){
+		if (flag == 1) { return };
+		flag = 1;
+
+		var row_index = $(this).parent().parent().index();
+		var self = $(this);
+
+		if ($(self).is(':checked')) 
+		{
+			$(self).attr('disabled','disabled');
+
+			var po_head_id_val = table_get_column_data(row_index,'id',0,myjstbl_po_list,colarray_po_list);
+			var po_number = table_get_column_data(row_index,'ponumber',0,myjstbl_po_list,colarray_po_list);
+
+			var arr = 	{ 
+							fnc : 'get_po_details',
+							po_head_id : po_head_id_val
+						};
+
+			$.ajax({
+				type: "POST",
+				dataType : 'JSON',
+				data: 'data=' + JSON.stringify(arr) + token_val,
+				success: function(response) {
+					clear_message_box();
+
+					if (response.error != '') 
+					{
+						build_message_box('messagebox_1',response.error,'danger');
+					}
+					else
+					{
+						myjstbl.insert_multiplerow_with_value(1,response.detail);
+
+						for (var i = 1; i < myjstbl.get_row_count(); i++) 
+						{
+							var row_po_number = table_get_column_data(i,'ponumber');
+							if (row_po_number == po_number) 
+							{
+								myjstbl.edit_row(i);
+							};
+						};
+
+						recompute_row_count(myjstbl,colarray);
+					}
+
+					$(self).removeAttr('disabled');
+
+					flag = 0;
+				}       
+			});
+		}
+		else
+		{
+
+		}
+	});
+	
+	$('.imgupdate').live('click',function(){
+		if (flag ==1 ) { return; };
+		flag = 1;
+
+		var row_index = $(this).parent().parent().index();
+
+		var receive_detail_id_val 	= table_get_column_data(row_index,'id');
+		var purchase_detail_id_val 	= table_get_column_data(row_index,'podetailid');
+		var quantity_val 			= table_get_column_data(row_index,'qtyrecv');
+		var product_id_val 			= table_get_column_data(row_index,'product',1);
+		var fnc_val 				= receive_detail_id_val == 0 ? 'insert_receive_detail' : 'update_receive_detail';
+
+		var arr = 	{ 
+						fnc : fnc_val,
+						receive_detail_id : receive_detail_id_val,
+						purchase_detail_id : purchase_detail_id_val,
+						quantity : quantity_val,
+						product_id : product_id_val
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+				{
+					build_message_box('messagebox_1',response.error,'danger');
+				}
+				else
+				{
+					myjstbl.update_row(row_index);
+					table_set_column_data(row_index,'id',[response.id]);
+				}
+			}       
+		});
+	});
+
 </script>

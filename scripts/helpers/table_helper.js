@@ -48,3 +48,41 @@ function recompute_total_qty(object,object_array,span_id)
 	}
 	
 }
+
+
+function table_get_column_data(row_index,object_array_column,array_column_index,object,object_array)
+{
+	var value = "";
+	var column_index = 0;
+	var js_table = myjstbl;
+	var js_table_array = colarray;
+
+	if (array_column_index) 
+	{
+		column_index = array_column_index;
+	};
+
+	if (object) 
+	{
+		js_table = object;
+		js_table_array = object_array;
+	};
+
+	value = js_table.getvalue_by_rowindex_tdclass(row_index, js_table_array[object_array_column].td_class)[column_index];
+
+	return value;
+}
+
+function table_set_column_data(row_index,object_array_column,values,object,object_array)
+{
+	var js_table = myjstbl;
+	var js_table_array = colarray;
+
+	if (object) 
+	{
+		js_table = object;
+		js_table_array = object_array;
+	};
+
+	js_table.setvalue_to_rowindex_tdclass(values,row_index,js_table_array[object_array_column].td_class);
+}

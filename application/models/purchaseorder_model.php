@@ -22,7 +22,8 @@ class Purchaseorder_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT CONCAT('PO',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`,`branch_id`,`supplier`,`for_branchid`
+		$query_head = "SELECT CONCAT('PO',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', 
+					`memo`,`branch_id`,`supplier`,`for_branchid`
 					FROM `purchase_head`
 					WHERE `is_show` = ".PURCHASE_CONST::ACTIVE." AND `id` = ?";
 
@@ -40,12 +41,8 @@ class Purchaseorder_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 			$response['supplier_name'] 		= $row->supplier;
-			$response['orderfor'] 		= $row->for_branchid;
-		
-		
-
-
-			$branch_id = $row->branch_id;
+			$response['orderfor'] 			= $row->for_branchid;
+			$branch_id = $row->for_branchid;
 		}
 
 		$query_detail_data = array($branch_id,$purchase_head_id);
@@ -120,6 +117,7 @@ class Purchaseorder_Model extends CI_Model {
 
 		return $response;
 	}
+
 	public function update_purchaseorder_detail($param)
 	{
 		extract($param);
@@ -200,6 +198,7 @@ class Purchaseorder_Model extends CI_Model {
 
 		return $response;
 	}
+
 	public function search_purchaseorder_list($param)
 	{
 		extract($param);
@@ -295,6 +294,7 @@ class Purchaseorder_Model extends CI_Model {
 
 		return $response;
 	}
+	
 	public function delete_purchaseorder_head($param)
 	{
 		extract($param);

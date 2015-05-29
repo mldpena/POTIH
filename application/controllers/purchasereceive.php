@@ -96,6 +96,14 @@ class PurchaseReceive extends CI_Controller {
 				$this->_get_purchase_receive_details();
 				break;
 
+			case 'get_po_details':
+				$this->_get_po_details($post_data);
+				break;
+
+			case 'insert_receive_detail':
+				$this->_insert_receive_detail($post_data);
+				break;
+
 			default:
 				
 				break;
@@ -115,4 +123,15 @@ class PurchaseReceive extends CI_Controller {
 		echo json_encode($response);
 	}
 
+	private function _get_po_details($param)
+	{
+		$response = $this->purchase_receive_model->get_po_details($param);
+		echo json_encode($response);
+	}
+
+	private function _insert_receive_detail($param)
+	{
+		$response = $this->purchase_receive_model->insert_receive_detail($param);
+		echo json_encode($response);
+	}
 }
