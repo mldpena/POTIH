@@ -55,9 +55,7 @@
 				</select>
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
-			<div class="max-row">
-				<button class="btn btn-primary" data-toggle="modal" data-target="#createProductModal" id="create_product">Create New Product</button>
-			</div>
+		
 			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>
@@ -70,54 +68,7 @@
 		</div>
 	</div>
 </div>
-<!-- Modal for insert and update products -->
-<div class="modal fade" id="createProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Create New Product</h4>
-			</div>
-			<div class="modal-body">
-				<div class="form-group">
-					<div class="checkbox pull-right" id="new_check_nonstack">
-						<input type="checkbox" class="modal-fields" value="" id="new_nonstack">Non-stock Item
-					</div>
-				</div>
-				<div class="form-group">
-					Material Code:
-					<input type="text" class="form-control modal-fields" id="new_itemcode" maxlength="8">
-				</div>
-				<div class="form-group">
-					Material Description:
-					<textarea class="form-control modal-fields" rows="4" id="new_product"></textarea>
-				</div>
-				<div class="form-group">
-					<div id="tbl_min_max" class="tbl max"></div>
-				</div>
-				<div class="form-group">
-					<div class="row">
-						<div class="col-xs-6">
-							Material Type:
-							<div class="txt-data modal-fields" id="material_text"></div>
-							<input type="hidden" class="modal-fields" id="material_id" value="0">
-						</div>
-						<div class="col-xs-6">
-							Subgrouping:
-							<div class="txt-data modal-fields" id="subgroup_text"></div>
-							<input type="hidden" class="modal-fields" id="subgroup_id" value="0">
-						</div>
-					</div>
-				</div>
-				<div id="messagebox_2"></div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-				<button type="button" class="btn btn-primary" id="save">Save</button>
-			</div>
-		</div>
-	</div>
-</div>
+
 <!-- Modal for delete confirmation -->
 <div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">

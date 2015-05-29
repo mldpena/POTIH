@@ -9,7 +9,7 @@ class Purchaseinventory extends CI_Controller {
 	
 	private function _load_libraries()
 	{
-	//	$this->load->model('purchaseinventory_model');
+		$this->load->model('purchaseinventory_model');
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 	}
@@ -37,7 +37,9 @@ class Purchaseinventory extends CI_Controller {
 		{
 			case 'list':
 				$page = 'purchaseinventory_list';
-				/* Temporary */
+				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
+				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;
 			
 			default:
@@ -83,8 +85,8 @@ class Purchaseinventory extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case '':
-				
+			case 'get_purchaseinventory_list':
+				$this->_get_purchaseinventory_list($post_data);
 				break;
 
 			
@@ -93,6 +95,11 @@ class Purchaseinventory extends CI_Controller {
 				break;
 		}
 
+	}
+	private function _get_purchaseinventory_list($param)
+	{
+		$response = $this->purchaseinventory_model->get_purchaseinventory_list($param);
+		echo json_encode($response);
 	}
 
 	
