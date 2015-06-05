@@ -42,7 +42,7 @@
 	</div>
 	<div class="content-form">
 		<div class="form-header">
-			Purchase
+			Purchase and Return
 		</div>
 		<div class="form-body default">
 			<a href="<?= base_url() ?>purchase/list">
@@ -73,16 +73,15 @@
 	</div>
 	<div class="content-form">
 		<div class="form-header">
-			Report
+			Reports
 		</div>
 		<div class="form-body default">
-			<a href="<?= base_url() ?>purchaseinventory/list">
+			<a href="<?= base_url() ?>invwarning/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>purchaseorder.png">
-					<div class="btn-title">Purchase Inventory Warning</div>
+					<div class="btn-title">Product Inventory Warning</div>
 				</div>
 			</a>
-			
 		</div>
 	</div>
 </div>

@@ -2,6 +2,10 @@
 
 class Product_Model extends CI_Model {
 
+	private $_current_branch_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -10,6 +14,11 @@ class Product_Model extends CI_Model {
 		$this->load->library('constants/product_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
+
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d h:i:s");
+
 		parent::__construct();
 	}
 
@@ -70,9 +79,7 @@ class Product_Model extends CI_Model {
 			$result_inventory->free_result();
 		}
 		else
-		{
 			$response['error'] = 'Product not found!';
-		}
 
 		$result->free_result();
 
@@ -120,14 +127,16 @@ class Product_Model extends CI_Model {
 		return $response;
 	}
 
+	/**
+	 * Convert to SQL transaction
+	 */
+
 	public function insert_new_product($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 
 		$response 	= array();
-		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$date_today,$date_today,$user_id,$user_id);
+		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		$response['error'] = '';
 
  		$query = "INSERT INTO `product`
@@ -146,9 +155,7 @@ class Product_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save product!';
-		}
 		else
 		{
 			$response['id'] = $result['id'];
@@ -176,9 +183,7 @@ class Product_Model extends CI_Model {
 			$result_inventory = $this->sql->execute_query($query_inventory,$query_inventory_data);
 
 			if ($result_inventory['error'] != '') 
-			{
 				$response['error'] = 'Unable to save branch inventory!';
-			}
 		}
 
 		return $response;
@@ -187,8 +192,6 @@ class Product_Model extends CI_Model {
 	public function update_product_details($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$product_id = $this->encrypt->decode($product_id);
 
 		$response 	= array();
@@ -207,7 +210,8 @@ class Product_Model extends CI_Model {
 						`last_modified_by` = ?
 						WHERE `id` = ?";
 
-		$query_product_data = array($code,$product,$is_nonstack,$material,$subgroup,$date_today,$user_id,$product_id);
+		$query_product_data = array($code,$product,$is_nonstack,$material,$subgroup,$this->_current_date,$this->_current_user,$product_id);
+		
 		array_push($query,$query_product);
 		array_push($query_data,$query_product_data);
 
@@ -228,13 +232,9 @@ class Product_Model extends CI_Model {
 		$result = $this->sql->execute_transaction($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save product!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 
@@ -244,14 +244,12 @@ class Product_Model extends CI_Model {
 	{
 		extract($param);
 
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$product_id = $this->encrypt->decode($product_id);
 
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($date_today,$user_id,$product_id);
+		$query_data = array($this->_current_date,$this->_current_user,$product_id);
 		$query 	= "UPDATE `product` 
 					SET 
 					`is_show` = ".PRODUCT_CONST::DELETED.",
@@ -262,9 +260,7 @@ class Product_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete product!';
-		}
 
 		return $response;
 	}

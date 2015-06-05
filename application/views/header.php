@@ -12,9 +12,7 @@
 						<div class="version pull-left">
 							Hi-Top - Version 1.0 <?= isset($branch) ? ' | Branch : '.$branch : '' ?>
 						</div>
-						<?php
-							if ($page != 'login') {
-						?>
+						<?php if ($page != 'login') : ?>
 							<div class="user-creds">
 								<div class="btn-group pull-right">
 									<button type="button" class="btn btn-default dropdown-toggle user-btn" data-toggle="dropdown" aria-expanded="false">
@@ -27,18 +25,12 @@
 								</div>
 								<a href="<?= base_url() ?>controlpanel"><div class="ez-menu pull-right">Home</div></a>
 							</div>
-						<?php
-							}
-						?>
+						<?php endif; ?>
 					</div>
 				</div>
 			</div>
-			<?php
-				if ($page != 'login') {
-			?>
+			<?php if ($page != 'login') : ?>
 			<div class="container-fluid">
 				<div class="row">
 					<?php require_once("sidebar.php"); ?>
-			<?php
-				}
-			?>
+			<?php endif; ?>

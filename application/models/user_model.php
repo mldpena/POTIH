@@ -2,6 +2,11 @@
 
 class User_Model extends CI_Model {
 
+	private $_user_head_id = 0;
+	private $_current_branch_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -10,6 +15,12 @@ class User_Model extends CI_Model {
 		$this->load->library('constants/user_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
+
+		$this->_user_head_id 		= $this->encrypt->decode($this->uri->segment(3));
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d h:i:s");
+
 		parent::__construct();
 	}
 
@@ -22,12 +33,11 @@ class User_Model extends CI_Model {
 	public function insert_new_user($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
+
 		$password 	= $this->encrypt->encode_md5($password);
 
 		$response 	= array();
-		$query_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$date_today,$date_today,$user_id,$user_id);
+		$query_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		
 		$response['error'] = '';
 
@@ -48,9 +58,7 @@ class User_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save user!';
-		}
 		else
 		{
 			$insert_id = $this->encrypt->decode($result['id']);
@@ -68,9 +76,7 @@ class User_Model extends CI_Model {
 				$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
 
 				if ($result_permissions['error'] != '') 
-				{
 					$response['error'] = 'Unable to insert permissions!';
-				}
 			}
 		}
 
@@ -87,14 +93,13 @@ class User_Model extends CI_Model {
 	{
 		extract($param);
 
-		$date_today = date('Y-m-d h:i:s');
+		$this->_current_date = date('Y-m-d h:i:s');
 		$user_id 	= $this->encrypt->decode($user_id);
-		$user_last_modified_id = $this->encrypt->decode(get_cookie('temp'));
 
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($date_today,$user_last_modified_id,$user_id);
+		$query_data = array($this->_current_date,$this->_current_user,$user_id);
 
 		$query 	= "UPDATE `user` 
 					SET 
@@ -106,9 +111,7 @@ class User_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete user!';
-		}
 
 		return $response;
 	}
@@ -116,13 +119,11 @@ class User_Model extends CI_Model {
 	public function update_user($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id 	= $this->encrypt->decode($this->uri->segment(3));
+
 		$password 	= $this->encrypt->encode_md5($password);
-		$user_last_modified_id = $this->encrypt->decode(get_cookie('temp'));
 
 		$response 	= array();
-		$query_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$date_today,$user_last_modified_id,$user_id);
+		$query_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$this->_current_date,$this->_current_user,$this->_user_head_id);
 		$response['error'] = '';
 
 		$query = "UPDATE`user`
@@ -140,18 +141,14 @@ class User_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save user!';
-		}	
 		else
 		{
 			$query_delete_previous_permissions = "DELETE FROM user_permission WHERE `user_id` = ?";
 			$result_delete_previous_permissions = $this->sql->execute_query($query_delete_previous_permissions,$user_id);
 
 			if ($result_delete_previous_permissions['error'] != '') 
-			{
 				$response['error'] = 'Unable to delete permissions!';
-			}
 			else
 			{
 				$query_permissions = "INSERT INTO `user_permission`
@@ -167,9 +164,7 @@ class User_Model extends CI_Model {
 					$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
 
 					if ($result_permissions['error'] != '') 
-					{
 						$response['error'] = 'Unable to insert permissions!';
-					}
 				}
 			}
 		}
@@ -188,10 +183,9 @@ class User_Model extends CI_Model {
 
 		$conditions		= "";
 		$order_field 	= "";
-		$user_id		= $this->encrypt->decode(get_cookie('temp'));
 
 		$response 	= array();
-		$query_data = array($user_id);
+		$query_data = array($this->_current_user);
 
 		$response['rowcnt'] = 0;
 		
@@ -269,8 +263,6 @@ class User_Model extends CI_Model {
 	public function get_user_details($param)
 	{
 
-		$user_id = $this->encrypt->decode($this->uri->segment(3));
-
 		$response = array();
 
 		$response['error'] = '';
@@ -279,12 +271,10 @@ class User_Model extends CI_Model {
 					FROM `user` 
 					WHERE `is_show` = ".USER_CONST::ACTIVE." AND `id` = ?";
 
-		$result = $this->db->query($query,$user_id);
+		$result = $this->db->query($query,$this->_user_head_id);
 
 		if ($result->num_rows() != 1) 
-		{
 			$response['error'] = 'Account does not exists!';
-		}
 		else
 		{
 			$row = $result->row();
@@ -303,15 +293,11 @@ class User_Model extends CI_Model {
 			$result_branches = $this->db->query($query_branches,$user_id);
 			
 			if ($result_branches->num_rows() == 0) 
-			{
 				$response['error'] = 'No branch assigned to this account!';
-			}
 			else
 			{
 				foreach ($result_branches->result() as $row) 
-				{
 					$response['branches'][] = $row->branch_id;
-				}
 			}
 		}
 

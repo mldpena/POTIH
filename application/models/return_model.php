@@ -2,6 +2,11 @@
 
 class Return_Model extends CI_Model {
 
+	private $_return_head_id = 0;
+	private $_current_branch_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -10,13 +15,18 @@ class Return_Model extends CI_Model {
 		$this->load->library('constants/return_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
+
+		$this->_return_head_id 		= $this->encrypt->decode($this->uri->segment(3));
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d h:i:s");
+
 		parent::__construct();
 	}
 
 	public function get_return_details()
 	{
 		$response 		= array();
-		$return_head_id = $this->encrypt->decode($this->uri->segment(3));
 		$branch_id 		= 0;
 
 		$response['head_error'] 	= '';
@@ -26,12 +36,10 @@ class Return_Model extends CI_Model {
 					FROM `return_head`
 					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
 
-		$result_head = $this->db->query($query_head,$return_head_id);
+		$result_head = $this->db->query($query_head,$this->_return_head_id);
 
 		if ($result_head->num_rows() != 1) 
-		{
 			$response['head_error'] = 'Unable to get return head details!';
-		}
 		else
 		{
 			$row = $result_head->row();
@@ -43,7 +51,7 @@ class Return_Model extends CI_Model {
 			$branch_id = $row->branch_id;
 		}
 
-		$query_detail_data = array($branch_id,$return_head_id);
+		$query_detail_data = array($branch_id,$this->_return_head_id);
 
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, 
@@ -57,9 +65,7 @@ class Return_Model extends CI_Model {
 		$result_detail = $this->db->query($query_detail,$query_detail_data);
 
 		if ($result_detail->num_rows() == 0) 
-		{
 			$response['detail_error'] = 'No return details found!';
-		}
 		else
 		{
 			$i = 0;
@@ -91,8 +97,7 @@ class Return_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$return_head_id 	= $this->encrypt->decode($this->uri->segment(3));
-		$query_data 		= array($return_head_id,$qty,$product_id,$memo);
+		$query_data 		= array($this->_return_head_id,$qty,$product_id,$memo);
 
 		$query = "INSERT INTO `return_detail`
 					(`headid`,
@@ -105,13 +110,9 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to insert return detail!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 	}
@@ -136,9 +137,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to update return detail!';
-		}
 
 		return $response;
 	}
@@ -157,9 +156,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$return_detail_id);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete return detail!';
-		}
 
 		return $response;
 
@@ -172,11 +169,8 @@ class Return_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] 	= '';
-		$date_today 		= date('Y-m-d h:i:s');
 		$entry_date 		= $entry_date.' '.date('h:i:s');
-		$return_head_id 	= $this->encrypt->decode($this->uri->segment(3));
-		$user_id 			= $this->encrypt->decode(get_cookie('temp'));
-		$query_data 		= array($entry_date,$memo,$customer_name,$user_id,$date_today,$return_head_id);
+		$query_data 		= array($entry_date,$memo,$customer_name,$this->_current_user,$this->_current_date,$this->_return_head_id);
 
 		$query = "UPDATE `return_head`
 					SET
@@ -191,9 +185,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to update return head!';
-		}
 
 		return $response;
 	}
@@ -286,14 +278,12 @@ class Return_Model extends CI_Model {
 	{
 		extract($param);
 
-		$date_today 	= date('Y-m-d h:i:s');
-		$user_id		= $this->encrypt->decode(get_cookie('temp'));
-		$return_head_id = $this->encrypt->decode($return_id);
+		$return_id 		= $this->encrypt->decode($return_id);
 
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($date_today,$user_id,$return_head_id);
+		$query_data = array($this->_current_date,$this->_current_user,$return_head_id);
 		$query 	= "UPDATE `return_head` 
 					SET 
 					`is_show` = ".RETURN_CONST::DELETED.",
@@ -304,10 +294,8 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete return head!';
-		}
-
+		
 		return $response;
 	}
 

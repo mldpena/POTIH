@@ -1,14 +1,149 @@
 <script type="text/javascript">
-	var flag = 0;
+	/**
+	 * Initialization of global variables
+	 * @flag {Number} - To prevent spam request
+	 * @global_purchase_receive_id {Number} - Holder of receive detail id for delete modal
+	 * @global_row_index {Number} - Holder of receive detail row index for delete modal
+	 * @token_val {String} - Token for CSRF Protection
+	 */
 	
+	var flag = 0;
+	var global_purchase_receive_id = 0;
+	var global_row_index = 0;
+	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table receive list
+	 */
+	
+	var tab = document.createElement('table');
+	tab.className = "tblstyle";
+	tab.id = "tableid";
+	tab.setAttribute("style","border-collapse:collapse;");
+	tab.setAttribute("class","border-collapse:collapse;");
+    
+    var colarray = [];
+	
+	var spnid = document.createElement('span');
+	colarray['id'] = { 
+        header_title: "",
+        edit: [spnid],
+        disp: [spnid],
+        td_class: "tablerow tdid",
+		headertd_class : "tdheader_id"
+    };
+
+    var spnnumber = document.createElement('span');
+	colarray['number'] = { 
+        header_title: "",
+        edit: [spnnumber],
+        disp: [spnnumber],
+        td_class: "tablerow tdnumber"
+    };
+
+    var spnlocation = document.createElement('span');
+	colarray['location'] = { 
+        header_title: "Location",
+        edit: [spnlocation],
+        disp: [spnlocation],
+        td_class: "tablerow column_click column_hover tdlocation"
+    };
+
+    var spnforbranch = document.createElement('span');
+	colarray['forbranch'] = { 
+        header_title: "For Branch",
+        edit: [spnforbranch],
+        disp: [spnforbranch],
+        td_class: "tablerow column_click column_hover tdforbranch"
+    };
+
+	var spnreferencenumber = document.createElement('span');
+	colarray['referencenumber'] = { 
+        header_title: "Reference #",
+        edit: [spnreferencenumber],
+        disp: [spnreferencenumber],
+        td_class: "tablerow column_click column_hover tdreference"
+    };
+   	
+   	var spnponumbers = document.createElement('span');
+	colarray['ponumbers'] = { 
+        header_title: "PO #",
+        edit: [spnponumbers],
+        disp: [spnponumbers],
+        td_class: "tablerow column_click column_hover tdponumbers"
+    };
+
+   	var spndate = document.createElement('span');
+	colarray['date'] = { 
+        header_title: "Entry Date",
+        edit: [spndate],
+        disp: [spndate],
+        td_class: "tablerow column_click column_hover tddate"
+    };
+
+    var spnmemo = document.createElement('span');
+	colarray['memo'] = { 
+        header_title: "Memo",
+        edit: [spnmemo],
+        disp: [spnmemo],
+        td_class: "tablerow column_click column_hover tdmemo"
+    };
+
+    var spntotalqty = document.createElement('span');
+	colarray['total_qty'] = { 
+        header_title: "Total qty",
+        edit: [spntotalqty],
+        disp: [spntotalqty],
+        td_class: "tablerow column_click column_hover tdtotalqty"
+    };
+
+    var imgDelete = document.createElement('i');
+	imgDelete.setAttribute("class","imgdel fa fa-trash");
+	colarray['coldelete'] = { 
+		header_title: "",
+		edit: [imgDelete],
+		disp: [imgDelete],
+		td_class: "tablerow column_hover tddelete"
+	};
+
+	var myjstbl;
+
+	var root = document.getElementById("tbl");
+	myjstbl = new my_table(tab, colarray, {	ispaging : true, 
+											tdhighlight_when_hover : "tablerow",
+											iscursorchange_when_hover : true,
+											isdeleteicon_when_hover : false
+							});
+
+	root.appendChild(myjstbl.tab);
+	root.appendChild(myjstbl.mypage.pagingtable);
+
+	/**
+	 * Bind datepicker and chosen functionality 
+	 */
+	
+	$('#tbl').hide();
+	$('#branch_list, #for_branch').chosen();
+	$('#date_from, #date_to').datepicker();
+	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
+	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
+	$('#date_from, #date_to').datepicker("setDate", new Date());
+	bind_asc_desc('order_type');
+
+	refresh_table();
+	
+	/**
+	 * Bind event for clicking create new button. Generates reference number and redirect to detail view 
+	 */
+
 	$('#create_new').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
-
 		var arr = 	{ 
-						fnc 	 	: 'create_reference_number'
+						fnc : 'create_reference_number'
 					};
 		$.ajax({
 			type: "POST",
@@ -18,16 +153,138 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
+				else
+					window.location = '<?= base_url() ?>poreceive/view/'+response.id;
+
+				flag = 0;
+			}       
+		});
+	});
+
+	$('.tddelete').live('click',function(){
+		global_row_index 			= $(this).parent().index();
+		global_purchase_receive_id 	= table_get_column_data(global_row_index,'id');
+
+		$('#deletePurchaseReceiveModal').modal('show');
+	});
+
+	$('#search').click(function(){
+    	refresh_table();
+    });
+
+    $('#delete').click(function(){
+		if (flag == 1) 
+			return;
+
+		flag = 1;
+
+		var row_index 		= global_row_index;
+		var purchase_receive_id_val = global_purchase_receive_id;
+
+		var arr = 	{ 
+						fnc : 'delete_purchase_receive_head', 
+						purchase_receive_id : purchase_receive_id_val
+					};
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+					build_message_box('messagebox_2',response.error,'danger');
 				else
 				{
-					window.location = '<?= base_url() ?>poreceive/view/'+response.id;
+					myjstbl.delete_row(row_index);
+					recompute_row_count(myjstbl,colarray);
+
+					if (myjstbl.get_row_count() == 1) 
+					{
+						$('#tbl').hide();
+					}
+
+					$('#deletePurchaseReceiveModal').modal('hide');
+
+					build_message_box('messagebox_1','Purchase Received entry successfully deleted!','success');
 				}
 
 				flag = 0;
 			}       
 		});
 	});
+
+    $('.column_click').live('click',function(){
+		
+		var row_index 	= $(this).parent().index();
+		var purchase_received_id = table_get_column_data(row_index,'id');
+
+		window.open('<?= base_url() ?>poreceive/view/' + purchase_received_id);
+	});
+
+    $('#deletePurchaseReceiveModal').live('hidden.bs.modal', function (e) {
+		global_row_index = 0;
+		global_purchase_receive_id = 0;
+	});
+
+	function refresh_table()
+	{
+		if (flag == 1)
+			return;
+
+		flag = 1;
+
+		var search_val 		= $('#search_string').val();
+		var order_val 		= $('#order_by').val();
+		var orde_type_val 	= $('#order_type').val();
+		var date_from_val 	= $('#date_from').val();
+		var date_to_val 	= $('#date_to').val();
+		var branch_val 		= $('#branch_list').val();
+		var for_branch_val  = $('#for_branch').val();
+
+		var arr = 	{ 
+						fnc 	 		: 'search_purchase_receive_list', 
+						search_string 	: search_val,
+						order_by  		: order_val,
+						order_type 		: orde_type_val,
+						date_from		: date_from_val,
+						date_to 		: date_to_val,
+						branch 			: branch_val,
+						for_branch 		: for_branch_val	
+					};
+
+		$('#loadingimg').show();
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				myjstbl.clear_table();
+				clear_message_box();
+
+				if (response.rowcnt == 0) 
+				{
+					$('#tbl').hide();
+					build_message_box('messagebox_1','No purchase received found!','info');
+				}
+				else
+				{
+					if(response.rowcnt <= 10)
+						myjstbl.mypage.set_last_page(1);
+					else
+						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
+
+					myjstbl.insert_multiplerow_with_value(1,response.data);
+
+					$('#tbl').show();
+				}
+
+				$('#loadingimg').hide();
+				
+				flag = 0;
+			}       
+		});
+	}
 </script>

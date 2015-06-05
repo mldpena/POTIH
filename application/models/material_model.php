@@ -2,6 +2,10 @@
 
 class Material_Model extends CI_Model {
 
+	private $_current_branch_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -10,17 +14,20 @@ class Material_Model extends CI_Model {
 		$this->load->library('constants/material_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
+
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d h:i:s");
+
 		parent::__construct();
 	}
 
 	public function add_new_material($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 
 		$response 	= array();
-		$query_data = array($code,$name,$date_today,$date_today,$user_id,$user_id);
+		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		$response['error'] = '';
 
  		$query = "INSERT INTO `material_type`
@@ -36,13 +43,9 @@ class Material_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save material!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 	}
@@ -50,7 +53,9 @@ class Material_Model extends CI_Model {
 	public function search_material_list($param)
 	{
 		extract($param);
+
 		$response 	= array();
+
 		$response['rowcnt'] = 0;
 		$conditions = "";
 		$order_field = "";
@@ -73,7 +78,9 @@ class Material_Model extends CI_Model {
 				break;
 		}
 
-		$query = "SELECT `id`, `code`, `name` from material_type where `is_show` = ".MATERIAL_CONST::ACTIVE." $conditions ORDER BY $order_field";
+		$query = "SELECT `id`, `code`, `name` 
+					FROM material_type 
+					WHERE `is_show` = ".MATERIAL_CONST::ACTIVE." $conditions ORDER BY $order_field";
 					
 		$result = $this->db->query($query,$query_data);
 
@@ -101,12 +108,11 @@ class Material_Model extends CI_Model {
 	public function update_material($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
+
 		$material_id = $this->encrypt->decode($material_id);
 
 		$response 	= array();
-		$query_data = array($code,$name,$date_today,$user_id,$material_id);
+		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$material_id);
 		$response['error'] = '';
 
 		$query = "UPDATE `material_type`
@@ -120,13 +126,9 @@ class Material_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save material!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 
@@ -134,7 +136,6 @@ class Material_Model extends CI_Model {
 
 	public function get_material_details($param)
 	{
-
 		extract($param);
 
 		$response = array();
@@ -143,7 +144,9 @@ class Material_Model extends CI_Model {
 
 		$material_id = $this->encrypt->decode($material_id);
 
-		$query = "SELECT `code`, `name` from material_type where `is_show` = ".MATERIAL_CONST::ACTIVE." AND  id = ?";
+		$query = "SELECT `code`, `name` 
+					FROM material_type 
+					WHERE `is_show` = ".MATERIAL_CONST::ACTIVE." AND  id = ?";
 						
 		$result = $this->db->query($query,$material_id);
 
@@ -155,9 +158,7 @@ class Material_Model extends CI_Model {
 			$response['data']['name'] 	= $row->name;
 		}
 		else
-		{
 			$response['error'] = 'Material not found!';
-		}
 
 		$result->free_result();
 
@@ -168,14 +169,12 @@ class Material_Model extends CI_Model {
 	{
 		extract($param);
 
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$material_id = $this->encrypt->decode($material_id);
 
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($date_today,$user_id,$material_id);
+		$query_data = array($this->_current_date,$this->_current_user,$material_id);
 		$query 	= "UPDATE `material_type` 
 					SET 
 					`is_show` = ".MATERIAL_CONST::DELETED.",
@@ -186,9 +185,7 @@ class Material_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete material!';
-		}
 
 		return $response;
 	}

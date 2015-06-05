@@ -2,6 +2,10 @@
 
 class Subgroup_Model extends CI_Model {
 
+	private $_current_branch_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -10,6 +14,11 @@ class Subgroup_Model extends CI_Model {
 		$this->load->library('constants/subgroup_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
+
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d h:i:s");
+
 		parent::__construct();
 	}
 
@@ -74,11 +83,9 @@ class Subgroup_Model extends CI_Model {
 	{
 
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 
 		$response 	= array();
-		$query_data = array($code,$name,$date_today,$date_today,$user_id,$user_id);
+		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		$response['error'] = '';
 
  		$query = "INSERT INTO `subgroup`
@@ -94,16 +101,11 @@ class Subgroup_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save sub group!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
-
 	}
 
 	public function get_subgroup_details($param)
@@ -128,9 +130,7 @@ class Subgroup_Model extends CI_Model {
 			$response['data']['name'] 	= $row->name;
 		}
 		else
-		{
 			$response['error'] = 'Subgroup not found!';
-		}
 
 		$result->free_result();
 
@@ -140,12 +140,10 @@ class Subgroup_Model extends CI_Model {
 	public function update_subgroup($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$subgroup_id = $this->encrypt->decode($subgroup_id);
 
 		$response 	= array();
-		$query_data = array($code,$name,$date_today,$user_id,$subgroup_id);
+		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$subgroup_id);
 		$response['error'] = '';
 
 		$query = "UPDATE `subgroup`
@@ -159,13 +157,9 @@ class Subgroup_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save subgroup!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 
@@ -175,14 +169,12 @@ class Subgroup_Model extends CI_Model {
 	{
 		extract($param);
 
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$subgroup_id = $this->encrypt->decode($subgroup_id);
 
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($date_today,$user_id,$subgroup_id);
+		$query_data = array($this->_current_date,$this->_current_user,$subgroup_id);
 		$query 	= "UPDATE `subgroup` 
 					SET 
 					`is_show` =".SUBGROUP_CONST::DELETED.",
@@ -193,9 +185,7 @@ class Subgroup_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete subgroup!';
-		}
 
 		return $response;
 	}

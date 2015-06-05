@@ -1,7 +1,12 @@
 <script type="text/javascript">
+    /**
+     * Initialization of global variables
+     * @flag {Number} - To prevent spam request
+     * @token_val {String} - Token for CSRF Protection
+     */
+    
     var flag = 0;
-    var global_product_id = 0;
-    var global_row_index = 0;
+    var token_val = '<?= $token ?>';
 
     var tab = document.createElement('table');
     tab.className = "tblstyle";
@@ -19,7 +24,6 @@
         td_class: "tablerow tdid",
         headertd_class : "tdheader_id"
     };
-
 
     var spnnumber = document.createElement('span');
     colarray['number'] = { 
@@ -97,64 +101,8 @@
         td_class: "tablerow column_click column_hover tdstatus"
     };
 
-  
-
-
-    var tab_min_max = document.createElement('table');
-    tab_min_max.className = "tblstyle";
-    tab_min_max.id = "table_min_max_id";
-    tab_min_max.setAttribute("style","border-collapse:collapse;");
-    tab_min_max.setAttribute("class","border-collapse:collapse;");
-    
-    var colarray_min_max = [];
-    
-    var spnid = document.createElement('span');
-    colarray_min_max['id'] = { 
-        header_title: "",
-        edit: [spnid],
-        disp: [spnid],
-        td_class: "tablerow tdid",
-        headertd_class : "tdheader_id"
-    };
-
-    var spnnumber = document.createElement('span');
-    colarray_min_max['number'] = { 
-        header_title: "",
-        edit: [spnnumber],
-        disp: [spnnumber],
-        td_class: "tablerow tdnumber"
-    };
-
-    var spnbranch = document.createElement('span');
-    var spnbranchid = document.createElement('span');
-    spnbranchid.setAttribute('style','display:none');
-    colarray_min_max['branch'] = { 
-        header_title: "Branch",
-        edit: [spnbranch,spnbranchid],
-        disp: [spnbranch,spnbranchid],
-        td_class: "tablerow column_hover tdbranch"
-    };
-
-    var txtmininv = document.createElement('input');
-    txtmininv.setAttribute('class','form-control');
-    colarray_min_max['min_inv'] = { 
-        header_title: "Min. Inv.",
-        edit: [txtmininv],
-        disp: [txtmininv],
-        td_class: "tablerow column_hover tdmin"
-    };
-
-    var txtmaxinv = document.createElement('input');
-    txtmaxinv.setAttribute('class','form-control');
-    colarray_min_max['max_inv'] = { 
-        header_title: "Max. Inv.",
-        edit: [txtmaxinv],
-        disp: [txtmaxinv],
-        td_class: "tablerow column_hover tdmax"
-    };
 
     var myjstbl;
-    var myjstbl_min_max;
 
     var root = document.getElementById("tbl");
     myjstbl = new my_table(tab, colarray, { ispaging : true, 
@@ -166,17 +114,12 @@
     root.appendChild(myjstbl.tab);
     root.appendChild(myjstbl.mypage.pagingtable);
 
-    var root_min_max = document.getElementById("tbl_min_max");
-    myjstbl_min_max = new my_table(tab_min_max, colarray_min_max, { ispaging : false, 
-                                            tdhighlight_when_hover : "tablerow",
-                                            iscursorchange_when_hover : true,
-                                            isdeleteicon_when_hover : false
-                            });
 
-   // root_min_max.appendChild(myjstbl_min_max.tab);
+    $('#tbl').hide();
 
-   $('#tbl').hide();
-    //Call refresh function after loading the page
+    /**
+     * Call refresh function after loading the page
+     */
     refresh_table();
 
     $('#date_from, #date_to').datepicker();
@@ -187,16 +130,14 @@
         refresh_table();
     });
 
-   
- 
-
     //Function for refreshing table content
     function refresh_table()
     {
-        if (flag == 1) { return; };
+        if (flag == 1) 
+            return;
+
         flag = 1;
 
-        var token_val       = '<?= $token ?>';
         var itemcode_val    = $('#itemcode').val();
         var product_val     = $('#product').val();
         var subgroup_val    = $('#subgroup').val();
@@ -205,12 +146,11 @@
         var datefrom_val    = $('#date_from').val();
         var dateto_val      = $('#date_to').val();
         var branch_val      = $('#branch').val();
-       
         var orderby_val     = $('#orderby').val();
 
 
         var arr =   { 
-                        fnc      : 'get_purchaseinventory_list', 
+                        fnc      : 'get_inventory_warning_list', 
                         code     : itemcode_val,
                         product  : product_val,
                         subgroup : subgroup_val,
@@ -219,9 +159,7 @@
                         datefrom : datefrom_val,
                         dateto   : dateto_val,
                         branch   : branch_val,
-                       
                         orderby  : orderby_val
-                        
                     };
 
         $('#loadingimg').show();
@@ -242,13 +180,9 @@
                 else
                 {
                     if(response.rowcnt <= 10)
-                    {
                         myjstbl.mypage.set_last_page(1);
-                    }
                     else
-                    {
                         myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-                    }
 
                     myjstbl.insert_multiplerow_with_value(1,response.data);
 

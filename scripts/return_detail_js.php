@@ -1,7 +1,20 @@
 <script type="text/javascript">
+	/**
+	 * Initialization of global variables
+	 * @flag {Number} - To prevent spam request
+	 * @global_detail_id {Number} - Holder of return detail id for delete modal
+	 * @global_row_index {Number} - Holder of return detail row index for delete modal
+	 * @token_val {String} - Token for CSRF Protection
+	 */
+	
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
+	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table details
+	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -116,10 +129,8 @@
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("setDate", new Date());
 
-		var token_val		= '<?= $token ?>';
-
 		var arr = 	{ 
-						fnc 	 	: 'get_return_details'
+						fnc : 'get_return_details'
 					};
 		$.ajax({
 			type: "POST",
@@ -129,9 +140,7 @@
 				clear_message_box();
 
 				if (response.head_error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
 				{
 					$('#reference_no').val(response.reference_number);
@@ -139,15 +148,11 @@
 					$('#customer_name').val(response.customer_name);
 
 					if (response.entry_date != '') 
-					{
 						$('#date').val(response.entry_date);
-					};
 				}
 				
 				if (response.detail_error == '') 
-				{
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
-				};
 
 				add_new_row(myjstbl,colarray);
 				recompute_total_qty(myjstbl,colarray,'total_qty');
@@ -156,12 +161,11 @@
 		});
 	}
 	else
-	{
 		$('input, textarea').attr('disabled','disabled');
-	}
 
 	$('.txtmemo').live('keydown',function(e){
-		if (e.keyCode == 13) {
+		if (e.keyCode == 13) 
+		{
 			insert_and_update_return_detail($(this));
 			e.preventDefault();
 		};
@@ -182,19 +186,18 @@
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_detail_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+		global_detail_id 	= table_get_column_data(global_row_index,'id');
 
 		if (global_detail_id != 0) 
-		{
 			$('#deleteReturnDetailModal').modal('show');
-		};
 	});
 
 	$('#delete').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
 		var detail_id_val 	= global_detail_id;
 
@@ -210,9 +213,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_2',response.error,'danger');
-				}
 				else
 				{
 					myjstbl.delete_row(row_index);
@@ -227,10 +228,11 @@
 	});
 
 	$('#save').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val	= '<?= $token ?>';
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var customer_name_val = $('#customer_name').val();
@@ -250,13 +252,9 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
-				{
 					window.location = "<?= base_url() ?>return/list";
-				}
 
 				flag = 0;
 			}       
@@ -276,17 +274,17 @@
 		        
 				var row_index = $(x).parent().parent().index();
 				if (error.length > 0) {
-					myjstbl.setvalue_to_rowindex_tdclass(['',0],row_index,colarray["product"].td_class);
-					myjstbl.setvalue_to_rowindex_tdclass([''],row_index,colarray["code"].td_class);
-					myjstbl.setvalue_to_rowindex_tdclass([''],row_index,colarray["qty"].td_class);
-					myjstbl.setvalue_to_rowindex_tdclass([''],row_index,colarray["inventory"].td_class);
-					myjstbl.setvalue_to_rowindex_tdclass([''],row_index,colarray["memo"].td_class);
+					table_set_column_data(row_index,'product',['',0]);
+					table_set_column_data(row_index,'code',['']);
+					table_set_column_data(row_index,'qty',['']);
+					table_set_column_data(row_index,'inventory',['']);
+					table_set_column_data(row_index,'memo',['']);
 				}
 				else
 				{
-					myjstbl.setvalue_to_rowindex_tdclass([ret_datas[1],ret_datas[0]],row_index,colarray["product"].td_class);
-					myjstbl.setvalue_to_rowindex_tdclass([ret_datas[2]],row_index,colarray["code"].td_class);
-					myjstbl.setvalue_to_rowindex_tdclass([ret_datas[3]],row_index,colarray["inventory"].td_class);
+					table_set_column_data(row_index,'product',[ret_datas[1],ret_datas[0]]);
+					table_set_column_data(row_index,'code',[ret_datas[2]]);
+					table_set_column_data(row_index,'inventory',[ret_datas[3]]);
 				}
 			},
 			fnc_render : function(ul, item){
@@ -298,15 +296,16 @@
 
 	function insert_and_update_return_detail(element)
 	{
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val 		= "<?= $token ?>";
 		var row_index 		= $(element).parent().parent().index();
-		var product_id_val 	= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray["product"].td_class)[1];
-		var qty_val 		= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray["qty"].td_class)[0];
-		var memo_val 		= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray["memo"].td_class)[0];
-		var id_val 			= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray["id"].td_class)[0];
+		var product_id_val 	= table_get_column_data(row_index,'product',1);
+		var qty_val 		= table_get_column_data(row_index,'qty');
+		var memo_val 		= table_get_column_data(row_index,'memo');
+		var id_val 			= table_get_column_data(row_index,'id');
 		var fnc_val 		= id_val != 0 ? "update_return_detail" : "insert_return_detail";
 
 		var arr = 	{ 
@@ -325,15 +324,13 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
 				{
 					myjstbl.update_row(row_index);
 
 					if (id_val == 0) {
-						myjstbl.setvalue_to_rowindex_tdclass([response.id],row_index,colarray["id"].td_class);
+						table_set_column_data(row_index,'id',[response.id]);
             			add_new_row(myjstbl,colarray,'txtproduct');
             		}
 

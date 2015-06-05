@@ -11,7 +11,6 @@ class PurchaseReceive extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
-		$this->load->model('purchase_receive_model');
 	}
 
 	/**
@@ -37,6 +36,7 @@ class PurchaseReceive extends CI_Controller {
 		{
 			case 'list':
 				$page = 'purchasereceive_list';
+				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
 				break;
 
 			case 'view':
@@ -44,7 +44,8 @@ class PurchaseReceive extends CI_Controller {
 				break;
 			
 			default:
-				# code...
+				echo "Invalid Page URL!";
+				exit();
 				break;
 		}
 
@@ -80,6 +81,9 @@ class PurchaseReceive extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->model('purchasereceive_model');
+
+		$response 	= array();
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -89,49 +93,46 @@ class PurchaseReceive extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'create_reference_number':
-				$this->_create_reference_number($post_data);
+				$response = get_next_number('purchase_receive_head','reference_number');
 				break;
 
 			case 'get_purchase_receive_details':
-				$this->_get_purchase_receive_details();
+				$response = $this->purchasereceive_model->get_purchase_receive_details();
 				break;
 
 			case 'get_po_details':
-				$this->_get_po_details($post_data);
+				$response = $this->purchasereceive_model->get_po_details($post_data);
 				break;
 
 			case 'insert_receive_detail':
-				$this->_insert_receive_detail($post_data);
+				$response = $this->purchasereceive_model->insert_receive_detail($post_data);
+				break;
+
+			case 'save_purchase_receive_head':
+				$response = $this->purchasereceive_model->update_receive_head($post_data);
+				break;
+
+			case 'search_purchase_receive_list':
+				$response = $this->purchasereceive_model->search_purchase_receive_list($post_data);
+				break;
+
+			case 'delete_purchase_receive_head':
+				$response = $this->purchasereceive_model->delete_purchase_receive_head($post_data);
+				break;
+
+			case 'delete_purchase_receive_detail':
+				$response = $this->purchasereceive_model->delete_purchase_receive_detail($post_data);
+				break;
+
+			case 'update_receive_detail':
+				$response = $this->purchasereceive_model->update_purchase_receive_detail($post_data);
 				break;
 
 			default:
-				
+				$response['error'] = 'Invalid arguments!';
 				break;
 		}
 
-	}
-
-	private function _create_reference_number($param)
-	{
-		$response = get_next_number('purchase_receive_head','reference_number');
-		echo json_encode($response);
-	}
-
-	private function _get_purchase_receive_details()
-	{
-		$response = $this->purchase_receive_model->get_purchase_receive_details();
-		echo json_encode($response);
-	}
-
-	private function _get_po_details($param)
-	{
-		$response = $this->purchase_receive_model->get_po_details($param);
-		echo json_encode($response);
-	}
-
-	private function _insert_receive_detail($param)
-	{
-		$response = $this->purchase_receive_model->insert_receive_detail($param);
 		echo json_encode($response);
 	}
 }

@@ -9,7 +9,6 @@ class User extends CI_Controller {
 	
 	private function _load_libraries()
 	{
-		$this->load->model('user_model');
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 	}
@@ -46,7 +45,8 @@ class User extends CI_Controller {
 				break;
 
 			default:
-
+				echo 'Invalid Page URL!';
+				exit();
 				break;
 		}
 
@@ -80,6 +80,8 @@ class User extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->model('user_model');
+
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -89,23 +91,23 @@ class User extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'insert_new_user':
-				$this->_insert_new_user($post_data);
+				$response = $this->user_model->insert_new_user($post_data);
 				break;
 
 			case 'get_user_list':
-				$this->_get_user_list($post_data);
+				$response = $this->user_model->get_user_list($post_data);
 				break;
 
 			case 'delete_user':
-				$this->_delete_user($post_data);
+				$response = $this->user_model->delete_user($post_data);
 				break;
 
 			case 'get_user_details':
-				$this->_get_user_details($post_data);
+				$response = $this->user_model->get_user_details($post_data);
 				break;
 
 			case 'update_user':
-				$this->_update_user($post_data);
+				$response = $this->user_model->update_user($post_data);
 				break;
 
 			default:
@@ -113,36 +115,6 @@ class User extends CI_Controller {
 				break;
 		}
 
-	}
-
-	private function _insert_new_user($param)
-	{
-		$response = $this->user_model->insert_new_user($param);
 		echo json_encode($response);
 	}
-
-	private function _get_user_list($param)
-	{
-		$response = $this->user_model->get_user_list($param);
-		echo json_encode($response);
-	}
-
-	private function _delete_user($param)
-	{
-		$response = $this->user_model->delete_user($param);
-		echo json_encode($response);
-	}
-
-	private function _get_user_details($param)
-	{
-		$response = $this->user_model->get_user_details($param);
-		echo json_encode($response);
-	}
-
-	private function _update_user($param)
-	{
-		$response = $this->user_model->update_user($param);
-		echo json_encode($response);
-	}
-
 }

@@ -1,7 +1,20 @@
 <script type="text/javascript">
+	/**
+	 * Initialization of global variables
+	 * @flag {Number} - To prevent spam request
+	 * @global_detail_id {Number} - Holder of return detail id for delete modal
+	 * @global_row_index {Number} - Holder of return detail row index for delete modal
+	 * @token_val {String} - Token for CSRF Protection
+	 */
+	
 	var flag = 0;
 	var global_return_id = 0;
 	var global_row_index = 0;
+	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table details
+	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -19,7 +32,6 @@
         td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
     };
-
 
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
@@ -102,7 +114,7 @@
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_return_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+		global_return_id 	= table_get_column_data(global_row_index,'id');
 
 		$('#deleteReturnModal').modal('show');
 	});
@@ -112,10 +124,11 @@
     });
   
 	$('#delete').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
 		var return_id_val 	= global_return_id;
 
@@ -131,18 +144,14 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_2',response.error,'danger');
-				}
 				else
 				{
 					myjstbl.delete_row(row_index);
 					recompute_row_count(myjstbl,colarray);
 
 					if (myjstbl.get_row_count() == 1) 
-					{
 						$('#tbl').hide();
-					}
 
 					$('#deleteReturnModal').modal('hide');
 
@@ -156,16 +165,16 @@
 
 	$('.column_click').live('click',function(){
 		var row_index 	= $(this).parent().index();
-		var return_id 	= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray['id'].td_class)[0];
+		var return_id 	= table_get_column_data(row_index,'id');
 
 		window.open('<?= base_url() ?>return/view/' + return_id);
 	});
 
 	$('#create_new').click(function(){
-		if (flag == 1) { return; };
-		flag = 1;
+		if (flag == 1)
+			return;
 
-		var token_val		= '<?= $token ?>';
+		flag = 1;
 
 		var arr = 	{ 
 						fnc 	 	: 'create_reference_number'
@@ -178,13 +187,9 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
-				{
 					window.location = '<?= base_url() ?>return/view/'+response.id;
-				}
 
 				flag = 0;
 			}       
@@ -198,10 +203,11 @@
 
 	function refresh_table()
 	{
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
 		var orde_type_val 	= $('#order_type').val();
@@ -237,13 +243,9 @@
 				else
 				{
 					if(response.rowcnt <= 10)
-					{
 						myjstbl.mypage.set_last_page(1);
-					}
 					else
-					{
 						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-					}
 
 					myjstbl.insert_multiplerow_with_value(1,response.data);
 

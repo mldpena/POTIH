@@ -9,7 +9,6 @@ class Login extends CI_Controller {
 	
 	private function _load_libraries()
 	{
-		$this->load->model('login_model');
 		$this->load->helper('authentication');
 	}
 
@@ -25,9 +24,7 @@ class Login extends CI_Controller {
 		$page = $this->uri->segment(2);
 
 		if ($page == 'logout') 
-		{
 			logout_user();
-		}
 
 		if (check_set_cookies()) 
 		{
@@ -72,6 +69,8 @@ class Login extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->model('login_model');
+
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -81,50 +80,18 @@ class Login extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'check_user':
-				$this->_check_user($post_data);
+				$response = $this->login_model->check_user_credential($post_data);
 				break;
 
 			case 'set_branch_user_session':
-				$this->_set_branch_user_session($post_data);
+				$response = $this->login_model->set_user_session($post_data);
 				break;
-			case 'update_first_login':
-				$this->_update_first_login($post_data);
-				break;
-		
 
 			default:
-				
+				$response['error'] = 'Invalid arguments!';
 				break;
 		}
 
-	}
-
-	/**
-	 * Check user name and password
-	 * @param  $param [array]
-	 * @return $data [json array]
-	 */
-	
-	private function _check_user($param)
-	{
-		$response = $this->login_model->check_user_credential($param);
 		echo json_encode($response);
 	}
-
-	/**
-	 * Set user detail and branch in cookie
-	 * @param $data [json array]
-	 */
-	
-	private function _set_branch_user_session($param)
-	{
-		$response = $this->login_model->set_user_session($param);
-		echo json_encode($response);
-	}
-	private function _update_first_login($param)
-	{
-		$response = $this->login_model->update_firstlogin($param);
-		echo json_encode($response);
-	}
-	
 }

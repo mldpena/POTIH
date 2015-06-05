@@ -2,6 +2,11 @@
 
 class Damage_Model extends CI_Model {
 
+	private $_damage_head_id = 0;
+	private $_current_branch_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -10,13 +15,18 @@ class Damage_Model extends CI_Model {
 		$this->load->library('constants/damage_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
+
+		$this->_damage_head_id 		= $this->encrypt->decode($this->uri->segment(3));
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d h:i:s");
+
 		parent::__construct();
 	}
 
 	public function get_damage_details()
 	{
 		$response 		= array();
-		$damage_head_id = $this->encrypt->decode($this->uri->segment(3));
 		$branch_id 		= 0;
 
 		$response['head_error'] 	= '';
@@ -26,12 +36,10 @@ class Damage_Model extends CI_Model {
 					FROM `damage_head`
 					WHERE `is_show` = ".DAMAGE_CONST::ACTIVE." AND `id` = ?";
 
-		$result_head = $this->db->query($query_head,$damage_head_id);
+		$result_head = $this->db->query($query_head,$this->_damage_head_id);
 
 		if ($result_head->num_rows() != 1) 
-		{
 			$response['head_error'] = 'Unable to get damage head details!';
-		}
 		else
 		{
 			$row = $result_head->row();
@@ -43,7 +51,7 @@ class Damage_Model extends CI_Model {
 			$branch_id = $row->branch_id;
 		}
 
-		$query_detail_data = array($branch_id,$damage_head_id);
+		$query_detail_data = array($branch_id,$this->_damage_head_id);
 
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, 
@@ -57,9 +65,7 @@ class Damage_Model extends CI_Model {
 		$result_detail = $this->db->query($query_detail,$query_detail_data);
 
 		if ($result_detail->num_rows() == 0) 
-		{
 			$response['detail_error'] = 'No damage details found!';
-		}
 		else
 		{
 			$i = 0;
@@ -91,8 +97,7 @@ class Damage_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$damage_head_id 	= $this->encrypt->decode($this->uri->segment(3));
-		$query_data 		= array($damage_head_id,$qty,$product_id,$memo);
+		$query_data 		= array($this->_damage_head_id,$qty,$product_id,$memo);
 
 		$query = "INSERT INTO `damage_detail`
 					(`headid`,
@@ -105,13 +110,9 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to insert damage detail!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 	}
@@ -136,9 +137,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to update damage detail!';
-		}
 
 		return $response;
 	}
@@ -157,9 +156,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$damage_detail_id);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete damage detail!';
-		}
 
 		return $response;
 
@@ -172,11 +169,8 @@ class Damage_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] 	= '';
-		$date_today 		= date('Y-m-d h:i:s');
 		$entry_date 		= $entry_date.' '.date('h:i:s');
-		$damage_head_id 	= $this->encrypt->decode($this->uri->segment(3));
-		$user_id 			= $this->encrypt->decode(get_cookie('temp'));
-		$query_data 		= array($entry_date,$memo,$user_id,$date_today,$damage_head_id);
+		$query_data 		= array($entry_date,$memo,$this->_current_user,$this->_current_date,$this->_damage_head_id);
 
 		$query = "UPDATE `damage_head`
 					SET
@@ -190,9 +184,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to update damage head!';
-		}
 
 		return $response;
 	}
@@ -284,14 +276,12 @@ class Damage_Model extends CI_Model {
 	{
 		extract($param);
 
-		$date_today 	= date('Y-m-d h:i:s');
-		$user_id		= $this->encrypt->decode(get_cookie('temp'));
 		$damage_head_id = $this->encrypt->decode($damage_id);
 
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($date_today,$user_id,$damage_head_id);
+		$query_data = array($this->_current_date,$this->_current_user,$damage_head_id);
 		$query 	= "UPDATE `damage_head` 
 					SET 
 					`is_show` = ".DAMAGE_CONST::DELETED.",
@@ -302,9 +292,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete damage head!';
-		}
 
 		return $response;
 	}

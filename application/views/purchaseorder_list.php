@@ -18,18 +18,20 @@
 					</tr>
 					<tr>
 						<td>Location:</td>
-							<td colspan="3"><select class="form-control" id="branch_list"><?= $branch_list ?></select></td>
+						<td colspan="3">
+							<select class="form-control" id="branch_list"><?= $branch_list ?></select>
 						</td>
 					</tr>
 					<tr>
 						<td>For Branch:</td>
-						<td colspan="3"><select class="form-control" id="for_branch"><?= $branch_list ?></select></td>
+						<td colspan="3">
+							<select class="form-control" id="for_branch"><?= $branch_list ?></select>
 						</td>
 					</tr>
 					<tr>
 						<td>Status:</td>
 						<td colspan="3">
-							<select class="form-control">
+							<select class="form-control" id="status">
 								<option value="0">ALL</option>
 								<option value="1">Incomplete</option>
 								<option value="2">Complete</option>
@@ -45,8 +47,9 @@
 				Order By:
 				<select class="form-control form-control mod" id="order_by">
 					<option value="1">Reference #</option>
-					<option value="2">Memo</option>
-					<option value="3">Supplier</option>
+					<option value="2">Location</option>
+					<option value="3">Date</option>
+					<option value="4">Supplier</option>
 				</select>
 				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
 				<input type="button" class="btn btn-success" value="Search" id="search">
@@ -60,6 +63,7 @@
 			</div>
 			<div class="max-row">
 				<center>
+					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>

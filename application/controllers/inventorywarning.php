@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Purchaseinventory extends CI_Controller {
+class InventoryWarning extends CI_Controller {
 	
 	/**
 	 * Load needed model or library for the current controller
@@ -9,7 +9,6 @@ class Purchaseinventory extends CI_Controller {
 	
 	private function _load_libraries()
 	{
-		$this->load->model('purchaseinventory_model');
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 	}
@@ -36,14 +35,15 @@ class Purchaseinventory extends CI_Controller {
 		switch ($page) 
 		{
 			case 'list':
-				$page = 'purchaseinventory_list';
+				$page = 'inventory_warning_list';
 				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
 				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
 				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;
 			
 			default:
-
+				echo "Invalid Page URL!";
+				exit();
 				break;
 		}
 
@@ -77,6 +77,8 @@ class Purchaseinventory extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->model('inventorywarning_model');
+
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -85,22 +87,16 @@ class Purchaseinventory extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case 'get_purchaseinventory_list':
-				$this->_get_purchaseinventory_list($post_data);
+			case 'get_inventory_warning_list':
+				$response = $this->inventorywarning_model->get_inventory_warning_list($post_data);
 				break;
 
 			
 			default:
-				
+				$response['error'] = 'Invalid Arguments!';
 				break;
 		}
 
-	}
-	private function _get_purchaseinventory_list($param)
-	{
-		$response = $this->purchaseinventory_model->get_purchaseinventory_list($param);
 		echo json_encode($response);
 	}
-
-	
 }

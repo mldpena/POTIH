@@ -1,7 +1,20 @@
 <script type="text/javascript">
+	/**
+	 * Initialization of global variables
+	 * @flag {Number} - To prevent spam request
+	 * @global_purchase_id {Number} - Holder of receive detail id for delete modal
+	 * @global_row_index {Number} - Holder of receive detail row index for delete modal
+	 * @token_val {String} - Token for CSRF Protection
+	 */
+	
 	var flag = 0;
 	var global_purchase_id = 0;
 	var global_row_index = 0;
+	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table purchase list
+	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -76,6 +89,7 @@
         disp: [spnmemo],
         td_class: "tablerow column_click column_hover tdmemo"
     };
+    
     var spntotalqty = document.createElement('span');
 	colarray['total_qty'] = { 
         header_title: "Total qty",
@@ -91,13 +105,7 @@
         disp: [spnqtyremain],
         td_class: "tablerow column_click column_hover tdqtyremain"
     };
-    var spnstatus = document.createElement('span');
-	colarray['status'] = { 
-        header_title: "Status",
-        edit: [spnstatus],
-        disp: [spnstatus],
-        td_class: "tablerow column_click column_hover tdstatus"
-    };
+
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
 	colarray['coldelete'] = { 
@@ -120,19 +128,19 @@
 	root.appendChild(myjstbl.mypage.pagingtable);	
 
 	$('#tbl').hide();
-	$('#branch_list').chosen();
-	$('#for_branch').chosen();
+	$('#branch_list, #for_branch').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
 	refresh_table();
+
 	bind_asc_desc('order_type');
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_purchase_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+		global_purchase_id 	= table_get_column_data(global_row_index,'id');
 
 		$('#deletePurchaseOrderModal').modal('show');
 	});
@@ -142,10 +150,11 @@
     });
 
  	$('#delete').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
 		var purchase_id_val = global_purchase_id;
 
@@ -161,18 +170,14 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_2',response.error,'danger');
-				}
 				else
 				{
 					myjstbl.delete_row(row_index);
 					recompute_row_count(myjstbl,colarray);
 
 					if (myjstbl.get_row_count() == 1) 
-					{
 						$('#tbl').hide();
-					}
 
 					$('#deletePurchaseOrderModal').modal('hide');
 
@@ -187,19 +192,19 @@
 	$('.column_click').live('click',function(){
 		
 		var row_index 	= $(this).parent().index();
-		var purchase_id = myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray['id'].td_class)[0];
+		var purchase_id = table_get_column_data(row_index,'id');
 
 		window.open('<?= base_url() ?>purchase/view/' + purchase_id);
 	});
 
 	$('#create_new').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
-
 		var arr = 	{ 
-						fnc 	 	: 'create_reference_number'
+						fnc : 'create_reference_number'
 					};
 		$.ajax({
 			type: "POST",
@@ -209,13 +214,9 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
-				{
 					window.location = '<?= base_url() ?>purchase/view/'+response.id;
-				}
 
 				flag = 0;
 			}       
@@ -229,16 +230,18 @@
 
 	function refresh_table()
 	{
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
 		var orde_type_val 	= $('#order_type').val();
 		var date_from_val 	= $('#date_from').val();
 		var date_to_val 	= $('#date_to').val();
 		var branch_val 		= $('#branch_list').val();
+		var status_val 		= $('#status').val();
 		var for_branch_val  = $('#for_branch').val();
 
 		var arr = 	{ 
@@ -249,7 +252,8 @@
 						date_from		: date_from_val,
 						date_to 		: date_to_val,
 						branch 			: branch_val,
-						for_branch 		: for_branch_val	
+						for_branch 		: for_branch_val,
+						status 			: status_val	
 					};
 
 		$('#loadingimg').show();
@@ -270,13 +274,9 @@
 				else
 				{
 					if(response.rowcnt <= 10)
-					{
 						myjstbl.mypage.set_last_page(1);
-					}
 					else
-					{
 						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-					}
 
 					myjstbl.insert_multiplerow_with_value(1,response.data);
 

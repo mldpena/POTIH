@@ -81,13 +81,11 @@
 				<div><i class="fa fa-plus-square"></i></div>
 			</div>
 			<div class="link-menu">
-				<a href="<?= base_url() ?>purchaseinventory/list">
+				<a href="<?= base_url() ?>invwarning/list">
 					<div class="link">
-					
-						<div>Purchase Inventory Warning</div>
+						<div>Product Inventory Warning</div>
 					</div>
 				</a>
-				
 			</div>
 		</div>
 	</div>

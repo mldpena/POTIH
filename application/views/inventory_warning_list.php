@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchaseinventory/list">Product List</a></li>
+			<li class="active"><a href="<?= base_url() ?>invwarning/list">Product Inventory Warning List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Product List</div>
+		<div class="form-header">Product Inventory Warning List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>
@@ -61,29 +61,9 @@
 			</div>
 			<div class="max-row">
 				<center>
-					
+					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
-			</div>
-		</div>
-	</div>
-</div>
-
-<!-- Modal for delete confirmation -->
-<div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Product</h4>
-			</div>
-			<div class="modal-body">
-				Are you sure you want to delete this product?
-				<div id="messagebox_3"></div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-				<button type="button" class="btn btn-primary" id="delete">Delete</button>
 			</div>
 		</div>
 	</div>

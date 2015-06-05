@@ -1,5 +1,6 @@
 <script type="text/javascript">
 	var flag = 0;
+	var token_val = '<?= $token ?>';
 
 	$('#username').focus();
 	
@@ -13,13 +14,7 @@
 
 	$('#submit').live('click',function(){
 		$(this).attr('disabled','disabled');
- 	
-
-		 
 		 check_user_login();
-		
-
-
 	});
 
 	$('#proceed').live('click',function(){
@@ -33,7 +28,9 @@
 
 	function check_user_login()
 	{
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
 		var token_val		= '<?= $token ?>';
@@ -61,30 +58,17 @@
 				else
 				{
 					if(response.is_first_login == 0)
-					{
-						 
-						 alert("Please be informed that you can change your password!");
-						 update_firstlogin();
-		
-					}
+						 alert("You are using a default password. Please change your password after logging in.");
 
 					fill_dropdown_option('branch',response.branches);
 
 					if (response.branches.length >= 2) 
-					{
 						$('#myModal').modal('show');
-					}
 					else
 					{
 						flag = 0;
-							
-							
-		 				
-						 set_branch_session();
-					
-
+						set_branch_session();
 					}
-					
 				}
 
 				flag = 0;
@@ -95,10 +79,11 @@
 
 	function set_branch_session()
 	{
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var username_val	= $("#username").val();
 		var password_val 	= $("#password").val();
 		var branch_val		= $('#branch').val();
@@ -118,18 +103,14 @@
 			data: 'data=' + JSON.stringify(arr) + token_val,
 			success: function(response) {
 				clear_message_box();
+
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_2',response.error,'danger');
-				}
 				else
 				{
-
 					build_message_box('messagebox_1','Connected!','success');
 					window.location = '<?= base_url() ?>controlpanel';
 					$('#myModal').hide();
-
-
 				}
 
 				flag = 0;

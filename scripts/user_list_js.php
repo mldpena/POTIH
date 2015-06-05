@@ -1,7 +1,20 @@
 <script type="text/javascript">
+	/**
+	 * Initialization of global variables
+	 * @flag {Number} - To prevent spam request
+	 * @global_detail_id {Number} - Holder of user detail id for delete modal
+	 * @global_row_index {Number} - Holder of user detail row index for delete modal
+	 * @token_val {String} - Token for CSRF Protection
+	 */
+	
 	var flag = 0;
 	var global_user_id = 0;
 	var global_row_index = 0;
+	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table details
+	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -100,23 +113,24 @@
 
 	$('.column_click').live('click',function(){
 		var row_index 	= $(this).parent().index();
-		var user_id 	= myjstbl.getvalue_by_rowindex_tdclass(row_index,colarray['id'].td_class)[0];
+		var user_id 	= table_get_column_data(global_row_index,'id');
 
 		window.open('<?= base_url() ?>user/view/' + user_id);
 	});
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_user_id 		= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+		global_user_id 		= table_get_column_data(global_row_index,'id');
 
 		$('#deleteUserModal').modal('show');
 	});
 
 	$('#delete').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
 		var user_id_val 	= global_user_id;
 
@@ -133,9 +147,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_2',response.error,'danger');
-				}
 				else
 				{
 					myjstbl.delete_row(row_index);
@@ -143,9 +155,7 @@
 					recompute_row_count(myjstbl,colarray);
 
 					if (myjstbl.get_row_count() == 1) 
-					{
 						$('#tbl').hide();
-					}
 
 					$('#deleteUserModal').modal('hide');
 
@@ -159,10 +169,11 @@
 
     function refresh_table()
 	{
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var search_string_val = $('#search_string').val();
 		var order_by_val 	= $('#order_by').val();
 		var status_val 		= $('#status').val();
@@ -194,13 +205,9 @@
 				else
 				{
 					if(response.rowcnt <= 10)
-					{
 						myjstbl.mypage.set_last_page(1);
-					}
 					else
-					{
 						myjstbl.mypage.set_last_page( Math.ceil(Number(rowcnt) / Number(myjstbl.mypage.filter_number)));
-					}
 
 					myjstbl.insert_multiplerow_with_value(1,response.data);
 

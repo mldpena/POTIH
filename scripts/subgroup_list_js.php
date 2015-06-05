@@ -1,7 +1,20 @@
 <script type="text/javascript">
+	/**
+	 * Initialization of global variables
+	 * @flag {Number} - To prevent spam request
+	 * @global_detail_id {Number} - Holder of subgroup detail id for delete modal
+	 * @global_row_index {Number} - Holder of subgroup detail row index for delete modal
+	 * @token_val {String} - Token for CSRF Protection
+	 */
+	
 	var flag = 0;
 	var global_subgroup_id = 0;
 	var global_row_index = 0;
+	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table details
+	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -74,16 +87,15 @@
    
     $('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_subgroup_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+		global_subgroup_id 	= table_get_column_data(global_row_index,'id');
 
 		$('#deleteSubgroupModal').modal('show');
 	});
 	
 	$('.column_click').live('click',function(){
 
-    	var token_val		= '<?= $token ?>';
     	global_row_index 	= $(this).parent().index();
-    	global_subgroup_id 	= myjstbl.getvalue_by_rowindex_tdclass(global_row_index, colarray["id"].td_class)[0];
+    	global_subgroup_id 	= table_get_column_data(global_row_index,'id');
 
     	var arr = 	{ 
 						fnc 	 	: 'get_subgroup_details', 
@@ -98,9 +110,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
 				{
 					$('#code').val(response.data['code']);
@@ -112,10 +122,11 @@
 	});
 
 	$('#delete').click(function(){
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
 		var subgroup_id_val = global_subgroup_id;
 
@@ -131,9 +142,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_3',response.error,'danger');
-				}
 				else
 				{
 					myjstbl.delete_row(row_index);
@@ -141,11 +150,9 @@
 					recompute_row_count(myjstbl,colarray);
 
 					if (myjstbl.get_row_count() == 1) 
-					{
 						$('#tbl').hide();
-					}
 
-					$('#deleteModal').modal('hide');
+					$('#deleteSubgroupModal').modal('hide');
 
 					build_message_box('messagebox_1','Sub Group successfully deleted!','success');
 				}
@@ -156,12 +163,13 @@
 	});
 
 	$('#save').click(function(){
-    	if (flag == 1) { return; };
+    	if (flag == 1) 
+    		return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var row_index 		= global_row_index;
-		var subgroup_id_val 	= global_subgroup_id;
+		var subgroup_id_val = global_subgroup_id;
 		var code_val 	= $('#code').val();
 		var name_val 	= $('#name').val();
 	   	var fnc_val 	= subgroup_id_val == 0 ? 'insert_new_subgroup' : 'edit_subgroup';
@@ -181,26 +189,22 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_2',response.error,'danger');
-				}
 				else
 				{
 					if (myjstbl.get_row_count() - 1 == 0) 
-					{
   						$("#tbl").show();
-            		};
 
             		if (subgroup_id_val == 0) 
             		{
             			myjstbl.add_new_row();
         				row_index = myjstbl.get_row_count() - 1;
-        				myjstbl.setvalue_to_rowindex_tdclass([response.id],row_index, colarray["id"].td_class);
-        				myjstbl.setvalue_to_rowindex_tdclass([row_index],row_index, colarray["number"].td_class);
+        				table_set_column_data(row_index,'id',[response.id]);
+        				table_set_column_data(row_index,'number',[row_index]);
             		}
 
-            		myjstbl.setvalue_to_rowindex_tdclass([code_val],row_index,colarray["code"].td_class);
-        			myjstbl.setvalue_to_rowindex_tdclass([name_val],row_index,colarray["name"].td_class);    		
+            		table_set_column_data(row_index,'code',[code_val]);
+        			table_set_column_data(row_index,'name',[name_val]);	
 
         			$('#createSubgroupModal').modal('hide');
 
@@ -223,10 +227,11 @@
 	
 	function refresh_table()
 	{
-		if (flag == 1) { return; };
+		if (flag == 1) 
+			return;
+
 		flag = 1;
 
-		var token_val	= '<?= $token ?>';
 		var search_val 	= $('#searchstring').val();
 		var order_val 	= $('#orderby').val();
 
@@ -247,20 +252,14 @@
 				clear_message_box();
 
 				if (response.rowcnt == 0) 
-				{
 					$('#tbl').hide();
 					build_message_box('messagebox_1','No material found!','info');
-				}
 				else
 				{
 					if(response.rowcnt <= 10)
-					{
 						myjstbl.mypage.set_last_page(1);
-					}
 					else
-					{
 						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-					}
 
 					myjstbl.insert_multiplerow_with_value(1,response.data);
 

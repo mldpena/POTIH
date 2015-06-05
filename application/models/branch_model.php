@@ -2,25 +2,33 @@
 
 class Branch_Model extends CI_Model {
 
+	private $_current_branch_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
-	public function __construct() {
+	public function __construct() 
+	{
 		$this->load->library('encrypt');
 		$this->load->library('constants/branch_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
+
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d h:i:s");
+
 		parent::__construct();
 	}
 
 	public function add_new_branch($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 
 		$response 	= array();
-		$query_data = array($code,$name,$date_today,$date_today,$user_id,$user_id);
+		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		$response['error'] = '';
 
  		$query = "INSERT INTO `branch`
@@ -36,13 +44,9 @@ class Branch_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save branch!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 	}
@@ -50,6 +54,7 @@ class Branch_Model extends CI_Model {
 	public function search_branch_list($param)
 	{
 		extract($param);
+
 		$response 	= array();
 		$response['rowcnt'] = 0;
 		$conditions = "";
@@ -101,12 +106,11 @@ class Branch_Model extends CI_Model {
 	public function update_branch($param)
 	{
 		extract($param);
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
+
 		$branch_id = $this->encrypt->decode($branch_id);
 
 		$response 	= array();
-		$query_data = array($code,$name,$date_today,$user_id,$branch_id);
+		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$branch_id);
 		$response['error'] = '';
 
 		$query = "UPDATE `branch`
@@ -120,13 +124,9 @@ class Branch_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to save branch!';
-		}
 		else
-		{
 			$response['id'] = $result['id'];
-		}
 
 		return $response;
 
@@ -155,9 +155,7 @@ class Branch_Model extends CI_Model {
 			$response['data']['name'] 	= $row->name;
 		}
 		else
-		{
 			$response['error'] = 'Branch not found!';
-		}
 
 		$result->free_result();
 
@@ -168,14 +166,12 @@ class Branch_Model extends CI_Model {
 	{
 		extract($param);
 
-		$date_today = date('Y-m-d h:i:s');
-		$user_id	= $this->encrypt->decode(get_cookie('temp'));
 		$branch_id = $this->encrypt->decode($branch_id);
 
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($date_today,$user_id,$branch_id);
+		$query_data = array($this->_current_date,$this->_current_user,$branch_id);
 		$query 	= "UPDATE `branch` 
 					SET 
 					`is_show` = ".BRANCH_CONST::DELETED.",
@@ -186,9 +182,7 @@ class Branch_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-		{
 			$response['error'] = 'Unable to delete branch!';
-		}
 
 		return $response;
 	}

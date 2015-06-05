@@ -9,7 +9,6 @@ class Product extends CI_Controller {
 	
 	private function _load_libraries()
 	{
-		$this->load->model('product_model');
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 	}
@@ -44,7 +43,8 @@ class Product extends CI_Controller {
 				break;
 			
 			default:
-
+				echo 'Invalid Page URL!';
+				exit();
 				break;
 		}
 
@@ -78,6 +78,8 @@ class Product extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->model('product_model');
+
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -87,73 +89,38 @@ class Product extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'get_product_list':
-				$this->_get_product_list($post_data);
+				$response = $this->product_model->get_product_list($post_data);
 				break;
 
 			case 'get_material_and_subgroup':
-				$this->_get_product_material_and_subgroup($post_data);
+				$response = $this->product_model->get_product_material_subgroup($post_data);
 				break;
 
 			case 'insert_new_product':
-				$this->_insert_new_product($post_data);
+				$response = $this->product_model->insert_new_product($post_data);
 				break;
 
 			case 'get_product_details':
-				$this->_get_product_details($post_data);
+				$response = $this->product_model->get_product_details($post_data);
 				break;
 
 			case 'update_product_details':
-				$this->_update_product_details($post_data);
+				$response = $this->product_model->update_product_details($post_data);
 				break;
 
 			case 'delete_product':
-				$this->_delete_product($post_data);
+				$response = $this->product_model->delete_product($post_data);
 				break;
 
 			case 'get_branch_list_for_min_max':
-				$this->_get_branch_list();
+				$response = $this->_get_branch_list();
 				break;
 
 			default:
-				
+				$response['error'] = 'Invalid arguments!';
 				break;
 		}
 
-	}
-
-	private function _get_product_list($param)
-	{
-		$response = $this->product_model->get_product_list($param);
-		echo json_encode($response);
-	}
-
-	private function _get_product_material_and_subgroup($param)
-	{
-		$response = $this->product_model->get_product_material_subgroup($param);
-		echo json_encode($response);
-	}
-
-	private function _insert_new_product($param)
-	{
-		$response = $this->product_model->insert_new_product($param);
-		echo json_encode($response);
-	}
-
-	private function _get_product_details($param)
-	{
-		$response = $this->product_model->get_product_details($param);
-		echo json_encode($response);
-	}
-
-	private function _update_product_details($param)
-	{
-		$response = $this->product_model->update_product_details($param);
-		echo json_encode($response);
-	}
-
-	private function _delete_product($param)
-	{
-		$response = $this->product_model->delete_product($param);
 		echo json_encode($response);
 	}
 
@@ -172,6 +139,6 @@ class Product extends CI_Controller {
 			$i++;		
 		}
 
-		echo json_encode($response);
+		return $response;
 	}
 }

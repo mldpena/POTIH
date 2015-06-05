@@ -1,5 +1,16 @@
 <script type="text/javascript">
+	/**
+	 * Initialization of global variables
+	 * @flag {Number} - To prevent spam request
+	 * @token_val {String} - Token for CSRF Protection
+	 */
+	
 	var flag = 0;
+	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table details
+	 */
 
 	$('#branches').chosen();
 
@@ -7,23 +18,20 @@
 		var value = $(this).val();
 
         if (value == 'Show Advanced Info') 
-        {
             $(this).val('Hide Advanced Info');
-        }
         else
-        {
             $(this).val('Show Advanced Info');
-        }
 
 		$("#show-info").toggle("fast");
 	});
 
 	$('#save').click(function(){
 
-		if(flag==1){return;}
+		if(flag==1)
+			return;
+
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var user_code_val	= $("#user_code").val();
 		var full_name_val 	= $("#full_name").val();
 		var status_val 		= $("#is_active").is(":checked") ? 1 : 0;
@@ -53,9 +61,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
 				{
 					build_message_box('messagebox_1','Account successfully saved!','success');
@@ -70,11 +76,8 @@
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
-
-		var token_val		= '<?= $token ?>';
-
 		var arr = 	{ 
-						fnc 		: 'get_user_details'
+						fnc : 'get_user_details'
 					};
 
 		$.ajax({
@@ -86,9 +89,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-				{
 					build_message_box('messagebox_1',response.error,'danger');
-				}
 				else
 				{
 					$('#user_code').val(response.user_code);
@@ -100,9 +101,7 @@
 					$('#branches').trigger("liszt:updated");
 
 					if (response.is_active == 0) 
-					{
 						$('#is_active').removeAttr('checked');
-					};
 				}
 
 				flag = 0;

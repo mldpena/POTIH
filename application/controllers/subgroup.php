@@ -12,7 +12,6 @@ class Subgroup extends CI_Controller {
 		
 		$this->load->helper('authentication');
 		$this->load->helper('query');
-		$this->load->model('subgroup_model');
 	}
 
 	/**
@@ -41,7 +40,8 @@ class Subgroup extends CI_Controller {
 				break;
 			
 			default:
-				# code...
+				echo "Invalid Page URL!";
+				exit();
 				break;
 		}
 
@@ -77,6 +77,8 @@ class Subgroup extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->model('subgroup_model');
+
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -87,63 +89,30 @@ class Subgroup extends CI_Controller {
 		{
 		
 			case 'search_subgroup_list' :
-				$this->_search_subgroup_list($post_data);
+				$response = $this->subgroup_model->search_subgroup_list($post_data);
 				break;
 
 			case 'insert_new_subgroup' :
-				$this->_add_new_subgroup($post_data);
+				$response = $this->subgroup_model->add_new_subgroup($post_data);
 				break;
 
 			case 'get_subgroup_details' :
-				$this->_get_subgroup_details($post_data);
+				$response = $this->subgroup_model->get_subgroup_details($post_data);
 				break;
 
 			case 'edit_subgroup' :
-				$this->_update_subgroup_details($post_data);
+				$response = $this->subgroup_model->update_subgroup($post_data);
 				break;
 
 			case 'delete_subgroup' :
-				$this->_delete_subgroup_details($post_data);
+				$response = $this->subgroup_model->delete_subgroup($post_data);
 				break;
 
 			default:
-				
+				$response['error'] = 'Invalid arguments!';
 				break;
 		}
 
-	}
-
-
-	private function _search_subgroup_list($param)
-	{
-		$response = $this->subgroup_model->search_subgroup_list($param);
 		echo json_encode($response);
 	}
-
-	private function _add_new_subgroup($param)
-	{
-		$response = $this->subgroup_model->add_new_subgroup($param);
-		echo json_encode($response);
-	}
-	
-	private function _get_subgroup_details($param)
-	{
-		$response = $this->subgroup_model->get_subgroup_details($param);
-		echo json_encode($response);
-	}
-
-	private function _update_subgroup_details($param)
-	{
-		$response = $this->subgroup_model->update_subgroup($param);
-		echo json_encode($response);
-	}
-
-	private function _delete_subgroup_details($param)
-	{
-		$response = $this->subgroup_model->delete_subgroup($param);
-		echo json_encode($response);
-	}
-
-
-
 }
