@@ -126,6 +126,12 @@
 					<div class="btn-title">Product Inventory Warning</div>
 				</div>
 			</a>
+				<a href="<?= base_url() ?>productbranchinventory/list">
+					<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<div class="btn-title">Product Branch Inventory </div>
+				</div>
+				</a>
 		</div>
 	</div>
 </div>

@@ -133,6 +133,13 @@
 						<div>Product Inventory Warning</div>
 					</div>
 				</a>
+				
+				<a href="<?= base_url() ?>productbranchinventory/list">
+					<div class="link">
+					
+						<div>Product Branch Inventory</div>
+					</div>
+				</a>
 			</div>
 		</div>
 	</div>

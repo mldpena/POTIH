@@ -37,13 +37,13 @@ if (!function_exists('get_user_fullname'))
 
 if (!function_exists('get_name_list_from_table')) 
 {
-	function get_name_list_from_table($is_option = false, $table = '', $include_all = false, $id = 0)
+	function get_name_list_from_table($is_option = false, $table = '', $include_all = false)
 	{
 		$CI =& get_instance();
 
 		$data_list = (!$is_option) ? array() : '';
 
-		$query = "SELECT CONCAT(`code`,' - ',`name`) AS 'name', `id`
+		$query = "SELECT CONCAT(`name`) AS 'name', `id`
 					FROM $table WHERE `is_show` = 1"; 
 
 		$result = $CI->db->query($query);
@@ -61,14 +61,7 @@ if (!function_exists('get_name_list_from_table'))
 				if (!$is_option) {
 					$data_list[$row->id] = $row->name;
 				}else{
-					$selected = '';
-
-					if ($id != 0 && $id == $row->id) 
-						$selected = 'selected';
-					else
-						$selected = '';
-
-					$data_list .= "<option value='".$row->id."' $selected>".$row->name."</option>";
+					$data_list .= "<option value='".$row->id."'>".$row->name."</option>";
 				}
 			}
 		}
