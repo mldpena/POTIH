@@ -1,9 +1,9 @@
 <?php
 	/**
-	* List of constants for purchase model
+	* List of constants for delivery model
 	*/
 
-	class Purchase_Const
+	class Delivery_Const
 	{
 		const ACTIVE 	= 1;
 		const DELETED 	= 0;
@@ -16,8 +16,9 @@
 		const INCOMPLETE = 1;
 		const COMPLETE = 2;
 		const NO_RECEIVED = 3;
-		const IMPORTED = 1;
-		const LOCAL = 2;
+		const BOTH = 1;
+		const SALES = 2;
+		const TRANSFER = 3;
 	}
 
 ?>

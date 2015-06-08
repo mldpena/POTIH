@@ -2,8 +2,8 @@
 	/**
 	 * Initialization of global variables
 	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of purchase detail id for delete modal
-	 * @global_row_index {Number} - Holder of purchase detail row index for delete modal
+	 * @global_detail_id {Number} - Holder of stock delivery id for delete modal
+	 * @global_row_index {Number} - Holder of stock delivery row index for delete modal
 	 * @token_val {String} - Token for CSRF Protection
 	 */
 	
@@ -13,7 +13,7 @@
 	var token_val = '<?= $token ?>';
 
 	/**
-	 * Initialization for JS table details
+	 * Initialization for JS table stock delivery details
 	 */
 
 	var tab = document.createElement('table');
@@ -31,6 +31,21 @@
         disp: [spnid],
         td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
+    };
+
+    var chkchecktransfer = document.createElement('input');
+    chkchecktransfer.setAttribute('type','checkbox');
+    chkchecktransfer.setAttribute('class','chktransfer');
+    var chkchecktransferdisabled = document.createElement('input');
+    chkchecktransferdisabled.setAttribute('type','checkbox');
+    chkchecktransferdisabled.setAttribute('disabled','disabled');
+    chkchecktransferdisabled.setAttribute('class','chktransfer');
+	colarray['istransfer'] = { 
+        header_title: "FT",
+        edit: [chkchecktransfer],
+        disp: [chkchecktransferdisabled],
+        td_class: "tablerow tdistransfer",
+		headertd_class : "tdistransfer"
     };
 
     var spnnumber = document.createElement('span');
@@ -123,6 +138,8 @@
 
 	root.appendChild(myjstbl.tab);
 
+	$('#tbl').hide();
+
 	var tableEvents = new TABLE.EventHelper();
 	tableEvents.bindUpdateEvents(get_table_details);
 
@@ -133,7 +150,7 @@
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
-						fnc : 'get_purchaseorder_details'
+						fnc : 'get_stock_delivery_details'
 					};
 		$.ajax({
 			type: "POST",
@@ -148,14 +165,14 @@
 				{
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
-					$('#supplier').val(response.supplier_name);
-					$('#orderfor').val(response.orderfor);
-					
-					if (response.is_imported == 1) 
-						$('#is_imported').attr('checked','checked');
+					$('#delivery_type').val(response.delivery_type);
+					$('#to_branch').val(response.to_branchid);
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
+
+					if (response.delivery_type == 2) 
+						$('#delivery_to_list').hide();
 				}
 				
 				if (response.detail_error == '') 
@@ -165,15 +182,23 @@
 				{
 					$('input, textarea, button, select').not('#print').attr('disabled','disabled');
 					$('.tdupdate, .tddelete').hide();
-				}	
+				}
 				else
 				{
 					add_new_row(myjstbl,colarray);
 					bind_product_autocomplete();
 				}
 
+				if (response.delivery_type != 1)
+				{
+					$('.tdistransfer').hide();
+					insert_dynamic_css();
+				} 
+					
+
 				recompute_total_qty(myjstbl,colarray,'total_qty');
-				
+
+				$('#tbl').show();
 			}       
 		});
 	}
@@ -194,7 +219,28 @@
 		global_detail_id 	= table_get_column_data(global_row_index,'id');
 
 		if (global_detail_id != 0) 
-			$('#deletePurchaseOrderModal').modal('show');
+			$('#deleteStockDeliveryModal').modal('show');
+	});
+
+	$('#delivery_type').live('change',function(){
+		if ($(this).val() == 2) 
+		{
+			$('#delivery_to_list').hide();
+			$('.tdistransfer').hide();
+			insert_dynamic_css();
+		}
+		else if ($(this).val() == 3) 
+		{
+			$('#delivery_to_list').show();
+			$('.tdistransfer').hide();
+			insert_dynamic_css();
+		}
+		else
+		{
+			$('#delivery_to_list').show();
+			$('.tdistransfer').show();
+			$('#dynamic-css').html('');
+		}
 	});
 
 	$('#delete').click(function(){
@@ -207,7 +253,7 @@
 		var detail_id_val 	= global_detail_id;
 
 		var arr = 	{ 
-						fnc 	 	: 'delete_purchaseorder_detail', 
+						fnc 	 	: 'delete_stock_delivery_detail', 
 						detail_id 	: detail_id_val
 					};
 		$.ajax({
@@ -224,7 +270,7 @@
 					myjstbl.delete_row(row_index);
 					recompute_row_count(myjstbl,colarray);
 					recompute_total_qty(myjstbl,colarray,'total_qty');
-					$('#deletePurchaseOrderModal').modal('hide');
+					$('#deleteStockDeliveryModal').modal('hide');
 				}
 
 				flag = 0;
@@ -240,17 +286,15 @@
 
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
-		var supplier_name_val = $('#supplier').val();
-		var orderfor_val = $('#orderfor').val();
-		var is_imported_val = $('#is_imported').is(':checked') ? 1 : 0;
+		var type_val 	= $('#delivery_type').val();
+		var to_branch 	= type_val == 2 ? 0 : $('#to_branch').val();
 
 		var arr = 	{ 
-						fnc 	 	: 'save_purchaseorder_head', 
+						fnc 	 	: 'save_stock_delivery_head', 
 						entry_date 	: date_val,
 						memo 		: memo_val,
-						supplier_name : supplier_name_val,
-						orderfor     : orderfor_val,
-						is_imported : is_imported_val
+						type 		: type_val,
+						to_branch 	: to_branch
 					};
 
 		$.ajax({
@@ -263,21 +307,21 @@
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
-					window.location = "<?= base_url() ?>purchase/list";
+					window.location = "<?= base_url() ?>delivery/list";
 
 				flag = 0;
 			}       
 		});
 	});
 
-	$('#deletePurchaseOrderModal').live('hidden.bs.modal', function (e) {
+	$('#deleteStockDeliveryModal').live('hidden.bs.modal', function (e) {
 		global_row_index 	= 0;
 		global_detail_id 	= 0;
 	});
 	
 	function bind_product_autocomplete()
 	{
-		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>purchase', {
+		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>delivery', {
 			enable_add : false,
 			fnc_callback : function(x, label, value, ret_datas, error){
 				var row_index = $(x).parent().parent().index();
@@ -309,17 +353,25 @@
 		var qty_val 		= table_get_column_data(row_index,'qty');
 		var memo_val 		= table_get_column_data(row_index,'memo');
 		var id_val 			= table_get_column_data(row_index,'id');
-		var fnc_val 		= id_val != 0 ? "update_purchaseorder_detail" : "insert_purchaseorder_detail";
+		var is_transfer_val = Number(table_get_column_data(row_index,'istransfer'));
+		var fnc_val 		= id_val != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
 		var arr = 	{ 
 						fnc 	 	: fnc_val, 
 						product_id 	: product_id_val,
 						qty     	: qty_val,
 			     		memo 		: memo_val,
-			     		detail_id 	: id_val
+			     		detail_id 	: id_val,
+			     		istransfer 	: is_transfer_val
 					};
 
 		return arr;
 	}
 
+	function insert_dynamic_css()
+	{
+		$('#dynamic-css').html('');
+		var css = "<style>.tdistransfer { display:none; }</style>";
+		$('#dynamic-css').html(css);
+	}
 </script>

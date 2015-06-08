@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchase/list">Purchase Order List</a></li>
+			<li class="active"><a href="<?= base_url() ?>delivery/list">Stock Delivery List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Purchase Order List</div>
+		<div class="form-header">Stock Delivery List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>
@@ -17,24 +17,24 @@
 						<td><input type="text" class="form-control" id="date_to"></td>
 					</tr>
 					<tr>
-						<td>Location:</td>
+						<td>From Branch:</td>
 						<td colspan="3">
-							<select class="form-control" id="branch_list"><?= $branch_list ?></select>
+							<select class="form-control" id="from_branch"><?= $branch_list ?></select>
 						</td>
 					</tr>
 					<tr>
-						<td>For Branch:</td>
+						<td>To Branch:</td>
 						<td colspan="3">
-							<select class="form-control" id="for_branch"><?= $branch_list ?></select>
+							<select class="form-control" id="to_branch"><?= $branch_list ?></select>
 						</td>
 					</tr>
 					<tr>
-						<td>Type:</td>
+						<td>Delivery Type:</td>
 						<td colspan="3">
-							<select class="form-control" id="type">
+							<select class="form-control" id="delivery_type">
 								<option value="0">ALL</option>
-								<option value="1">Imported</option>
-								<option value="2">Local</option>
+								<option value="1">Sales</option>
+								<option value="2">Stock Transferring</option>
 							</select>
 						</td>
 					</tr>
@@ -57,15 +57,13 @@
 				Order By:
 				<select class="form-control form-control mod" id="order_by">
 					<option value="1">Reference #</option>
-					<option value="2">Location</option>
 					<option value="3">Date</option>
-					<option value="4">Supplier</option>
 				</select>
 				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_new">Create New Purchase Order</button>
+				<button class="btn btn-primary" id="create_new">Create New Stock Delivery</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -80,15 +78,15 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="deletePurchaseOrderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteStockDeliveryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Stock Delivery Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this purchase entry?
+				Are you sure you want to delete this stock delivery entry?
 				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

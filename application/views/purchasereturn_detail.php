@@ -2,18 +2,15 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchase/list">Purchase Order List</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchase/view">Purchase Order Detail</a></li>
+			<li class="active"><a href="<?= base_url() ?>purchaseret/list">Purchase Return List</a></li>
+			<li class="active"><a href="<?= base_url() ?>purchaseret/view">Purchase Return Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Purchase Order Detail</div>
+		<div class="form-header">Purchase Return Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
 				<table>
-					<tr>
-						<td colspan="2"><input type="checkbox" id="is_imported"> Imported Orders</td>
-					</tr>
 					<tr>
 						<td>Reference #:</td>
 						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
@@ -25,12 +22,6 @@
 					<tr>
 						<td>Date:</td>
 						<td><input type="text" class="form-control" id="date"></td>
-					</tr>
-					<tr>
-						<td>Order For:</td>
-						<td colspan="1">
-							<select class="form-control" id="orderfor" ><?= $branch_list ?></select>
-						</td>
 					</tr>
 					<tr>
 						<td valign="top">Memo:</td>
@@ -62,7 +53,7 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="deletePurchaseOrderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deletePurchaseReturnModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -70,7 +61,7 @@
 				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this purchase entry?
+				Are you sure you want to delete this purchase return entry?
 				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

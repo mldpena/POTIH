@@ -37,7 +37,7 @@ if (!function_exists('get_user_fullname'))
 
 if (!function_exists('get_name_list_from_table')) 
 {
-	function get_name_list_from_table($is_option = false, $table = '', $include_all = false)
+	function get_name_list_from_table($is_option = false, $table = '', $include_all = false, $id = 0)
 	{
 		$CI =& get_instance();
 
@@ -61,7 +61,14 @@ if (!function_exists('get_name_list_from_table'))
 				if (!$is_option) {
 					$data_list[$row->id] = $row->name;
 				}else{
-					$data_list .= "<option value='".$row->id."'>".$row->name."</option>";
+					$selected = '';
+
+					if ($id != 0 && $id == $row->id) 
+						$selected = 'selected';
+					else
+						$selected = '';
+
+					$data_list .= "<option value='".$row->id."' $selected>".$row->name."</option>";
 				}
 			}
 		}

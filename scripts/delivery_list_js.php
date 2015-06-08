@@ -2,18 +2,18 @@
 	/**
 	 * Initialization of global variables
 	 * @flag {Number} - To prevent spam request
-	 * @global_purchase_id {Number} - Holder of receive detail id for delete modal
-	 * @global_row_index {Number} - Holder of receive detail row index for delete modal
+	 * @global_delivery_id {Number} - Holder of stock delivery detail id for delete modal
+	 * @global_row_index {Number} - Holder of stock delivery detail row index for delete modal
 	 * @token_val {String} - Token for CSRF Protection
 	 */
 	
 	var flag = 0;
-	var global_purchase_id = 0;
+	var global_delivery_id = 0;
 	var global_row_index = 0;
 	var token_val = '<?= $token ?>';
 
 	/**
-	 * Initialization for JS table purchase list
+	 * Initialization for JS table stock delivery list
 	 */
 
 	var tab = document.createElement('table');
@@ -42,28 +42,28 @@
         td_class: "tablerow tdnumber"
     };
 
-    var spnlocation = document.createElement('span');
-	colarray['location'] = { 
-        header_title: "Location",
-        edit: [spnlocation],
-        disp: [spnlocation],
-        td_class: "tablerow column_click column_hover tdlocation"
-    };
-
-    var spnforbranch = document.createElement('span');
-	colarray['forbranch'] = { 
-        header_title: "For Branch",
-        edit: [spnforbranch],
-        disp: [spnforbranch],
-        td_class: "tablerow column_click column_hover tdforbranch"
-    };
-
-	var spnreferencenumber = document.createElement('span');
+    var spnreferencenumber = document.createElement('span');
 	colarray['referencenumber'] = { 
         header_title: "Reference #",
         edit: [spnreferencenumber],
         disp: [spnreferencenumber],
         td_class: "tablerow column_click column_hover tdreference"
+    };
+
+    var spnfrombranch = document.createElement('span');
+	colarray['frombranch'] = { 
+        header_title: "From Branch",
+        edit: [spnfrombranch],
+        disp: [spnfrombranch],
+        td_class: "tablerow column_click column_hover tdfrombranch"
+    };
+
+    var spntobranch = document.createElement('span');
+	colarray['tobranch'] = { 
+        header_title: "To Branch",
+        edit: [spntobranch],
+        disp: [spntobranch],
+        td_class: "tablerow column_click column_hover tdtobranch"
     };
    	
    	var spndate = document.createElement('span');
@@ -74,12 +74,12 @@
         td_class: "tablerow column_click column_hover tddate"
     };
 
-    var spnsupplier= document.createElement('span');
-	colarray['supplier'] = { 
-        header_title: "Supplier",
-        edit: [spnsupplier],
-        disp: [spnsupplier],
-        td_class: "tablerow column_click column_hover tdsupplier"
+    var spntype = document.createElement('span');
+	colarray['type'] = { 
+        header_title: "Type",
+        edit: [spntype],
+        disp: [spntype],
+        td_class: "tablerow column_click column_hover tdtype"
     };
 
     var spnmemo = document.createElement('span');
@@ -96,14 +96,6 @@
         edit: [spntotalqty],
         disp: [spntotalqty],
         td_class: "tablerow column_click column_hover tdtotalqty"
-    };
-
-   	var spnqtyremain = document.createElement('span');
-	colarray['qty_remaining'] = { 
-        header_title: "Qty Remaining",
-        edit: [spnqtyremain],
-        disp: [spnqtyremain],
-        td_class: "tablerow column_click column_hover tdqtyremain"
     };
 
     var imgDelete = document.createElement('i');
@@ -128,7 +120,7 @@
 	root.appendChild(myjstbl.mypage.pagingtable);	
 
 	$('#tbl').hide();
-	$('#branch_list, #for_branch').chosen();
+	$('#from_branch, #to_branch').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
@@ -140,9 +132,9 @@
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_purchase_id 	= table_get_column_data(global_row_index,'id');
+		global_delivery_id 	= table_get_column_data(global_row_index,'id');
 
-		$('#deletePurchaseOrderModal').modal('show');
+		$('#deleteStockDeliveryModal').modal('show');
 	});
 
 	$('#search').click(function(){
@@ -156,11 +148,11 @@
 		flag = 1;
 
 		var row_index 		= global_row_index;
-		var purchase_id_val = global_purchase_id;
+		var delivery_id_val = global_delivery_id;
 
 		var arr = 	{ 
-						fnc 	 	: 'delete_purchaseorder_head', 
-						purchase_id : purchase_id_val
+						fnc 	 	: 'delete_stock_delivery_head', 
+						delivery_head_id : delivery_id_val
 					};
 		$.ajax({
 			type: "POST",
@@ -179,9 +171,9 @@
 					if (myjstbl.get_row_count() == 1) 
 						$('#tbl').hide();
 
-					$('#deletePurchaseOrderModal').modal('hide');
+					$('#deleteStockDeliveryModal').modal('hide');
 
-					build_message_box('messagebox_1','Purchase Order entry successfully deleted!','success');
+					build_message_box('messagebox_1','Stock Delivery entry successfully deleted!','success');
 				}
 
 				flag = 0;
@@ -192,9 +184,9 @@
 	$('.column_click').live('click',function(){
 		
 		var row_index 	= $(this).parent().index();
-		var purchase_id = table_get_column_data(row_index,'id');
+		var delivery_id = table_get_column_data(row_index,'id');
 
-		window.open('<?= base_url() ?>purchase/view/' + purchase_id);
+		window.open('<?= base_url() ?>delivery/view/' + delivery_id);
 	});
 
 	$('#create_new').click(function(){
@@ -216,16 +208,16 @@
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
-					window.location = '<?= base_url() ?>purchase/view/'+response.id;
+					window.location = '<?= base_url() ?>delivery/view/'+response.id;
 
 				flag = 0;
 			}       
 		});
 	});
 
-	$('#deletePurchaseOrderModal').live('hidden.bs.modal', function (e) {
+	$('#deleteStockDeliveryModal').live('hidden.bs.modal', function (e) {
 		global_row_index 	= 0;
-		global_purchase_id 	= 0;
+		global_delivery_id 	= 0;
 	});
 
 	function refresh_table()
@@ -240,22 +232,22 @@
 		var orde_type_val 	= $('#order_type').val();
 		var date_from_val 	= $('#date_from').val();
 		var date_to_val 	= $('#date_to').val();
-		var branch_val 		= $('#branch_list').val();
+		var from_branch_val = $('#from_branch').val();
+		var to_branch_val 	= $('#to_branch').val();
 		var status_val 		= $('#status').val();
-		var type_val 		= $('#type').val();
-		var for_branch_val  = $('#for_branch').val();
+		var type_val 		= $('#delivery_type').val();
 
 		var arr = 	{ 
-						fnc 	 		: 'search_purchaseorder_list', 
+						fnc 	 		: 'search_stock_delivery_list', 
 						search_string 	: search_val,
 						order_by  		: order_val,
 						order_type 		: orde_type_val,
 						date_from		: date_from_val,
 						date_to 		: date_to_val,
-						branch 			: branch_val,
-						for_branch 		: for_branch_val,
+						from_branch 	: from_branch_val,
+						to_branch 		: to_branch_val,
 						status 			: status_val,
-						type 			: type_val	
+						type 			: type_val
 					};
 
 		$('#loadingimg').show();
@@ -271,7 +263,7 @@
 				if (response.rowcnt == 0) 
 				{
 					$('#tbl').hide();
-					build_message_box('messagebox_1','No purchase order found!','info');
+					build_message_box('messagebox_1','No stock delivery found!','info');
 				}
 				else
 				{

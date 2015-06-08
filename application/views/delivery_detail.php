@@ -1,36 +1,40 @@
+<div id="dynamic-css"></div>
 <div class="main-content pull-right">
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchase/list">Purchase Order List</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchase/view">Purchase Order Detail</a></li>
+			<li class="active"><a href="<?= base_url() ?>delivery/list">Stock Delivery List</a></li>
+			<li class="active"><a href="<?= base_url() ?>delivery/view">Stock Delivery Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Purchase Order Detail</div>
+		<div class="form-header">Stock Delivery Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
 				<table>
 					<tr>
-						<td colspan="2"><input type="checkbox" id="is_imported"> Imported Orders</td>
+						<td>Delivery Type:</td>
+						<td style="width:300px;">
+							<select class="form-control" id="delivery_type">
+								<option value="1">BOTH</option>
+								<option value="2">Sales</option>
+								<option value="3">Transfer</option>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<td>Reference #:</td>
 						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
 					</tr>
-					<tr>
-						<td>Supplier:</td>
-						<td><input type="text" class="form-control" id="supplier"></td>
+					<tr id="delivery_to_list">
+						<td>Delivery To:</td>
+						<td colspan="1">
+							<select class="form-control" id="to_branch" ><?= $branch_list ?></select>
+						</td>
 					</tr>
 					<tr>
 						<td>Date:</td>
 						<td><input type="text" class="form-control" id="date"></td>
-					</tr>
-					<tr>
-						<td>Order For:</td>
-						<td colspan="1">
-							<select class="form-control" id="orderfor" ><?= $branch_list ?></select>
-						</td>
 					</tr>
 					<tr>
 						<td valign="top">Memo:</td>
@@ -62,15 +66,15 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="deletePurchaseOrderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteStockDeliveryModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete stock delivery Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this purchase entry?
+				Are you sure you want to delete this stock delivery entry?
 				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

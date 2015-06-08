@@ -2,8 +2,8 @@
 	/**
 	 * Initialization of global variables
 	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of purchase detail id for delete modal
-	 * @global_row_index {Number} - Holder of purchase detail row index for delete modal
+	 * @global_detail_id {Number} - Holder of purchase return detail id for delete modal
+	 * @global_row_index {Number} - Holder of purchase return detail row index for delete modal
 	 * @token_val {String} - Token for CSRF Protection
 	 */
 	
@@ -97,8 +97,7 @@
 		header_title: "",
 		edit: [imgUpdate],
 		disp: [imgEdit],
-		td_class: "tablerow column_hover tdupdate",
-		headertd_class: "tdupdate"
+		td_class: "tablerow column_hover tdupdate"
 	};
 
     var imgDelete = document.createElement('i');
@@ -107,8 +106,7 @@
 		header_title: "",
 		edit: [imgDelete],
 		disp: [imgDelete],
-		td_class: "tablerow column_hover tddelete",
-		headertd_class: "tddelete"
+		td_class: "tablerow column_hover tddelete"
 	};
 
 
@@ -133,7 +131,7 @@
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
-						fnc : 'get_purchaseorder_details'
+						fnc : 'get_purchasereturn_details'
 					};
 		$.ajax({
 			type: "POST",
@@ -149,10 +147,6 @@
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
 					$('#supplier').val(response.supplier_name);
-					$('#orderfor').val(response.orderfor);
-					
-					if (response.is_imported == 1) 
-						$('#is_imported').attr('checked','checked');
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
@@ -161,16 +155,8 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				if (response.is_editable == false)
-				{
-					$('input, textarea, button, select').not('#print').attr('disabled','disabled');
-					$('.tdupdate, .tddelete').hide();
-				}	
-				else
-				{
-					add_new_row(myjstbl,colarray);
-					bind_product_autocomplete();
-				}
+				add_new_row(myjstbl,colarray);
+				bind_product_autocomplete();
 
 				recompute_total_qty(myjstbl,colarray,'total_qty');
 				
@@ -194,7 +180,7 @@
 		global_detail_id 	= table_get_column_data(global_row_index,'id');
 
 		if (global_detail_id != 0) 
-			$('#deletePurchaseOrderModal').modal('show');
+			$('#deletePurchaseReturnModal').modal('show');
 	});
 
 	$('#delete').click(function(){
@@ -207,7 +193,7 @@
 		var detail_id_val 	= global_detail_id;
 
 		var arr = 	{ 
-						fnc 	 	: 'delete_purchaseorder_detail', 
+						fnc 	 	: 'delete_purchasereturn_detail', 
 						detail_id 	: detail_id_val
 					};
 		$.ajax({
@@ -224,7 +210,7 @@
 					myjstbl.delete_row(row_index);
 					recompute_row_count(myjstbl,colarray);
 					recompute_total_qty(myjstbl,colarray,'total_qty');
-					$('#deletePurchaseOrderModal').modal('hide');
+					$('#deletePurchaseReturnModal').modal('hide');
 				}
 
 				flag = 0;
@@ -241,16 +227,12 @@
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var supplier_name_val = $('#supplier').val();
-		var orderfor_val = $('#orderfor').val();
-		var is_imported_val = $('#is_imported').is(':checked') ? 1 : 0;
 
 		var arr = 	{ 
-						fnc 	 	: 'save_purchaseorder_head', 
+						fnc 	 	: 'save_purchasereturn_head', 
 						entry_date 	: date_val,
 						memo 		: memo_val,
-						supplier_name : supplier_name_val,
-						orderfor     : orderfor_val,
-						is_imported : is_imported_val
+						supplier_name : supplier_name_val
 					};
 
 		$.ajax({
@@ -263,21 +245,21 @@
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
-					window.location = "<?= base_url() ?>purchase/list";
+					window.location = "<?= base_url() ?>purchaseret/list";
 
 				flag = 0;
 			}       
 		});
 	});
 
-	$('#deletePurchaseOrderModal').live('hidden.bs.modal', function (e) {
+	$('#deletePurchaseReturnModal').live('hidden.bs.modal', function (e) {
 		global_row_index 	= 0;
 		global_detail_id 	= 0;
 	});
 	
 	function bind_product_autocomplete()
 	{
-		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>purchase', {
+		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>purchaseret', {
 			enable_add : false,
 			fnc_callback : function(x, label, value, ret_datas, error){
 				var row_index = $(x).parent().parent().index();
@@ -309,7 +291,7 @@
 		var qty_val 		= table_get_column_data(row_index,'qty');
 		var memo_val 		= table_get_column_data(row_index,'memo');
 		var id_val 			= table_get_column_data(row_index,'id');
-		var fnc_val 		= id_val != 0 ? "update_purchaseorder_detail" : "insert_purchaseorder_detail";
+		var fnc_val 		= id_val != 0 ? "update_purchasereturn_detail" : "insert_purchasereturn_detail";
 
 		var arr = 	{ 
 						fnc 	 	: fnc_val, 

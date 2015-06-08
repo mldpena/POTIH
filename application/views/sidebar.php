@@ -73,6 +73,38 @@
 						<div>Return</div>
 					</div>
 				</a>
+				<a href="<?= base_url() ?>purchaseret/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>purchasereturn.png">
+						<div>Purchase Return</div>
+					</div>
+				</a>
+			</div>
+		</div>
+		<div class="sidebar-group" id="delivery-group">
+			<div class="header subgroup-toggle">
+				<div>Delivery and Stock Transferring</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
+				<a href="<?= base_url() ?>delivery/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<div>Stock Delivery</div>
+					</div>
+				</a>
+				<a href="<?= base_url() ?>sdreceive/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<div>Stock Receive</div>
+					</div>
+				</a>
+				<a href="<?= base_url() ?>creceive/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<div>Customer Receive</div>
+					</div>
+				</a>
 			</div>
 		</div>
 		<div class="sidebar-group" id="report-group">
@@ -83,6 +115,7 @@
 			<div class="link-menu">
 				<a href="<?= base_url() ?>invwarning/list">
 					<div class="link">
+						<img src="<?= base_url().IMG ?>purchaseorder.png">
 						<div>Product Inventory Warning</div>
 					</div>
 				</a>

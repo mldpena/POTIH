@@ -43,6 +43,10 @@ $route['return/(:any)'] = 'productreturn';
 $route['purchase/(:any)'] = 'purchaseorder';
 $route['poreceive/(:any)'] = 'purchasereceive';
 $route['invwarning/(:any)'] = 'inventorywarning';
+$route['purchaseret/(:any)'] = 'purchasereturn';
+$route['delivery/(:any)'] = 'stockdelivery';
+$route['sdreceive/(:any)'] = 'stockdelivery';
+$route['creceive/(:any)'] = 'stockdelivery';
 $route['404_override'] = '';
 
 

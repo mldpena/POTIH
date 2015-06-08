@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchase/list">Purchase Order List</a></li>
+			<li class="active"><a href="<?= base_url() ?>purchaseret/list">Purchase Return List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Purchase Order List</div>
+		<div class="form-header">Purchase Return List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>
@@ -20,33 +20,6 @@
 						<td>Location:</td>
 						<td colspan="3">
 							<select class="form-control" id="branch_list"><?= $branch_list ?></select>
-						</td>
-					</tr>
-					<tr>
-						<td>For Branch:</td>
-						<td colspan="3">
-							<select class="form-control" id="for_branch"><?= $branch_list ?></select>
-						</td>
-					</tr>
-					<tr>
-						<td>Type:</td>
-						<td colspan="3">
-							<select class="form-control" id="type">
-								<option value="0">ALL</option>
-								<option value="1">Imported</option>
-								<option value="2">Local</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Status:</td>
-						<td colspan="3">
-							<select class="form-control" id="status">
-								<option value="0">ALL</option>
-								<option value="1">Incomplete</option>
-								<option value="2">Complete</option>
-								<option value="3">No Received</option>
-							</select>
 						</td>
 					</tr>
 				</table>
@@ -65,7 +38,7 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_new">Create New Purchase Order</button>
+				<button class="btn btn-primary" id="create_new">Create New Purchase Return</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -80,15 +53,15 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="deletePurchaseOrderModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deletePurchaseReturnModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Purchase Return Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this purchase entry?
+				Are you sure you want to delete this purchase return entry?
 				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

@@ -69,6 +69,37 @@
 					<div class="btn-title">Return</div>
 				</div>
 			</a>
+			<a href="<?= base_url() ?>purchaseret/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchasereturn.png">
+					<div class="btn-title">Purchase Return</div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="content-form">
+		<div class="form-header">
+			Delivery and Stock Transferring
+		</div>
+		<div class="form-body default">
+			<a href="<?= base_url() ?>delivery/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<div class="btn-title">Stock Delivery</div>
+				</div>
+			</a>
+			<a href="<?= base_url() ?>sdreceive/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<div class="btn-title">Stock Receive</div>
+				</div>
+			</a>
+			<a href="<?= base_url() ?>creceive/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<div class="btn-title">Customer Receive</div>
+				</div>
+			</a>
 		</div>
 	</div>
 	<div class="content-form">
