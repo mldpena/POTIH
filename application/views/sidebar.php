@@ -69,7 +69,7 @@
 				</a>
 				<a href="<?= base_url() ?>return/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchasereturn.png">
+						<img src="<?= base_url().IMG ?>return.png">
 						<div>Return</div>
 					</div>
 				</a>
@@ -89,19 +89,19 @@
 			<div class="link-menu">
 				<a href="<?= base_url() ?>delivery/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<img src="<?= base_url().IMG ?>stockdelivery.png">
 						<div>Stock Delivery</div>
 					</div>
 				</a>
 				<a href="<?= base_url() ?>sdreceive/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<img src="<?= base_url().IMG ?>stockreceive.png">
 						<div>Stock Receive</div>
 					</div>
 				</a>
 				<a href="<?= base_url() ?>creceive/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<img src="<?= base_url().IMG ?>customerreceive.png">
 						<div>Customer Receive</div>
 					</div>
 				</a>
@@ -115,7 +115,7 @@
 			<div class="link-menu">
 				<a href="<?= base_url() ?>invwarning/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<img src="<?= base_url().IMG ?>productinventorywarning.png">
 						<div>Product Inventory Warning</div>
 					</div>
 				</a>

@@ -65,7 +65,7 @@
 			</a>
 			<a href="<?= base_url() ?>return/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchasereturn.png">
+					<img src="<?= base_url().IMG ?>return.png">
 					<div class="btn-title">Return</div>
 				</div>
 			</a>
@@ -84,19 +84,19 @@
 		<div class="form-body default">
 			<a href="<?= base_url() ?>delivery/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>stockdelivery.png">
 					<div class="btn-title">Stock Delivery</div>
 				</div>
 			</a>
 			<a href="<?= base_url() ?>sdreceive/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>stockreceive.png">
 					<div class="btn-title">Stock Receive</div>
 				</div>
 			</a>
 			<a href="<?= base_url() ?>creceive/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>customerreceive.png">
 					<div class="btn-title">Customer Receive</div>
 				</div>
 			</a>
@@ -109,7 +109,7 @@
 		<div class="form-body default">
 			<a href="<?= base_url() ?>invwarning/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>productinventorywarning.png">
 					<div class="btn-title">Product Inventory Warning</div>
 				</div>
 			</a>

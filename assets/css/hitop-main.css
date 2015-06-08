@@ -73,7 +73,7 @@ body{
 
 /*Sidebar*/
 .sidebar{
-	width: 18.7%;
+	width: 20%;
 	height: 100%;
 	margin-left: 15px;
 	margin-top: 10px;
@@ -92,7 +92,7 @@ body{
 }
 .sidebar > .sidebar-links-panel .sidebar-group .header{
 	background: #00923F;
-	font-size: 14px;
+	font-size: 12px;
 	text-align: left;
 	color: #fff;
 	padding: 10px;
@@ -229,7 +229,7 @@ body{
 }
 /*Main Content*/
 .main-content{
-	width: 78%;
+	width: 76.7%;
 	margin-right: 15px;
 	margin-top: 15px;
 	min-height: 534px;
