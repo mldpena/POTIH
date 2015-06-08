@@ -113,7 +113,7 @@
 
 	$('.column_click').live('click',function(){
 		var row_index 	= $(this).parent().index();
-		var user_id 	= table_get_column_data(global_row_index,'id');
+		var user_id 	= table_get_column_data(row_index,'id');
 
 		window.open('<?= base_url() ?>user/view/' + user_id);
 	});

@@ -192,7 +192,7 @@
     	//Assign values to global variables to be used for saving
 
     	global_row_index 	= $(this).parent().index();
-    	global_product_id 	= table_get_column_data(row_index,'id');
+    	global_product_id 	= table_get_column_data(global_row_index,'id');
 
     	var arr = 	{ 
 						fnc 	 	: 'get_product_details', 

@@ -104,6 +104,19 @@
 	</div>
 	<div class="content-form">
 		<div class="form-header">
+			Others
+		</div>
+		<div class="form-body default">
+			<a href="<?= base_url() ?>adjust/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<div class="btn-title">Inventory Adjust</div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div class="content-form">
+		<div class="form-header">
 			Reports
 		</div>
 		<div class="form-body default">

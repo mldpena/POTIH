@@ -251,9 +251,11 @@
 				myjstbl.clear_table();
 				clear_message_box();
 
-				if (response.rowcnt == 0) 
+				if (response.rowcnt == 0)
+				{ 
 					$('#tbl').hide();
 					build_message_box('messagebox_1','No material found!','info');
+				}
 				else
 				{
 					if(response.rowcnt <= 10)

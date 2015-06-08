@@ -84,7 +84,7 @@
 
 	 $('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_material_id 	= table_get_column_data()
+		global_material_id 	= table_get_column_data(global_row_index,'id');
 
 		$('#deleteMaterialModal').modal('show');
 	});

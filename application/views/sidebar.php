@@ -109,6 +109,20 @@
 		</div>
 		<div class="sidebar-group" id="report-group">
 			<div class="header subgroup-toggle">
+				<div>Others</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
+				<a href="<?= base_url() ?>adjust/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<div>Inventory Adjust</div>
+					</div>
+				</a>
+			</div>
+		</div>
+		<div class="sidebar-group" id="report-group">
+			<div class="header subgroup-toggle">
 				<div>Report</div>
 				<div><i class="fa fa-plus-square"></i></div>
 			</div>
