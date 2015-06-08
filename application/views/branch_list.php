@@ -20,6 +20,7 @@
 			</div>
 			<div class="max-row">
 				<button class="btn btn-primary" data-toggle="modal" data-target="#createBranchModal">Create Branch</button>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#setMainBranchModal">Set Main Branch</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -73,6 +74,25 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" class="btn btn-primary" id="delete">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal for main branch setup -->
+<div class="modal fade" id="setMainBranchModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Set Main Branch</h4>
+			</div>
+			<div class="modal-body">
+				Set Main Branch : <select id="main_branch" class="form-control"><?= $branch_list ?></select>
+				<div id="messagebox_3"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" id="update_main_branch">Save</button>
 			</div>
 		</div>
 	</div>

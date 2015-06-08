@@ -217,6 +217,39 @@
 		});
 	});
 
+	$('#update_main_branch').click(function(){
+		if (flag == 1) 
+			return;
+
+		flag = 1;
+
+		var branch_id_val 	= $('#main_branch').val();
+
+		var arr = 	{ 
+						fnc 	 	: 'update_main_branch', 
+						branch_id 	: branch_id_val
+					};
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+					build_message_box('messagebox_3',response.error,'danger');
+				else
+				{
+					$('#setMainBranchModal').modal('hide');
+
+					build_message_box('messagebox_1','Main Branch successfully updated!','success');
+				}
+
+				flag = 0;
+			}       
+		});
+	});
+
 	$('#createBranchModal, #deleteBranchModal').live('hidden.bs.modal', function (e) {
 		$('.modal-fields').val('');
 		$('.modal-fields').html('');

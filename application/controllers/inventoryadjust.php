@@ -1,7 +1,7 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class Branch extends CI_Controller {
-
+class InventoryAdjust extends CI_Controller {
+	
 	private $_config;
 	/**
 	 * Load needed model or library for the current controller
@@ -37,8 +37,9 @@ class Branch extends CI_Controller {
 		switch ($page) 
 		{
 			case 'list':
-				$page = 'branch_list';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE,(int)$this->_config->general->main_branch_id);
+				$page = 'adjust_list';
+				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;
 			
 			default:
@@ -77,7 +78,7 @@ class Branch extends CI_Controller {
 	
 	private function _ajax_request()
 	{
-		$this->load->model('branch_model');
+		$this->load->model('adjust_model');
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -87,54 +88,15 @@ class Branch extends CI_Controller {
 
 		switch ($fnc) 
 		{
-			case 'insert_new_branch':
-				$response = $this->branch_model->add_new_branch($post_data);
-				break;
-
-			case 'search_branch_list' :
-				$response = $this->branch_model->search_branch_list($post_data);
-				break;
-
-			case 'get_branch_details' :
-				$response = $this->branch_model->get_branch_details($post_data);
-				break;
-
-			case 'edit_branch' :
-				$response = $this->branch_model->update_branch($post_data);
-				break;
-
-			case 'delete_branch' :
-				$response = $this->branch_model->delete_branch($post_data);
-				break;
-
-			case 'update_main_branch':
-				$response = $this->_set_main_branch_config($post_data);
+			case 'get_product_and_adjust_list':
+				$response = $this->adjust_model->get_product_adjust_list($post_data);
 				break;
 
 			default:
-				$response['error'] = 'Invalid Arguments!';
+				$response['error'] = 'Invalid arguments!';
 				break;
 		}
 
 		echo json_encode($response);
-	}
-
-	private function _set_main_branch_config($param)
-	{
-		extract($param);
-
-		$response['error'] = '';
-
-		try
-		{
-			$this->_config->general->main_branch_id = $branch_id;
-			$this->_config->asXML("application/config/app.xml");
-		}
-		catch (Exception $e)
-		{
-			$response['error'] = $e->getMessage();
-		}
-
-		return $response;
 	}
 }
