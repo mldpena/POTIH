@@ -158,7 +158,7 @@
     
 
         if(branch_val != 0){ flag= 1;}
-        else{ alert('no branch selected!');};
+        else{ alert('no branch selected!'); $('#tbl').hide();};
       
                    
          var arr =    {
