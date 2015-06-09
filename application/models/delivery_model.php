@@ -353,6 +353,8 @@ class Delivery_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+
 		return $response;
 	}
 	
@@ -468,6 +470,8 @@ class Delivery_Model extends CI_Model {
 				$i++;
 			}
 		}
+
+		$result->free_result();
 
 		return $response;
 	}
@@ -645,6 +649,8 @@ class Delivery_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+		
 		return $response;
 	}
 

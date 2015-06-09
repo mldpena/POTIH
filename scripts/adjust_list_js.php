@@ -123,18 +123,95 @@
     });
 
     $('.column_click').live('click',function(){
+    	if (flag == 1)
+			return;
+
     	global_row_index = $(this).parent().index();
     	global_product_id = table_get_column_data(global_row_index,'id');
     	global_adjust_id = table_get_column_data(global_row_index,'request',1);
-
+    	
     	var arr = 	{ 
 						fnc 	 : 'get_adjust_details', 
 						product_id : global_product_id,
 						adjust_id  : global_adjust_id,
 					};
 
-    	$('#requestAdjustModal').modal('show');
+		flag = 1;
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				if (response.error != '') 
+					build_message_box('messagebox_2',response.error,'danger');
+				else
+				{
+					if (global_adjust_id == 0) 
+						$('#div-pending').hide();
+					else
+						$('#div-pending').show();
+
+					$('#product_name').html(response.product_name);
+					$('#product_code').html(response.material_code);
+					$('#old_inventory').html(response.old_inventory);
+					$('#new_inventory').val(response.new_inventory);
+				}
+
+				$('#requestAdjustModal').modal('show');
+				flag = 0;
+			}       
+		});
+
+    	
     });
+
+	$('#save').click(function(){
+		if (flag == 1)
+			return;
+
+		var fnc_val 			= global_adjust_id == 0 ? 'insert_inventory_adjust' : 'update_inventory_adjust';
+		var new_inventory_val 	= $('#new_inventory').val();
+		var old_inventory_val 	= $('#old_inventory').html();
+		var arr = 	{ 
+						fnc 	 : fnc_val, 
+						product_id : global_product_id,
+						adjust_id  : global_adjust_id,
+						old_inventory : old_inventory_val,
+						new_inventory : new_inventory_val,
+					};
+
+		flag = 1;
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				if (response.error != '') 
+					build_message_box('messagebox_2',response.error,'danger');
+				else
+				{
+					var message = '';
+					if (response.status == 1) 
+					{
+						var adjust_id = Number(global_adjust_id) == 0 ? response.id : global_adjust_id;
+						message = 'Inventory adjust request successfully submitted!';
+						table_set_column_data(global_row_index,'request',[new_inventory_val,adjust_id]);
+					}
+					else if (response.status == 2)
+					{
+						message = 'Inventory successfully adjusted!';
+						table_set_column_data(global_row_index,'inv',[new_inventory_val]);
+					} 
+						
+					$('#requestAdjustModal').modal('hide');
+					build_message_box('messagebox_1',message,'success');
+				}
+				flag = 0;
+			}       
+		});
+	});
 
     //Callback function for modals. Will reset values to default
     $('#requestAdjustModal').live('hidden.bs.modal', function (e) {

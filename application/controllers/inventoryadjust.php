@@ -92,6 +92,18 @@ class InventoryAdjust extends CI_Controller {
 				$response = $this->adjust_model->get_product_adjust_list($post_data);
 				break;
 
+			case 'get_adjust_details':
+				$response = $this->adjust_model->get_adjust_details($post_data);
+				break;
+
+			case 'insert_inventory_adjust':
+				$response = $this->adjust_model->insert_inventory_adjust($post_data,$this->_config);
+				break;
+
+			case 'update_inventory_adjust':
+				$response = $this->adjust_model->insert_inventory_adjust($post_data,$this->_config);
+				break;
+
 			default:
 				$response['error'] = 'Invalid arguments!';
 				break;

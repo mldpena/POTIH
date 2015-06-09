@@ -154,6 +154,108 @@ class Adjust_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+
 		return $response;
 	}
+
+	public function get_adjust_details($param)
+	{
+		extract($param);
+
+		$response 	= array();
+		$response['error'] = '';
+
+		$product_id = $this->encrypt->decode($product_id);
+		$adjust_id = $adjust_id == '0' ? 0 : $this->encrypt->decode($adjust_id);
+
+		$query_data = array($this->_current_branch_id,$adjust_id,$product_id);
+		$query = "SELECT P.`description` AS 'product_name', P.`material_code`, COALESCE(IA.`old_inventory`,PBI.`inventory`) AS 'old_inventory',
+					COALESCE(IA.`new_inventory`,0) AS 'new_inventory'
+					FROM product AS P
+					LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
+					LEFT JOIN inventory_adjust AS IA ON IA.`product_id` = P.`id` AND IA.`id` = ?
+					WHERE P.`id` = ?";
+
+		$result = $this->db->query($query,$query_data);
+		if ($result->num_rows() == 1) 
+		{
+			$row = $result->row();
+
+			foreach ($row as $key => $value) 
+				$response[$key] = $value;
+		}
+		else
+			$response['error'] = 'Unable to get adjustment details!';
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	public function insert_inventory_adjust($param,$config)
+	{
+		extract($param);
+		
+		$response 	= array();
+		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::REQUEST;
+		$product_id = $this->encrypt->decode($product_id);
+
+		$response['error'] = '';
+
+		$query_data = array($this->_current_branch_id,$product_id,$old_inventory,$new_inventory,ADJUST_CONST::ACTIVE,$status,$this->_current_user,$this->_current_user,$this->_current_date,$this->_current_date);
+		$query = "INSERT INTO `inventory_adjust`
+					(`branch_id`,
+					`product_id`,
+					`old_inventory`,
+					`new_inventory`,
+					`is_show`,
+					`status`,
+					`created_by`,
+					`last_modified_by`,
+					`date_created`,
+					`last_modified_date`)
+					VALUES
+					(?,?,?,?,?,?,?,?,?,?)";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+			$response['error'] = 'Unable to insert inventory adjust!';
+		else
+		{
+			$response['status'] = $status;
+			$response['id'] = $this->encrypt->encode($result['id']);
+		}
+
+		return $response;
+	}
+
+	public function update_inventory_adjust($param,$config)
+	{
+		extract($param);
+
+		$response 	= array();
+		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::REQUEST;
+		$adjust_id 	= $this->encrypt->decode($adjust_id);
+
+		$response['error'] = '';
+
+		$query_data = array($new_inventory,$this->_current_user,$this->_current_date,$adjust_id);
+		$query = "UPDATE `inventory_adjust`
+					SET `new_inventory` = ?,
+					`last_modified_by` = ?,
+					`last_modified_date` = ?
+					WHERE `id` = ?";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+			$response['error'] = 'Unable to insert inventory adjust!';
+		else
+			$response['status'] = $status;
+		
+		return $response;
+	}
+
 }

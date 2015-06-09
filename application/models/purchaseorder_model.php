@@ -332,6 +332,8 @@ class PurchaseOrder_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+		
 		return $response;
 	}
 	

@@ -80,15 +80,19 @@
 				<h4 class="modal-title" id="myModalLabel">Inventory Adjust</h4>
 			</div>
 			<div class="modal-body">
+				<div class="form-group" id="div-pending">
+					Status:
+					<span id="status">PENDING</span>
+				</div>
 				<div class="form-group">
 					<div class="row">
 						<div class="col-xs-6">
 							Product Name:
 							<div class="txt-data modal-fields" id="product_name"></div>
 						</div>
-						<div class="col-xs-6" id="div-status" style="display:none;">
-							Status:
-							<div class="txt-data modal-fields" id="status"></div>
+						<div class="col-xs-6">
+							Material Code:
+							<div class="txt-data modal-fields" id="product_code"></div>
 						</div>
 					</div>
 				</div>
@@ -96,7 +100,7 @@
 					<div class="row">
 						<div class="col-xs-6">
 							Old Inventory:
-							<div class="txt-data modal-fields" id="old_inventory"></div>
+							<div class="modal-fields" id="old_inventory"></div>
 						</div>
 						<div class="col-xs-6">
 							New Inventory:

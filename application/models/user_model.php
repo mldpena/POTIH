@@ -290,7 +290,7 @@ class User_Model extends CI_Model {
 								LEFT JOIN branch AS B ON B.`id` = UP.`branch_id`
 								WHERE B.`is_show` = ".USER_CONST::ACTIVE." AND `user_id` = ?";
 			
-			$result_branches = $this->db->query($query_branches,$user_id);
+			$result_branches = $this->db->query($query_branches,$this->_user_head_id);
 			
 			if ($result_branches->num_rows() == 0) 
 				$response['error'] = 'No branch assigned to this account!';
