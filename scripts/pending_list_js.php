@@ -6,9 +6,6 @@
 	 */
 	
 	var flag = 0;
-	var global_adjust_id = 0;
-	var global_product_id = 0;
-	var global_row_index = 0;
 	var token_val = '<?= $token ?>';
 
 	/**
@@ -30,6 +27,16 @@
         disp: [spnid],
         td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
+    };
+
+	var chkadjust = document.createElement('input');
+	chkadjust.setAttribute('type','checkbox');
+	chkadjust.setAttribute('class','chkadjust');
+	colarray['checkbox'] = { 
+        header_title: "",
+        edit: [chkadjust],
+        disp: [chkadjust],
+        td_class: "tablerow tdchkadjust"
     };
 
     var spnnumber = document.createElement('span');
@@ -64,20 +71,28 @@
         td_class: "tablerow column_click column_hover tdtype"
     };
 
-    var spnmaterial = document.createElement('span');
-	colarray['material'] = { 
-        header_title: "Material Type",
-        edit: [spnmaterial],
-        disp: [spnmaterial],
-        td_class: "tablerow column_click column_hover tdmaterial_type"
+    var spnfrombranch = document.createElement('span');
+	colarray['frombranch'] = { 
+        header_title: "From Branch",
+        edit: [spnfrombranch],
+        disp: [spnfrombranch],
+        td_class: "tablerow column_click column_hover tdfrombranch"
     };
 
-    var spnsubgroup = document.createElement('span');
-	colarray['subgroup'] = { 
-        header_title: "Sub Group",
-        edit: [spnsubgroup],
-        disp: [spnsubgroup],
-        td_class: "tablerow column_click column_hover tdsubgroup"
+    var spndate = document.createElement('span');
+	colarray['date'] = { 
+        header_title: "Date",
+        edit: [spndate],
+        disp: [spndate],
+        td_class: "tablerow column_click column_hover tddate"
+    };
+
+    var spnoldinv = document.createElement('span');
+	colarray['oldinv'] = { 
+        header_title: "Old Inv",
+        edit: [spnoldinv],
+        disp: [spnoldinv],
+        td_class: "tablerow column_click column_hover tdoldinv"
     };
 
     var spninv = document.createElement('span');
@@ -88,14 +103,28 @@
         td_class: "tablerow column_click column_hover tdinv"
     };
 
-    var spnrequest = document.createElement('span');
-    var spnrequesthidden = document.createElement('span');
-    spnrequesthidden.setAttribute('style','display:none');
-	colarray['request'] = { 
+    var spnnewinv = document.createElement('span');
+	colarray['newinv'] = { 
         header_title: "Req Inv",
-        edit: [spnrequest,spnrequesthidden],
-        disp: [spnrequest,spnrequesthidden],
-        td_class: "tablerow column_click column_hover tdrequest"
+        edit: [spnnewinv],
+        disp: [spnnewinv],
+        td_class: "tablerow column_click column_hover tdnewinv"
+    };
+
+    var spnstatus = document.createElement('span');
+	colarray['status'] = { 
+        header_title: "Status",
+        edit: [spnstatus],
+        disp: [spnstatus],
+        td_class: "tablerow column_click column_hover tdstatus"
+    };
+
+    var spnmemo = document.createElement('span');
+	colarray['memo'] = { 
+        header_title: "Memo",
+        edit: [spnmemo],
+        disp: [spnmemo],
+        td_class: "tablerow column_click column_hover tdmemo"
     };
 
 	var myjstbl;
@@ -110,30 +139,45 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
-	$('#tbl').hide();
+	var tableHelper = new TABLE.EventHelper();
+
+	$('#tbl, #action-button').hide();
 	//Call refresh function after loading the page
-	refresh_table();
+	
 
 	$('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
+    $('#date_from, #date_to').datepicker("setDate", new Date());
+
+    refresh_table();
 
     //Event for calling search function
     $('#search').click(function(){
     	refresh_table();
     });
 
-    $('.column_click').live('click',function(){
-    	if (flag == 1)
-			return;
+    $('#approve, #decline').click(function(){
+    	if (flag == 1) 
+    		return;
 
-    	global_row_index = $(this).parent().index();
-    	global_product_id = table_get_column_data(global_row_index,'id');
-    	global_adjust_id = table_get_column_data(global_row_index,'request',1);
-    	
+    	var action_val = $(this).attr('id');
+    	var adjust_id_list_val = [];
+
+    	$(".chkadjust:checked").each(function () {
+	        var self = $(this);
+	        var row_index =  $(this).parent().parent().index();
+
+	        var adjust_id = tableHelper.getData(row_index,'id');
+
+	        tableHelper.setData(row_index,'status',[$.ucfirst(action_val) + 'd']);
+	        
+	        adjust_id_list_val.push(adjust_id);
+    	});
+
     	var arr = 	{ 
-						fnc 	 : 'get_adjust_details', 
-						product_id : global_product_id,
-						adjust_id  : global_adjust_id,
+						fnc 	: 'update_request_status', 
+						action  : action_val,
+						adjust_id_list  : adjust_id_list_val
 					};
 
 		flag = 1;
@@ -144,84 +188,17 @@
 			data: 'data=' + JSON.stringify(arr) + token_val,
 			success: function(response) {
 				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
+					build_message_box('messagebox_1',response.error,'danger');
 				else
 				{
-					if (global_adjust_id == 0) 
-						$('#div-pending').hide();
-					else
-						$('#div-pending').show();
-
-					$('#product_name').html(response.product_name);
-					$('#product_code').html(response.material_code);
-					$('#old_inventory').html(response.old_inventory);
-					$('#new_inventory').val(response.new_inventory);
+					flag = 0;
+					build_message_box('messagebox_1','Inventory adjust request successfully ' + action_val + 'd!','success');
 				}
 
-				$('#requestAdjustModal').modal('show');
 				flag = 0;
 			}       
 		});
-
-    	
     });
-
-	$('#save').click(function(){
-		if (flag == 1)
-			return;
-
-		var fnc_val 			= global_adjust_id == 0 ? 'insert_inventory_adjust' : 'update_inventory_adjust';
-		var new_inventory_val 	= $('#new_inventory').val();
-		var old_inventory_val 	= $('#old_inventory').html();
-		var memo_val 			= $('#memo').val();
-
-		var arr = 	{ 
-						fnc 	 : fnc_val, 
-						product_id : global_product_id,
-						adjust_id  : global_adjust_id,
-						old_inventory : old_inventory_val,
-						new_inventory : new_inventory_val,
-						memo : memo_val
-					};
-
-		flag = 1;
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					var message = '';
-					if (response.status == 1) 
-					{
-						var adjust_id = Number(global_adjust_id) == 0 ? response.id : global_adjust_id;
-						message = 'Inventory adjust request successfully submitted!';
-						table_set_column_data(global_row_index,'request',[new_inventory_val,adjust_id]);
-					}
-					else if (response.status == 2)
-					{
-						message = 'Inventory successfully adjusted!';
-						table_set_column_data(global_row_index,'inv',[new_inventory_val]);
-					} 
-						
-					$('#requestAdjustModal').modal('hide');
-					build_message_box('messagebox_1',message,'success');
-				}
-				flag = 0;
-			}       
-		});
-	});
-
-    //Callback function for modals. Will reset values to default
-    $('#requestAdjustModal').live('hidden.bs.modal', function (e) {
-		global_row_index 	= 0;
-		global_adjust_id 	= 0;
-		global_product_id 	= 0;
-	});
 
     //Function for refreshing table content
 	function refresh_table()
@@ -238,12 +215,12 @@
 		var material_val	= $('#material').val();
 		var datefrom_val	= $('#date_from').val();
 		var dateto_val		= $('#date_to').val();
-		var inv_val			= $('#invstatus').val();
+		var branch_val		= $('#branch').val();
 		var orderby_val		= $('#orderby').val();
-
+		var status_val		= $('#status').val();
 
 		var arr = 	{ 
-						fnc 	 : 'get_product_and_adjust_list', 
+						fnc 	 : 'get_pending_adjust_list', 
 						code 	 : itemcode_val,
 						product  : product_val,
 						subgroup : subgroup_val,
@@ -251,8 +228,9 @@
 						material : material_val,
 						datefrom : datefrom_val,
 						dateto 	 : dateto_val,
-						invstat  : inv_val,
-						orderby  : orderby_val
+						branch 	 : branch_val,
+						orderby  : orderby_val,
+						status 	 : status_val
 					};
 
 		$('#loadingimg').show();
@@ -267,8 +245,8 @@
 
 				if (response.rowcnt == 0) 
 				{
-					$('#tbl').hide();
-					build_message_box('messagebox_1','No product found!','info');
+					$('#tbl, #action-button').hide();
+					build_message_box('messagebox_1','No inventory adjust found!','info');
 				}
 				else
 				{
@@ -279,7 +257,7 @@
 
 					myjstbl.insert_multiplerow_with_value(1,response.data);
 
-					$('#tbl').show();
+					$('#tbl, #action-button').show();
 				}
 
 				$('#loadingimg').hide();

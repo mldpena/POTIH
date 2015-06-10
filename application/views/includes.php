@@ -19,5 +19,6 @@
 <script type="text/javascript" src="<?= base_url().JS ?>my_js_tbl.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>my_js_tblpaging.js"></script>   
 <script type="text/javascript" src="<?= base_url().JS ?>sidebar.js"></script>   
+<script type="text/javascript" src="<?= base_url().JS ?>jquery.extend.js"></script>   
 
 

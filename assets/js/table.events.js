@@ -13,16 +13,14 @@ var _settings = {
     modalID     : 'deleteModal'
 };
 
-TABLE.EventHelper = function() { }
+TABLE.EventHelper = function(options) { 
+    if (options) {
+        $.extend(settings,options);
+    }
+}
 
 
 TABLE.EventHelper.prototype = {
-    init : function(options) {
-        if (options) {
-            $.extend(settings,options);
-        }
-    },
-
     bindUpdateEvents : function(callback){
         $('.' + _settings.updateClass).live('click',function(){
             _callAjaxUpdate($(this),callback);
@@ -41,7 +39,7 @@ TABLE.EventHelper.prototype = {
     },
 
     getData : function(row_index,object_array_column,array_column_index,object,object_array){
-        _getColumnData(row_index,object_array_column,array_column_index,object,object_array);
+        return _getColumnData(row_index,object_array_column,array_column_index,object,object_array);
     },
 
     setData : function(row_index,object_array_column,values,object,object_array){

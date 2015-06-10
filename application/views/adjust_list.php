@@ -60,6 +60,9 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
+				<a href="<?= base_url() ?>adjust/express"><button class="btn btn-primary">Inventory Adjust Express</button></a>
+			</div>
+			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>
 			<div class="max-row">
@@ -107,6 +110,10 @@
 							<input type="text" class="form-control modal-fields" id="new_inventory">
 						</div>
 					</div>
+				</div>
+				<div class="form-group">
+					Memo:
+					<textarea class="form-control modal-fields" rows="4" id="memo"></textarea>
 				</div>
 				<div id="messagebox_2"></div>
 			</div>

@@ -323,7 +323,7 @@ class Product_Model extends CI_Model {
 		if (!empty($dateto))
 		{
 			$conditions .= " AND P.`date_created` <= ?";
-			array_push($query_data,$datefrom.' 23:59:59');
+			array_push($query_data,$dateto.' 23:59:59');
 		}
 
 		if ($type != PRODUCT_CONST::ALL_OPTION) 

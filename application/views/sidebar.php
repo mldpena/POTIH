@@ -119,6 +119,12 @@
 						<div>Inventory Adjust</div>
 					</div>
 				</a>
+				<a href="<?= base_url() ?>pending/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<div>Pending Inventory Adjust</div>
+					</div>
+				</a>
 			</div>
 		</div>
 		<div class="sidebar-group" id="report-group">
@@ -133,10 +139,8 @@
 						<div>Product Inventory Warning</div>
 					</div>
 				</a>
-				
 				<a href="<?= base_url() ?>productbranchinventory/list">
 					<div class="link">
-					
 						<div>Product Branch Inventory</div>
 					</div>
 				</a>

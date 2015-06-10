@@ -12,10 +12,11 @@
 		const ALL_OPTION 	= 0;
 		const ORDER_BY_CODE = 1;
 		const ORDER_BY_NAME = 2;
+		const ORDER_BY_LOCATION = 3;
 		const POSITIVE_INV 	= 1;
 		const NEGATIVE_INV 	= 2;
 		const ZERO_INV 	= 3;
-		const REQUEST = 1;
+		const PENDING = 1;
 		const APPROVED = 2;
 		const DECLINED = 3;
 	}

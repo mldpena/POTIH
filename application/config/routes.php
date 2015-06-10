@@ -48,6 +48,7 @@ $route['delivery/(:any)'] = 'stockdelivery';
 $route['sdreceive/(:any)'] = 'stockdelivery';
 $route['creceive/(:any)'] = 'stockdelivery';
 $route['adjust/(:any)'] = 'inventoryadjust';
+$route['pending/(:any)'] = 'inventoryadjust';
 $route['404_override'] = '';
 
 

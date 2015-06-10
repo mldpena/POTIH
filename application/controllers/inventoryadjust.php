@@ -26,7 +26,8 @@ class InventoryAdjust extends CI_Controller {
 
 		check_user_credentials();
 
-		$page = $this->uri->segment(2);
+		$page 		= $this->uri->segment(2);
+		$controller = $this->uri->segment(1);
 
 		if (isset($_POST['data'])) 
 		{
@@ -34,19 +35,34 @@ class InventoryAdjust extends CI_Controller {
 			exit();
 		}
 
-		switch ($page) 
+		if ($controller == 'adjust') 
 		{
-			case 'list':
-				$page = 'adjust_list';
-				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
-				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
-				break;
-			
-			default:
-				echo 'Invalid Page URL!';
-				exit();
-				break;
+			switch ($page) 
+			{
+				case 'list':
+					$page = 'adjust_list';
+					$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+					$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+					break;
+				
+				case 'express':
+					$page = 'adjust_express_list';
+					break;
+
+				default:
+					echo 'Invalid Page URL!';
+					exit();
+					break;
+			}
 		}
+		else if ($controller == 'pending') 
+		{
+			$page = 'pending_list';
+			$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+			$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
+			$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+		}
+		
 
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
@@ -102,6 +118,14 @@ class InventoryAdjust extends CI_Controller {
 
 			case 'update_inventory_adjust':
 				$response = $this->adjust_model->insert_inventory_adjust($post_data,$this->_config);
+				break;
+
+			case 'get_pending_adjust_list':
+				$response = $this->adjust_model->get_pending_adjust_list($post_data);
+				break;
+
+			case 'update_request_status':
+				$response = $this->adjust_model->update_request_status($post_data);
 				break;
 
 			default:

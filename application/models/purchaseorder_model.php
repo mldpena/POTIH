@@ -286,7 +286,7 @@ class PurchaseOrder_Model extends CI_Model {
 					break;
 				
 				case PURCHASE_CONST::COMPLETE:
-					$having = "HAVING remaining_qty = 0";
+					$having = "HAVING remaining_qty <= 0";
 					break;
 
 				case PURCHASE_CONST::NO_RECEIVED:
@@ -298,7 +298,12 @@ class PurchaseOrder_Model extends CI_Model {
 		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', 
 					CONCAT('PO',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
 					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-					SUM(PD.`quantity`) AS 'total_qty', SUM(PD.`quantity` - PD.`recv_quantity`) AS 'remaining_qty'
+					SUM(PD.`quantity`) AS 'total_qty', SUM(PD.`quantity` - PD.`recv_quantity`) AS 'remaining_qty',
+					CASE 
+						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) < SUM(PD.`quantity`) AND SUM(PD.`quantity` - PD.`recv_quantity`) <> 0 THEN 'Incomplete'
+						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) <= 0 THEN 'Complete'
+						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) = SUM(PD.`quantity`) THEN 'No Received'
+					END AS 'status'
 					FROM purchase_head AS PH
 					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
 					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
@@ -327,6 +332,7 @@ class PurchaseOrder_Model extends CI_Model {
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
 				$response['data'][$i][] = array($row->remaining_qty);
+				$response['data'][$i][] = array($row->status);
 				$response['data'][$i][] = array('');
 				$i++;
 			}
