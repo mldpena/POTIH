@@ -128,6 +128,10 @@ class InventoryAdjust extends CI_Controller {
 				$response = $this->adjust_model->update_request_status($post_data);
 				break;
 
+			case 'get_adjust_express_list':
+				$response = $this->adjust_model->get_adjust_express_list($post_data);
+				break;
+				
 			default:
 				$response['error'] = 'Invalid arguments!';
 				break;

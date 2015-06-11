@@ -450,4 +450,85 @@ class Adjust_Model extends CI_Model {
 
 		return $response;
 	}
+
+	public function get_adjust_express_list($param)
+	{
+		extract($param);
+
+		$conditions		= "";
+		$order_field 	= "";
+		$having 		= "";
+
+		$response 	= array();
+		$query_data = array($this->_current_branch_id);
+
+		$response['rowcnt'] = 0;
+		
+		
+		if (!empty($date_from))
+		{
+			$conditions .= " AND IA.`date_created` >= ?";
+			array_push($query_data,$date_from.' 00:00:00');
+		}
+
+		if (!empty($date_to))
+		{
+			$conditions .= " AND IA.`date_created` <= ?";
+			array_push($query_data,$date_to.' 23:59:59');
+		}
+	
+		if (!empty($search_string)) 
+		{
+			$conditions .= " AND CONCAT(P.`description`,' ',IA.`memo`,' ',P.`material_code`) LIKE ?";
+			array_push($query_data,'%'.$search_string.'%');
+		}
+
+		switch ($order_by) 
+		{
+			case ADJUST_CONST::ORDER_BY_NAME:
+				$order_field = "P.`description`";
+				break;
+			
+			case ADJUST_CONST::ORDER_BY_CODE:
+				$order_field = "P.`material_code`";
+				break;
+		}
+
+		$query = "SELECT IA.`id`, COALESCE(P.`description`,'') AS 'description', 
+					COALESCE(P.`id`,0) AS 'product_id', P.`material_code`,
+					IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
+					CASE 
+						WHEN IA.`status` = ".ADJUST_CONST::PENDING." THEN 'Pending'
+						WHEN IA.`status` = ".ADJUST_CONST::APPROVED." THEN 'Approved'
+						WHEN IA.`status` = ".ADJUST_CONST::DECLINED." THEN 'Declined'
+					END AS 'status'
+					FROM inventory_adjust AS IA
+					LEFT JOIN product AS P ON P.`id` = IA.`product_id` AND P.`is_show` = 1
+					WHERE IA.`is_show` = 1 AND IA.`branch_id` = ? $conditions
+					ORDER BY $order_field $order_type";
+
+		$result = $this->db->query($query,$query_data);
+		
+		if ($result->num_rows() > 0) 
+		{
+			$response['rowcnt'] = $result->num_rows();
+			$i = 0;
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($this->encrypt->encode($row->id));
+				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row->description,$this->encrypt->encode($row->product_id));
+				$response['data'][$i][] = array($row->material_code);
+				$response['data'][$i][] = array($row->old_inventory);
+				$response['data'][$i][] = array($row->new_inventory);
+				$response['data'][$i][] = array($row->memo);
+				$response['data'][$i][] = array($row->status);
+				$response['data'][$i][] = array('');
+				$i++;
+			}
+		}
+
+		return $response;
+	}
 }

@@ -107,7 +107,7 @@
 				</a>
 			</div>
 		</div>
-		<div class="sidebar-group" id="report-group">
+		<div class="sidebar-group" id="others-group">
 			<div class="header subgroup-toggle">
 				<div>Others</div>
 				<div><i class="fa fa-plus-square"></i></div>

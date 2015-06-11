@@ -23,38 +23,65 @@ TABLE.EventHelper = function(options) {
 TABLE.EventHelper.prototype = {
     bindUpdateEvents : function(callback){
         $('.' + _settings.updateClass).live('click',function(){
-            _callAjaxUpdate($(this),callback);
+            _callUpdate($(this),callback);
         });
 
         $('.' + _settings.memoClass).live('keydown',function(e){
             if (e.keyCode == 13) {
-                _callAjaxUpdate($(this),callback);
+                _callUpdate($(this),callback);
                 e.preventDefault();
             };
         });
     },
 
-    addRow : function(object,object_array,element_focus){
-        _addRow(object,object_array,element_focus);
+    addRow : function(elementFocus,object,objectArray){
+        _addRow(elementFocus,object,objectArray);
     },
 
-    getData : function(row_index,object_array_column,array_column_index,object,object_array){
-        return _getColumnData(row_index,object_array_column,array_column_index,object,object_array);
+    getData : function(rowIndex,objectArrayColumn,arrayColumnIndex,object,objectArray){
+        return _getColumnData(rowIndex,objectArrayColumn,arrayColumnIndex,object,objectArray);
     },
 
-    setData : function(row_index,object_array_column,values,object,object_array){
-        _setColumnData(row_index,object_array_column,values,object,object_array);
+    setData : function(rowIndex,objectArrayColumn,values,object,objectArray){
+        _setColumnData(rowIndex,objectArrayColumn,values,object,objectArray);
+    },
+
+    getElement : function(rowIndex,objectArrayColumn,object,objectArray){
+        var jsTable = myjstbl;
+        var jsTableArray = colarray;
+
+        if (object) 
+        {
+            jsTable = object;
+            jsTableArray = objectArray;
+        };
+
+        return jsTable.getelem_by_rowindex_tdclass(rowIndex,jsTableArray[objectArrayColumn].td_class);
+    },
+
+    recomputeRowNumber : function(object,objectArray){
+        var jsTable = myjstbl;
+        var jsTableArray = colarray;
+
+        if (object) 
+        {
+            jsTable = object;
+            jsTableArray = objectArray
+        };
+
+        for (var i = 1; i < jsTable.get_row_count(); i++)
+            jsTable.setvalue_to_rowindex_tdclass([i],i,jsTableArray["number"].td_class);
     }
 }
 
-function _callAjaxUpdate(element,callback)
+function _callUpdate(element,callback)
 {
     if (_flag == 1) 
         return;
 
     _flag = 1;
 
-    var row_index = $(element).parent().parent().index();
+    var rowIndex = $(element).parent().parent().index();
     var arr = callback(element);
 
     $.ajax({
@@ -68,10 +95,10 @@ function _callAjaxUpdate(element,callback)
                 build_message_box('messagebox_1',response.error,'danger');
             else
             {
-                myjstbl.update_row(row_index);
+                myjstbl.update_row(rowIndex);
 
                 if (arr.detail_id == 0) {
-                    _setColumnData(row_index,'id',[response.id]);
+                    _setColumnData(rowIndex,'id',[response.id]);
                     _addRow(myjstbl,colarray,'txtproduct');
                 }
 
@@ -82,59 +109,69 @@ function _callAjaxUpdate(element,callback)
     });
 }
 
-function _addRow(object,object_array,element_focus)
+function _addRow(elementFocus,object,objectArray)
 {
     var ok = true;
-    var count = object.get_row_count() - 1;
+
+    var jsTable = myjstbl;
+    var jsTableArray = colarray;
+
+    if (object) 
+    {
+        jsTable = object;
+        jsTableArray = objectArray;
+    };
+
+    /*var count = jsTable.get_row_count() - 1;
 
     if (count > 0) {
-        var id =  object.getvalue_by_rowindex_tdclass(count,object_array["id"].td_class);
+        var id =  jsTable.getvalue_by_rowindex_tdclass(count,jsTableArray["id"].td_class);
         if (id == 0)
             ok = false;
     }
 
     if (ok == false) 
-        return;
+        return;*/
 
-    var last_row_index = object.get_row_count();
-    object.add_new_row();
-    object.setvalue_to_rowindex_tdclass([last_row_index],last_row_index,object_array['number'].td_class);
+    var lastRowIndex = jsTable.get_row_count();
+    jsTable.add_new_row();
+    jsTable.setvalue_to_rowindex_tdclass([lastRowIndex],lastRowIndex,jsTableArray['number'].td_class);
 
-    if (element_focus) 
-        $('.' + element_focus + ':last').focus();
+    if (elementFocus) 
+        $('.' + element + ':last').focus();
 }
 
-function _getColumnData(row_index,object_array_column,array_column_index,object,object_array)
+function _getColumnData(rowIndex,objectArrayColumn,arrayColumnIndex,object,objectArray)
 {
     var value = "";
     var column_index = 0;
-    var js_table = myjstbl;
-    var js_table_array = colarray;
+    var jsTable = myjstbl;
+    var jsTableArray = colarray;
 
-    if (array_column_index) 
-        column_index = array_column_index;
+    if (arrayColumnIndex) 
+        column_index = arrayColumnIndex;
 
     if (object) 
     {
-        js_table = object;
-        js_table_array = object_array;
+        jsTable = object;
+        jsTableArray = objectArray;
     };
 
-    value = js_table.getvalue_by_rowindex_tdclass(row_index, js_table_array[object_array_column].td_class)[column_index];
+    value = jsTable.getvalue_by_rowindex_tdclass(rowIndex, jsTableArray[objectArrayColumn].td_class)[column_index];
 
     return value;
 }
 
-function _setColumnData(row_index,object_array_column,values,object,object_array)
+function _setColumnData(rowIndex,objectArrayColumn,values,object,objectArray)
 {
-    var js_table = myjstbl;
-    var js_table_array = colarray;
+    var jsTable = myjstbl;
+    var jsTableArray = colarray;
 
     if (object) 
     {
-        js_table = object;
-        js_table_array = object_array;
+        jsTable = object;
+        jsTableArray = objectArray;
     };
 
-    js_table.setvalue_to_rowindex_tdclass(values,row_index,js_table_array[object_array_column].td_class);
+    jsTable.setvalue_to_rowindex_tdclass(values,rowIndex,jsTableArray[objectArrayColumn].td_class);
 }
