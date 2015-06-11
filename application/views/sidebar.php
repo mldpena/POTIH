@@ -125,6 +125,12 @@
 						<div>Pending Inventory Adjust</div>
 					</div>
 				</a>
+				<a href="<?= base_url() ?>warehouserelease/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<div>Warehouse Release</div>
+					</div>
+				</a>
 			</div>
 		</div>
 		<div class="sidebar-group" id="report-group">
