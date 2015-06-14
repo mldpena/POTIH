@@ -7,10 +7,15 @@
 	 * @global_row_index {Number} - Holder of return detail row index for delete modal
 	 * @token_val {String} - Token for CSRF Protection
 	 */
+	
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
 	var token_val = '<?= $token ?>';
+
+	/**
+	 * Initialization for JS table details
+	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -40,12 +45,12 @@
 
     var spnproduct = document.createElement('span');
     var spnproductid = document.createElement('span');
-    var txtproduct = document.createElement('input');
-    txtproduct.setAttribute('class','form-control txtproduct');
+    //var txtproduct = document.createElement('input');
+   // txtproduct.setAttribute('class','form-control txtproduct');
     spnproductid.setAttribute('style','display:none;');
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid],
+        edit: [spnproduct,spnproductid],
         disp: [spnproduct,spnproductid],
         td_class: "tablerow column_click column_hover tdproduct"
     };
@@ -59,11 +64,11 @@
     };
    	
    	var spnqty = document.createElement('span');
-   	var txtqty = document.createElement('input');
-    txtqty.setAttribute('class','form-control txtqty');
+   //	var txtqty = document.createElement('input');
+   // txtqty.setAttribute('class','form-control txtqty');
 	colarray['qty'] = { 
         header_title: "Qty",
-        edit: [txtqty],
+        edit: [spnqty],
         disp: [spnqty],
         td_class: "tablerow column_click column_hover tdqty"
     };
@@ -77,22 +82,22 @@
     };
 
     var spnmemo = document.createElement('span');
-    var txtmemo = document.createElement('input');
-    txtmemo.setAttribute('class','form-control txtmemo');
+   // var txtmemo = document.createElement('input');
+   // txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
         header_title: "Remarks",
-        edit: [txtmemo],
+        edit: [spnmemo],
         disp: [spnmemo],
         td_class: "tablerow column_click column_hover tdmemo"
     };
 
-    var spnqtyrelease = document.createElement('span');
+   
     var txtqtyrelease = document.createElement('input');
-    txtqtyrelease.setAttribute('class','form-control txtqtyrelease');
+   	txtqtyrelease.setAttribute('class','form-control txtqtyrelease');
 	colarray['qty_release'] = { 
         header_title: "Qty Release",
         edit: [txtqtyrelease],
-        disp: [spnqtyrelease],
+        disp: [txtqtyrelease],
         td_class: "tablerow column_click column_hover tdqty_release",
         headertd_class : "tdheader_qtyrelease"
     };
@@ -100,12 +105,12 @@
     
     var imgUpdate = document.createElement('i');
 	imgUpdate.setAttribute("class","imgupdate fa fa-check");
-	var imgEdit = document.createElement('i');
-	imgEdit.setAttribute("class","imgedit fa fa-pencil");
+	//var imgEdit = document.createElement('i');
+	//imgEdit.setAttribute("class","imgedit fa fa-pencil");
 	colarray['colupdate'] = { 
 		header_title: "",
 		edit: [imgUpdate],
-		disp: [imgEdit],
+		disp: [imgUpdate],
 		td_class: "tablerow column_hover tdupdate"
 	};
 
@@ -130,10 +135,10 @@
 
 
 	root.appendChild(myjstbl.tab);
+	
 
-//$('.tdqty_release').hide(); $('.tdheader_qtyrelease').hide()
-	
-	
+//$('.tdqty_release').hide(); $('.tdheader_qtyrelease').hide();
+
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -164,26 +169,14 @@
 						$('#date').val(response.entry_date);
 				}
 				
-				//$('input, textarea, button, select').not('#print').attr('disabled','disabled');
+			$('textarea, text, #customer_name, #date').attr('disabled','disabled');
 
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				if (response.delivery_type != 1)
-				{
-					$('.tdqty_release').hide();
-					$('.tdheader_qtyrelease').hide();
-					insert_dynamic_css();
-				} 
-				add_new_row(myjstbl,colarray);	
-
-					$('.tdqty_release').hide();
-					$('.tdheader_qtyrelease').hide();
-					insert_dynamic_css();
-
 				recompute_total_qty(myjstbl,colarray,'total_qty');
 				bind_product_autocomplete();
-				$('#tbl').show();
+				//$('#tbl').show();
 			}       
 		});
 	}
@@ -191,27 +184,23 @@
 		$('input, textarea').attr('disabled','disabled');
 	}
 
-	$('.txtmemo').live('keydown',function(e){
-		if (e.keyCode == 13) 
-		{
-			insert_and_update_warehouserelease_detail($(this));
-			e.preventDefault();
-		};
-	});
+	// $('.txtmemo').live('keydown',function(e){
+	// 	if (e.keyCode == 13) 
+	// 	{
+	// 		insert_and_update_warehouserelease_detail($(this));
+	// 		e.preventDefault();
+	// 	};
+	// });
 
 	$('.imgupdate').live('click',function(){
 		insert_and_update_warehouserelease_detail($(this));
 	});
 
-	$('.imgedit').live('click',function(){
-		var row_index = $(this).parent().parent().index();
-		myjstbl.edit_row(row_index);
+	
 
-	});
-
-	$('.txtqty').live('blur',function(e){
-		recompute_total_qty(myjstbl,colarray,'total_qty');
-	});
+	// $('.txtqty').live('blur',function(e){
+	// 	recompute_total_qty(myjstbl,colarray,'total_qty');
+	// });
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
@@ -342,7 +331,7 @@ function bind_product_autocomplete()
 						product_id 	: product_id_val,
 						qty     	: qty_val,
 			     		memo 		: memo_val,
-			     		released	:	qtyrelease_val,
+			     		released	:qtyrelease_val,
 			     		detail_id 	: id_val
 					};
 
@@ -363,33 +352,21 @@ function bind_product_autocomplete()
 					if (id_val == 0) {
 
 						table_set_column_data(row_index,'id',[response.id]);
-            			add_new_row(myjstbl,colarray,'txtproduct');
+            			//add_new_row(myjstbl,colarray,'txtproduct');
 
 						$('.tdqty_release').hide();
 						$('.tdheader_qtyrelease').hide();
+
 						insert_dynamic_css();
             		}
 
 				}
 
+				$('input, textarea').not('#print, #save').attr('disabled','disabled');
 				flag = 0;
 			}       
 		});
 
 	}
-	function insert_dynamic_css()
-	{
-		$('#dynamic-css').html('');
 
-		var css = "<style>.tdqty_release { display:none; }</style>";
-		$('#dynamic-css').html(css);
-
-		$('#dynamic-css').html('');
-		
-		var css1 = "<style>.tdheader_qtyrelease { display:none; }</style>";
-		$('#dynamic-css').html(css1);
-	}
-
-
-// 
 </script>

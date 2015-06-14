@@ -11,6 +11,7 @@ class Warehouserelease extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->model('warehouserelease_model');
 		
 	}
 
@@ -22,11 +23,14 @@ class Warehouserelease extends CI_Controller {
 	public function index()
 	{	
 		$this->_load_libraries();
-
+		
 		check_user_credentials();
 
 		$page = $this->uri->segment(2);
-
+		
+		$addview =  array();
+		$this->load->model('warehouserelease_model');
+	
 		if (isset($_POST['data'])) 
 		{
 			$this->_ajax_request();
@@ -35,14 +39,23 @@ class Warehouserelease extends CI_Controller {
 
 		switch ($page) 
 		{
+
 			case 'list':
 				$page = 'warehouserelease_list';
+
 				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
 				break;
 
 			case 'add':
-			case 'view':
+				$addview = 1;
 				$page = 'warehouserelease_detail';
+				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
+							break;
+			case 'view':
+				$addview= 2;
+				
+				$page  = 'warehouserelease_detail1';
+				
 				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
 				break;
 
@@ -52,15 +65,26 @@ class Warehouserelease extends CI_Controller {
 				break;
 		}
 
+		$this->warehouserelease_model->do_some($addview);
 		
-
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
 		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
 		$data['page'] 	= $page;
 		$data['script'] = $page.'_js.php';
 
+
+	  //  $this->load->model('warehouserelease_model', $addview);
+
+
+		//$this->load->script('warehouserelease_detail', $data);
+
 		$this->load->view('master', $data);
+		
+		//return $addview;
+		//$this->warehouserelease_model->set_variable($variable);
+		//return $chosen1;
+		//echo json_encode($addview);
 	}
 
 	/**
@@ -75,6 +99,7 @@ class Warehouserelease extends CI_Controller {
 	    $params = array_slice($this->uri->rsegment_array(), $param_offset);
 
 	    call_user_func_array(array($this, $method), $params);
+
 	} 
 
 	/**
@@ -124,6 +149,9 @@ class Warehouserelease extends CI_Controller {
 				$response = $this->warehouserelease_model->delete_warehouserelease_head($post_data);
 				break;
 
+			case 'get_chosen':
+				$response = $this->warehouserelease_model->get_chosen($post_data);
+				break;
 			default:
 				$response['error'] = 'Invalid Arguments!';
 				break;

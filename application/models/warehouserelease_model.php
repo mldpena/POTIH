@@ -6,7 +6,8 @@ class Warehouserelease_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
-
+	
+	public $choice;
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -15,17 +16,22 @@ class Warehouserelease_Model extends CI_Model {
 		$this->load->library('constants/return_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
-
+		
+		//$this->choice             
 		$this->_return_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		//$this->_choice              = $this->do_some();
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
+		
 		parent::__construct();
 	}
 
+	
 	public function get_warehouserelease_details()
 	{
+		
+
 		$response 		= array();
 		$branch_id 		= 0;
 
@@ -143,6 +149,7 @@ public function insert_warehouserelease_detail($param)
 
 		return $response;
 	}
+
 
 	public function delete_warehouserelease_detail($param)
 	{
@@ -300,5 +307,43 @@ public function insert_warehouserelease_detail($param)
 		
 		return $response;
 	}
+	  
+	
+ //  }
+   public function do_some($addview=array())
+	{
+	  
+	 $this->choice = $addview;
+	
+	 print_r($this->choice);
+	
+  
+	}
+	
 
+	
+	public function get_chosen($param)
+	{
+		
+	extract($param);
+	
+	
+	if( $this->choice == 1)
+	{
+
+		$response = 1;
+
+	}
+
+	if($this->choice == 2)
+	{
+
+		$response = 2;
+
+	}
+	
+	
+	return $response;
+	}
+	
 }

@@ -3,7 +3,7 @@
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
 			<li class="active"><a href="<?= base_url() ?>warehouserelease/list">Warehouse Release List</a></li>
-			<li class="active"><a href="<?= base_url() ?>warehouserelease/add">Warehouse Release Detail</a></li>
+			<li class="active"><a href="<?= base_url() ?>warehouserelease/view">Warehouse Release Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -17,7 +17,7 @@
 					</tr>
 					<tr>
 						<td>Customer:</td>
-						<td><input type="text" class="form-control" id="customer_name" ></td>
+						<td><input type="text" class="form-control" id="customer_name"></td>
 					</tr>
 					<tr>
 						<td>Date:</td>

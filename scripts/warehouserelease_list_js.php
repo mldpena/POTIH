@@ -11,6 +11,7 @@
 	var global_return_id = 0;
 	var global_row_index = 0;
 	var token_val = '<?= $token ?>';
+		var page_chosen= 0 ;
 
 	/**
 	 * Initialization for JS table details
@@ -168,8 +169,9 @@
 	$('.column_click').live('click',function(){
 		var row_index 	= $(this).parent().index();
 		var return_id 	= table_get_column_data(row_index,'id');
-
+	
 		window.open('<?= base_url() ?>warehouserelease/view/' + return_id);
+	
 	});
 
 	$('#create_new').click(function(){
