@@ -93,13 +93,13 @@
 						<div>Stock Delivery</div>
 					</div>
 				</a>
-				<a href="<?= base_url() ?>sdreceive/list">
+				<a href="<?= base_url() ?>delreceive/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>stockreceive.png">
 						<div>Stock Receive</div>
 					</div>
 				</a>
-				<a href="<?= base_url() ?>creceive/list">
+				<a href="<?= base_url() ?>custreceive/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>customerreceive.png">
 						<div>Customer Receive</div>
@@ -139,7 +139,7 @@
 				<div><i class="fa fa-plus-square"></i></div>
 			</div>
 			<div class="link-menu">
-				<a href="<?= base_url() ?>invwarning/list">
+				<a href="<?= base_url() ?>product/warning">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>productinventorywarning.png">
 						<div>Product Inventory Warning</div>
@@ -147,6 +147,7 @@
 				</a>
 				<a href="<?= base_url() ?>productbranchinventory/list">
 					<div class="link">
+						<img src="<?= base_url().IMG ?>productbranchinventory.png">
 						<div>Product Branch Inventory</div>
 					</div>
 				</a>

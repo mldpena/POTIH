@@ -3,15 +3,13 @@
 	* List of constants for purchase receive model
 	*/
 
-	class Purchase_Receive_Const
+	require_once(CONSTANTS.'default_const.php');
+
+	class Purchase_Receive_Const extends Default_Const
 	{
-		const ACTIVE 	= 1;
-		const DELETED 	= 0;
 		const ORDER_BY_REFERENCE = 1;
 		const ORDER_BY_LOCATION = 2;
 		const ORDER_BY_DATE = 3;
-		const USED 		= 1;
-		const ALL_OPTION = 0;
 	}
 
 ?>

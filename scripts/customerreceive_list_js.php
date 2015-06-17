@@ -109,7 +109,7 @@
 		var row_index 	= $(this).parent().index();
 		var delivery_id = table_get_column_data(row_index,'id');
 
-		window.open('<?= base_url() ?>creceive/view/' + delivery_id);
+		window.open('<?= base_url() ?>custreceive/view/' + delivery_id);
 	});
 
 	function refresh_table()

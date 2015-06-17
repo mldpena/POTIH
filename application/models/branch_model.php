@@ -12,7 +12,7 @@ class Branch_Model extends CI_Model {
 	public function __construct() 
 	{
 		$this->load->library('encrypt');
-		$this->load->library('constants/branch_const');
+		$this->load->file(CONSTANTS.'branch_const.php');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 

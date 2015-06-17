@@ -43,6 +43,7 @@ define('FONTS','assets/fonts/');
 define('IMG','assets/img/');
 define('JS','assets/js/');
 define('BOWER','assets/bower_components/');
+define('CONSTANTS',APPPATH.'config/constants/');
 
 /* ENCRYPTION AND DECRYPTION*/
 define('SALT', 'T!S!D!T_33_HELLO_WORLD');

@@ -7,7 +7,7 @@ if (!function_exists('get_branch_name'))
 		$CI =& get_instance();
 		$CI->load->helper('cookie');
 		$CI->load->library('encrypt');
-		$CI->load->library('constants/branch_const');
+		$CI->load->file(CONSTANTS.'branch_const.php');
 
 		
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
@@ -109,7 +109,7 @@ if (!function_exists('get_product_list_autocomplete'))
 		$CI->load->helper('cookie');
 		$CI->load->library('encrypt');
 		$CI->load->library('sql');
-		$CI->load->library('constants/product_const');
+		$CI->load->file(CONSTANTS.'product_const.php');
 
 		$data 		= array();
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));

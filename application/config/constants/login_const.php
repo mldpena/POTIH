@@ -3,10 +3,10 @@
 	* List of constants for login model
 	*/
 
-	class Login_Const
+	require_once(CONSTANTS.'default_const.php');
+
+	class Login_Const extends Default_Const
 	{
-		const ACTIVE 	= 1;
-		const DELETED 	= 0;
 		const INACTIVE = 0;
 		const FIRST_LOGIN = 0;
 	}

@@ -2,13 +2,11 @@
 	/**
 	* List of constants for user model
 	*/
+	require_once(CONSTANTS.'default_const.php');
 
-	class User_Const
+	class User_Const extends Default_Const
 	{
-		const ACTIVE 	= 1;
-		const DELETED 	= 0;
 		const INACTIVE 	= 0;
-		const ALL_OPTION = 0;
 		const ORDER_BY_CODE = 1;
 		const ORDER_BY_NAME = 2;
 	}

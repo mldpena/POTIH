@@ -4,13 +4,13 @@
 	 * @flag {Number} - To prevent spam request
 	 * @global_detail_id {Number} - Holder of purchase detail id for delete modal
 	 * @global_row_index {Number} - Holder of purchase detail row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
+	 * @token {String} - Token for CSRF Protection
 	 */
 	
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
+	var token = '<?= $token ?>';
 
 	/**
 	 * Initialization for JS table details
@@ -123,8 +123,9 @@
 
 	root.appendChild(myjstbl.tab);
 
-	var tableEvents = new TABLE.EventHelper();
-	tableEvents.bindUpdateEvents(get_table_details);
+	var tableHelper = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
+	tableHelper.bindUpdateEvents(getRowDetails);
+	tableHelper.bindAutoComplete(token,'<?= base_url ?>purchase');
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -138,7 +139,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -167,13 +168,9 @@
 					$('.tdupdate, .tddelete').hide();
 				}	
 				else
-				{
-					add_new_row(myjstbl,colarray);
-					bind_product_autocomplete();
-				}
+					tableHelper.addRow('txtproduct');
 
-				recompute_total_qty(myjstbl,colarray,'total_qty');
-				
+				recompute_total_qty(myjstbl,colarray,'total_qty');	
 			}       
 		});
 	}
@@ -181,8 +178,8 @@
 		$('input, textarea').attr('disabled','disabled');
 
 	$('.imgedit').live('click',function(){
-		var row_index = $(this).parent().parent().index();
-		myjstbl.edit_row(row_index);
+		var rowIndex = $(this).parent().parent().index();
+		myjstbl.edit_row(rowIndex);
 	});
 
 	$('.txtqty').live('blur',function(e){
@@ -191,7 +188,7 @@
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_detail_id 	= table_get_column_data(global_row_index,'id');
+		global_detail_id 	= tableHelper.getData(global_row_index,'id');
 
 		if (global_detail_id != 0) 
 			$('#deletePurchaseOrderModal').modal('show');
@@ -203,7 +200,7 @@
 
 		flag = 1;
 
-		var row_index 		= global_row_index;
+		var rowIndex 		= global_row_index;
 		var detail_id_val 	= global_detail_id;
 
 		var arr = 	{ 
@@ -213,7 +210,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -221,8 +218,8 @@
 					build_message_box('messagebox_2',response.error,'danger');
 				else
 				{
-					myjstbl.delete_row(row_index);
-					recompute_row_count(myjstbl,colarray);
+					myjstbl.delete_row(rowIndex);
+					tableHelper.recomputeRowNumber();
 					recompute_total_qty(myjstbl,colarray,'total_qty');
 					$('#deletePurchaseOrderModal').modal('hide');
 				}
@@ -256,7 +253,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -274,41 +271,14 @@
 		global_row_index 	= 0;
 		global_detail_id 	= 0;
 	});
-	
-	function bind_product_autocomplete()
-	{
-		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>purchase', {
-			enable_add : false,
-			fnc_callback : function(x, label, value, ret_datas, error){
-				var row_index = $(x).parent().parent().index();
-				if (error.length > 0) {
-					table_set_column_data(row_index,'product',['',0]);
-					table_set_column_data(row_index,'code',['']);
-					table_set_column_data(row_index,'qty',['']);
-					table_set_column_data(row_index,'inventory',['']);
-					table_set_column_data(row_index,'memo',['']);
-				}
-				else
-				{
-					table_set_column_data(row_index,'product',[ret_datas[1],ret_datas[0]]);
-					table_set_column_data(row_index,'code',[ret_datas[2]]);
-					table_set_column_data(row_index,'inventory',[ret_datas[3]]);
-				}
-			},
-			fnc_render : function(ul, item){
-				return my_autocomplete_render_fnc(ul, item, "code_name", [2,1], 
-					{ width : ["100px","auto"] });
-			}
-		});
-	}
 
-	function get_table_details(element)
+	function getRowDetails(element)
 	{
-		var row_index 		= $(element).parent().parent().index();
-		var product_id_val 	= table_get_column_data(row_index,'product',1);
-		var qty_val 		= table_get_column_data(row_index,'qty');
-		var memo_val 		= table_get_column_data(row_index,'memo');
-		var id_val 			= table_get_column_data(row_index,'id');
+		var rowIndex 		= $(element).parent().parent().index();
+		var product_id_val 	= tableHelper.getData(rowIndex,'product',1);
+		var qty_val 		= tableHelper.getData(rowIndex,'qty');
+		var memo_val 		= tableHelper.getData(rowIndex,'memo');
+		var id_val 			= tableHelper.getData(rowIndex,'id');
 		var fnc_val 		= id_val != 0 ? "update_purchaseorder_detail" : "insert_purchaseorder_detail";
 
 		var arr = 	{ 

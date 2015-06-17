@@ -42,6 +42,14 @@ class Product extends CI_Controller {
 				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;
 			
+			case 'warning':
+				$page = 'inventory_warning_list';
+				/* Temporary */
+				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
+				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+				break;
+
 			default:
 				echo 'Invalid Page URL!';
 				exit();
@@ -114,6 +122,10 @@ class Product extends CI_Controller {
 
 			case 'get_branch_list_for_min_max':
 				$response = $this->_get_branch_list();
+				break;
+
+			case 'get_inventory_warning_list':
+				$response = $this->product_model->get_product_warning_list($post_data);
 				break;
 
 			default:

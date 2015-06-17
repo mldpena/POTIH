@@ -7,7 +7,7 @@ class Login_Model extends CI_Model {
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->library('constants/login_const');
+		$this->load->file(CONSTANTS.'login_const.php');
 		$this->load->helper('cookie');
 		parent::__construct();
 	}

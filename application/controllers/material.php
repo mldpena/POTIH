@@ -44,8 +44,6 @@ class Material extends CI_Controller {
 				break;
 		}
 
-		
-
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
 		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();

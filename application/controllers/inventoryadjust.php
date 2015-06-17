@@ -102,40 +102,55 @@ class InventoryAdjust extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'get_product_and_adjust_list':
-				$response = $this->adjust_model->get_product_adjust_list($post_data);
-				break;
+		$response['error'] = '';
 
-			case 'get_adjust_details':
-				$response = $this->adjust_model->get_adjust_details($post_data);
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'get_product_and_adjust_list':
+					$response = $this->adjust_model->get_product_adjust_list($post_data);
+					break;
 
-			case 'insert_inventory_adjust':
-				$response = $this->adjust_model->insert_inventory_adjust($post_data,$this->_config);
-				break;
+				case 'get_adjust_details':
+					$response = $this->adjust_model->get_adjust_details($post_data);
+					break;
 
-			case 'update_inventory_adjust':
-				$response = $this->adjust_model->insert_inventory_adjust($post_data,$this->_config);
-				break;
+				case 'insert_inventory_adjust':
+					$response = $this->adjust_model->insert_inventory_adjust($post_data,$this->_config);
+					break;
 
-			case 'get_pending_adjust_list':
-				$response = $this->adjust_model->get_pending_adjust_list($post_data);
-				break;
+				case 'update_inventory_adjust':
+					$response = $this->adjust_model->update_inventory_adjust($post_data,$this->_config);
+					break;
 
-			case 'update_request_status':
-				$response = $this->adjust_model->update_request_status($post_data);
-				break;
+				case 'get_pending_adjust_list':
+					$response = $this->adjust_model->get_pending_adjust_list($post_data);
+					break;
 
-			case 'get_adjust_express_list':
-				$response = $this->adjust_model->get_adjust_express_list($post_data);
-				break;
-				
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				case 'update_request_status':
+					$this->adjust_model->update_request_status($post_data);
+					break;
+
+				case 'get_adjust_express_list':
+					$response = $this->adjust_model->get_adjust_express_list($post_data);
+					break;
+					
+				case 'delete_inventory_request':
+					$this->adjust_model->delete_inventory_request($post_data);
+					break;
+
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
+					
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}
+		} catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
+		
 
 		echo json_encode($response);
 	}

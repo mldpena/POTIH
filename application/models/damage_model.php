@@ -12,7 +12,7 @@ class Damage_Model extends CI_Model {
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->library('constants/damage_const');
+		$this->load->file(CONSTANTS.'damage_const.php');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 

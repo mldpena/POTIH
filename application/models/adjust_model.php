@@ -5,13 +5,17 @@ class Adjust_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
-
+	private $_error_message = array('REQUEST_EXISTS' => 'Cannot submit adjust request! Current product still has a pending request!',
+									'UNABLE_TO_INSERT' => 'Unable to insert inventory adjust!',
+									'UNABLE_TO_UPDATE' => 'Unable to update inventory adjust!',
+									'UNABLE_TO_SELECT' => 'Unable to get select details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete request! Selected request might already be deleted or approved/declined.');
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->library('constants/adjust_const');
+		$this->load->file(CONSTANTS.'adjust_const.php');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 
@@ -164,7 +168,6 @@ class Adjust_Model extends CI_Model {
 		extract($param);
 
 		$response 	= array();
-		$response['error'] = '';
 
 		$product_id = $this->encrypt->decode($product_id);
 		$adjust_id = $adjust_id == '0' ? 0 : $this->encrypt->decode($adjust_id);
@@ -186,7 +189,7 @@ class Adjust_Model extends CI_Model {
 				$response[$key] = $value;
 		}
 		else
-			$response['error'] = 'Unable to get adjustment details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT']);
 
 		$result->free_result();
 
@@ -199,9 +202,17 @@ class Adjust_Model extends CI_Model {
 		
 		$response 	= array();
 		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
-		$product_id = $this->encrypt->decode($product_id);
+		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 
-		$response['error'] = '';
+		$query_validation_data = array($product_id,$this->_current_branch_id);
+		$query_validation = "SELECT `id` FROM inventory_adjust WHERE `product_id` = ? AND `branch_id` = ? AND `status` = ".ADJUST_CONST::PENDING." AND `is_show` = ".ADJUST_CONST::ACTIVE;
+
+		$result_validation = $this->db->query($query_validation,$query_validation_data);
+
+		if ($result_validation->num_rows() > 0)
+			throw new Exception($this->_error_message['REQUEST_EXISTS']);			
+
+		$result_validation->free_result();
 
 		$query_data = array($this->_current_branch_id,$product_id,$old_inventory,$new_inventory,ADJUST_CONST::ACTIVE,$status,$memo,$this->_current_user,$this->_current_user,$this->_current_date,$this->_current_date);
 		$query = "INSERT INTO `inventory_adjust`
@@ -220,13 +231,12 @@ class Adjust_Model extends CI_Model {
 					(?,?,?,?,?,?,?,?,?,?,?)";
 
 		$result = $this->sql->execute_query($query,$query_data);
-
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert inventory adjust!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 		{
 			$response['status'] = $status;
-			$response['id'] = $this->encrypt->encode($result['id']);
+			$response['id'] = $result['id'];
 		}
 
 		return $response;
@@ -238,22 +248,33 @@ class Adjust_Model extends CI_Model {
 
 		$response 	= array();
 		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
-		$adjust_id 	= $this->encrypt->decode($adjust_id);
+		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
+		$adjust_id 	= $this->encrypt->decode($detail_id);
 
-		$response['error'] = '';
+		$query_validation_data = array($product_id,$this->_current_branch_id,$adjust_id);
+		$query_validation = "SELECT `id` FROM inventory_adjust WHERE `product_id` = ? AND `branch_id` = ? AND `id` <> ? AND `status` = ".ADJUST_CONST::PENDING." AND `is_show` = ".ADJUST_CONST::ACTIVE;
 
-		$query_data = array($new_inventory,$memo,$this->_current_user,$this->_current_date,$adjust_id);
+		$result_validation = $this->db->query($query_validation,$query_validation_data);
+
+		if ($result_validation->num_rows() > 0)
+			throw new Exception($this->_error_message['REQUEST_EXISTS']);			
+
+		$result_validation->free_result();
+
+		$query_data = array($product_id,$old_inventory,$new_inventory,$memo,$this->_current_user,$this->_current_date,$adjust_id);
 		$query = "UPDATE `inventory_adjust`
-					SET `new_inventory` = ?,
+					SET 
+					`product_id` = ?,
+					`old_inventory` = ?,
+					`new_inventory` = ?,
 					`memo` = ?,
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?";
 
 		$result = $this->sql->execute_query($query,$query_data);
-
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert inventory adjust!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['status'] = $status;
 		
@@ -413,9 +434,6 @@ class Adjust_Model extends CI_Model {
 	{
 		extract($param);
 
-		$response = array();
-		$response['error'] = '';
-
 		$status = 0;
 		$adjust_ids = array();
 
@@ -446,9 +464,8 @@ class Adjust_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'])
-			$response['error'] = 'Unable to update inventory adjust request!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
-		return $response;
 	}
 
 	public function get_adjust_express_list($param)
@@ -525,10 +542,34 @@ class Adjust_Model extends CI_Model {
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->status);
 				$response['data'][$i][] = array('');
+				$response['data'][$i][] = array('');
 				$i++;
 			}
 		}
 
 		return $response;
+	}
+
+	public function delete_inventory_request($param)
+	{
+		extract($param);
+
+		$detail_id = $this->encrypt->decode($detail_id);
+
+		$query_data = array(ADJUST_CONST::DELETED,$this->_current_user,$this->_current_date,$detail_id);
+
+		$query = "UPDATE `inventory_adjust`
+					SET `is_show` = ?,
+						`last_modified_by` = ?,
+						`last_modified_date` = ?
+					WHERE `id` = ? AND `status` = ".ADJUST_CONST::PENDING;
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'])
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
+		else if ($this->db->affected_rows() != 1)
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
+
 	}
 }

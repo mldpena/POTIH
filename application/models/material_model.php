@@ -11,7 +11,7 @@ class Material_Model extends CI_Model {
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->library('constants/material_const');
+		$this->load->file(CONSTANTS.'material_const.php');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 

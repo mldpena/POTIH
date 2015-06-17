@@ -88,13 +88,13 @@
 					<div class="btn-title">Stock Delivery</div>
 				</div>
 			</a>
-			<a href="<?= base_url() ?>sdreceive/list">
+			<a href="<?= base_url() ?>delreceive/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>stockreceive.png">
 					<div class="btn-title">Stock Receive</div>
 				</div>
 			</a>
-			<a href="<?= base_url() ?>creceive/list">
+			<a href="<?= base_url() ?>custreceive/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>customerreceive.png">
 					<div class="btn-title">Customer Receive</div>
@@ -132,18 +132,18 @@
 			Reports
 		</div>
 		<div class="form-body default">
-			<a href="<?= base_url() ?>invwarning/list">
+			<a href="<?= base_url() ?>product/warning">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>productinventorywarning.png">
 					<div class="btn-title">Product Inventory Warning</div>
 				</div>
 			</a>
-				<a href="<?= base_url() ?>productbranchinventory/list">
-					<div class="each-btn" align="center">
+			<a href="<?= base_url() ?>productbranchinventory/list">
+				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>productbranchinventory.png">
-						<div class="btn-title">Product Branch Inventory </div>
+					<div class="btn-title">Product Branch Inventory </div>
 				</div>
-				</a>
+			</a>
 		</div>
 	</div>
 </div>

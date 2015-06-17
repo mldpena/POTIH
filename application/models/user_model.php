@@ -12,7 +12,7 @@ class User_Model extends CI_Model {
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->library('constants/user_const');
+		$this->load->file(CONSTANTS.'user_const.php');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 

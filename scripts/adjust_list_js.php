@@ -110,6 +110,8 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
+	var tableHelper = new TABLE.EventHelper({tableObject : myjstbl, tableArray : colarray});
+
 	$('#tbl').hide();
 	//Call refresh function after loading the page
 	refresh_table();
@@ -127,8 +129,8 @@
 			return;
 
     	global_row_index = $(this).parent().index();
-    	global_product_id = table_get_column_data(global_row_index,'id');
-    	global_adjust_id = table_get_column_data(global_row_index,'request',1);
+    	global_product_id = tableHelper.getData(global_row_index,'id');
+    	global_adjust_id = tableHelper.getData(global_row_index,'request',1);
     	
     	var arr = 	{ 
 						fnc 	 : 'get_adjust_details', 
@@ -162,8 +164,6 @@
 				flag = 0;
 			}       
 		});
-
-    	
     });
 
 	$('#save').click(function(){
@@ -200,12 +200,12 @@
 					{
 						var adjust_id = Number(global_adjust_id) == 0 ? response.id : global_adjust_id;
 						message = 'Inventory adjust request successfully submitted!';
-						table_set_column_data(global_row_index,'request',[new_inventory_val,adjust_id]);
+						tableHelper.setData(global_row_index,'request',[new_inventory_val,adjust_id]);
 					}
 					else if (response.status == 2)
 					{
 						message = 'Inventory successfully adjusted!';
-						table_set_column_data(global_row_index,'inv',[new_inventory_val]);
+						tableHelper.setData(global_row_index,'inv',[new_inventory_val]);
 					} 
 						
 					$('#requestAdjustModal').modal('hide');
