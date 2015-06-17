@@ -167,12 +167,48 @@
 	});
 
 	$('.column_click').live('click',function(){
+		
 		var row_index 	= $(this).parent().index();
 		var return_id 	= table_get_column_data(row_index,'id');
-	
-		window.open('<?= base_url() ?>warehouserelease/view/' + return_id);
-	
+		var search_val 		= $('#search_string').val();
+		var order_val 		= $('#order_by').val();
+		var orde_type_val 	= $('#order_type').val();
+		var date_from_val 	= $('#date_from').val();
+		var date_to_val 	= $('#date_to').val();
+	    var branch_val 	= table_get_column_data(row_index,'referencenumber');
+		var arr = 	{ 
+						fnc 	 		: 'search_warehouserelease_list',
+						search_string 	: search_val,
+						order_by  		: order_val,
+						order_type 		: orde_type_val,
+						date_from		: date_from_val,
+						date_to 		: date_to_val,
+						branch 			: branch_val
+					
+						
+					};
+
+			$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token_val,
+			success: function(response) {
+				clear_message_box();
+				 if(response.is_used == 0)
+					{
+					window.location = '<?= base_url() ?>warehouserelease/add/'+ return_id;
+					}
+				else{
+					window.open('<?= base_url() ?>warehouserelease/view/' + return_id);
+				}
+				flag = 0;
+			}       
+		});
 	});
+
+		
+	
+
 
 	$('#create_new').click(function(){
 		if (flag == 1)
@@ -206,34 +242,7 @@
 	});
 	
 
-	$('#create_new').click(function(){
-		if (flag == 1)
-			return;
-		
-
-		flag = 1;
-
-		var arr = 	{ 
-						fnc 	 	: 'create_reference_number'
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_1',response.error,'danger');
-				else
-					
-					window.location = '<?= base_url() ?>warehouserelease/add/'+response.id;
-
-				flag = 0;
-			}       
-		});
-	});
-
+	
 	function refresh_table()
 	{
 		if (flag == 1) 
@@ -291,4 +300,5 @@
 			}       
 		});
 	}
+
 </script>

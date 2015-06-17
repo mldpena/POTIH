@@ -131,8 +131,6 @@
 
 	root.appendChild(myjstbl.tab);
 
-//$('.tdqty_release').hide(); $('.tdheader_qtyrelease').hide()
-	
 	
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -164,8 +162,6 @@
 						$('#date').val(response.entry_date);
 				}
 				
-				//$('input, textarea, button, select').not('#print').attr('disabled','disabled');
-
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
@@ -175,8 +171,8 @@
 					$('.tdheader_qtyrelease').hide();
 					insert_dynamic_css();
 				} 
-				add_new_row(myjstbl,colarray);	
-
+				
+					add_new_row(myjstbl,colarray);
 					$('.tdqty_release').hide();
 					$('.tdheader_qtyrelease').hide();
 					insert_dynamic_css();
@@ -282,6 +278,8 @@
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
+					
+				
 					window.location = "<?= base_url() ?>warehouserelease/list";
 
 				flag = 0;
@@ -330,10 +328,12 @@ function bind_product_autocomplete()
 		flag = 1;
 
 		var row_index 		= $(element).parent().parent().index();
+		
 		var product_id_val 	= table_get_column_data(row_index,'product',1);
+	
 		var qty_val 		= table_get_column_data(row_index,'qty');
 		var memo_val 		= table_get_column_data(row_index,'memo');
-		var qtyrelease_val 	= table_get_column_data(row_index,'qty_release');
+		var qtyrelease_val 	= 0;
 		var id_val 			= table_get_column_data(row_index,'id');
 		var fnc_val 		= id_val != 0 ? "update_warehouserelease_detail" : "insert_warehouserelease_detail";
 
@@ -342,8 +342,10 @@ function bind_product_autocomplete()
 						product_id 	: product_id_val,
 						qty     	: qty_val,
 			     		memo 		: memo_val,
-			     		released	:	qtyrelease_val,
+			     		released	:qtyrelease_val,
 			     		detail_id 	: id_val
+			     		
+			     		
 					};
 
 		$.ajax({
@@ -391,5 +393,5 @@ function bind_product_autocomplete()
 	}
 
 
-// 
+
 </script>

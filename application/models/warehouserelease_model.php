@@ -8,16 +8,19 @@ class Warehouserelease_Model extends CI_Model {
 	private $_current_date = '';
 	
 	public $choice;
+
+	//public $response;
+	//var $addview;
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
 		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'return_const.php');
+		//$this->load->library('constants/return_const');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
 		
-		//$this->choice             
+		//$this->choice   =           
 		$this->_return_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
@@ -40,7 +43,7 @@ class Warehouserelease_Model extends CI_Model {
 
 		$query_head = "SELECT CONCAT('WRD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`
 					FROM `warehouserelease_head`
-					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
+					WHERE `is_show` = 1 AND `id` = ?";
 
 		$result_head = $this->db->query($query_head,$this->_return_head_id);
 
@@ -63,8 +66,8 @@ class Warehouserelease_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', WRD.`quantity`, WRD.`memo`, WRD.`qty_released`,
 						COALESCE(PBI.`inventory`,0) AS 'inventory'
 					FROM `warehouserelease_detail` AS WRD
-					LEFT JOIN `warehouserelease_head` AS WRH ON WRD.`headid` = WRH.`id` AND WRH.`is_show` = ".RETURN_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = WRD.`product_id` AND P.`is_show` = ".RETURN_CONST::ACTIVE."
+					LEFT JOIN `warehouserelease_head` AS WRH ON WRD.`headid` = WRH.`id` AND WRH.`is_show` = 1
+					LEFT JOIN `product` AS P ON P.`id` = WRD.`product_id` AND P.`is_show` =1
 					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
 					WHERE WRD.`headid` = ?";
 
@@ -90,7 +93,7 @@ class Warehouserelease_Model extends CI_Model {
 				$i++;
 			}
 		}
-
+		
 		$result_head->free_result();
 		$result_detail->free_result();
 
@@ -112,7 +115,7 @@ public function insert_warehouserelease_detail($param)
 					`product_id`,
 					`memo`, `qty_released`)
 					VALUES
-					(?,?,?,?,?);";
+					(?,?,?,?,?)";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -140,7 +143,8 @@ public function insert_warehouserelease_detail($param)
 					`product_id` = ?,
 					`memo` = ?,
 					`qty_released` = ?
-					WHERE `id` = ?;";
+					
+					WHERE `id` = ?";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -186,7 +190,7 @@ public function insert_warehouserelease_detail($param)
 					`entry_date` = ?,
 					`memo` = ?,
 					`customer` = ?,
-					`is_used` = ".RETURN_CONST::USED.",
+					`is_used` = 1,
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -207,10 +211,10 @@ public function insert_warehouserelease_detail($param)
 
 		$response 	= array();
 		$query_data = array();
-
 		$response['rowcnt'] = 0;
-		
-		
+		$response['error']		= '';
+	
+
 		if (!empty($date_from))
 		{
 			$conditions .= " AND RD.`date_created` >= ?";
@@ -223,7 +227,7 @@ public function insert_warehouserelease_detail($param)
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($branch != RETURN_CONST::ALL_OPTION) 
+		if ($branch != 0) 
 		{
 			$conditions .= " AND RD.`branch_id` = ?";
 			array_push($query_data,$branch);
@@ -237,25 +241,25 @@ public function insert_warehouserelease_detail($param)
 
 		switch ($order_by) 
 		{
-			case RETURN_CONST::ORDER_BY_REFERENCE:
+			case 1:
 				$order_field = "RD.`reference_number`";
 				break;
 			
-			case RETURN_CONST::ORDER_BY_LOCATION:
+			case 2:
 				$order_field = "B.`name`";
 				break;
 
-			case RETURN_CONST::ORDER_BY_DATE:
+			case 3:
 				$order_field = "RD.`customer`";
 				break;
 		}
 
 
 		$query = "SELECT RD.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('WRD',RD.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RD.`is_used` = 0, 'Unused', RD.`memo`) AS 'memo', RD.`customer`
+					COALESCE(DATE(`entry_date`),'') AS 'entry_date',RD. `is_used`, IF(RD.`is_used` = 0, 'Unused', RD.`memo`) AS 'memo', RD.`customer`
 					FROM warehouserelease_head AS RD
-					LEFT JOIN branch AS B ON B.`id` = RD.`branch_id` AND B.`is_show` = ".RETURN_CONST::ACTIVE."
-					WHERE RD.`is_show` = ".RETURN_CONST::ACTIVE." $conditions
+					LEFT JOIN branch AS B ON B.`id` = RD.`branch_id` AND B.`is_show` = 1
+					WHERE RD.`is_show` = 1 $conditions
 					ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);
@@ -277,12 +281,32 @@ public function insert_warehouserelease_detail($param)
 				$response['data'][$i][] = array('');
 				$i++;
 			}
+
+		
+	}
+
+	$query1 = " SELECT RD.`id`, RD. `is_used` 
+					FROM warehouserelease_head AS RD
+					WHERE CONCAT('WRD',RD.`reference_number`)=? AND RD.`is_show` = 1";
+			        $results = $this->db->query($query1,$branch);	
+
+		if ($results->num_rows() != 1) {
+			$response['error'] = 'Invalid User Name / Password!';
+		}
+		else
+		{
+			$rows = $results->row();
+			$response['is_used']=  $rows->is_used;
 		}
 
 		$result->free_result();
+		$results->free_result();
 		
 		return $response;
 	}
+
+
+
 	public function delete_warehouserelease_head($param)
 	{
 		extract($param);
@@ -295,7 +319,7 @@ public function insert_warehouserelease_detail($param)
 		$query_data = array($this->_current_date,$this->_current_user,$return_head_id);
 		$query 	= "UPDATE `warehouserelease_head` 
 					SET 
-					`is_show` = ".RETURN_CONST::DELETED.",
+					`is_show` = 0,
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -309,41 +333,7 @@ public function insert_warehouserelease_detail($param)
 	}
 	  
 	
- //  }
-   public function do_some($addview=array())
-	{
-	  
-	 $this->choice = $addview;
-	
-	 print_r($this->choice);
-	
-  
-	}
-	
+ 
 
-	
-	public function get_chosen($param)
-	{
-		
-	extract($param);
-	
-	
-	if( $this->choice == 1)
-	{
-
-		$response = 1;
-
-	}
-
-	if($this->choice == 2)
-	{
-
-		$response = 2;
-
-	}
-	
-	
-	return $response;
-	}
-	
+	   	
 }

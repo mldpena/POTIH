@@ -64,8 +64,6 @@
     };
    	
    	var spnqty = document.createElement('span');
-   //	var txtqty = document.createElement('input');
-   // txtqty.setAttribute('class','form-control txtqty');
 	colarray['qty'] = { 
         header_title: "Qty",
         edit: [spnqty],
@@ -82,8 +80,6 @@
     };
 
     var spnmemo = document.createElement('span');
-   // var txtmemo = document.createElement('input');
-   // txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
         header_title: "Remarks",
         edit: [spnmemo],
@@ -92,12 +88,13 @@
     };
 
    
+    var spnqtyrelease = document.createElement('span');
     var txtqtyrelease = document.createElement('input');
-   	txtqtyrelease.setAttribute('class','form-control txtqtyrelease');
+    txtqtyrelease.setAttribute('class','form-control txtqtyrelease');
 	colarray['qty_release'] = { 
         header_title: "Qty Release",
         edit: [txtqtyrelease],
-        disp: [txtqtyrelease],
+        disp: [spnqtyrelease],
         td_class: "tablerow column_click column_hover tdqty_release",
         headertd_class : "tdheader_qtyrelease"
     };
@@ -105,22 +102,22 @@
     
     var imgUpdate = document.createElement('i');
 	imgUpdate.setAttribute("class","imgupdate fa fa-check");
-	//var imgEdit = document.createElement('i');
-	//imgEdit.setAttribute("class","imgedit fa fa-pencil");
+	var imgEdit = document.createElement('i');
+	imgEdit.setAttribute("class","imgedit fa fa-pencil");
 	colarray['colupdate'] = { 
 		header_title: "",
 		edit: [imgUpdate],
-		disp: [imgUpdate],
+		disp: [imgEdit],
 		td_class: "tablerow column_hover tdupdate"
 	};
-
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
 	colarray['coldelete'] = { 
 		header_title: "",
 		edit: [imgDelete],
 		disp: [imgDelete],
-		td_class: "tablerow column_hover tddelete"
+		td_class: "tablerow column_hover tddelete",
+		headertd_class : "tdheader_delete"
 	};
 
 
@@ -135,10 +132,6 @@
 
 
 	root.appendChild(myjstbl.tab);
-	
-
-//$('.tdqty_release').hide(); $('.tdheader_qtyrelease').hide();
-
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -168,15 +161,27 @@
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);
 				}
+
 				
 			$('textarea, text, #customer_name, #date').attr('disabled','disabled');
 
-				if (response.detail_error == '') 
-					myjstbl.insert_multiplerow_with_value(1,response.detail);
+				if (response.delivery_type != 1)
+				{
+					$('.tddelete').hide();
+					$('.tdheader_delete').hide();
+					insert_dynamic_css();
+				} 
 
+				if (response.detail_error == '') {
+					myjstbl.insert_multiplerow_with_value(1,response.detail);
+					check_detail_received();
+			};
+
+					$('.tddelete').hide();
+					$('.tdheader_delete').hide();
+					insert_dynamic_css();
 				recompute_total_qty(myjstbl,colarray,'total_qty');
 				bind_product_autocomplete();
-				//$('#tbl').show();
 			}       
 		});
 	}
@@ -184,104 +189,17 @@
 		$('input, textarea').attr('disabled','disabled');
 	}
 
-	// $('.txtmemo').live('keydown',function(e){
-	// 	if (e.keyCode == 13) 
-	// 	{
-	// 		insert_and_update_warehouserelease_detail($(this));
-	// 		e.preventDefault();
-	// 	};
-	// });
-
 	$('.imgupdate').live('click',function(){
 		insert_and_update_warehouserelease_detail($(this));
 	});
 
+	$('.imgedit').live('click',function(){
+		var row_index = $(this).parent().parent().index();
+		myjstbl.edit_row(row_index);
+
+	});
 	
-
-	// $('.txtqty').live('blur',function(e){
-	// 	recompute_total_qty(myjstbl,colarray,'total_qty');
-	// });
-
-	$('.tddelete').live('click',function(){
-		global_row_index 	= $(this).parent().index();
-		global_detail_id 	= table_get_column_data(global_row_index,'id');
-
-		if (global_detail_id != 0) 
-			$('#deleteReturnDetailModal').modal('show');
-	});
-
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var row_index 		= global_row_index;
-		var detail_id_val 	= global_detail_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_warehouserelease_detail', 
-						detail_id 	: detail_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(row_index);
-					recompute_row_count(myjstbl,colarray);
-					recompute_total_qty(myjstbl,colarray,'total_qty');
-					$('#deleteReturnDetailModal').modal('hide');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-	$('#save').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var date_val	= $('#date').val();
-		var memo_val 	= $('#memo').val();
-		var customer_name_val = $('#customer_name').val();
-
-		var arr = 	{ 
-						fnc 	 	: 'save_warehouserelease_head', 
-						entry_date 	: date_val,
-						memo 		: memo_val,
-						customer_name : customer_name_val
-					};
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_1',response.error,'danger');
-				else
-					window.location = "<?= base_url() ?>warehouserelease/list";
-
-				flag = 0;
-			}       
-		});
-	});
-$('#deleteReturnDetailModal').live('hidden.bs.modal', function (e) {
-		global_row_index 	= 0;
-		global_detail_id 	= 0;
-	});
-
+	
 function bind_product_autocomplete()
 	{
 		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>return', {
@@ -352,11 +270,9 @@ function bind_product_autocomplete()
 					if (id_val == 0) {
 
 						table_set_column_data(row_index,'id',[response.id]);
-            			//add_new_row(myjstbl,colarray,'txtproduct');
-
-						$('.tdqty_release').hide();
-						$('.tdheader_qtyrelease').hide();
-
+            	
+							$('.tddelete').hide();
+					$('.tdheader_delete').hide();
 						insert_dynamic_css();
             		}
 
@@ -368,5 +284,27 @@ function bind_product_autocomplete()
 		});
 
 	}
+	function insert_dynamic_css()
+	{
+		$('#dynamic-css').html('');
 
+		var css = "<style>.tddelete { display:none; }</style>";
+		$('#dynamic-css').html(css);
+
+		$('#dynamic-css').html('');
+		
+		var css1 = "<style>.tdheader_delete { display:none; }</style>";
+		$('#dynamic-css').html(css1);
+	}
+function check_detail_received()
+	{
+		for (var i = 1; i < myjstbl.get_row_count(); i++) 
+		{
+			var row_qtyrelease_number = table_get_column_data(i,'qty_release');
+			var row_receive_detail_id = table_get_column_data(i,'id');
+
+			if (row_qtyrelease_number == 0) 
+				myjstbl.edit_row(i);
+		};
+	}
 </script>

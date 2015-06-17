@@ -28,7 +28,7 @@ class Warehouserelease extends CI_Controller {
 
 		$page = $this->uri->segment(2);
 		
-		$addview =  array();
+		$script ='';
 		$this->load->model('warehouserelease_model');
 	
 		if (isset($_POST['data'])) 
@@ -42,20 +42,18 @@ class Warehouserelease extends CI_Controller {
 
 			case 'list':
 				$page = 'warehouserelease_list';
-
+				$script= $page.'_js.php';
 				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
 				break;
 
 			case 'add':
-				$addview = 1;
 				$page = 'warehouserelease_detail';
+				$script= $page.'_js.php';
 				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
-							break;
+				break;
 			case 'view':
-				$addview= 2;
-				
 				$page  = 'warehouserelease_detail1';
-				
+				$script= $page.'_js.php';
 				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
 				break;
 
@@ -64,27 +62,16 @@ class Warehouserelease extends CI_Controller {
 				exit();
 				break;
 		}
-
-		$this->warehouserelease_model->do_some($addview);
 		
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
 		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
 		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
-
-
-	  //  $this->load->model('warehouserelease_model', $addview);
-
-
-		//$this->load->script('warehouserelease_detail', $data);
+		$data['script'] = $script;
 
 		$this->load->view('master', $data);
 		
-		//return $addview;
-		//$this->warehouserelease_model->set_variable($variable);
-		//return $chosen1;
-		//echo json_encode($addview);
+
 	}
 
 	/**
@@ -147,10 +134,6 @@ class Warehouserelease extends CI_Controller {
 				break;
 			case 'delete_warehouserelease_head':
 				$response = $this->warehouserelease_model->delete_warehouserelease_head($post_data);
-				break;
-
-			case 'get_chosen':
-				$response = $this->warehouserelease_model->get_chosen($post_data);
 				break;
 			default:
 				$response['error'] = 'Invalid Arguments!';
