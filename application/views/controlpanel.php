@@ -109,19 +109,19 @@
 		<div class="form-body default">
 			<a href="<?= base_url() ?>adjust/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>inventoryadjust.png">
 					<div class="btn-title">Inventory Adjust</div>
 				</div>
 			</a>
 			<a href="<?= base_url() ?>pending/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>pendinginventoryadjust.png">
 					<div class="btn-title">Pending Inventory Adjust</div>
 				</div>
 			</a>
 			<a href="<?= base_url() ?>warehouserelease/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>warehouserelease.png">
 					<div class="btn-title">Warehouse Release</div>
 				</div>
 			</a>
@@ -140,7 +140,7 @@
 			</a>
 				<a href="<?= base_url() ?>productbranchinventory/list">
 					<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>productbranchinventory.png">
 						<div class="btn-title">Product Branch Inventory </div>
 				</div>
 				</a>
