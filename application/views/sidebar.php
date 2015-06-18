@@ -115,19 +115,19 @@
 			<div class="link-menu">
 				<a href="<?= base_url() ?>adjust/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<img src="<?= base_url().IMG ?>inventoryadjust.png">
 						<div>Inventory Adjust</div>
 					</div>
 				</a>
 				<a href="<?= base_url() ?>pending/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<img src="<?= base_url().IMG ?>pendinginventoryadjust.png">
 						<div>Pending Inventory Adjust</div>
 					</div>
 				</a>
 				<a href="<?= base_url() ?>warehouserelease/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchaseorder.png">
+						<img src="<?= base_url().IMG ?>warehouserelease.png">
 						<div>Warehouse Release</div>
 					</div>
 				</a>

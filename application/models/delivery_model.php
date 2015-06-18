@@ -61,7 +61,7 @@ class Delivery_Model extends CI_Model {
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory'
+						COALESCE(PBI.`inventory`,0) AS 'inventory', SD.`recv_quantity` AS 'receiveqty'
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
@@ -84,6 +84,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->inventory);
+				$response['detail'][$i][] = array($row->receiveqty);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -320,7 +321,12 @@ class Delivery_Model extends CI_Model {
 						WHEN `delivery_type` = ".DELIVERY_CONST::SALES." THEN 'Sales'
 						WHEN `delivery_type` = ".DELIVERY_CONST::TRANSFER." THEN 'Transfer'
 						ELSE 'Unused'
-					END AS 'delivery_type'
+					END AS 'delivery_type',
+					CASE
+						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) < SUM(SD.`quantity`) AND SUM(SD.`quantity` - SD.`recv_quantity`) <> 0 THEN 'Incomplete'
+						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) = 0 THEN 'Complete'
+						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) = SUM(SD.`quantity`) THEN 'No Received'
+					END AS 'status'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
 					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."
@@ -348,6 +354,7 @@ class Delivery_Model extends CI_Model {
 				$response['data'][$i][] = array($row->delivery_type);
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
+				$response['data'][$i][] = array($row->status);
 				$response['data'][$i][] = array('');
 				$i++;
 			}
@@ -443,15 +450,17 @@ class Delivery_Model extends CI_Model {
 					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', SH.`memo`,
 					SUM(SD.`quantity`) AS 'total_qty'
 					FROM stock_delivery_head AS SH
-					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id` AND SD.`is_for_branch` = 1
+					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
 					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`is_used` = ".DELIVERY_CONST::USED." 
 						AND SH.`delivery_type` IN(".DELIVERY_CONST::TRANSFER.",".DELIVERY_CONST::BOTH.") $conditions
+						AND SD.`is_for_branch` = 1
 					GROUP BY SH.`id`
 					ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);
+
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
@@ -622,11 +631,12 @@ class Delivery_Model extends CI_Model {
 					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', SH.`memo`,
 					SUM(SD.`quantity`) AS 'total_qty'
 					FROM stock_delivery_head AS SH
-					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id` AND SD.`is_for_branch` = 0
+					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
 					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`is_used` = ".DELIVERY_CONST::USED." 
 						AND SH.`delivery_type` IN(".DELIVERY_CONST::SALES.",".DELIVERY_CONST::BOTH.") $conditions
+						AND SD.`is_for_branch` = 0
 					GROUP BY SH.`id`
 					ORDER BY $order_field $order_type";
 

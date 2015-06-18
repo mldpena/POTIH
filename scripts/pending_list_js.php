@@ -152,7 +152,7 @@
     refresh_table();
 
     //Event for calling search function
-    $('#search').click(function(){
+    $('#search').click(function({ tableObject : myjstbl, tableArray : colarray}){
     	refresh_table();
     });
 

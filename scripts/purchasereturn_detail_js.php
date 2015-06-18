@@ -4,13 +4,13 @@
 	 * @flag {Number} - To prevent spam request
 	 * @global_detail_id {Number} - Holder of purchase return detail id for delete modal
 	 * @global_row_index {Number} - Holder of purchase return detail row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
+	 * @token {String} - Token for CSRF Protection
 	 */
 	
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
+	var token = '<?= $token ?>';
 
 	/**
 	 * Initialization for JS table details
@@ -121,7 +121,7 @@
 
 	root.appendChild(myjstbl.tab);
 
-	var tableEvents = new TABLE.EventHelper();
+	var tableEvents = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
 	tableEvents.bindUpdateEvents(get_table_details);
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -136,7 +136,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -199,7 +199,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -238,7 +238,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
