@@ -732,4 +732,34 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
+	public function check_current_inventory($param)
+	{
+		extract($param);
+
+		$response = array();
+		$response['is_insufficient'] = 0;
+
+		$query_data = array($product_id,$this->_current_branch_id);
+
+		$query = "SELECT `inventory`, `min_inv` FROM product_branch_inventory WHERE `product_id` = ? AND `branch_id` = ?";
+		
+		$result = $this->db->query($query,$query_data);
+
+		$row = $result->row();
+
+		$current_inventory = $row->inventory;
+		$mininum_inventory = $row->min_inv;
+
+		if (($current_inventory - $qty) <= $mininum_inventory) 
+		{
+			$response['is_insufficient'] = 1;
+			$response['current_inventory'] = $current_inventory;
+			$response['new_inventory'] = $current_inventory - $qty;
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
 }

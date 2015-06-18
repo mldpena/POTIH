@@ -73,6 +73,14 @@
         td_class: "tablerow column_click column_hover tdcustomer"
     };
 
+    var spnreceiveby = document.createElement('span');
+	colarray['receivedby'] = { 
+        header_title: "Received By",
+        edit: [spnreceiveby],
+        disp: [spnreceiveby],
+        td_class: "tablerow column_click column_hover tdreceivedby"
+    };
+
     var spnmemo = document.createElement('span');
 	colarray['memo'] = { 
         header_title: "Memo",

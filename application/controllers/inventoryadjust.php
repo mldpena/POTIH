@@ -128,7 +128,7 @@ class InventoryAdjust extends CI_Controller {
 					break;
 
 				case 'update_request_status':
-					$this->adjust_model->update_request_status($post_data);
+					$response = $this->adjust_model->update_request_status($post_data);
 					break;
 
 				case 'get_adjust_express_list':
@@ -136,7 +136,7 @@ class InventoryAdjust extends CI_Controller {
 					break;
 					
 				case 'delete_inventory_request':
-					$this->adjust_model->delete_inventory_request($post_data);
+					$response = $this->adjust_model->delete_inventory_request($post_data);
 					break;
 
 				case 'autocomplete_product':
@@ -147,6 +147,7 @@ class InventoryAdjust extends CI_Controller {
 					$response['error'] = 'Invalid arguments!';
 					break;
 			}
+
 		} catch (Exception $e) {
 			$response['error'] = $e->getMessage();
 		}

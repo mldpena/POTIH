@@ -146,6 +146,7 @@
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
 					$('#customer_name').val(response.customer_name);
+					$('#received_by').val(response.received_by);
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);
@@ -236,12 +237,14 @@
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var customer_name_val = $('#customer_name').val();
+		var received_by_val = $('#received_by').val();
 
 		var arr = 	{ 
 						fnc 	 	: 'save_return_head', 
 						entry_date 	: date_val,
 						memo 		: memo_val,
-						customer_name : customer_name_val
+						customer_name : customer_name_val,
+						received_by : received_by_val
 					};
 
 		$.ajax({

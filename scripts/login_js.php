@@ -95,8 +95,6 @@
 						branch_id : branch_val 
 					};
 
-
-
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',

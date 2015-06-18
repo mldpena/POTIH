@@ -169,6 +169,8 @@ class Adjust_Model extends CI_Model {
 
 		$response 	= array();
 
+		$response['error'] = '';
+
 		$product_id = $this->encrypt->decode($product_id);
 		$adjust_id = $adjust_id == '0' ? 0 : $this->encrypt->decode($adjust_id);
 
@@ -201,6 +203,9 @@ class Adjust_Model extends CI_Model {
 		extract($param);
 		
 		$response 	= array();
+
+		$response['error'] = '';
+
 		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 
@@ -247,6 +252,9 @@ class Adjust_Model extends CI_Model {
 		extract($param);
 
 		$response 	= array();
+
+		$response['error'] = '';
+
 		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 		$adjust_id 	= $this->encrypt->decode($detail_id);
@@ -434,6 +442,8 @@ class Adjust_Model extends CI_Model {
 	{
 		extract($param);
 
+		$response['error'] = '';
+
 		$status = 0;
 		$adjust_ids = array();
 
@@ -466,6 +476,7 @@ class Adjust_Model extends CI_Model {
 		if ($result['error'])
 			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
+		return $response;
 	}
 
 	public function get_adjust_express_list($param)
@@ -554,6 +565,8 @@ class Adjust_Model extends CI_Model {
 	{
 		extract($param);
 
+		$response['error'] = '';
+
 		$detail_id = $this->encrypt->decode($detail_id);
 
 		$query_data = array(ADJUST_CONST::DELETED,$this->_current_user,$this->_current_date,$detail_id);
@@ -571,5 +584,6 @@ class Adjust_Model extends CI_Model {
 		else if ($this->db->affected_rows() != 1)
 			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
+		return $response;
 	}
 }

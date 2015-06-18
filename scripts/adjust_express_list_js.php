@@ -244,8 +244,8 @@
 					var requestStatus = tableHelper.getData(i,'status');
 					if (requestStatus != state.Pending.name)
 					{
-						var updateElement = tableHelper.getElement(rowIndex,'update');
-						var deleteElement = tableHelper.getElement(rowIndex,'delete');
+						var updateElement = tableHelper.getElement(i,'update');
+						var deleteElement = tableHelper.getElement(i,'delete');
 
 						$(updateElement,deleteElement).hide();
 					}

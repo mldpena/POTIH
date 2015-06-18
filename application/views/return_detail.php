@@ -20,6 +20,10 @@
 						<td><input type="text" class="form-control" id="customer_name"></td>
 					</tr>
 					<tr>
+						<td>Received By:</td>
+						<td><input type="text" class="form-control" id="received_by"></td>
+					</tr>
+					<tr>
 						<td>Date:</td>
 						<td><input type="text" class="form-control" id="date"></td>
 					</tr>

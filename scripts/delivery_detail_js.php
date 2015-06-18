@@ -155,8 +155,9 @@
 
 	$('#tbl').hide();
 
-	var tableEvents = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
-	tableEvents.bindUpdateEvents(get_table_details);
+	var tableHelper = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
+	//tableHelper.bindUpdateEvents(onBeforeSubmitDetails);
+	tableHelper.bindAutoComplete(token,'stockdelivery');
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -200,8 +201,7 @@
 				}
 				else
 				{
-					add_new_row(myjstbl,colarray);
-					bind_product_autocomplete();
+					tableHelper.addRow();
 				}
 
 				if (!$.inArray(response.delivery_type,[state.Both,state.Unsaved]))
@@ -231,7 +231,7 @@
 
 	$('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_detail_id 	= table_get_column_data(global_row_index,'id');
+		global_detail_id 	= tableHelper.getData(global_row_index,'id');
 
 		if (global_detail_id != 0) 
 			$('#deleteStockDeliveryModal').modal('show');
@@ -258,6 +258,17 @@
 		}
 	});
 
+	$('.imgupdate').live('click',function(){
+		checkCurrentInventory($(this));
+    });
+
+    $('.txtmemo').live('keydown',function(e){
+        if (e.keyCode == 13) {
+            checkCurrentInventory($(this));
+            e.preventDefault();
+        };
+    });
+
 	$('#delete').click(function(){
 		if (flag == 1) 
 			return;
@@ -283,7 +294,7 @@
 				else
 				{
 					myjstbl.delete_row(row_index);
-					recompute_row_count(myjstbl,colarray);
+					tableHelper.recomputeRowNumber();
 					recompute_total_qty(myjstbl,colarray,'total_qty');
 					$('#deleteStockDeliveryModal').modal('hide');
 				}
@@ -333,42 +344,15 @@
 		global_row_index 	= 0;
 		global_detail_id 	= 0;
 	});
-	
-	function bind_product_autocomplete()
-	{
-		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>delivery', {
-			enable_add : false,
-			fnc_callback : function(x, label, value, ret_datas, error){
-				var row_index = $(x).parent().parent().index();
-				if (error.length > 0) {
-					table_set_column_data(row_index,'product',['',0]);
-					table_set_column_data(row_index,'code',['']);
-					table_set_column_data(row_index,'qty',['']);
-					table_set_column_data(row_index,'inventory',['']);
-					table_set_column_data(row_index,'memo',['']);
-				}
-				else
-				{
-					table_set_column_data(row_index,'product',[ret_datas[1],ret_datas[0]]);
-					table_set_column_data(row_index,'code',[ret_datas[2]]);
-					table_set_column_data(row_index,'inventory',[ret_datas[3]]);
-				}
-			},
-			fnc_render : function(ul, item){
-				return my_autocomplete_render_fnc(ul, item, "code_name", [2,1], 
-					{ width : ["100px","auto"] });
-			}
-		});
-	}
 
-	function get_table_details(element)
+	function onBeforeSubmitDetails(element)
 	{
-		var row_index 		= $(element).parent().parent().index();
-		var product_id_val 	= table_get_column_data(row_index,'product',1);
-		var qty_val 		= table_get_column_data(row_index,'qty');
-		var memo_val 		= table_get_column_data(row_index,'memo');
-		var id_val 			= table_get_column_data(row_index,'id');
-		var is_transfer_val = Number(table_get_column_data(row_index,'istransfer'));
+		var rowIndex 		= $(element).parent().parent().index();
+		var product_id_val 	= tableHelper.getData(rowIndex,'product',1);
+		var qty_val 		= tableHelper.getData(rowIndex,'qty');
+		var memo_val 		= tableHelper.getData(rowIndex,'memo');
+		var id_val 			= tableHelper.getData(rowIndex,'id');
+		var is_transfer_val = Number(tableHelper.getData(rowIndex,'istransfer'));
 		var fnc_val 		= id_val != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
 		var arr = 	{ 
@@ -381,6 +365,37 @@
 					};
 
 		return arr;
+	}
+
+	function checkCurrentInventory(element)
+	{
+		var rowIndex 		= $(element).parent().parent().index();
+		var product_id_val 	= tableHelper.getData(rowIndex,'product',1);
+		var qty_val 		= tableHelper.getData(rowIndex,'qty');
+
+		var arrChecker = 	{
+								fnc : 'check_product_inventory',
+								product_id : product_id_val,
+								qty : qty_val
+							}
+
+		$.ajax({
+	        type: "POST",
+	        dataType : 'JSON',
+	        data: 'data=' + JSON.stringify(arrChecker) + token,
+	        success: function(response) {
+	            clear_message_box();
+
+	            if (response.is_insufficient == 1) {
+	            	var confirmation = confirm('Current inventory(' + response.current_inventory + ') will reach the minumum level. Do you still want to continue?');
+	            
+	            	if (!confirmation) 
+	            		return;
+	            }
+
+	            _callUpdate(element,onBeforeSubmitDetails);
+	        }       
+    	});
 	}
 
 	function insert_dynamic_css()

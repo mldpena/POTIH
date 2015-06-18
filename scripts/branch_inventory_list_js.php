@@ -4,7 +4,7 @@
     var token   = '<?= $token ?>';
 
     var arr =  { fnc : 'get_branch_list' };
-
+    var myjstbl;
               
      $.ajax({
         type: "POST",
@@ -71,7 +71,7 @@
 
 
                 var root = document.getElementById("tbl");
-                var myjstbl = new my_table(tab, colarray, { ispaging : true, 
+                myjstbl = new my_table(tab, colarray, { ispaging : true, 
                                                         tdhighlight_when_hover : "tablerow",
                                                         iscursorchange_when_hover : true  
                                         });

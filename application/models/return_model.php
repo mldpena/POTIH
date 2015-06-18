@@ -32,7 +32,8 @@ class Return_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`
+		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number',
+					COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`, `received_by`
 					FROM `return_head`
 					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
 
@@ -48,6 +49,7 @@ class Return_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 			$response['customer_name'] 		= $row->customer;
+			$response['received_by'] 		= $row->received_by;
 			$branch_id = $row->branch_id;
 		}
 
@@ -170,13 +172,14 @@ class Return_Model extends CI_Model {
 
 		$response['error'] 	= '';
 		$entry_date 		= $entry_date.' '.date('h:i:s');
-		$query_data 		= array($entry_date,$memo,$customer_name,$this->_current_user,$this->_current_date,$this->_return_head_id);
+		$query_data 		= array($entry_date,$memo,$customer_name,$received_by,$this->_current_user,$this->_current_date,$this->_return_head_id);
 
 		$query = "UPDATE `return_head`
 					SET
 					`entry_date` = ?,
 					`memo` = ?,
 					`customer` = ?,
+					`received_by` = ?,
 					`is_used` = ".RETURN_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
@@ -223,7 +226,7 @@ class Return_Model extends CI_Model {
 
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(RD.`reference_number`,' ',RD.`memo`,' ',RD.`customer`) LIKE ?";
+			$conditions .= " AND CONCAT(RD.`reference_number`,' ',RD.`memo`,' ',RD.`customer`,' ',RD.`received_by`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -244,7 +247,8 @@ class Return_Model extends CI_Model {
 
 
 		$query = "SELECT RD.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('RD',RD.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RD.`is_used` = 0, 'Unused', RD.`memo`) AS 'memo', RD.`customer`
+					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RD.`is_used` = 0, 'Unused', RD.`memo`) AS 'memo', 
+					RD.`customer`, RD.`received_by`
 					FROM return_head AS RD
 					LEFT JOIN branch AS B ON B.`id` = RD.`branch_id` AND B.`is_show` = ".RETURN_CONST::ACTIVE."
 					WHERE RD.`is_show` = ".RETURN_CONST::ACTIVE." $conditions
@@ -265,6 +269,7 @@ class Return_Model extends CI_Model {
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->entry_date);
 				$response['data'][$i][] = array($row->customer);
+				$response['data'][$i][] = array($row->received_by);
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array('');
 				$i++;
@@ -285,7 +290,7 @@ class Return_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
-		$query_data = array($this->_current_date,$this->_current_user,$return_head_id);
+		$query_data = array($this->_current_date,$this->_current_user,$return_id);
 		$query 	= "UPDATE `return_head` 
 					SET 
 					`is_show` = ".RETURN_CONST::DELETED.",

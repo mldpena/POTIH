@@ -197,6 +197,10 @@ class StockDelivery extends CI_Controller {
 				$response = $this->delivery_model->get_customer_receive_details($post_data);
 				break;
 				
+			case 'check_product_inventory':
+				$response = $this->delivery_model->check_current_inventory($post_data);
+				break;
+
 			default:
 				$response['error'] = 'Invalid Arguments!';
 				break;
