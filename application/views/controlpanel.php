@@ -138,7 +138,7 @@
 					<div class="btn-title">Product Inventory Warning</div>
 				</div>
 			</a>
-			<a href="<?= base_url() ?>productbranchinventory/list">
+			<a href="<?= base_url() ?>product/inventory">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>productbranchinventory.png">
 					<div class="btn-title">Product Branch Inventory </div>
