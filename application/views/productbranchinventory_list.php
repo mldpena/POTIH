@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>product/inventory">Product Branch Inventory</a></li>
+			<li class="active"><a href="<?= base_url() ?>productbranch_inventory/list">product branch inventory</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -55,13 +55,35 @@
 				</select>
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
+		
 			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>
 			<div class="max-row">
 				<center>
+					
 					<div id="tbl" class="tbl max"></div>
 				</center>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal for delete confirmation -->
+<div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Delete Product</h4>
+			</div>
+			<div class="modal-body">
+				Are you sure you want to delete this product?
+				<div id="messagebox_3"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" id="delete">Delete</button>
 			</div>
 		</div>
 	</div>

@@ -145,7 +145,7 @@
 						<div>Product Inventory Warning</div>
 					</div>
 				</a>
-				<a href="<?= base_url() ?>product/inventory">
+				<a href="<?= base_url() ?>productbranchinventory/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>productbranchinventory.png">
 						<div>Product Branch Inventory</div>

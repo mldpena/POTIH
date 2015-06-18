@@ -36,18 +36,18 @@ class Product extends CI_Controller {
 		{
 			case 'list':
 				$page = 'product_list';
+				/* Temporary */
 				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
+				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;
 			
 			case 'warning':
 				$page = 'inventory_warning_list';
+				/* Temporary */
 				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
-				break;
-
-			case 'inventory':
-				$page = 'branch_inventory_list';
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',FALSE);
-				
+				$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+				$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 				break;
 
 			default:
@@ -55,9 +55,6 @@ class Product extends CI_Controller {
 				exit();
 				break;
 		}
-
-		$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
-		$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
 
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
@@ -129,14 +126,6 @@ class Product extends CI_Controller {
 
 			case 'get_inventory_warning_list':
 				$response = $this->product_model->get_product_warning_list($post_data);
-				break;
-
-			case 'get_branch_list':
-				$response['branches'] = get_name_list_from_table(FALSE,'branch',FALSE);
-				break;
-
-			case 'get_branch_inventory_list':
-				$response = $this->product_model->get_product_branch_inventory_list($post_data);
 				break;
 
 			default:
