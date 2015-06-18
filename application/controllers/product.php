@@ -41,7 +41,7 @@ class Product extends CI_Controller {
 			
 			case 'warning':
 				$page = 'inventory_warning_list';
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
+				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',FALSE);
 				break;
 
 			case 'inventory':

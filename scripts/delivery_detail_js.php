@@ -1,16 +1,23 @@
 <script type="text/javascript">
+	var state = {
+		Unsaved 	: 0,
+		Both 		: 1,
+		Sales 		: 2,
+		Transfer 	: 3
+	}
+
 	/**
 	 * Initialization of global variables
 	 * @flag {Number} - To prevent spam request
 	 * @global_detail_id {Number} - Holder of stock delivery id for delete modal
 	 * @global_row_index {Number} - Holder of stock delivery row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
+	 * @token {String} - Token for CSRF Protection
 	 */
 	
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
+	var token = '<?= $token ?>';
 
 	/**
 	 * Initialization for JS table stock delivery details
@@ -94,6 +101,14 @@
         td_class: "tablerow column_click column_hover tdinv"
     };
 
+    var spnreceive = document.createElement('span');
+	colarray['receive'] = { 
+        header_title: "Received Qty",
+        edit: [spnreceive],
+        disp: [spnreceive],
+        td_class: "tablerow column_click column_hover tdreceive"
+    };
+
     var spnmemo = document.createElement('span');
     var txtmemo = document.createElement('input');
     txtmemo.setAttribute('class','form-control txtmemo');
@@ -140,7 +155,7 @@
 
 	$('#tbl').hide();
 
-	var tableEvents = new TABLE.EventHelper();
+	var tableEvents = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
 	tableEvents.bindUpdateEvents(get_table_details);
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -155,7 +170,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -189,7 +204,7 @@
 					bind_product_autocomplete();
 				}
 
-				if (response.delivery_type != 1)
+				if (!$.inArray(response.delivery_type,[state.Both,state.Unsaved]))
 				{
 					$('.tdistransfer').hide();
 					insert_dynamic_css();
@@ -259,7 +274,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -300,7 +315,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 

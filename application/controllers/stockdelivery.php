@@ -59,7 +59,7 @@ class StockDelivery extends CI_Controller {
 			}
 		}
 		
-		if ($controller == 'sdreceive') 
+		if ($controller == 'delreceive') 
 		{
 			switch ($page) 
 			{
@@ -81,7 +81,7 @@ class StockDelivery extends CI_Controller {
 			}
 		}
 
-		if ($controller == 'creceive') 
+		if ($controller == 'custreceive') 
 		{
 			switch ($page) 
 			{

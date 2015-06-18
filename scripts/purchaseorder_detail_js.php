@@ -125,7 +125,7 @@
 
 	var tableHelper = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
 	tableHelper.bindUpdateEvents(getRowDetails);
-	tableHelper.bindAutoComplete(token,'<?= base_url ?>purchase');
+	tableHelper.bindAutoComplete(token,'<?= base_url() ?>purchase');
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{

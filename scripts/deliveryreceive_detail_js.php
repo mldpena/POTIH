@@ -4,13 +4,13 @@
 	 * @flag {Number} - To prevent spam request
 	 * @global_detail_id {Number} - Holder of stock receive id for delete modal
 	 * @global_row_index {Number} - Holder of stock receive row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
+	 * @token {String} - Token for CSRF Protection
 	 */
 	
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
+	var token = '<?= $token ?>';
 
 	/**
 	 * Initialization for JS table stock receive details
@@ -117,8 +117,8 @@
 
 	$('#tbl').hide();
 
-	var tableEvents = new TABLE.EventHelper();
-	tableEvents.bindUpdateEvents(get_table_details);
+	var tableHelper = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray });
+	tableHelper.bindUpdateEvents(get_table_details);
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -132,7 +132,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -157,12 +157,13 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				if (response.delivery_type != 1)
+				for (var i = 1; i < myjstbl.get_row_count(); i++) 
 				{
-					$('.tdistransfer').hide();
-					insert_dynamic_css();
-				} 
-					
+					var receive_qty = tableHelper.getData(i,'receiveqty');
+					if (receive_qty == 0) 
+						myjstbl.edit_row(i);
+				};
+
 				recompute_total_qty(myjstbl,colarray,'total_qty');
 
 				$('#tbl').show();
@@ -180,8 +181,8 @@
 	function get_table_details(element)
 	{
 		var row_index 		= $(element).parent().parent().index();
-		var id_val 			= table_get_column_data(row_index,'id');
-		var receiveqty_val 	= table_get_column_data(row_index,'receiveqty');
+		var id_val 			= tableHelper.getData(row_index,'id');
+		var receiveqty_val 	= tableHelper.getData(row_index,'receiveqty');
 
 		var arr = 	{ 
 						fnc 	 	: 'update_stock_receive_detail', 
@@ -190,12 +191,5 @@
 					};
 
 		return arr;
-	}
-
-	function insert_dynamic_css()
-	{
-		$('#dynamic-css').html('');
-		var css = "<style>.tdistransfer { display:none; }</style>";
-		$('#dynamic-css').html(css);
 	}
 </script>

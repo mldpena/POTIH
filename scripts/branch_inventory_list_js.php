@@ -69,10 +69,9 @@
                     };
                 });
 
-                var global_myjstbl;
 
                 var root = document.getElementById("tbl");
-                myjstbl = new my_table(tab, colarray, { ispaging : true, 
+                var myjstbl = new my_table(tab, colarray, { ispaging : true, 
                                                         tdhighlight_when_hover : "tablerow",
                                                         iscursorchange_when_hover : true  
                                         });

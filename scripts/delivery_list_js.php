@@ -98,6 +98,15 @@
         td_class: "tablerow column_click column_hover tdtotalqty"
     };
 
+    var spnstatus = document.createElement('span');
+	colarray['status'] = { 
+        header_title: "Status",
+        edit: [spnstatus],
+        disp: [spnstatus],
+        td_class: "tablerow column_click column_hover tdstatus"
+    };
+
+
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
 	colarray['coldelete'] = { 

@@ -69,7 +69,6 @@
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
-				</div>
 			</div>
 			<div class="max-row">
 				<center>
