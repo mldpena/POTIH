@@ -442,13 +442,6 @@ body{
 	padding: 10px;
 }
 
-/*CHOSEN AUTOCOMPLETE*/
-/*.ui-autocomplete li a, .ui-autocomplete li a span{
-	width: 100% !important;
-}
-.ui-autocomplete li a span{
-	padding: 4px 0 0 4px !important;
-}*/
 /*Mozilla Firefox Override CSS*/
 /*@-moz-document url-prefix() {
 	.tbl-filters table td select{

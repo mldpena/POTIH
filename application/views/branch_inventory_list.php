@@ -21,10 +21,6 @@
 								<option value="2">Non - Stock</option>
 							</select>
 						</td>
-						<td>Branch:</td>
-						<td colspan="3">
-							<select id="branch"  class="form-control" multiple="multiple" data-placeholder="Select a Branch"><?= $branch_list ?></select>
-						</td>
 					</tr>
 					<tr>
 						<td>Material Name:</td>
@@ -33,17 +29,24 @@
 						<td>
 							<select class="form-control" id="material"><?= $material_list ?></select>
 						</td>
-						
 					</tr>
 					<tr>
-						<td>Subgroup:</td>
-						<td>
-							<select class="form-control" id="subgroup"><?= $subgroup_list ?></select>
-						</td>
 						<td style="display:none;">Date To:</td>
 						<td style="display:none;"><input type="text" class="form-control" id="date_from"></td>
 						<td style="display:none;">Date From:</td>
 						<td style="display:none;"><input type="text" class="form-control" id="date_to"></td>
+					</tr>
+					<tr>
+						<td>Subgroup:</td>
+						<td colspan="3">
+							<select class="form-control" id="subgroup"><?= $subgroup_list ?></select>
+						</td>
+					</tr>
+					<tr>
+						<td>Branch:</td>
+						<td colspan="3" style="width:552px;">
+							<select id="branch" class="form-control" multiple="multiple" data-placeholder="Select a Branch"><?= $branch_list ?></select>
+						</td>
 					</tr>
 				</table>
 			</div>
