@@ -12,7 +12,7 @@
 			<div class="max-row tbl-filters">
 				<table>
 					<tr>
-						<td>Reference #:</td>
+						<td>Doc #:</td>
 						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
 					</tr>
 					<tr>

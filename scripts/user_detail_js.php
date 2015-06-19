@@ -30,7 +30,7 @@
 		if(flag==1)
 			return;
 
-		flag = 1;
+		//flag = 1;
 
 		var user_code_val	= $("#user_code").val();
 		var full_name_val 	= $("#full_name").val();
@@ -40,6 +40,17 @@
 		var contact_val 	= $("#contact").val();
 		var branches_val    = $('#branches').val() == null ? '' : $('#branches').val();
 		var fnc_val 		= "<?= $this->uri->segment(3) ?>" != "" ? "update_user" : "insert_new_user";
+
+		if ($.inArray('0',branches_val) != -1) 
+		{
+			branches_val = [];
+			$('#branches > option').each(function(key,element){
+				var value = $(element).val();
+				
+				if (value != 0) 
+					branches_val.push(value);
+			});
+		}
 
 		var arr = 	{ 
 						fnc 		: fnc_val, 

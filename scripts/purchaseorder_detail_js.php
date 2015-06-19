@@ -239,7 +239,7 @@
 		var memo_val 	= $('#memo').val();
 		var supplier_name_val = $('#supplier').val();
 		var orderfor_val = $('#orderfor').val();
-		var is_imported_val = $('#is_imported').is(':checked') ? 1 : 0;
+		var is_imported_val = $('#is_imported').is(':checked') ? 1 : 2;
 
 		var arr = 	{ 
 						fnc 	 	: 'save_purchaseorder_head', 

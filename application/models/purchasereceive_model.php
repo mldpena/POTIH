@@ -272,7 +272,7 @@ class PurchaseReceive_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT(PRH.`reference_number`,' ',PRH.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 

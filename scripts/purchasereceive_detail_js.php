@@ -114,7 +114,7 @@
     var txtqtyrecv = document.createElement('input');
     txtqtyrecv.setAttribute('class','form-control txtqtyrecv');
 	colarray['qtyrecv'] = { 
-        header_title: "Qty Recv",
+        header_title: "Qty Received",
         edit: [txtqtyrecv],
         disp: [spnqtyrecv],
         td_class: "tablerow column_click column_hover tdqtyrecv"

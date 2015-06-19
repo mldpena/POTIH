@@ -33,8 +33,9 @@
 						<td colspan="3">
 							<select class="form-control" id="delivery_type">
 								<option value="0">ALL</option>
-								<option value="1">Sales</option>
-								<option value="2">Stock Transferring</option>
+								<option value="1">Both</option>
+								<option value="2">Sales</option>
+								<option value="3">Stock Transferring</option>
 							</select>
 						</td>
 					</tr>

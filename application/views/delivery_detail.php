@@ -33,7 +33,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Date:</td>
+						<td>Delivery Date:</td>
 						<td><input type="text" class="form-control" id="date"></td>
 					</tr>
 					<tr>

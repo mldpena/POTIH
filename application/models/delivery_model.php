@@ -184,11 +184,13 @@ class Delivery_Model extends CI_Model {
 		$query_data 		= array();
 		$query 				= array();
 
-		$query_delivery_head_data = array($entry_date,$memo,$to_branch,$type,$this->_current_user,$this->_current_date,$this->_delivery_head_id); 
+		$query_delivery_head_data = array($entry_date,$entry_date,$entry_date,$memo,$to_branch,$type,$this->_current_user,$this->_current_date,$this->_delivery_head_id); 
 
 		$query_delivery_head = "UPDATE `stock_delivery_head`
 					SET
 					`entry_date` = ?,
+					`delivery_receive_date` = ?,
+					`customer_receive_date` = ?,
 					`memo` = ?,
 					`to_branchid` = ?,
 					`delivery_type` = ?,
@@ -255,13 +257,13 @@ class Delivery_Model extends CI_Model {
 
 		if ($to_branch != DELIVERY_CONST::ALL_OPTION) 
 		{
-			$conditions .= " AND SH.`to_branch` = ?";
+			$conditions .= " AND SH.`to_branchid` = ?";
 			array_push($query_data,$to_branch);
 		}
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT('SD',SD.`reference_number`,' ',SD.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT(SH.`reference_number`,' ',SH.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -430,7 +432,7 @@ class Delivery_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT('SD',SD.`reference_number`,' ',SD.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT(SH.`reference_number`,' ',SH.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -494,7 +496,7 @@ class Delivery_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SH.`delivery_type`
+					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SH.`delivery_type`, DATE(SH.`delivery_receive_date`) AS 'receive_date'
 					FROM `stock_delivery_head` AS SH
 					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
 					GROUP BY SH.`id`";
@@ -512,6 +514,7 @@ class Delivery_Model extends CI_Model {
 			$response['memo'] 				= $row->memo;
 			$response['to_branchid'] 		= $row->to_branchid;
 			$response['delivery_type'] 		= $row->delivery_type;
+			$response['receive_date'] 		= $row->receive_date;
 			$branch_id = $row->branch_id;
 		}
 
@@ -611,7 +614,7 @@ class Delivery_Model extends CI_Model {
 
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT('SD',SD.`reference_number`,' ',SD.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT(SH.`reference_number`,' ',SH.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -673,7 +676,7 @@ class Delivery_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`delivery_type`
+					SH.`memo`, SH.`branch_id`, SH.`delivery_type`, DATE(SH.`customer_receive_date`) AS 'receive_date'
 					FROM `stock_delivery_head` AS SH
 					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
 					GROUP BY SH.`id`";
@@ -690,6 +693,7 @@ class Delivery_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 			$response['delivery_type'] 		= $row->delivery_type;
+			$response['receive_date'] 		= $row->receive_date;
 			$branch_id = $row->branch_id;
 		}
 
@@ -741,21 +745,19 @@ class Delivery_Model extends CI_Model {
 
 		$query_data = array($product_id,$this->_current_branch_id);
 
-		$query = "SELECT `inventory`, `min_inv` FROM product_branch_inventory WHERE `product_id` = ? AND `branch_id` = ?";
+		$query = "SELECT `inventory` AS 'current_inventory', `min_inv` FROM product_branch_inventory WHERE `product_id` = ? AND `branch_id` = ?";
 		
 		$result = $this->db->query($query,$query_data);
 
 		$row = $result->row();
 
-		$current_inventory = $row->inventory;
-		$mininum_inventory = $row->min_inv;
 
-		if (($current_inventory - $qty) <= $mininum_inventory) 
-		{
-			$response['is_insufficient'] = 1;
-			$response['current_inventory'] = $current_inventory;
-			$response['new_inventory'] = $current_inventory - $qty;
-		}
+		if (($row->current_inventory - $qty) < 0) 
+			$response['is_insufficient'] = DELIVERY_CONST::NEGATIVE_INV;
+		elseif (($row->current_inventory - $qty) > 0 && ($row->current_inventory - $qty) <= $row->min_inv)
+			$response['is_insufficient'] = DELIVERY_CONST::MINIMUM;
+
+		$response['current_inventory'] = $row->current_inventory;
 
 		$result->free_result();
 

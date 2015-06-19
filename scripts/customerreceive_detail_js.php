@@ -122,9 +122,9 @@
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
-		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date').datepicker("setDate", new Date());
+		$('#date, #receive_date').datepicker();
+    	$('#date, #receive_date').datepicker("option","dateFormat", "yy-mm-dd" );
+    	$('#date, #receive_date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
 						fnc : 'get_customer_receive_details'
@@ -143,12 +143,13 @@
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
 					$('#delivery_type').val(response.delivery_type);
+					$('#receive_date').val(response.receive_date);	
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 				}
 				
-				$('input, textarea, button, select').not('#print').attr('disabled','disabled');
+				$('input, textarea, button, select').not('#print, #receive_date').attr('disabled','disabled');
 
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);

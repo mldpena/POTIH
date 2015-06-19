@@ -178,7 +178,7 @@
 		var order_by_val 	= $('#order_by').val();
 		var status_val 		= $('#status').val();
 		var order_type_val 	= $('#order_type').val();
-
+		
 		var arr = 	{ 
 						fnc 	 	: 'get_user_list', 
 						search_string : search_string_val,

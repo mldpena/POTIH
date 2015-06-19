@@ -235,7 +235,7 @@ public function insert_warehouserelease_detail($param)
 
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT('WRD',RD.`reference_number`,' ',B.`name`,' ',RD.`customer`) LIKE ?";
+			$conditions .= " AND CONCAT(RD.`reference_number`,' ',B.`name`,' ',RD.`customer`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 

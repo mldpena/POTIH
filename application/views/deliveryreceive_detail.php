@@ -33,8 +33,12 @@
 						</td>
 					</tr>
 					<tr>
-						<td>Date:</td>
+						<td>Delivery Date:</td>
 						<td><input type="text" class="form-control" id="date"></td>
+					</tr>
+					<tr>
+						<td>Receive Date:</td>
+						<td><input type="text" class="form-control" id="receive_date"></td>
 					</tr>
 					<tr>
 						<td valign="top">Memo:</td>
@@ -61,6 +65,7 @@
 			</div>
 			<div class="max-row" align="right">
 				<input type="button" class="btn btn-primary" value="Print" id="print">
+				<input type="button" class="btn btn-success" value="Save" id="save">
 			</div>
 		</div>
 	</div>

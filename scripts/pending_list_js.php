@@ -139,7 +139,7 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
-	var tableHelper = new TABLE.EventHelper();
+	var tableHelper = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
 
 	$('#tbl, #action-button').hide();
 	//Call refresh function after loading the page
@@ -152,7 +152,7 @@
     refresh_table();
 
     //Event for calling search function
-    $('#search').click(function({ tableObject : myjstbl, tableArray : colarray}){
+    $('#search').click(function(){
     	refresh_table();
     });
 

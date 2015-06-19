@@ -122,9 +122,9 @@
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
-		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date').datepicker("setDate", new Date());
+		$('#date, #receive_date').datepicker();
+    	$('#date, #receive_date').datepicker("option","dateFormat", "yy-mm-dd" );
+    	$('#date, #receive_date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
 						fnc : 'get_stock_receive_details'
@@ -144,6 +144,7 @@
 					$('#memo').val(response.memo);
 					$('#delivery_type').val(response.delivery_type);
 					$('#to_branch').val(response.to_branchid);
+					$('#receive_date').val(response.receive_date);	
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
@@ -152,7 +153,7 @@
 						$('#delivery_to_list').hide();
 				}
 				
-				$('input, textarea, button, select').not('#print').attr('disabled','disabled');
+				$('input, textarea, button, select').not('#print, #receive_date').attr('disabled','disabled');
 
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
@@ -177,6 +178,40 @@
 		var row_index = $(this).parent().parent().index();
 		myjstbl.edit_row(row_index);
 	});
+
+	/*$('#save').click(function(){
+		if (flag == 1) 
+			return;
+
+		flag = 1;
+
+		var receive_date_val	= $('#receive_date').val();
+		var date_column_val 	= 'delivery_receive_date';
+
+		var arr = 	{ 
+						fnc 	 	: 'save_receive_head', 
+						entry_date 	: date_val,
+						memo 		: memo_val,
+						type 		: type_val,
+						to_branch 	: to_branch
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+					build_message_box('messagebox_1',response.error,'danger');
+				else
+					window.location = "<?= base_url() ?>delivery/list";
+
+				flag = 0;
+			}       
+		});
+	});*/
 
 	function get_table_details(element)
 	{

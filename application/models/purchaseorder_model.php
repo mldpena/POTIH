@@ -240,7 +240,7 @@ class PurchaseOrder_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT('PO',PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`) LIKE ?";
+			$conditions .= " AND CONCAT(PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 

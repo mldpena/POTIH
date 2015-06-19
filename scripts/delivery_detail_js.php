@@ -6,6 +6,12 @@
 		Transfer 	: 3
 	}
 
+	var inventorySate = {
+		Sufficient	: 0,
+		Minimum 	: 1,
+		Negative 	: 2
+	}
+
 	/**
 	 * Initialization of global variables
 	 * @flag {Number} - To prevent spam request
@@ -106,7 +112,8 @@
         header_title: "Received Qty",
         edit: [spnreceive],
         disp: [spnreceive],
-        td_class: "tablerow column_click column_hover tdreceive"
+        td_class: "tablerow column_click column_hover tdreceive",
+        headertd_class : "tdreceive"
     };
 
     var spnmemo = document.createElement('span');
@@ -386,8 +393,10 @@
 	        success: function(response) {
 	            clear_message_box();
 
-	            if (response.is_insufficient == 1) {
-	            	var confirmation = confirm('Current inventory(' + response.current_inventory + ') will reach the minumum level. Do you still want to continue?');
+	            if (response.is_insufficient != inventorySate.Sufficient) {
+	            	var confirmMessage = (response.is_insufficient == inventorySate.Minimum) ? 'Current inventory is ' + response.current_inventory + '.  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
+
+	            	var confirmation = confirm(confirmMessage);
 	            
 	            	if (!confirmation) 
 	            		return;
@@ -398,10 +407,16 @@
     	});
 	}
 
-	function insert_dynamic_css()
+	function hideTransferColumn()
 	{
 		$('#dynamic-css').html('');
 		var css = "<style>.tdistransfer { display:none; }</style>";
 		$('#dynamic-css').html(css);
+	}
+
+	function hideReceiveQuantity()
+	{
+
+
 	}
 </script>

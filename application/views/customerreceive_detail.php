@@ -27,8 +27,12 @@
 						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
 					</tr>
 					<tr>
-						<td>Date:</td>
+						<td>Delivery Date:</td>
 						<td><input type="text" class="form-control" id="date"></td>
+					</tr>
+					<tr>
+						<td>Receive Date:</td>
+						<td><input type="text" class="form-control" id="receive_date"></td>
 					</tr>
 					<tr>
 						<td valign="top">Memo:</td>

@@ -92,7 +92,7 @@
     var spnrequesthidden = document.createElement('span');
     spnrequesthidden.setAttribute('style','display:none');
 	colarray['request'] = { 
-        header_title: "Req Inv",
+        header_title: "Requested Inv",
         edit: [spnrequest,spnrequesthidden],
         disp: [spnrequest,spnrequesthidden],
         td_class: "tablerow column_click column_hover tdrequest"

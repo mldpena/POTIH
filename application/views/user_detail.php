@@ -176,6 +176,135 @@
 						<td><input type="checkbox" class="check-detail" value="101"></td>
 						<td></td>
 					</tr>
+					<tr>
+						<td>Purchase Return</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="103"></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="max-row">
+				<h2>Stock Transferring Section</h2>
+			</div>
+			<div class="max-row tbl max user">
+				<table>
+					<tr class="tableheader">
+						<td style="width:345px;">Page</td>
+						<td style="width:100px;">View</td>
+						<td style="width:100px;">View Detail</td>
+						<td style="width:100px;">Add</td>
+						<td style="width:100px;">Edit</td>
+						<td style="width:100px;">Delete</td>
+						<td style="width:320px;">Others</td>
+					</tr>
+					<tr>
+						<td>Stock Delivery</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="103"></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Stock Receive</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Customer Receive</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="max-row">
+				<h2>Others Section</h2>
+			</div>
+			<div class="max-row tbl max user">
+				<table>
+					<tr class="tableheader">
+						<td style="width:345px;">Page</td>
+						<td style="width:100px;">View</td>
+						<td style="width:100px;">View Detail</td>
+						<td style="width:100px;">Add</td>
+						<td style="width:100px;">Edit</td>
+						<td style="width:100px;">Delete</td>
+						<td style="width:320px;">Others</td>
+					</tr>
+					<tr>
+						<td>Inventory Adjust</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="103"></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Pending Inventory Adjust</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td><input type="checkbox" class="check-detail" value="104">Allow to Approve / Decline</td>
+					</tr>
+					<tr>
+						<td>Warehouse Release</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="max-row">
+				<h2>Reports Section</h2>
+			</div>
+			<div class="max-row tbl max user">
+				<table>
+					<tr class="tableheader">
+						<td style="width:345px;">Page</td>
+						<td style="width:100px;">View</td>
+						<td style="width:100px;">View Detail</td>
+						<td style="width:100px;">Add</td>
+						<td style="width:100px;">Edit</td>
+						<td style="width:100px;">Delete</td>
+						<td style="width:320px;">Others</td>
+					</tr>
+					<tr>
+						<td>Product Inventory Warning</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Product Branch Inventory</td>
+						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
 				</table>
 			</div>
 		</div>

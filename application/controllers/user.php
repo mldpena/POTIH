@@ -41,7 +41,7 @@ class User extends CI_Controller {
 			case 'add':
 			case 'view':
 				$page = 'user_detail';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch');
+				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
 				break;
 
 			default:

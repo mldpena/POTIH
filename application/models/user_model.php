@@ -145,7 +145,7 @@ class User_Model extends CI_Model {
 		else
 		{
 			$query_delete_previous_permissions = "DELETE FROM user_permission WHERE `user_id` = ?";
-			$result_delete_previous_permissions = $this->sql->execute_query($query_delete_previous_permissions,$user_id);
+			$result_delete_previous_permissions = $this->sql->execute_query($query_delete_previous_permissions,$this->_user_head_id);
 
 			if ($result_delete_previous_permissions['error'] != '') 
 				$response['error'] = 'Unable to delete permissions!';
@@ -160,7 +160,7 @@ class User_Model extends CI_Model {
 
 				foreach ($branches as $key => $value) 
 				{
-					$query_permissions_data = array($value,$user_id,100);
+					$query_permissions_data = array($value,$this->_user_head_id,100);
 					$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
 
 					if ($result_permissions['error'] != '') 
@@ -199,19 +199,19 @@ class User_Model extends CI_Model {
 
 		if ($status != USER_CONST::ALL_OPTION) 
 		{
-			switch ($type) 
+			switch ($status) 
 			{
 				case 1:
-					$type = USER_CONST::ACTIVE;
+					$status = USER_CONST::ACTIVE;
 					break;
 				
 				case 2:
-					$type = USER_CONST::INACTIVE;
+					$status = USER_CONST::INACTIVE;
 					break;
 			}
 
 			$conditions .= " AND `is_active` = ?";
-			array_push($query_data,$type);
+			array_push($query_data,$status);
 		}
 
 		switch ($order_by) 
