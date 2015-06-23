@@ -37,32 +37,35 @@ body{
 }
 .header-nav > .version{
 	font-family: R-Regular;
-	font-size: 12px;
+	font-size: 14.5px;
 	padding: 8px;
 	text-transform: uppercase;
 	color: #fff;
 }
 .header-nav > .user-creds{
 	font-family: R-Regular;
-	font-size: 12px;
+	font-size: 14.5px;
 	color: #fff;
 }
-.header-nav .user-creds .user-btn{
+.header-nav > .user-creds .user-btn{
 	border-radius: 0px !important;
 	border: none !important;
 	padding: 8px;
-	font-size: 12px;
+	font-size: 14.5px;
 	font-family: R-Regular;
 	text-transform: uppercase;
 	color: #fff;
 	background: #e74c3c;
+}
+.header-nav > .user-creds .dropdown-menu li a{
+	font-size: 14.5px;
 }
 .header-nav > .user-creds > a .ez-menu{
 	float: left;
 	padding: 8px;
 	text-transform: uppercase;
 	color: #fff;
-	font-size: 12px;
+	font-size: 14.5px;
 }
 .header-nav > .user-creds > a .ez-menu:hover,
 .header-nav .user-creds .user-btn:active,
@@ -92,7 +95,7 @@ body{
 }
 .sidebar > .sidebar-links-panel .sidebar-group .header{
 	background: #00923F;
-	font-size: 12px;
+	font-size: 12.5px;
 	text-align: left;
 	color: #fff;
 	padding: 10px;
@@ -109,8 +112,8 @@ body{
 	margin-top: 2px;
 }
 .sidebar > a .sidebar-logo .mainlogo{
-	width: 120px;
-	height: 120px;
+	width: 150px;
+	height: 150px;
 }
 .sidebar > .sidebar-links-panel .sidebar-group{
 	float: left;
@@ -129,8 +132,8 @@ body{
 	text-decoration: none;
 }
 .sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link img{
-	width: 20px;
-	height: 20px;
+	width: 23px;
+	height: 23px;
 	float: left;
 }
 .sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link div{
@@ -138,7 +141,7 @@ body{
 	padding-top: 1px;
 	margin-left: 5px;
 	font-family: R-Regular;
-	font-size: 13px;
+	font-size: 15px;
 }
 .sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link{
 	padding: 8px 10px;
@@ -166,21 +169,21 @@ body{
 	border-bottom-left-radius: 10px;
 }
 .cpanel-header > img{
-	width: 100px;
-	height: 100px;
+	width: 120px;
+	height: 120px;
 	float: left;
 	margin-top: 4px;
 }
 .cpanel-header > .title{
 	float: left;
-	padding-top: 15px;
+	padding-top: 25px;
 	margin-left: 15px;
 	font-size: 50px;
 	color: #565656;
 }
 .main-content.cpanel > .content-form .form-header{
 	padding: 12px 15px;
-	font-size: 14px;
+	font-size: 15px;
 	color: #fff;
 	background: #01923F;
 	border-bottom: 1px solid transparent;
@@ -207,13 +210,13 @@ body{
 .main-content.cpanel > .content-form .form-body a .each-btn{
 	float: left;
 	border: 1px #ddd solid;
-	width: 129.6px;
-	height: 119px;
+	width: 147.8px;
+	height: 129px;
 	margin-left: 15px;
 	margin-top: 15px;
 	background: #f2f2f2;
 	border-radius: 4px;
-	padding: 0px 5px;
+	padding: 0px 10px;
 }
 .main-content.cpanel > .content-form .form-body a .each-btn:hover{
 	background: #f9f9f9;
@@ -224,8 +227,8 @@ body{
 	margin-top: 10px;
 }
 .main-content.cpanel > .content-form .form-body a .each-btn .btn-title{
-	margin-top: 5px;
-	font-size: 13px;
+	margin-top: 7px;
+	font-size: 15px;
 }
 /*Main Content*/
 .main-content{
@@ -289,7 +292,7 @@ body{
 /*Login*/
 .login-wrapper{
 	width: 543px;
-	min-height: 553px;
+	min-height: 543px;
 }
 .login-panel{
 	background: #fff;
@@ -327,7 +330,7 @@ body{
 	padding: 15px; 
 	font-family: R-Regular;
 	font-weight: 100;
-	font-size: 13px;
+	font-size: 15px;
 	background: #fff;
 	border-top: 2px #07438C solid;
 	float: left;
