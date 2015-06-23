@@ -65,18 +65,18 @@
 					<span>Admin</span>
 				</div>
 			</div>
-			<div class="max-row">
-				<h2>Data Section</h2>
+			<div class="sub-panel header-section">
+				<div align="left">Data Section</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
 					<tr class="tableheader">
 						<td style="width:345px;">Page</td>
-						<td style="width:100px;">View</td>
-						<td style="width:100px;">View Detail</td>
-						<td style="width:100px;">Add</td>
-						<td style="width:100px;">Edit</td>
-						<td style="width:100px;">Delete</td>
+						<td style="width:130px;">View</td>
+						<td style="width:130px;">View Detail</td>
+						<td style="width:130px;">Add</td>
+						<td style="width:130px;">Edit</td>
+						<td style="width:130px;">Delete</td>
 						<td style="width:320px;">Others</td>
 					</tr>
 					<tr>
@@ -126,18 +126,18 @@
 					</tr>
 				</table>
 			</div>
-			<div class="max-row">
-				<h2>Purchase Section</h2>
+			<div class="sub-panel header-section">
+				<div align="left">Purchase Section</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
 					<tr class="tableheader">
 						<td style="width:345px;">Page</td>
-						<td style="width:100px;">View</td>
-						<td style="width:100px;">View Detail</td>
-						<td style="width:100px;">Add</td>
-						<td style="width:100px;">Edit</td>
-						<td style="width:100px;">Delete</td>
+						<td style="width:130px;">View</td>
+						<td style="width:130px;">View Detail</td>
+						<td style="width:130px;">Add</td>
+						<td style="width:130px;">Edit</td>
+						<td style="width:130px;">Delete</td>
 						<td style="width:320px;">Others</td>
 					</tr>
 					<tr>
@@ -187,18 +187,18 @@
 					</tr>
 				</table>
 			</div>
-			<div class="max-row">
-				<h2>Stock Transferring Section</h2>
+			<div class="sub-panel header-section">
+				<div align="left">Stock Transferring Section</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
 					<tr class="tableheader">
 						<td style="width:345px;">Page</td>
-						<td style="width:100px;">View</td>
-						<td style="width:100px;">View Detail</td>
-						<td style="width:100px;">Add</td>
-						<td style="width:100px;">Edit</td>
-						<td style="width:100px;">Delete</td>
+						<td style="width:130px;">View</td>
+						<td style="width:130px;">View Detail</td>
+						<td style="width:130px;">Add</td>
+						<td style="width:130px;">Edit</td>
+						<td style="width:130px;">Delete</td>
 						<td style="width:320px;">Others</td>
 					</tr>
 					<tr>
@@ -230,18 +230,18 @@
 					</tr>
 				</table>
 			</div>
-			<div class="max-row">
-				<h2>Others Section</h2>
+			<div class="sub-panel header-section">
+				<div align="left">Others Section</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
 					<tr class="tableheader">
 						<td style="width:345px;">Page</td>
-						<td style="width:100px;">View</td>
-						<td style="width:100px;">View Detail</td>
-						<td style="width:100px;">Add</td>
-						<td style="width:100px;">Edit</td>
-						<td style="width:100px;">Delete</td>
+						<td style="width:130px;">View</td>
+						<td style="width:130px;">View Detail</td>
+						<td style="width:130px;">Add</td>
+						<td style="width:130px;">Edit</td>
+						<td style="width:130px;">Delete</td>
 						<td style="width:320px;">Others</td>
 					</tr>
 					<tr>
@@ -273,18 +273,18 @@
 					</tr>
 				</table>
 			</div>
-			<div class="max-row">
-				<h2>Reports Section</h2>
+			<div class="sub-panel header-section">
+				<div align="left">Reports Section</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
 					<tr class="tableheader">
 						<td style="width:345px;">Page</td>
-						<td style="width:100px;">View</td>
-						<td style="width:100px;">View Detail</td>
-						<td style="width:100px;">Add</td>
-						<td style="width:100px;">Edit</td>
-						<td style="width:100px;">Delete</td>
+						<td style="width:130px;">View</td>
+						<td style="width:130px;">View Detail</td>
+						<td style="width:130px;">Add</td>
+						<td style="width:130px;">Edit</td>
+						<td style="width:130px;">Delete</td>
 						<td style="width:320px;">Others</td>
 					</tr>
 					<tr>

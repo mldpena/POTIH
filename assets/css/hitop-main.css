@@ -289,6 +289,9 @@ body{
 	width: 100%;
 	float: left;
 }
+.sub-panel.header-section div{
+	padding: 8px 0px; 
+}
 /*Login*/
 .login-wrapper{
 	width: 543px;
