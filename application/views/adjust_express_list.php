@@ -31,13 +31,10 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<div id="messagebox_1"></div>
-				</div>
-			</div>
-			<div class="max-row">
 				<center>
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
+					<div id="messagebox_1"></div>
 				</center>
 			</div>
 		</div>
