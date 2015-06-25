@@ -1,10 +1,10 @@
 $(function(){
-	$(".sidebar-group a[href='"+current_url+"'] .link").css({
+	$(".sidebar-group a[href*='"+current_url+"'] .link").css({
 		"background" : "#ecffe8",
 		"border-left" : "2px #00923F solid"
 	});
 
-	$(".sidebar-group a[href='"+current_url+"']").parent().parent().addClass("active-tab");
+	$(".sidebar-group a[href*='"+current_url+"']").parent().parent().addClass("active-tab");
 	$(".sidebar-group.active-tab .subgroup-toggle div i").removeClass("fa-plus-square").addClass("fa-minus-square");
 	$(".sidebar-group.active-tab .link-menu").css("display", "block");
 
