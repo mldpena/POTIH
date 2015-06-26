@@ -94,7 +94,7 @@ class PurchaseOrder extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'create_reference_number':
-				$response = get_next_number('purchase_head','reference_number');
+				$response = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
 				break;
 
 			case 'get_purchaseorder_details':
@@ -105,15 +105,15 @@ class PurchaseOrder extends CI_Controller {
 				$response = get_product_list_autocomplete($post_data);
 				break;
 
-			case 'insert_purchaseorder_detail':
+			case 'insert_detail':
 				$response = $this->purchaseorder_model->insert_purchaseorder_detail($post_data);
 				break;
 
-			case 'update_purchaseorder_detail':
+			case 'update_detail':
 				$response = $this->purchaseorder_model->update_purchaseorder_detail($post_data);
 				break;
 
-			case 'delete_purchaseorder_detail':
+			case 'delete_detail':
 				$response = $this->purchaseorder_model->delete_purchaseorder_detail($post_data);
 				break;
 
@@ -125,7 +125,7 @@ class PurchaseOrder extends CI_Controller {
 				$response = $this->purchaseorder_model->search_purchaseorder_list($post_data);
 				break;
 
-			case 'delete_purchaseorder_head':
+			case 'delete_head':
 				$response = $this->purchaseorder_model->delete_purchaseorder_head($post_data);
 				break;
 

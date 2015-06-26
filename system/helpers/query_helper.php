@@ -72,7 +72,7 @@ if (!function_exists('get_name_list_from_table'))
 
 if (!function_exists('get_next_number')) 
 {
-	function get_next_number($table_name = '', $field = '', $default_value = 100000)
+	function get_next_number($table_name = '', $field = '', $additional_field = array(), $default_value = 100000)
 	{
 		$CI =& get_instance();
 		$CI->load->helper('cookie');
@@ -91,8 +91,21 @@ if (!function_exists('get_next_number'))
 		array_push($query,"SELECT COAlESCE(MAX(`$field` + 0),$default_value) INTO @invoiceno_d FROM `$table_name` WHERE `is_show` = 1 FOR UPDATE;");
 		array_push($query_data,array());
 
-		array_push($query,"INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`) VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1),NOW(),?,?,?)");
-		array_push($query_data,array($user_id,$user_id,$branch_id));
+		//array_push($query,"INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`) VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1),NOW(),?,?,?)");
+		$query_temp 		= "INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`";
+		$query_temp_values 	= "VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1),NOW(),?,?,?";
+		$query_data_temp 	= array($user_id,$user_id,$branch_id);
+
+		foreach ($additional_field as $key => $value) {
+			$query_temp .= ",`".$key."`";
+			$query_temp_values .= ",?";
+			array_push($query_data_temp,$value);
+		}
+
+		$query_temp = $query_temp.") ".$query_temp_values.")";
+
+		array_push($query,$query_temp);
+		array_push($query_data,$query_data_temp);
 
 		$data = $CI->sql->execute_transaction($query,$query_data);
 
@@ -116,9 +129,8 @@ if (!function_exists('get_product_list_autocomplete'))
 		$term 		= '%'.$term.'%';
 		$query_data = array($branch_id,$term,$term);
 
-		$query = "SELECT P.`description`, P.`id`, P.`material_code`, COALESCE(PBI.`inventory`,0) AS 'inventory'
+		$query = "SELECT P.`description`, P.`id`, P.`material_code`
 					FROM product AS P
-					LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
 					WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND (P.`description` LIKE ? OR P.`material_code` LIKE ?)
 					LIMIT 10";
 
@@ -130,7 +142,7 @@ if (!function_exists('get_product_list_autocomplete'))
 		{
 			$data[$i]['label'] = $row->description;
 			$data[$i]['value'] = $row->id;
-			$data[$i]['ret_datas'] = array($row->id,$row->description,$row->material_code,$row->inventory);
+			$data[$i]['ret_datas'] = array($row->id,$row->description,$row->material_code);
 			$i++;			
 		}
 

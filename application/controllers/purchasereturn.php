@@ -93,7 +93,7 @@ class PurchaseReturn extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'create_reference_number':
-				$response = get_next_number('purchase_return_head','reference_number');
+				$response = get_next_number('purchase_return_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
 				break;
 
 			case 'get_purchasereturn_details':

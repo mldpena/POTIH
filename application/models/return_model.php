@@ -208,13 +208,13 @@ class Return_Model extends CI_Model {
 		
 		if (!empty($date_from))
 		{
-			$conditions .= " AND RD.`date_created` >= ?";
+			$conditions .= " AND RD.`entry_date` >= ?";
 			array_push($query_data,$date_from.' 00:00:00');
 		}
 
 		if (!empty($date_to))
 		{
-			$conditions .= " AND RD.`date_created` <= ?";
+			$conditions .= " AND RD.`entry_date` <= ?";
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 

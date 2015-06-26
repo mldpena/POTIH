@@ -84,7 +84,7 @@
     
     var spntotalqty = document.createElement('span');
 	colarray['total_qty'] = { 
-        header_title: "Total qty",
+        header_title: "Total Qty",
         edit: [spntotalqty],
         disp: [spntotalqty],
         td_class: "tablerow column_click column_hover tdtotalqty"

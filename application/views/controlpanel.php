@@ -42,7 +42,7 @@
 	</div>
 	<div class="content-form">
 		<div class="form-header">
-			Purchase and Return
+			Purchase
 		</div>
 		<div class="form-body default">
 			<a href="<?= base_url() ?>purchase/list">
@@ -63,10 +63,17 @@
 					<div class="btn-title">Damage</div>
 				</div>
 			</a>
+		</div>
+	</div>
+	<div class="content-form">
+		<div class="form-header">
+			Return
+		</div>
+		<div class="form-body default">
 			<a href="<?= base_url() ?>return/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>return.png">
-					<div class="btn-title">Return</div>
+					<div class="btn-title">Customer Return</div>
 				</div>
 			</a>
 			<a href="<?= base_url() ?>purchaseret/list">

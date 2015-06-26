@@ -67,10 +67,18 @@
 						<div>Damage</div>
 					</div>
 				</a>
+			</div>
+		</div>
+		<div class="sidebar-group" id="return-group">
+			<div class="header subgroup-toggle">
+				<div>Return</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
 				<a href="<?= base_url() ?>return/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>return.png">
-						<div>Return</div>
+						<div>Customer Return</div>
 					</div>
 				</a>
 				<a href="<?= base_url() ?>purchaseret/list">

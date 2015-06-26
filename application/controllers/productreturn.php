@@ -93,7 +93,7 @@ class ProductReturn extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'create_reference_number':
-				$response = get_next_number('return_head','reference_number');
+				$response = get_next_number('return_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
 				break;
 
 			case 'get_return_details':

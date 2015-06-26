@@ -121,8 +121,8 @@
 
 	root.appendChild(myjstbl.tab);
 
-	var tableEvents = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
-	tableEvents.bindUpdateEvents(get_table_details);
+	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray});
+	tableHelper.bindUpdateEvents(getDetailsOnSubmit);
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -284,7 +284,7 @@
 		});
 	}
 
-	function get_table_details(element)
+	function getDetailsOnSubmit(element)
 	{
 		var row_index 		= $(element).parent().parent().index();
 		var product_id_val 	= table_get_column_data(row_index,'product',1);

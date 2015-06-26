@@ -110,7 +110,7 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
-	var tableHelper = new TABLE.EventHelper({tableObject : myjstbl, tableArray : colarray});
+	var tableHelper = new TableHelper({tableObject : myjstbl, tableArray : colarray});
 
 	$('#tbl').hide();
 	//Call refresh function after loading the page

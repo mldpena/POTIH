@@ -90,7 +90,7 @@ class Damage extends CI_Controller {
 		switch ($fnc) 
 		{
 			case 'create_reference_number':
-				$response = get_next_number('damage_head','reference_number');
+				$response = get_next_number('damage_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
 				break;
 
 			case 'get_damage_details':
@@ -101,15 +101,15 @@ class Damage extends CI_Controller {
 				$response = get_product_list_autocomplete($post_data);
 				break;
 
-			case 'insert_damage_detail':
+			case 'insert_detail':
 				$response = $this->damage_model->insert_damage_detail($post_data);
 				break;
 
-			case 'update_damage_detail':
+			case 'update_detail':
 				$response = $this->damage_model->update_damage_detail($post_data);
 				break;
 
-			case 'delete_damage_detail':
+			case 'delete_detail':
 				$response = $this->damage_model->delete_damage_detail($post_data);
 				break;
 
@@ -121,7 +121,7 @@ class Damage extends CI_Controller {
 				$response = $this->damage_model->search_damage_list($post_data);
 				break;
 
-			case 'delete_damage_head':
+			case 'delete_head':
 				$response = $this->damage_model->delete_damage_head($post_data);
 				break;
 

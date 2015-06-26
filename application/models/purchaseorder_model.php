@@ -62,12 +62,10 @@ class PurchaseOrder_Model extends CI_Model {
 		$query_detail_data = array($branch_id,$this->_purchase_head_id);
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory'
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`
 					FROM `purchase_detail` AS PD
 					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".PURCHASE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
 					WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$query_detail_data);
@@ -84,7 +82,6 @@ class PurchaseOrder_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->product, $row->product_id);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -298,12 +295,12 @@ class PurchaseOrder_Model extends CI_Model {
 		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', 
 					CONCAT('PO',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
 					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-					SUM(PD.`quantity`) AS 'total_qty', SUM(PD.`quantity` - PD.`recv_quantity`) AS 'remaining_qty',
-					CASE 
+					COALESCE(SUM(PD.`quantity`),'') AS 'total_qty', COALESCE(SUM(PD.`quantity` - PD.`recv_quantity`),'') AS 'remaining_qty',
+					COALESCE(CASE 
 						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) < SUM(PD.`quantity`) AND SUM(PD.`quantity` - PD.`recv_quantity`) <> 0 THEN 'Incomplete'
 						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) <= 0 THEN 'Complete'
 						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) = SUM(PD.`quantity`) THEN 'No Received'
-					END AS 'status'
+					END,'') AS 'status'
 					FROM purchase_head AS PH
 					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
 					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
@@ -347,7 +344,7 @@ class PurchaseOrder_Model extends CI_Model {
 	{
 		extract($param);
 
-		$purchase_head_id = $this->encrypt->decode($purchase_id);
+		$purchase_head_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';

@@ -51,19 +51,15 @@ class Damage_Model extends CI_Model {
 			$branch_id = $row->branch_id;
 		}
 
-		$query_detail_data = array($branch_id,$this->_damage_head_id);
-
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory'
+						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`
 					FROM `damage_detail` AS DD
 					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".DAMAGE_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
 					WHERE DD.`headid` = ?";
 
-		$result_detail = $this->db->query($query_detail,$query_detail_data);
-
+		$result_detail = $this->db->query($query_detail,$this->_damage_head_id);
+		
 		if ($result_detail->num_rows() == 0) 
 			$response['detail_error'] = 'No damage details found!';
 		else
@@ -76,7 +72,6 @@ class Damage_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->product, $row->product_id);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -204,13 +199,13 @@ class Damage_Model extends CI_Model {
 		
 		if (!empty($date_from))
 		{
-			$conditions .= " AND D.`date_created` >= ?";
+			$conditions .= " AND D.`entry_date` >= ?";
 			array_push($query_data,$date_from.' 00:00:00');
 		}
 
 		if (!empty($date_to))
 		{
-			$conditions .= " AND D.`date_created` <= ?";
+			$conditions .= " AND D.`entry_date` <= ?";
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
@@ -222,7 +217,7 @@ class Damage_Model extends CI_Model {
 
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(D.`reference_number`,' ',D.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT('DD',D.`reference_number`,' ',D.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -276,7 +271,7 @@ class Damage_Model extends CI_Model {
 	{
 		extract($param);
 
-		$damage_head_id = $this->encrypt->decode($damage_id);
+		$damage_head_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';

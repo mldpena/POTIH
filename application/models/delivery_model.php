@@ -317,18 +317,18 @@ class Delivery_Model extends CI_Model {
 		$query = "SELECT SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
 					CONCAT('SD',SH.`reference_number`) AS 'reference_number',
 					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
-					SUM(SD.`quantity`) AS 'total_qty', SUM(SD.`quantity` - SD.`recv_quantity`) AS 'remaining_qty',
+					COALESCE(SUM(SD.`quantity`),'') AS 'total_qty', SUM(SD.`quantity` - SD.`recv_quantity`) AS 'remaining_qty',
 					CASE 
 						WHEN `delivery_type` = ".DELIVERY_CONST::BOTH." THEN 'Both'
 						WHEN `delivery_type` = ".DELIVERY_CONST::SALES." THEN 'Sales'
 						WHEN `delivery_type` = ".DELIVERY_CONST::TRANSFER." THEN 'Transfer'
 						ELSE 'Unused'
 					END AS 'delivery_type',
-					CASE
+					COALESCE(CASE
 						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) < SUM(SD.`quantity`) AND SUM(SD.`quantity` - SD.`recv_quantity`) <> 0 THEN 'Incomplete'
 						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) = 0 THEN 'Complete'
 						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) = SUM(SD.`quantity`) THEN 'No Received'
-					END AS 'status'
+					END,'') AS 'status'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
 					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."

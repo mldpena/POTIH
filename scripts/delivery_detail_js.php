@@ -162,7 +162,7 @@
 
 	$('#tbl').hide();
 
-	var tableHelper = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
+	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray});
 	//tableHelper.bindUpdateEvents(onBeforeSubmitDetails);
 	tableHelper.bindAutoComplete(token,'stockdelivery');
 

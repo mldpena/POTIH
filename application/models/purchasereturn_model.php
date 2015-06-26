@@ -254,7 +254,7 @@ class PurchaseReturn_Model extends CI_Model {
 		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location',
 					CONCAT('PR',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
 					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-					SUM(PD.`quantity`) AS 'total_qty'
+					COALESCE(SUM(PD.`quantity`),'') AS 'total_qty'
 					FROM purchase_return_head AS PH
 					LEFT JOIN purchase_return_detail AS PD ON PD.`headid` = PH.`id`
 					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".PURCHASE_RETURN_CONST::ACTIVE."

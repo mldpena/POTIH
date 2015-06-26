@@ -294,9 +294,9 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$query = "SELECT 
 						PRH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'for_branch',
-						CONCAT('PR',PRH.`reference_number`) AS 'reference_number', GROUP_CONCAT(DISTINCT CONCAT('PO',PH.`reference_number`)) AS 'po_numbers',
+						CONCAT('PR',PRH.`reference_number`) AS 'reference_number', COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PO',PH.`reference_number`)),'') AS 'po_numbers',
 					    COALESCE(PRH.`entry_date`,'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
-					    SUM(PRD.`quantity`) AS 'total_qty'
+					    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'
 					FROM
 						purchase_receive_head AS PRH
 					    LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`

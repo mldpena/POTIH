@@ -1,20 +1,5 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of purchase detail id for delete modal
-	 * @global_row_index {Number} - Holder of purchase detail row index for delete modal
-	 * @token {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var global_detail_id = 0;
-	var global_row_index = 0;
 	var token = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table details
-	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -71,14 +56,6 @@
         td_class: "tablerow column_click column_hover tdqty"
     };
 
-    var spninventory = document.createElement('span');
-	colarray['inventory'] = { 
-        header_title: "Inventory",
-        edit: [spninventory],
-        disp: [spninventory],
-        td_class: "tablerow column_click column_hover tdinv"
-    };
-
     var spnmemo = document.createElement('span');
     var txtmemo = document.createElement('input');
     txtmemo.setAttribute('class','form-control txtmemo');
@@ -123,9 +100,10 @@
 
 	root.appendChild(myjstbl.tab);
 
-	var tableHelper = new TABLE.EventHelper({ tableObject : myjstbl, tableArray : colarray});
-	tableHelper.bindUpdateEvents(getRowDetails);
-	tableHelper.bindAutoComplete(token,'<?= base_url() ?>purchase');
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
+										{ baseURL : "<?= base_url() ?>", controller : 'purchase' } );
+
+	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit} );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -168,73 +146,17 @@
 					$('.tdupdate, .tddelete').hide();
 				}	
 				else
-					tableHelper.addRow('txtproduct');
+					tableHelper.contentProvider.addRow('txtproduct');
 
-				recompute_total_qty(myjstbl,colarray,'total_qty');	
+				tableHelper.contentProvider.recomputeTotalQuantity();
 			}       
 		});
 	}
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('.imgedit').live('click',function(){
-		var rowIndex = $(this).parent().parent().index();
-		myjstbl.edit_row(rowIndex);
-	});
-
-	$('.txtqty').live('blur',function(e){
-		recompute_total_qty(myjstbl,colarray,'total_qty');
-	});
-
-	$('.tddelete').live('click',function(){
-		global_row_index 	= $(this).parent().index();
-		global_detail_id 	= tableHelper.getData(global_row_index,'id');
-
-		if (global_detail_id != 0) 
-			$('#deletePurchaseOrderModal').modal('show');
-	});
-
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var rowIndex 		= global_row_index;
-		var detail_id_val 	= global_detail_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_purchaseorder_detail', 
-						detail_id 	: detail_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(rowIndex);
-					tableHelper.recomputeRowNumber();
-					recompute_total_qty(myjstbl,colarray,'total_qty');
-					$('#deletePurchaseOrderModal').modal('hide');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#save').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
+	function getHeadDetailsBeforeSubmit()
+	{
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var supplier_name_val = $('#supplier').val();
@@ -248,45 +170,6 @@
 						supplier_name : supplier_name_val,
 						orderfor     : orderfor_val,
 						is_imported : is_imported_val
-					};
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_1',response.error,'danger');
-				else
-					window.location = "<?= base_url() ?>purchase/list";
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#deletePurchaseOrderModal').live('hidden.bs.modal', function (e) {
-		global_row_index 	= 0;
-		global_detail_id 	= 0;
-	});
-
-	function getRowDetails(element)
-	{
-		var rowIndex 		= $(element).parent().parent().index();
-		var product_id_val 	= tableHelper.getData(rowIndex,'product',1);
-		var qty_val 		= tableHelper.getData(rowIndex,'qty');
-		var memo_val 		= tableHelper.getData(rowIndex,'memo');
-		var id_val 			= tableHelper.getData(rowIndex,'id');
-		var fnc_val 		= id_val != 0 ? "update_purchaseorder_detail" : "insert_purchaseorder_detail";
-
-		var arr = 	{ 
-						fnc 	 	: fnc_val, 
-						product_id 	: product_id_val,
-						qty     	: qty_val,
-			     		memo 		: memo_val,
-			     		detail_id 	: id_val
 					};
 
 		return arr;
