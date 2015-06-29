@@ -9,6 +9,8 @@
 	{
 		const ORDER_BY_CODE = 1;
 		const ORDER_BY_NAME = 2;
+		const PRODUCT_INSERT = 0;
+		const PRODUCT_UPDATE = 1;
 	}
 
 ?>
