@@ -124,35 +124,36 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
-	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray});
-
-	// Bind Update Events for inline insert and update
-	// Bind Autocomplete Product
-	tableHelper.bindUpdateEvents(onBeforeDetailSubmit,onAfterAdjustInsert);
-	tableHelper.bindAutoComplete(token,'adjust',onAfterProductSelect);
-
 	$('#tbl').hide();
 
 	$('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
     $('#date_from, #date_to').datepicker("setDate",new Date());
 
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'adjust' });
+
+
+	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit,false,onAfterAdjustInsert);
+	tableHelper.detailContent.bindAutoComplete(onAfterProductSelect);
+
     refreshTable();
+
+    $('.imgedit').live('click',function(){
+        var rowIndex = $(this).parent().parent().index();
+        myjstbl.edit_row(rowIndex);
+    });
 
     $('#search').click(function(){
     	refreshTable();
     });
 
-    $('.imgedit').live('click',function(){
-    	var rowIndex = $(this).parent().parent().index();
-    	myjstbl.edit_row(rowIndex);
-    });
-
     $('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
-		global_id 			= tableHelper.getData(global_row_index,'id');
+		global_id 			= tableHelper.contentProvider.getData(global_row_index,'id');
 
-		$('#deleteAdjustRequest').modal('show');
+		if (global_id != 0)
+			$('#deleteAdjustRequest').modal('show');
 	});
 
     $('#delete').click(function(){
@@ -241,17 +242,18 @@
 				}
 
 				for (var i = 1; i < myjstbl.get_row_count(); i++) {
-					var requestStatus = tableHelper.getData(i,'status');
+					var requestStatus = tableHelper.contentProvider.getData(i,'status');
 					if (requestStatus != state.Pending.name)
 					{
-						var updateElement = tableHelper.getElement(i,'update');
-						var deleteElement = tableHelper.getElement(i,'delete');
+						var updateElement = tableHelper.contentProvider.getElement(i,'update');
+						var deleteElement = tableHelper.contentProvider.getElement(i,'delete');
 
-						$(updateElement,deleteElement).hide();
+						$(updateElement).hide();
+						$(deleteElement).hide();
 					}
 				};
 
-				tableHelper.addRow();
+				tableHelper.contentProvider.addRow();
 
 				$('#loadingimg').hide();
 				$('#tbl').show();
@@ -260,15 +262,15 @@
 		});
 	}
 
-	function onBeforeDetailSubmit(element)
+	function getRowDetailsBeforeSubmit(element)
 	{
 		var rowIndex 	= $(element).parent().parent().index();
-		var productId 	= tableHelper.getData(rowIndex,'product',1);
-		var newInventory = tableHelper.getData(rowIndex,'newinventory');
-		var oldInventory = tableHelper.getData(rowIndex,'oldinventory');
-		var memo 		= tableHelper.getData(rowIndex,'memo');
-		var adjustId 	= tableHelper.getData(rowIndex,'id');
-		var status 		= $.getEnumValue(state,tableHelper.getData(rowIndex,'status'));
+		var productId 	= tableHelper.contentProvider.getData(rowIndex,'product',1);
+		var newInventory = tableHelper.contentProvider.getData(rowIndex,'newinventory');
+		var oldInventory = tableHelper.contentProvider.getData(rowIndex,'oldinventory');
+		var memo 		= tableHelper.contentProvider.getData(rowIndex,'memo');
+		var adjustId 	= tableHelper.contentProvider.getData(rowIndex,'id');
+		var status 		= $.getEnumValue(state,tableHelper.contentProvider.getData(rowIndex,'status'));
 		var fnc 		= adjustId != 0 ? "update_inventory_adjust" : "insert_inventory_adjust"; 
 
 		var arr = 	{
@@ -288,17 +290,17 @@
 	{
 		if (error.length > 0) 
 		{
-            tableHelper.setData(rowIndex,'product',['',0]);
-            tableHelper.setData(rowIndex,'material_code',['']);
-            tableHelper.setData(rowIndex,'oldinventory',['']);
-            tableHelper.setData(rowIndex,'newinventory',['']);
-            tableHelper.setData(rowIndex,'memo',['']);
+            tableHelper.contentProvider.setData(rowIndex,'product',['',0]);
+            tableHelper.contentProvider.setData(rowIndex,'material_code',['']);
+            tableHelper.contentProvider.setData(rowIndex,'oldinventory',['']);
+            tableHelper.contentProvider.setData(rowIndex,'newinventory',['']);
+            tableHelper.contentProvider.setData(rowIndex,'memo',['']);
         }
         else
         {
-            tableHelper.setData(rowIndex,'product',[response[1],response[0]]);
-            tableHelper.setData(rowIndex,'material_code',[response[2]]);
-            tableHelper.setData(rowIndex,'oldinventory',[response[3]]);
+            tableHelper.contentProvider.setData(rowIndex,'product',[response[1],response[0]]);
+            tableHelper.contentProvider.setData(rowIndex,'material_code',[response[2]]);
+            tableHelper.contentProvider.setData(rowIndex,'oldinventory',[response[3]]);
         }
 	}
 
@@ -308,14 +310,14 @@
 
 		build_message_box('messagebox_1',message,'success');
 
-		tableHelper.setData(rowIndex,'status',[$.getEnumString(state,response.status)]);
+		tableHelper.contentProvider.setData(rowIndex,'status',[$.getEnumString(state,response.status)]);
 
 		if (response.status != state.Pending.value) {
-			var updateElement = tableHelper.getElement(rowIndex,'update');
-			var deleteElement = tableHelper.getElement(rowIndex,'delete');
+			var updateElement = tableHelper.contentProvider.getElement(rowIndex,'update');
+			var deleteElement = tableHelper.contentProvider.getElement(rowIndex,'delete');
 
-			$(updateElement,deleteElement).hide();
-			//$(deleteElement).hide();
+			$(updateElement).hide();
+			$(deleteElement).hide();
 		};
 	}
 </script>

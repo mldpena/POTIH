@@ -104,15 +104,15 @@ class PurchaseReturn extends CI_Controller {
 				$response = get_product_list_autocomplete($post_data);
 				break;
 
-			case 'insert_purchasereturn_detail':
+			case 'insert_detail':
 				$response = $this->purchasereturn_model->insert_purchasereturn_detail($post_data);
 				break;
 
-			case 'update_purchasereturn_detail':
+			case 'update_detail':
 				$response = $this->purchasereturn_model->update_purchasereturn_detail($post_data);
 				break;
 
-			case 'delete_purchasereturn_detail':
+			case 'delete_detail':
 				$response = $this->purchasereturn_model->delete_purchasereturn_detail($post_data);
 				break;
 
@@ -124,7 +124,7 @@ class PurchaseReturn extends CI_Controller {
 				$response = $this->purchasereturn_model->search_purchasereturn_list($post_data);
 				break;
 
-			case 'delete_purchasereturn_head':
+			case 'delete_head':
 				$response = $this->purchasereturn_model->delete_purchasereturn_head($post_data);
 				break;
 

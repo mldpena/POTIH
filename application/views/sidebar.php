@@ -133,7 +133,7 @@
 						<div>Pending Inventory Adjust</div>
 					</div>
 				</a>
-				<a href="<?= base_url() ?>warehouserelease/list">
+				<a href="<?= base_url() ?>release/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>warehouserelease.png">
 						<div>Warehouse Release</div>

@@ -135,12 +135,11 @@ class PurchaseReceive_Model extends CI_Model {
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory', CONCAT('PO',PH.`reference_number`) AS 'po_number',
+						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`,
 						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining'
 					FROM `purchase_head` AS PH
 					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id` 
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = PH.`for_branchid`
 					LEFT JOIN (
 								SELECT PRD.`purchase_detail_id`, SUM(PRD.`quantity`) AS 'quantity', PRD.`id`
 						        FROM purchase_receive_head AS PRH
@@ -159,14 +158,14 @@ class PurchaseReceive_Model extends CI_Model {
 			$i = 0;
 			foreach ($result->result() as $row) 
 			{
+				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = $row->receive_detail_id == 0 ? array(0) : array($this->encrypt->encode($row->receive_detail_id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->po_detail_id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->po_number);
-				$response['detail'][$i][] = array($row->product,$row->product_id);
+				$response['detail'][$i][] = array($row->product,$row->product_id,$break_line,$row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining);
 				$response['detail'][$i][] = array($row->qty_receive);

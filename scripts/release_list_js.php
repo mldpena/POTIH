@@ -26,28 +26,20 @@
         td_class: "tablerow tdnumber"
     };
 
-    var spnreferencenumber = document.createElement('span');
+    var spnlocation = document.createElement('span');
+	colarray['location'] = { 
+        header_title: "Location",
+        edit: [spnlocation],
+        disp: [spnlocation],
+        td_class: "tablerow column_click column_hover tdlocation"
+    };
+
+	var spnreferencenumber = document.createElement('span');
 	colarray['referencenumber'] = { 
         header_title: "Reference #",
         edit: [spnreferencenumber],
         disp: [spnreferencenumber],
         td_class: "tablerow column_click column_hover tdreference"
-    };
-
-    var spnfrombranch = document.createElement('span');
-	colarray['frombranch'] = { 
-        header_title: "From Branch",
-        edit: [spnfrombranch],
-        disp: [spnfrombranch],
-        td_class: "tablerow column_click column_hover tdfrombranch"
-    };
-
-    var spntobranch = document.createElement('span');
-	colarray['tobranch'] = { 
-        header_title: "To Branch",
-        edit: [spntobranch],
-        disp: [spntobranch],
-        td_class: "tablerow column_click column_hover tdtobranch"
     };
    	
    	var spndate = document.createElement('span');
@@ -58,12 +50,12 @@
         td_class: "tablerow column_click column_hover tddate"
     };
 
-    var spntype = document.createElement('span');
-	colarray['type'] = { 
-        header_title: "Type",
-        edit: [spntype],
-        disp: [spntype],
-        td_class: "tablerow column_click column_hover tdtype"
+    var spncustomer = document.createElement('span');
+	colarray['customer'] = { 
+        header_title: "Customer",
+        edit: [spncustomer],
+        disp: [spncustomer],
+        td_class: "tablerow column_click column_hover tdcustomer"
     };
 
     var spnmemo = document.createElement('span');
@@ -71,25 +63,16 @@
         header_title: "Memo",
         edit: [spnmemo],
         disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tdmemo"
+        td_class: "tablerow column_click column_hover tddate"
     };
-    
-    var spntotalqty = document.createElement('span');
-	colarray['total_qty'] = { 
-        header_title: "Total Qty",
-        edit: [spntotalqty],
-        disp: [spntotalqty],
-        td_class: "tablerow column_click column_hover tdtotalqty"
-    };
-
-    var spnstatus = document.createElement('span');
+  	
+  	var spnstatus = document.createElement('span');
 	colarray['status'] = { 
         header_title: "Status",
         edit: [spnstatus],
         disp: [spnstatus],
         td_class: "tablerow column_click column_hover tdstatus"
     };
-
 
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
@@ -113,22 +96,21 @@
 	root.appendChild(myjstbl.mypage.pagingtable);	
 
 	$('#tbl').hide();
-	$('#from_branch, #to_branch').chosen();
+	$('#branch_list').chosen();
 	$('#date_from, #date_to').datepicker();
-	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'delivery' });
+										{ baseURL : "<?= base_url() ?>", controller : 'release' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
-	
+
 	function getSearchFilter()
 	{
 		var search_val 		= $('#search_string').val();
@@ -136,22 +118,18 @@
 		var orde_type_val 	= $('#order_type').val();
 		var date_from_val 	= $('#date_from').val();
 		var date_to_val 	= $('#date_to').val();
-		var from_branch_val = $('#from_branch').val();
-		var to_branch_val 	= $('#to_branch').val();
+		var branch_val 		= $('#branch_list').val();
 		var status_val 		= $('#status').val();
-		var type_val 		= $('#delivery_type').val();
 
 		var arr = 	{ 
-						fnc 	 		: 'search_stock_delivery_list', 
+						fnc 	 		: 'search_release_list', 
 						search_string 	: search_val,
 						order_by  		: order_val,
 						order_type 		: orde_type_val,
 						date_from		: date_from_val,
 						date_to 		: date_to_val,
-						from_branch 	: from_branch_val,
-						to_branch 		: to_branch_val,
-						status 			: status_val,
-						type 			: type_val
+						branch 			: branch_val,
+						status 			: status_val
 					};
 
 		return arr;
@@ -159,7 +137,6 @@
 
 	function actionAfterDelete()
 	{
-		build_message_box('messagebox_1','Stock Delivery successfully deleted!','success');
+		build_message_box('messagebox_1','Warehouse Release entry successfully deleted!','success');
 	}
-
 </script>

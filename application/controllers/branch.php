@@ -12,7 +12,6 @@ class Branch extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
-		$this->_config = simplexml_load_file("application/config/app.xml") or die("Error: Cannot create object");
 	}
 
 	/**
@@ -38,7 +37,7 @@ class Branch extends CI_Controller {
 		{
 			case 'list':
 				$page = 'branch_list';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE,(int)$this->_config->general->main_branch_id);
+				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
 				break;
 			
 			default:
@@ -117,24 +116,5 @@ class Branch extends CI_Controller {
 		}
 
 		echo json_encode($response);
-	}
-
-	private function _set_main_branch_config($param)
-	{
-		extract($param);
-
-		$response['error'] = '';
-
-		try
-		{
-			$this->_config->general->main_branch_id = $branch_id;
-			$this->_config->asXML("application/config/app.xml");
-		}
-		catch (Exception $e)
-		{
-			$response['error'] = $e->getMessage();
-		}
-
-		return $response;
 	}
 }

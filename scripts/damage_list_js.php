@@ -18,7 +18,6 @@
 		headertd_class : "tdheader_id"
     };
 
-
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -95,7 +94,7 @@
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.helpers._refreshTable(getSearchFilter);
+	tableHelper.contentHelper.refreshTable(getSearchFilter);
 	
 	function getSearchFilter()
 	{

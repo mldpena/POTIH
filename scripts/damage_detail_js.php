@@ -19,7 +19,6 @@
 		headertd_class : "tdheader_id"
     };
 
-
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -33,10 +32,22 @@
     var txtproduct = document.createElement('input');
     txtproduct.setAttribute('class','form-control txtproduct');
     spnproductid.setAttribute('style','display:none;');
+
+    var description = document.createElement('textarea');
+    description.setAttribute('class','nonStackDescription');
+    description.setAttribute('style','display:none;');
+
+    var disabledDescription = document.createElement('textarea');
+    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('style','display:none;');
+    disabledDescription.setAttribute('disabled','disabled');
+
+    var newline = document.createElement('span');
+
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid],
-        disp: [spnproduct,spnproductid],
+        edit: [txtproduct,spnproductid,newline,description],
+        disp: [spnproduct,spnproductid,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -139,6 +150,7 @@
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentProvider.addRow();
+				tableHelper.contentHelper.showDescriptionFields();
 			}       
 		});
 	}

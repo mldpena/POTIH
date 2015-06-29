@@ -1,20 +1,5 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of purchase return detail id for delete modal
-	 * @global_row_index {Number} - Holder of purchase return detail row index for delete modal
-	 * @token {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var global_detail_id = 0;
-	var global_row_index = 0;
 	var token = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table details
-	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -46,10 +31,22 @@
     var txtproduct = document.createElement('input');
     txtproduct.setAttribute('class','form-control txtproduct');
     spnproductid.setAttribute('style','display:none;');
+
+    var description = document.createElement('textarea');
+    description.setAttribute('class','nonStackDescription');
+    description.setAttribute('style','display:none;');
+
+    var disabledDescription = document.createElement('textarea');
+    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('style','display:none;');
+    disabledDescription.setAttribute('disabled','disabled');
+
+    var newline = document.createElement('span');
+
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid],
-        disp: [spnproduct,spnproductid],
+        edit: [txtproduct,spnproductid,newline,description],
+        disp: [spnproduct,spnproductid,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -69,14 +66,6 @@
         edit: [txtqty],
         disp: [spnqty],
         td_class: "tablerow column_click column_hover tdqty"
-    };
-
-    var spninventory = document.createElement('span');
-	colarray['inventory'] = { 
-        header_title: "Inventory",
-        edit: [spninventory],
-        disp: [spninventory],
-        td_class: "tablerow column_click column_hover tdinv"
     };
 
     var spnmemo = document.createElement('span');
@@ -121,8 +110,10 @@
 
 	root.appendChild(myjstbl.tab);
 
-	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray});
-	tableHelper.bindUpdateEvents(getDetailsOnSubmit);
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'purchaseret' });
+
+	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit} );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -155,75 +146,18 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				add_new_row(myjstbl,colarray);
-				bind_product_autocomplete();
-
-				recompute_total_qty(myjstbl,colarray,'total_qty');
-				
+				tableHelper.contentProvider.recomputeTotalQuantity();
+				tableHelper.contentProvider.addRow();
+				tableHelper.contentHelper.showDescriptionFields();
 			}       
 		});
 	}
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('.imgedit').live('click',function(){
-		var row_index = $(this).parent().parent().index();
-		myjstbl.edit_row(row_index);
-	});
 
-	$('.txtqty').live('blur',function(e){
-		recompute_total_qty(myjstbl,colarray,'total_qty');
-	});
-
-	$('.tddelete').live('click',function(){
-		global_row_index 	= $(this).parent().index();
-		global_detail_id 	= table_get_column_data(global_row_index,'id');
-
-		if (global_detail_id != 0) 
-			$('#deletePurchaseReturnModal').modal('show');
-	});
-
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var row_index 		= global_row_index;
-		var detail_id_val 	= global_detail_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_purchasereturn_detail', 
-						detail_id 	: detail_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(row_index);
-					recompute_row_count(myjstbl,colarray);
-					recompute_total_qty(myjstbl,colarray,'total_qty');
-					$('#deletePurchaseReturnModal').modal('hide');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#save').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
+	function getHeadDetailsBeforeSubmit()
+	{
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var supplier_name_val = $('#supplier').val();
@@ -233,72 +167,6 @@
 						entry_date 	: date_val,
 						memo 		: memo_val,
 						supplier_name : supplier_name_val
-					};
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_1',response.error,'danger');
-				else
-					window.location = "<?= base_url() ?>purchaseret/list";
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#deletePurchaseReturnModal').live('hidden.bs.modal', function (e) {
-		global_row_index 	= 0;
-		global_detail_id 	= 0;
-	});
-	
-	function bind_product_autocomplete()
-	{
-		my_autocomplete_add("<?= $token ?>",".txtproduct",'<?= base_url() ?>purchaseret', {
-			enable_add : false,
-			fnc_callback : function(x, label, value, ret_datas, error){
-				var row_index = $(x).parent().parent().index();
-				if (error.length > 0) {
-					table_set_column_data(row_index,'product',['',0]);
-					table_set_column_data(row_index,'code',['']);
-					table_set_column_data(row_index,'qty',['']);
-					table_set_column_data(row_index,'inventory',['']);
-					table_set_column_data(row_index,'memo',['']);
-				}
-				else
-				{
-					table_set_column_data(row_index,'product',[ret_datas[1],ret_datas[0]]);
-					table_set_column_data(row_index,'code',[ret_datas[2]]);
-					table_set_column_data(row_index,'inventory',[ret_datas[3]]);
-				}
-			},
-			fnc_render : function(ul, item){
-				return my_autocomplete_render_fnc(ul, item, "code_name", [2,1], 
-					{ width : ["100px","auto"] });
-			}
-		});
-	}
-
-	function getDetailsOnSubmit(element)
-	{
-		var row_index 		= $(element).parent().parent().index();
-		var product_id_val 	= table_get_column_data(row_index,'product',1);
-		var qty_val 		= table_get_column_data(row_index,'qty');
-		var memo_val 		= table_get_column_data(row_index,'memo');
-		var id_val 			= table_get_column_data(row_index,'id');
-		var fnc_val 		= id_val != 0 ? "update_purchasereturn_detail" : "insert_purchasereturn_detail";
-
-		var arr = 	{ 
-						fnc 	 	: fnc_val, 
-						product_id 	: product_id_val,
-						qty     	: qty_val,
-			     		memo 		: memo_val,
-			     		detail_id 	: id_val
 					};
 
 		return arr;

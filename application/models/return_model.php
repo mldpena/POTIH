@@ -53,18 +53,14 @@ class Return_Model extends CI_Model {
 			$branch_id = $row->branch_id;
 		}
 
-		$query_detail_data = array($branch_id,$this->_return_head_id);
-
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory'
+						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`description`
 					FROM `return_detail` AS RD
 					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".RETURN_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
 					WHERE RD.`headid` = ?";
 
-		$result_detail = $this->db->query($query_detail,$query_detail_data);
+		$result_detail = $this->db->query($query_detail,$this->_return_head_id);
 
 		if ($result_detail->num_rows() == 0) 
 			$response['detail_error'] = 'No return details found!';
@@ -73,12 +69,12 @@ class Return_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
+				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -99,15 +95,16 @@ class Return_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 		= array($this->_return_head_id,$qty,$product_id,$memo);
+		$query_data 		= array($this->_return_head_id,$qty,$product_id,$memo,$description);
 
 		$query = "INSERT INTO `return_detail`
 					(`headid`,
 					`quantity`,
 					`product_id`,
-					`memo`)
+					`memo`,
+					`description`)
 					VALUES
-					(?,?,?,?);";
+					(?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -127,13 +124,14 @@ class Return_Model extends CI_Model {
 
 		$response['error'] = '';
 		$return_detail_id 	= $this->encrypt->decode($detail_id);
-		$query_data 		= array($qty,$product_id,$memo,$return_detail_id);
+		$query_data 		= array($qty,$product_id,$memo,$description,$return_detail_id);
 
 		$query = "UPDATE `return_detail`
 					SET
 					`quantity` = ?,
 					`product_id` = ?,
-					`memo` = ?
+					`memo` = ?,
+					`description` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);
@@ -226,7 +224,7 @@ class Return_Model extends CI_Model {
 
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(RD.`reference_number`,' ',RD.`memo`,' ',RD.`customer`,' ',RD.`received_by`) LIKE ?";
+			$conditions .= " AND CONCAT('RD',RD.`reference_number`,' ',RD.`memo`,' ',RD.`customer`,' ',RD.`received_by`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -285,7 +283,7 @@ class Return_Model extends CI_Model {
 	{
 		extract($param);
 
-		$return_id 		= $this->encrypt->decode($return_id);
+		$return_id 		= $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';

@@ -12,7 +12,6 @@ class InventoryAdjust extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
-		$this->_config = simplexml_load_file("application/config/app.xml") or die("Error: Cannot create object");
 	}
 
 	/**
@@ -116,11 +115,11 @@ class InventoryAdjust extends CI_Controller {
 					break;
 
 				case 'insert_inventory_adjust':
-					$response = $this->adjust_model->insert_inventory_adjust($post_data,$this->_config);
+					$response = $this->adjust_model->insert_inventory_adjust($post_data);
 					break;
 
 				case 'update_inventory_adjust':
-					$response = $this->adjust_model->update_inventory_adjust($post_data,$this->_config);
+					$response = $this->adjust_model->update_inventory_adjust($post_data);
 					break;
 
 				case 'get_pending_adjust_list':
@@ -135,12 +134,12 @@ class InventoryAdjust extends CI_Controller {
 					$response = $this->adjust_model->get_adjust_express_list($post_data);
 					break;
 					
-				case 'delete_inventory_request':
+				case 'delete_detail':
 					$response = $this->adjust_model->delete_inventory_request($post_data);
 					break;
 
 				case 'autocomplete_product':
-					$response = get_product_list_autocomplete($post_data);
+					$response = get_product_list_autocomplete($post_data,TRUE);
 					break;
 					
 				default:

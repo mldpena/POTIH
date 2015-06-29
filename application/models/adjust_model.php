@@ -198,7 +198,7 @@ class Adjust_Model extends CI_Model {
 		return $response;
 	}
 
-	public function insert_inventory_adjust($param,$config)
+	public function insert_inventory_adjust($param)
 	{
 		extract($param);
 		
@@ -206,7 +206,7 @@ class Adjust_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
+		$status 	= ADJUST_CONST::PENDING; //$config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 
 		$query_validation_data = array($product_id,$this->_current_branch_id);
@@ -247,7 +247,7 @@ class Adjust_Model extends CI_Model {
 		return $response;
 	}
 
-	public function update_inventory_adjust($param,$config)
+	public function update_inventory_adjust($param)
 	{
 		extract($param);
 
@@ -255,7 +255,7 @@ class Adjust_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$status 	= $config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
+		$status 	= ADJUST_CONST::PENDING; //$config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 		$adjust_id 	= $this->encrypt->decode($detail_id);
 

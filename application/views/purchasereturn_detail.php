@@ -53,12 +53,12 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="deletePurchaseReturnModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Purchase Return Entry</h4>
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete this purchase return entry?

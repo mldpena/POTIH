@@ -1,19 +1,10 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @token_val {String} - Token for CSRF Protection
-	 */
 	
 	var flag = 0;
 	var global_adjust_id = 0;
 	var global_product_id = 0;
 	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table details
-	 */
+	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -110,27 +101,24 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
-	var tableHelper = new TableHelper({tableObject : myjstbl, tableArray : colarray});
-
 	$('#tbl').hide();
-	//Call refresh function after loading the page
-	refresh_table();
 
 	$('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
-    //Event for calling search function
-    $('#search').click(function(){
-    	refresh_table();
-    });
+    var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'adjust' });
 
+	tableHelper.headContent.bindSearchEvent(getSearchFilter);
+	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	
     $('.column_click').live('click',function(){
     	if (flag == 1)
 			return;
 
     	global_row_index = $(this).parent().index();
-    	global_product_id = tableHelper.getData(global_row_index,'id');
-    	global_adjust_id = tableHelper.getData(global_row_index,'request',1);
+    	global_product_id = tableHelper.contentProvider.getData(global_row_index,'id');
+    	global_adjust_id = tableHelper.contentProvider.getData(global_row_index,'request',1);
     	
     	var arr = 	{ 
 						fnc 	 : 'get_adjust_details', 
@@ -143,7 +131,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				if (response.error != '') 
 					build_message_box('messagebox_2',response.error,'danger');
@@ -189,7 +177,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				if (response.error != '') 
 					build_message_box('messagebox_2',response.error,'danger');
@@ -200,12 +188,12 @@
 					{
 						var adjust_id = Number(global_adjust_id) == 0 ? response.id : global_adjust_id;
 						message = 'Inventory adjust request successfully submitted!';
-						tableHelper.setData(global_row_index,'request',[new_inventory_val,adjust_id]);
+						tableHelper.contentProvider.setData(global_row_index,'request',[new_inventory_val,adjust_id]);
 					}
 					else if (response.status == 2)
 					{
 						message = 'Inventory successfully adjusted!';
-						tableHelper.setData(global_row_index,'inv',[new_inventory_val]);
+						tableHelper.contentProvider.setData(global_row_index,'inv',[new_inventory_val]);
 					} 
 						
 					$('#requestAdjustModal').modal('hide');
@@ -223,14 +211,8 @@
 		global_product_id 	= 0;
 	});
 
-    //Function for refreshing table content
-	function refresh_table()
+    function getSearchFilter()
 	{
-		if (flag == 1)
-			return;
-
-		flag = 1;
-
 		var itemcode_val 	= $('#itemcode').val();
 		var product_val 	= $('#product').val();
 		var subgroup_val 	= $('#subgroup').val();
@@ -255,37 +237,6 @@
 						orderby  : orderby_val
 					};
 
-		$('#loadingimg').show();
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
-
-				if (response.rowcnt == 0) 
-				{
-					$('#tbl').hide();
-					build_message_box('messagebox_1','No product found!','info');
-				}
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-
-					$('#tbl').show();
-				}
-
-				$('#loadingimg').hide();
-
-				flag = 0;
-			}       
-		});
+		return arr;
 	}
 </script>

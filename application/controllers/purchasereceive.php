@@ -116,7 +116,7 @@ class PurchaseReceive extends CI_Controller {
 				$response = $this->purchasereceive_model->search_purchase_receive_list($post_data);
 				break;
 
-			case 'delete_purchase_receive_head':
+			case 'delete_head':
 				$response = $this->purchasereceive_model->delete_purchase_receive_head($post_data);
 				break;
 

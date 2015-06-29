@@ -126,7 +126,7 @@
 					<div class="btn-title">Pending Inventory Adjust</div>
 				</div>
 			</a>
-			<a href="<?= base_url() ?>warehouserelease/list">
+			<a href="<?= base_url() ?>release/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>warehouserelease.png">
 					<div class="btn-title">Warehouse Release</div>

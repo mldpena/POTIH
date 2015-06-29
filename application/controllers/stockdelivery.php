@@ -161,7 +161,7 @@ class StockDelivery extends CI_Controller {
 				$response = $this->delivery_model->update_stock_delivery_detail($post_data);
 				break;
 
-			case 'delete_stock_delivery_detail':
+			case 'delete_detail':
 				$response = $this->delivery_model->delete_stock_delivery_detail($post_data);
 				break;
 
@@ -173,32 +173,40 @@ class StockDelivery extends CI_Controller {
 				$response = $this->delivery_model->search_stock_delivery_list($post_data);
 				break;
 
-			case 'delete_stock_delivery_head':
+			case 'delete_head':
 				$response = $this->delivery_model->delete_stock_delivery_head($post_data);
 				break;
 
 			case 'search_stock_receive_list':
-				$response = $this->delivery_model->search_stock_receive_list($post_data);
+				$response = $this->delivery_model->search_receive_list($post_data, 1);
 				break;
 
 			case 'get_stock_receive_details':
-				$response = $this->delivery_model->get_stock_receive_details($post_data);
+				$response = $this->delivery_model->get_receive_details(1);
 				break;
 
-			case 'update_stock_receive_detail':
-				$response = $this->delivery_model->update_stock_receive_detail($post_data);
+			case 'update_receive_detail':
+				$response = $this->delivery_model->update_receive_detail($post_data);
 				break;
 
 			case 'search_customer_receive_list':
-				$response = $this->delivery_model->search_customer_receive_list($post_data);
+				$response = $this->delivery_model->search_receive_list($post_data, 2);
 				break;
 
 			case 'get_customer_receive_details':
-				$response = $this->delivery_model->get_customer_receive_details($post_data);
+				$response = $this->delivery_model->get_receive_details(2);
 				break;
 				
 			case 'check_product_inventory':
-				$response = $this->delivery_model->check_current_inventory($post_data);
+				$response = check_current_inventory($post_data);
+				break;
+
+			case 'update_delivery_receive_head':
+				$response = $this->delivery_model->update_receive_head($post_data, 1);
+				break;
+
+			case 'update_customer_receive_head':
+				$response = $this->delivery_model->update_receive_head($post_data, 2);
 				break;
 
 			default:

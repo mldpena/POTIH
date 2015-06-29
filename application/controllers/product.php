@@ -157,8 +157,8 @@ class Product extends CI_Controller {
 			$response['data'][$i][] = array(0);		
 			$response['data'][$i][] = array($i+1);		
 			$response['data'][$i][] = array($value,$key);		
-			$response['data'][$i][] = array(1);		
-			$response['data'][$i][] = array(1);	
+			$response['data'][$i][] = array(0);		
+			$response['data'][$i][] = array(0);	
 			$i++;		
 		}
 

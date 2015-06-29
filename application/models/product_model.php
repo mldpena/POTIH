@@ -501,7 +501,7 @@ class Product_Model extends CI_Model {
 						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
-						WHERE (PBI.`inventory` > PBI.`max_inv` OR PBI.`inventory` < PBI.`min_inv`) AND P.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						WHERE ((PBI.`inventory` > PBI.`max_inv` AND PBI.`max_inv` <> 0) OR (PBI.`inventory` < PBI.`min_inv` AND PBI.`min_inv` <> 0)) AND P.`is_show` = ".PRODUCT_CONST::ACTIVE."
 						$conditions
 						ORDER BY $order_field";
 

@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>warehouserelease/list">Warehouse Release List</a></li>
+			<li class="active"><a href="<?= base_url() ?>release/list">Warehouse Release List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -19,6 +19,17 @@
 					<tr>
 						<td>Location:</td>
 						<td colspan="3"><select class="form-control" id="branch_list"><?= $branch_list ?></select></td>
+					</tr>
+					<tr>
+						<td>Status:</td>
+						<td colspan="3">
+							<select class="form-control" id="status">
+								<option value="0">ALL</option>
+								<option value="1">Incomplete</option>
+								<option value="2">Complete</option>
+								<option value="3">No Received</option>
+							</select>
+						</td>
 					</tr>
 				</table>
 			</div>
@@ -49,15 +60,15 @@
 		</div>
 	</div>
 </div>
-<div class="modal fade" id="deleteReturnModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Warehouse release Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Warehouse Release Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this Warehouse release entry?
+				Are you sure you want to delete this Warehouse Release entry?
 				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

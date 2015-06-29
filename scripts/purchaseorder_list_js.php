@@ -18,7 +18,6 @@
 		headertd_class : "tdheader_id"
     };
 
-
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -127,7 +126,6 @@
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
-	_refreshTable(getSearchFilter);
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
@@ -135,6 +133,8 @@
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
+
+	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
 	function getSearchFilter()
 	{
@@ -168,6 +168,5 @@
 	{
 		build_message_box('messagebox_1','Purchase Order entry successfully deleted!','success');
 	}
-
 
 </script>

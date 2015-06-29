@@ -31,10 +31,22 @@
     var txtproduct = document.createElement('input');
     txtproduct.setAttribute('class','form-control txtproduct');
     spnproductid.setAttribute('style','display:none;');
+
+    var description = document.createElement('textarea');
+    description.setAttribute('class','nonStackDescription');
+    description.setAttribute('style','display:none;');
+
+    var disabledDescription = document.createElement('textarea');
+    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('style','display:none;');
+    disabledDescription.setAttribute('disabled','disabled');
+
+    var newline = document.createElement('span');
+
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid],
-        disp: [spnproduct,spnproductid],
+        edit: [txtproduct,spnproductid,newline,description],
+        disp: [spnproduct,spnproductid,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -146,9 +158,11 @@
 					$('.tdupdate, .tddelete').hide();
 				}	
 				else
-					tableHelper.contentProvider.addRow('txtproduct');
+					tableHelper.contentProvider.addRow();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
+				tableHelper.contentHelper.showDescriptionFields();
+
 			}       
 		});
 	}
@@ -160,7 +174,7 @@
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var supplier_name_val = $('#supplier').val();
-		var orderfor_val = $('#orderfor').val();
+		var orderfor_val 	= $('#orderfor').val();
 		var is_imported_val = $('#is_imported').is(':checked') ? 1 : 2;
 
 		var arr = 	{ 

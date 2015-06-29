@@ -34,7 +34,7 @@ class Delivery_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SUM(SD.`recv_quantity`) AS 'total_qty', SH.`delivery_type`
+					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SUM(SD.`recv_quantity`) AS 'total_qty', SH.`delivery_type`, SH.`is_used`
 					FROM `stock_delivery_head` AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
 					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
@@ -54,21 +54,20 @@ class Delivery_Model extends CI_Model {
 			$response['to_branchid'] 		= $row->to_branchid;
 			$response['delivery_type'] 		= $row->delivery_type;
 			$response['is_editable'] 		= $row->total_qty == 0 ? TRUE : FALSE;
+			$response['is_saved'] 			= $row->is_used;
 			$branch_id = $row->branch_id;
 		}
 
-		$query_detail_data = array($branch_id,$this->_delivery_head_id);
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory', SD.`recv_quantity` AS 'receiveqty'
+						SD.`recv_quantity` AS 'receiveqty', SD.`description`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
 					WHERE SD.`headid` = ?";
 
-		$result_detail = $this->db->query($query_detail,$query_detail_data);
+		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
 
 		if ($result_detail->num_rows() == 0) 
 			$response['detail_error'] = 'No stock delivery details found!';
@@ -77,13 +76,13 @@ class Delivery_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
+				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($row->is_for_branch);
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id);
+				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
 				$response['detail'][$i][] = array($row->receiveqty);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
@@ -105,16 +104,17 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 		= array($this->_delivery_head_id,$qty,$product_id,$memo,$istransfer);
+		$query_data 		= array($this->_delivery_head_id,$qty,$product_id,$memo,$istransfer,$description);
 
 		$query = "INSERT INTO `stock_delivery_detail`
 					(`headid`,
 					`quantity`,
 					`product_id`,
 					`memo`,
-					`is_for_branch`)
+					`is_for_branch`,
+					`description`)
 					VALUES
-					(?,?,?,?,?);";
+					(?,?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -134,14 +134,15 @@ class Delivery_Model extends CI_Model {
 
 		$response['error'] = '';
 		$delivery_detail_id = $this->encrypt->decode($detail_id);
-		$query_data 		= array($qty,$product_id,$memo,$istransfer,$delivery_detail_id);
+		$query_data 		= array($qty,$product_id,$memo,$istransfer,$description,$delivery_detail_id);
 
 		$query = "UPDATE `stock_delivery_detail`
 					SET
 					`quantity` = ?,
 					`product_id` = ?,
 					`memo` = ?,
-					`is_for_branch` = ?
+					`is_for_branch` = ?,
+					`description` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);
@@ -263,7 +264,7 @@ class Delivery_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(SH.`reference_number`,' ',SH.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT('SD',SH.`reference_number`,' ',SH.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -371,7 +372,7 @@ class Delivery_Model extends CI_Model {
 	{
 		extract($param);
 
-		$delivery_head_id = $this->encrypt->decode($delivery_head_id);
+		$delivery_head_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';
@@ -392,7 +393,7 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_stock_receive_list($param)
+	public function search_receive_list($param, $search_type)
 	{
 		extract($param);
 
@@ -423,17 +424,28 @@ class Delivery_Model extends CI_Model {
 			$conditions .= " AND SH.`branch_id` = ?";
 			array_push($query_data,$from_branch);
 		}
-
-		if ($to_branch != DELIVERY_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND SH.`to_branchid` = ?";
-			array_push($query_data,$to_branch);
-		}
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(SH.`reference_number`,' ',SH.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT('SD',SH.`reference_number`,' ',SH.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
+		}
+
+		$fixed_condition = "";
+
+		switch ($search_type) {
+			case DELIVERY_CONST::FOR_TRANSFER:
+				$fixed_condition = "AND SH.`delivery_type` IN(".DELIVERY_CONST::TRANSFER.",".DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 1";
+				if (($to_branch) && $to_branch != DELIVERY_CONST::ALL_OPTION) 
+				{
+					$conditions .= " AND SH.`to_branchid` = ?";
+					array_push($query_data,$to_branch);
+				}
+				break;
+			
+			case DELIVERY_CONST::FOR_CUSTOMER:
+				$fixed_condition = "AND SH.`delivery_type` IN(".DELIVERY_CONST::SALES.",".DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 0";
+				break;
 		}
 
 		switch ($order_by) 
@@ -456,8 +468,7 @@ class Delivery_Model extends CI_Model {
 					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`is_used` = ".DELIVERY_CONST::USED." 
-						AND SH.`delivery_type` IN(".DELIVERY_CONST::TRANSFER.",".DELIVERY_CONST::BOTH.") $conditions
-						AND SD.`is_for_branch` = 1
+						$fixed_condition $conditions
 					GROUP BY SH.`id`
 					ORDER BY $order_field $order_type";
 
@@ -474,10 +485,14 @@ class Delivery_Model extends CI_Model {
 				$response['data'][$i][] = array($i+1);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->from_branch);
-				$response['data'][$i][] = array($row->to_branch);
+
+				if ($search_type == DELIVERY_CONST::FOR_TRANSFER)
+					$response['data'][$i][] = array($row->to_branch);
+				
 				$response['data'][$i][] = array($row->entry_date);
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
+
 				$i++;
 			}
 		}
@@ -487,7 +502,7 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
-	public function get_stock_receive_details()
+	public function get_receive_details($receive_type)
 	{
 		$response 		= array();
 		$branch_id 		= 0;
@@ -495,8 +510,22 @@ class Delivery_Model extends CI_Model {
 		$response['head_error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
+		$receive_date_column 	= "";
+		$is_transfer 			= "";
+
+		if ($receive_type == DELIVERY_CONST::FOR_TRANSFER) 
+		{
+			$receive_date_column = "SH.`delivery_receive_date`";
+			$is_transfer = 1;
+		}
+		else
+		{
+			$receive_date_column = "SH.`customer_receive_date`";
+			$is_transfer = 0;
+		}
+
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SH.`delivery_type`, DATE(SH.`delivery_receive_date`) AS 'receive_date'
+					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SH.`delivery_type`, DATE($receive_date_column) AS 'receive_date'
 					FROM `stock_delivery_head` AS SH
 					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
 					GROUP BY SH.`id`";
@@ -504,7 +533,7 @@ class Delivery_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_delivery_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get stock receive head details!';
+			$response['head_error'] = 'Unable to get receive head details!';
 		else
 		{
 			$row = $result_head->row();
@@ -512,38 +541,38 @@ class Delivery_Model extends CI_Model {
 			$response['reference_number'] 	= $row->reference_number;
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
-			$response['to_branchid'] 		= $row->to_branchid;
+
+			if ($receive_type == DELIVERY_CONST::FOR_TRANSFER) 
+				$response['to_branchid'] 		= $row->to_branchid;
+
 			$response['delivery_type'] 		= $row->delivery_type;
 			$response['receive_date'] 		= $row->receive_date;
 			$branch_id = $row->branch_id;
 		}
 
-		$query_detail_data = array($branch_id,$this->_delivery_head_id);
-
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory', SD.`recv_quantity`
+						SD.`recv_quantity`, SD.`description`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
-					WHERE SD.`headid` = ? AND SD.`is_for_branch` = 1";
+					WHERE SD.`headid` = ? AND SD.`is_for_branch` = $is_transfer";
 
-		$result_detail = $this->db->query($query_detail,$query_detail_data);
+		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
 
 		if ($result_detail->num_rows() == 0) 
-			$response['detail_error'] = 'No stock receive details found!';
+			$response['detail_error'] = 'No receive details found!';
 		else
 		{
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
+				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id);
+				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->recv_quantity);
 				$response['detail'][$i][] = array('');
@@ -557,7 +586,7 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
-	public function update_stock_receive_detail($param)
+	public function update_receive_detail($param)
 	{
 		extract($param);
 
@@ -580,188 +609,25 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_customer_receive_list($param)
-	{
-		extract($param);
-
-		$conditions		= "";
-		$order_field 	= "";
-		$having 		= "";
-
-		$response 	= array();
-		$query_data = array();
-
-		$response['rowcnt'] = 0;
-		
-		
-		if (!empty($date_from))
-		{
-			$conditions .= " AND SH.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
-
-		if (!empty($date_to))
-		{
-			$conditions .= " AND SH.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
-
-		if ($from_branch != DELIVERY_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND SH.`branch_id` = ?";
-			array_push($query_data,$from_branch);
-		}
-
-		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT(SH.`reference_number`,' ',SH.`memo`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
-
-		switch ($order_by) 
-		{
-			case DELIVERY_CONST::ORDER_BY_REFERENCE:
-				$order_field = "SH.`reference_number`";
-				break;
-
-			case DELIVERY_CONST::ORDER_BY_DATE:
-				$order_field = "SH.`entry_date`";
-				break;
-		}
-
-		$query = "SELECT SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
-					CONCAT('SD',SH.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', SH.`memo`,
-					SUM(SD.`quantity`) AS 'total_qty'
-					FROM stock_delivery_head AS SH
-					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
-					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`is_used` = ".DELIVERY_CONST::USED." 
-						AND SH.`delivery_type` IN(".DELIVERY_CONST::SALES.",".DELIVERY_CONST::BOTH.") $conditions
-						AND SD.`is_for_branch` = 0
-					GROUP BY SH.`id`
-					ORDER BY $order_field $order_type";
-
-		$result = $this->db->query($query,$query_data);
-		if ($result->num_rows() > 0) 
-		{
-			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
-
-			foreach ($result->result() as $row) 
-			{
-				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
-				$response['data'][$i][] = array($row->reference_number);
-				$response['data'][$i][] = array($row->from_branch);
-				$response['data'][$i][] = array($row->entry_date);
-				$response['data'][$i][] = array($row->memo);
-				$response['data'][$i][] = array($row->total_qty);
-				$i++;
-			}
-		}
-
-		$result->free_result();
-		
-		return $response;
-	}
-
-	public function get_customer_receive_details()
-	{
-		$response 		= array();
-		$branch_id 		= 0;
-
-		$response['head_error'] 	= '';
-		$response['detail_error'] 	= ''; 
-
-		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`delivery_type`, DATE(SH.`customer_receive_date`) AS 'receive_date'
-					FROM `stock_delivery_head` AS SH
-					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
-					GROUP BY SH.`id`";
-
-		$result_head = $this->db->query($query_head,$this->_delivery_head_id);
-
-		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get customer receive head details!';
-		else
-		{
-			$row = $result_head->row();
-
-			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
-			$response['memo'] 				= $row->memo;
-			$response['delivery_type'] 		= $row->delivery_type;
-			$response['receive_date'] 		= $row->receive_date;
-			$branch_id = $row->branch_id;
-		}
-
-		$query_detail_data = array($branch_id,$this->_delivery_head_id);
-
-		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory', SD.`recv_quantity`
-					FROM `stock_delivery_detail` AS SD
-					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
-					WHERE SD.`headid` = ? AND SD.`is_for_branch` = 0";
-
-		$result_detail = $this->db->query($query_detail,$query_detail_data);
-
-		if ($result_detail->num_rows() == 0) 
-			$response['detail_error'] = 'No customer receive details found!';
-		else
-		{
-			$i = 0;
-			foreach ($result_detail->result() as $row) 
-			{
-				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
-				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id);
-				$response['detail'][$i][] = array($row->material_code);
-				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
-				$response['detail'][$i][] = array($row->memo);
-				$response['detail'][$i][] = array($row->recv_quantity);
-				$response['detail'][$i][] = array('');
-				$i++;
-			}
-		}
-
-		$result_head->free_result();
-		$result_detail->free_result();
-
-		return $response;
-	}
-
-	public function check_current_inventory($param)
+	public function update_receive_head($param, $receive_type)
 	{
 		extract($param);
 
 		$response = array();
-		$response['is_insufficient'] = 0;
+		$response['error'] = '';
 
-		$query_data = array($product_id,$this->_current_branch_id);
+		$receive_date_column = $receive_type == DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
 
-		$query = "SELECT `inventory` AS 'current_inventory', `min_inv` FROM product_branch_inventory WHERE `product_id` = ? AND `branch_id` = ?";
-		
-		$result = $this->db->query($query,$query_data);
+		$query_data = array($receive_date,$this->_delivery_head_id);
+		$query 	= "UPDATE `stock_delivery_head` 
+					SET `$receive_date_column` = ?
+					WHERE `id` = ?";
 
-		$row = $result->row();
+		$result = $this->sql->execute_query($query,$query_data);
 
-
-		if (($row->current_inventory - $qty) < 0) 
-			$response['is_insufficient'] = DELIVERY_CONST::NEGATIVE_INV;
-		elseif (($row->current_inventory - $qty) > 0 && ($row->current_inventory - $qty) <= $row->min_inv)
-			$response['is_insufficient'] = DELIVERY_CONST::MINIMUM;
-
-		$response['current_inventory'] = $row->current_inventory;
-
-		$result->free_result();
+		if ($result['error'] != '') 
+			$response['error'] = 'Unable to update stock delivery head!';
 
 		return $response;
 	}
-
 }

@@ -8,22 +8,27 @@
  * Version: 1.0
  */
 
+var ProductType = {
+    Stock : 1,
+    NonStock : 0
+};
 
+var InventoryState = {
+    Sufficient  : 0,
+    Minimum     : 1,
+    Negative    : 2
+}
 
 var TableHelper = function(tableOptions,options) {
-    
+
     this._flag = 0;
 
     this._jsTable;
     this._jsTableArray;
-    this.globalRownIndex = 0;
-    this.globaId = 0;
+    this.globalRowIndex = 0;
+    this.globalId = 0;
 
-    /**
-     * Settings
-     * @type {Object}
-     */
-    this.settings = { 
+    this._settings = { 
         updateClass : 'imgupdate',
         deleteClass : 'tddelete',
         editClass   : 'imgedit',
@@ -31,7 +36,6 @@ var TableHelper = function(tableOptions,options) {
         deleteID    : 'delete',
         saveID      : 'save',
         quantityClass : 'txtqty',
-        totalQtyID  : 'total_qty',
         deleteModalID     : 'deleteModal',
         insertDetailName : 'insert_detail',
         updateDetailName : 'update_detail',
@@ -43,151 +47,135 @@ var TableHelper = function(tableOptions,options) {
         tableID : 'tbl',
         loadingImgID : 'loadingimg',
         searchButtonID : 'search',
-        columnClass : 'column_click'
+        columnClass : 'column_click',
+        nonStackClass : 'nonStackDescription'
     };
 
-    // Overrides current settings
     if (options) {
         $.extend(this._settings,options);
     }
 
-    // Bind table to be used for the helper
     if (tableOptions) {
         this._jsTable = tableOptions.tableObject;
         this._jsTableArray = tableOptions.tableArray;
     };
-}
 
-TableHelper.prototype = {
-    self : function() {
-        return this;
-    },
-    contentProvider : {
-        addRow : function(element,tableObject,tableObjectArray)
+    var self = this;
+
+    self.contentProvider = {
+        addRow : function(elementID)
         {
-            _addRow(element,tableObject,tableObjectArray);
+            var lastRowIndex = self._jsTable.get_row_count();
+            self._jsTable.add_new_row();
+            self._jsTable.setvalue_to_rowindex_tdclass([lastRowIndex],lastRowIndex,self._jsTableArray['number'].td_class);
+
+            if (elementID) 
+                $('.' + elementID + ':last').focus();
         },
 
-        getData : function(rowIndex,tableObjectArrayColumn,arrayColumnIndex,tableObject,tableObjectArray)
+        getData : function(rowIndex,arrayColumn,arrayColumnIndex)
         {
-            return _getColumnData(rowIndex,tableObjectArrayColumn,arrayColumnIndex,tableObject,tableObjectArray);
+            var value = "";
+            var columnIndex = 0;
+
+            if (arrayColumnIndex) 
+                columnIndex = arrayColumnIndex;
+
+            value = self._jsTable.getvalue_by_rowindex_tdclass(rowIndex, self._jsTableArray[arrayColumn].td_class)[columnIndex];
+
+            return value;
         },
 
-        setData : function(rowIndex,tableObjectArrayColumn,values,tableObject,tableObjectArray)
+        setData : function(rowIndex,arrayColumn,values)
         {
-            _setColumnData(rowIndex,tableObjectArrayColumn,values,tableObject,tableObjectArray);
+            self._jsTable.setvalue_to_rowindex_tdclass(values,rowIndex,self._jsTableArray[arrayColumn].td_class);
         },
 
-        getElement : function(rowIndex,tableObjectArrayColumn,tableObject,tableObjectArray)
+        getElement : function(rowIndex,arrayColumn)
         {
-            var jsTable = _jsTable;
-            var jsTableArray = _jsTableArray;
-
-            if (tableObject) 
-            {
-                jsTable = tableObject;
-                jsTableArray = tableObjectArray;
-            };
-
-            return jsTable.getelem_by_rowindex_tdclass(rowIndex,jsTableArray[tableObjectArrayColumn].td_class);
+            return self._jsTable.getelem_by_rowindex_tdclass(rowIndex,self._jsTableArray[arrayColumn].td_class);
         },
 
-        recomputeTotalQuantity : function(tableObject,tableObjectArray)
+        recomputeTotalQuantity : function()
         {
-            var jsTable = _jsTable;
-            var jsTableArray = _jsTableArray;
-
-            if (tableObject) 
-            {
-                jsTable = tableObject;
-                jsTableArray = tableObjectArray;
-            };
-
             var totalQty = 0;
 
-            for (var i = 1; i < jsTable.get_row_count(); i++) {
-                var currentQty = _getColumnData(i,'qty');
+            for (var i = 1; i < self._jsTable.get_row_count(); i++) {
+                var currentQty = self.contentProvider.getData(i,'qty');
                 totalQty += Number(currentQty);
             };
 
-            $('#' + _settings.totalQtySpan).html(totalQty);
+            $('#' + self._settings.totalQtySpan).html(totalQty);
         },
 
-        recomputeRowNumber : function(tableObject,tableObjectArray)
+        recomputeRowNumber : function(t)
         {
-            var jsTable = _jsTable;
-            var jsTableArray = _jsTableArray;
-
-            if (tableObject) 
-            {
-                jsTable = tableObject;
-                jsTableArray = tableObjectArray
-            };
-
-            for (var i = 1; i < jsTable.get_row_count(); i++)
-                jsTable.setvalue_to_rowindex_tdclass([i],i,jsTableArray["number"].td_class);
+            for (var i = 1; i < self._jsTable.get_row_count(); i++)
+                self._jsTable.setvalue_to_rowindex_tdclass([i],i,self._jsTableArray["number"].td_class);
         }
     },
 
-    detailContent : {
-        bindUpdateEvents : function(onBeforeSubmit,onAfterSubmit)
+    self.detailContent = {
+        bindUpdateEvents : function(onBeforeSubmit,isCheckInventory,onAfterSubmit)
         {
-            var tableHelper = TableHelper.prototype.self();
-
-            $('.' + _settings.updateClass).live('click',function(){
-                tableHelper.helpers._callUpdate($(this),onBeforeSubmit,onAfterSubmit);
+            $('.' + self._settings.updateClass).live('click',function(){
+                if (isCheckInventory && isCheckInventory == true)
+                    self.contentHelper.checkCurrentInventory($(this),onBeforeSubmit,onAfterSubmit);
+                else
+                    self.contentHelper.sendUpdateRequest($(this),onBeforeSubmit,onAfterSubmit);
             });
 
-            $('.' + _settings.memoClass).live('keydown',function(e){
+            $('.' + self._settings.memoClass).live('keydown',function(e){
                 if (e.keyCode == 13) {
-                    tableHelper.helpers._callUpdate($(this),onBeforeSubmit,onAfterSubmit);
                     e.preventDefault();
+
+                    if (isCheckInventory && isCheckInventory == true)
+                        self.contentHelper.checkCurrentInventory($(this),onBeforeSubmit,onAfterSubmit);
+                    else
+                        self.contentHelper.sendUpdateRequest($(this),onBeforeSubmit,onAfterSubmit);
                 };
             });
         },
 
         bindEditEvents : function()
         {
-            var tableHelper = TableHelper.prototype.self();
-            
-            $('.' + _settings.editClass).live('click',function(){
+            $('.' + self._settings.editClass).live('click',function(){
                 var rowIndex = $(this).parent().parent().index();
-                _jsTable.edit_row(rowIndex);
+                self._jsTable.edit_row(rowIndex);
+                self.contentHelper.showDescriptionFields();
             });
 
-            $('.' + _settings.quantityClass).live('blur',function(){
-                tableHelper.contentProvider.recomputeTotalQuantity();
+            $('.' + self._settings.quantityClass).live('blur',function(){
+                self.contentProvider.recomputeTotalQuantity();
             });
         },
 
         bindDeleteEvents : function(onBeforeSubmit)
         {
-            var tableHelper = TableHelper.prototype.self();
+            $('.' + self._settings.deleteClass).live('click',function(){
+                self.globalRowIndex    = $(this).parent().index();
+                self.globalId          = self.contentProvider.getData(self.globalRowIndex,'id');
 
-            $('.' + _settings.deleteClass).live('click',function(){
-                globalRownIndex    = $(this).parent().index();
-                globaId             = _getColumnData(globalRownIndex,'id');
-
-                if (globaId != 0) 
-                    $('#' + _settings.deleteModalID).modal('show');
+                if (self.globalId != 0) 
+                    $('#' + self._settings.deleteModalID).modal('show');
             });
 
-            $('#' + _settings.deleteID).click(function(){
-                if (_flag == 1) 
+            $('#' + self._settings.deleteID).click(function(){
+                if (self._flag == 1) 
                     return;
 
-                _flag = 1;
+                self._flag = 1;
 
-                var rowIndex       = globalRownIndex;
+                var rowIndex       = self.globalRowIndex;
 
                 if (onBeforeSubmit) 
                     var arr = onBeforeSubmit($(this));
                 else
                 {
-                    var detail_id_val  = globaId;
+                    var rowUniqueId  = self.globalId;
                     var arr =   { 
-                                    fnc         : _settings.deleteDetailName, 
-                                    detail_id   : detail_id_val
+                                    fnc         : self._settings.deleteDetailName, 
+                                    detail_id   : rowUniqueId
                                 };
                 }
                
@@ -202,43 +190,57 @@ TableHelper.prototype = {
                             build_message_box('messagebox_2',response.error,'danger');
                         else
                         {
-                            _jsTable.delete_row(rowIndex);
-                            tableHelper.contentProvider.recomputeRowNumber();
-                            tableHelper.contentProvider.recomputeTotalQuantity();
-                            $('#' + _settings.deleteModalID).modal('hide');
+                            self._jsTable.delete_row(rowIndex);
+                            self.contentProvider.recomputeRowNumber();
+                            self.contentProvider.recomputeTotalQuantity();
+                            $('#' + self._settings.deleteModalID).modal('hide');
                         }
 
-                        _flag = 0;
+                        self._flag = 0;
                     }       
                 });
             });
 
-            $('#' + _settings.deleteModalID).live('hidden.bs.modal', function (e) 
-            {
-                globalRownIndex = 0;
-                globaId         = 0;
+            $('#' + self._settings.deleteModalID).live('hidden.bs.modal', function (e) {
+                self.globalRowIndex = 0;
+                self.globalId         = 0;
             });
         },
 
         bindAutoComplete : function (onAfterSubmit)
         {
-            my_autocomplete_add(token,"." + _settings.productClass,_settings.controller, {
+            my_autocomplete_add(token,"." + self._settings.productClass,self._settings.controller, {
                 enable_add : false,
                 fnc_callback : function(x, label, value, ret_datas, error){
                     var rowIndex = $(x).parent().parent().index();
                     if (onAfterSubmit) {
                         onAfterSubmit(rowIndex, error, ret_datas);
                     }else{
+
+                        var descriptionElement = $(x).parent().find('.' + self._settings.nonStackClass);
+
                         if (error.length > 0) {
-                            _setColumnData(rowIndex,'product',['',0]);
-                            _setColumnData(rowIndex,'code',['']);
-                            _setColumnData(rowIndex,'qty',['']);
-                            _setColumnData(rowIndex,'memo',['']);
+                            self.contentProvider.setData(rowIndex,'product',['',0,'','']);
+                            self.contentProvider.setData(rowIndex,'code',['']);
+                            self.contentProvider.setData(rowIndex,'qty',['']);
+                            self.contentProvider.setData(rowIndex,'memo',['']);
+                            $(descriptionElement).hide();
                         }
                         else
                         {
-                            _setColumnData(rowIndex,'product',[ret_datas[1],ret_datas[0]]);
-                            _setColumnData(rowIndex,'code',[ret_datas[2]]);
+                            var newLine = '';
+                            if (ret_datas[3] == ProductType.NonStock)
+                            {
+                                newLine = '<br/>';
+                                $(descriptionElement).show();
+                            }
+                            else
+                                $(descriptionElement).val('').hide();
+
+                            self.contentProvider.setData(rowIndex,'product',[ret_datas[1],ret_datas[0],newLine,'']);
+                            self.contentProvider.setData(rowIndex,'code',[ret_datas[2]]);
+
+                            
                         }
                     }
                     
@@ -252,13 +254,30 @@ TableHelper.prototype = {
 
         bindSaveTransactionEvent : function(onBeforeSubmit)
         {
-            $('#' + _settings.saveID).click(function(){
-                if (_flag == 1)
+            $('#' + self._settings.saveID).click(function(){
+                if (self._flag == 1)
                     return;
 
-                _flag = 1;
 
                 var arr = onBeforeSubmit();
+
+                var rowsToSubtract = 0;
+
+                var addRowExist = self.contentProvider.getData(self._jsTable.get_row_count() - 1, 'id');
+                
+                if (addRowExist == 0) 
+                    rowsToSubtract = 2
+                else
+                    rowsToSubtract = 1;
+
+
+                if (self._jsTable.get_row_count() - rowsToSubtract == 0) 
+                {
+                    alert('Please encode at least one product!');
+                    return;
+                }
+
+                self._flag = 1;
 
                 $.ajax({
                     type: "POST",
@@ -270,54 +289,50 @@ TableHelper.prototype = {
                         if (response.error != '') 
                             build_message_box('messagebox_1',response.error,'danger');
                         else
-                            window.location = _settings.baseURL + _settings.controller + "/list";
+                            window.location = self._settings.baseURL + self._settings.controller + "/list";
 
-                        _flag = 0;
+                        self._flag = 0;
                     }       
                 });
             });
         },
         bindAllEvents : function(callbackOptions)
         {
-            var tableHelper = TableHelper.prototype.self();
-
-            tableHelper.detailContent.bindUpdateEvents(callbackOptions.updateEventsBeforeCallback,callbackOptions.updateEventsAfterCallback);
-            tableHelper.detailContent.bindEditEvents();
-            tableHelper.detailContent.bindDeleteEvents(callbackOptions.deleteEventsBeforeCallback);
-            tableHelper.detailContent.bindAutoComplete();
-            tableHelper.detailContent.bindSaveTransactionEvent(callbackOptions.saveEventsBeforeCallback);
+            self.detailContent.bindUpdateEvents(callbackOptions.updateEventsBeforeCallback, callbackOptions.addInventoryChecker, callbackOptions.updateEventsAfterCallback);
+            self.detailContent.bindEditEvents();
+            self.detailContent.bindDeleteEvents(callbackOptions.deleteEventsBeforeCallback);
+            self.detailContent.bindAutoComplete();
+            self.detailContent.bindSaveTransactionEvent(callbackOptions.saveEventsBeforeCallback);
         }
     },
 
-    headContent : {
+    self.headContent = {
         bindDeleteEvents : function(onBeforeSubmit, onAfterDelete)
         {
-            var tableHelper = TableHelper.prototype.self();
+            $('.' + self._settings.deleteClass).live('click',function(){
+                self.globalRowIndex    = $(this).parent().index();
+                self.globalId            = self.contentProvider.getData(self.globalRowIndex,'id');
 
-            $('.' + tableHelper._settings.deleteClass).live('click',function(){
-                globalRownIndex    = $(this).parent().index();
-                globaId             = tableHelper.contentProvider._getColumnData(globalRownIndex,'id');
-
-                if (globaId != 0) 
-                    $('#' + tableHelper._settings.deleteModalID).modal('show');
+                if (self.globalId != 0) 
+                    $('#' + self._settings.deleteModalID).modal('show');
             });
 
-            $('#' + tableHelper._settings.deleteID).click(function(){
-                if (tableHelper._flag == 1)
+            $('#' + self._settings.deleteID).click(function(){
+                if (self._flag == 1)
                     return;
 
-                tableHelper._flag = 1;
+                self._flag = 1;
 
-                var rowIndex       = globalRownIndex;
+                var rowIndex       = self.globalRowIndex;
 
                 if (onBeforeSubmit) 
                     var arr = onBeforeSubmit($(this));
                 else
                 {
-                    var head_id_val  = globaId;
+                    var rowUniqueId  = self.globalId;
                     var arr =   { 
-                                    fnc       : tableHelper._settings.deleteHeadName, 
-                                    head_id   : head_id_val
+                                    fnc       : self._settings.deleteHeadName, 
+                                    head_id   : rowUniqueId
                                 };
                 }
                
@@ -332,53 +347,53 @@ TableHelper.prototype = {
                             build_message_box('messagebox_2',response.error,'danger');
                         else
                         {
-                            tableHelper._jsTable.delete_row(rowIndex);
-                            tableHelper.contentProvider.recomputeRowNumber();
+                            self._jsTable.delete_row(rowIndex);
+                            self.contentProvider.recomputeRowNumber();
 
-                            if (tableHelper._jsTable.get_row_count() == 1) 
-                                $('#' + tableHelper._settings.tableID).hide();
+                            if (self._jsTable.get_row_count() == 1) 
+                                $('#' + self._settings.tableID).hide();
 
-                            $('#' + tableHelper._settings.deleteModalID).modal('hide');
+                            $('#' + self._settings.deleteModalID).modal('hide');
 
                             if (onAfterDelete)
                                 onAfterDelete();
                         }
 
-                        _flag = 0;
+                        self._flag = 0;
                     }       
                 });
             });
 
-            $('#' + tableHelper._settings.deleteModalID).live('hidden.bs.modal', function (e) {
-                globalRownIndex = 0;
-                globaId         = 0;
+            $('#' + self._settings.deleteModalID).live('hidden.bs.modal', function (e) {
+                self.globalRowIndex = 0;
+                self.globalId         = 0;
             });
         },
 
         bindSearchEvent : function(onBeforeSubmit)
         {
-            $('#' + tableHelper._settings.searchButtonID).click(function(){
-                tableHelper.helpers._refreshTable(onBeforeSubmit);
+            $('#' + self._settings.searchButtonID).click(function(){
+                self.contentHelper.refreshTable(onBeforeSubmit);
             });
         },
 
         bindViewEvent : function()
         {
-            $('.' + tableHelper._settings.columnClass).live('click',function(){
-                var rowIndex   = $(this).parent().index();
-                var headId   = tableHelper.helpers._getColumnData(rowIndex,'id');
+            $('.' + self._settings.columnClass).live('click',function(){
+                var rowIndex = $(this).parent().index();
+                var headId   = self.contentProvider.getData(rowIndex,'id');
 
-                window.open(tableHelper._settings.baseURL + tableHelper._settings.controller + '/view/' + headId);
+                window.open(self._settings.baseURL + self._settings.controller + '/view/' + headId);
             });
         },
 
         bindCreateReferenceEvent : function ()
         {
-            $('#' + tableHelper._settings.createButtonId).click(function(){
-                if (tableHelper._flag == 1) 
+            $('#' + self._settings.createButtonId).click(function(){
+                if (self._flag == 1) 
                     return;
 
-                tableHelper._flag = 1;
+                self._flag = 1;
 
                 var arr = { fnc : 'create_reference_number' };
 
@@ -392,33 +407,30 @@ TableHelper.prototype = {
                         if (response.error != '') 
                             build_message_box('messagebox_1',response.error,'danger');
                         else
-                            window.location = tableHelper._settings.baseURL + tableHelper._settings.controller + '/view/' + response.id;
+                            window.location = self._settings.baseURL + self._settings.controller + '/view/' + response.id;
 
-                        _flag = 0;
+                        self._flag = 0;
                     }       
                 });
             });
         },
-        bindAllEvents : function (callbackOptions)
-        {
-            var tableHelper = TableHelper.prototype.self();
 
-            tableHelper.headContent.bindDeleteEvents(callbackOptions.deleteEventsBeforeCallback,callbackOptions.deleteEventsAfterCallback);
-            tableHelper.headContent.bindSearchEvent(callbackOptions.searchEventsBeforeCallback);
-            tableHelper.headContent.bindViewEvent();
-            tableHelper.headContent.bindCreateReferenceEvent();
+        bindAllEvents : function(callbackOptions)
+        {
+            self.headContent.bindDeleteEvents(callbackOptions.deleteEventsBeforeCallback,callbackOptions.deleteEventsAfterCallback);
+            self.headContent.bindSearchEvent(callbackOptions.searchEventsBeforeCallback);
+            self.headContent.bindViewEvent();
+            self.headContent.bindCreateReferenceEvent();
         }
     },
 
-    helpers : {
-        _callUpdate : function(element,onBeforeSubmit,onAfterSubmit)
+    self.contentHelper = {
+        sendUpdateRequest : function(element,onBeforeSubmit,onAfterSubmit)
         {
-            var tableHelper = TableHelper.prototype.self();
-
-            if (tableHelper._flag == 1) 
+            if (self._flag == 1) 
                 return;
 
-            tableHelper._flag = 1;
+            self._flag = 1;
 
             var rowIndex = $(element).parent().parent().index();
 
@@ -426,19 +438,22 @@ TableHelper.prototype = {
                 var arr = onBeforeSubmit(element);
             else
             {
-                var rowIndex       = $(element).parent().parent().index();
-                var product_id_val  = tableHelper.helpers._getColumnData(rowIndex,'product',1);
-                var qty_val         = tableHelper.helpers._getColumnData(rowIndex,'qty');
-                var memo_val        = tableHelper.helpers._getColumnData(rowIndex,'memo');
-                var id_val          = tableHelper.helpers._getColumnData(rowIndex,'id');
-                var fnc_val         = id_val != 0 ? tableHelper._settings.updateDetailName : tableHelper._settings.insertDetailName;
+
+                var rowIndex        = $(element).parent().parent().index();
+                var productId       = self.contentProvider.getData(rowIndex,'product',1);
+                var qty             = self.contentProvider.getData(rowIndex,'qty');
+                var memo            = self.contentProvider.getData(rowIndex,'memo');
+                var rowUniqueId     = self.contentProvider.getData(rowIndex,'id');
+                var nonStackDescription  = self.contentProvider.getData(rowIndex,'product',3);
+                var actionFunction  = rowUniqueId != 0 ? self._settings.updateDetailName : self._settings.insertDetailName;
 
                 var arr =   { 
-                                fnc         : fnc_val, 
-                                product_id  : product_id_val,
-                                qty         : qty_val,
-                                memo        : memo_val,
-                                detail_id   : id_val
+                                fnc         : actionFunction, 
+                                product_id  : productId,
+                                qty         : qty,
+                                memo        : memo,
+                                detail_id   : rowUniqueId,
+                                description : nonStackDescription
                             };
             }
             
@@ -453,128 +468,113 @@ TableHelper.prototype = {
                         build_message_box('messagebox_1',response.error,'danger');
                     else
                     {
-                        tableHelper._jsTable.update_row(rowIndex);
+                        self._jsTable.update_row(rowIndex);
 
+                        self.contentHelper.showDescriptionFields();
+                        
                         if (arr.detail_id == 0) {
-                            tableHelper.helpers._setColumnData(rowIndex,'id',[response.id]);
-                            tableHelper.helpers._addRow(_settings.productClass);
+                            self.contentProvider.setData(rowIndex,'id',[response.id]);
+                            self.contentProvider.addRow(self._settings.productClass);
                         }
 
                         if (onAfterSubmit)
                             onAfterSubmit(rowIndex,response);
                     }
 
-                    _flag = 0;
+                    self._flag = 0;
                 }       
             });
         },
 
-        _addRow : function(element,tableObject,tableObjectArray)
+        refreshTable : function(onBeforeSubmit)
         {
-            var tableHelper = TableHelper.prototype.self();
-
-            var ok = true;
-
-            var jsTable = tableHelper._jsTable;
-            var jsTableArray = tableHelper._jsTableArray;
-
-            if (tableObject) 
-            {
-                jsTable = tableObject;
-                jsTableArray = tableObjectArray;
-            };
-
-            var lastRowIndex = jsTable.get_row_count();
-            jsTable.add_new_row();
-            jsTable.setvalue_to_rowindex_tdclass([lastRowIndex],lastRowIndex,jsTableArray['number'].td_class);
-
-            if (element) 
-                $('.' + element + ':last').focus();
-        },
-
-        _getColumnData : function(rowIndex,tableObjectArrayColumn,arrayColumnIndex,tableObject,tableObjectArray)
-        {
-            var tableHelper = TableHelper.prototype.self();
-
-            var value = "";
-            var column_index = 0;
-            var jsTable = tableHelper._jsTable;
-            var jsTableArray = tableHelper._jsTableArray;
-
-            if (arrayColumnIndex) 
-                column_index = arrayColumnIndex;
-
-            if (tableObject) 
-            {
-                jsTable = tableObject;
-                jsTableArray = tableObjectArray;
-            };
-
-            value = jsTable.getvalue_by_rowindex_tdclass(rowIndex, jsTableArray[tableObjectArrayColumn].td_class)[column_index];
-
-            return value;
-        },
-
-        _setColumnData : function(rowIndex,tableObjectArrayColumn,values,tableObject,tableObjectArray)
-        {
-            var tableHelper = TableHelper.prototype.self();
-
-            var jsTable = tableHelper._jsTable;
-            var jsTableArray = tableHelper._jsTableArray;
-
-            if (tableObject) 
-            {
-                jsTable = tableObject;
-                jsTableArray = tableObjectArray;
-            };
-
-            jsTable.setvalue_to_rowindex_tdclass(values,rowIndex,jsTableArray[tableObjectArrayColumn].td_class);
-        },
-
-        _refreshTable : function(onBeforeSubmit)
-        {
-            var tableHelper = TableHelper.prototype.self();
-
-            if (tableHelper._flag == 1)
+            if (self._flag == 1)
                 return;
 
             var arr = onBeforeSubmit();
 
-            _flag = 1;
+            self._flag = 1;
 
-            $('#' + tableHelper._settings.loadingImgID).show();
+            $('#' + self._settings.loadingImgID).show();
 
             $.ajax({
                 type: "POST",
                 dataType : 'JSON',
                 data: 'data=' + JSON.stringify(arr) + token,
                 success: function(response) {
-                    tableHelper._jsTable.clear_table();
+                    self._jsTable.clear_table();
                     clear_message_box();
 
                     if (response.rowcnt == 0) 
                     {
-                        $('#' + tableHelper._settings.tableID).hide();
+                        $('#' + self._settings.tableID).hide();
                         build_message_box('messagebox_1','No entry found!','info');
                     }
                     else
                     {
                         if(response.rowcnt <= 10)
-                            tableHelper._jsTable.mypage.set_last_page(1);
+                            self._jsTable.mypage.set_last_page(1);
                         else
-                            tableHelper._jsTable.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(_jsTable.mypage.filter_number)));
+                            self._jsTable.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(self._jsTable.mypage.filter_number)));
 
-                        tableHelper._jsTable.insert_multiplerow_with_value(1,response.data);
+                        self._jsTable.insert_multiplerow_with_value(1,response.data);
 
-                        $('#' + tableHelper._settings.tableID).show();
+                        $('#' + self._settings.tableID).show();
                     }
 
-                    $('#' + tableHelper._settings.loadingImgID).hide();
+                    $('#' + self._settings.loadingImgID).hide();
                     
-                    tableHelper._flag = 0;
+                    self._flag = 0;
+                }       
+            });
+        },
+
+        showDescriptionFields : function()
+        {
+            for (var i = 1; i < self._jsTable.get_row_count(); i++) 
+            {
+                var description = self.contentProvider.getData(i,'product',3);
+                if (description != '')
+                {
+                    var productElement = self.contentProvider.getElement(i,'product');
+                    var descriptionElement = $(productElement).parent().find('.' + self._settings.nonStackClass);
+
+                    $(descriptionElement).show();
+                }
+            };
+        },
+
+        checkCurrentInventory : function(element,onBeforeSubmit,onAfterSubmit)
+        {
+            var continueTransaction = true;
+            var rowIndex    = $(element).parent().parent().index();
+            var productId   = tableHelper.contentProvider.getData(rowIndex,'product',1);
+            var enteredQty  = tableHelper.contentProvider.getData(rowIndex,'qty');
+
+            var arr =   {
+                            fnc : 'check_product_inventory',
+                            product_id : productId,
+                            qty : enteredQty
+                        }
+
+            $.ajax({
+                type: "POST",
+                dataType : 'JSON',
+                data: 'data=' + JSON.stringify(arr) + token,
+                success: function(response) {
+                    clear_message_box();
+
+                    if (response.is_insufficient != InventoryState.Sufficient) {
+                        var confirmMessage = (response.is_insufficient == InventoryState.Minimum) ? 'Current inventory is ' + response.current_inventory + '.  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
+                        continueTransaction = confirm(confirmMessage);
+                    }
+
+                    if (continueTransaction) 
+                        self.contentHelper.sendUpdateRequest(element,onBeforeSubmit,onAfterSubmit);
+                    else
+                        return;
                 }       
             });
         }
     }
-}
-
+};

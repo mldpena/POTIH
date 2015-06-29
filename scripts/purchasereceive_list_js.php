@@ -1,20 +1,5 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_purchase_receive_id {Number} - Holder of receive detail id for delete modal
-	 * @global_row_index {Number} - Holder of receive detail row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var global_purchase_receive_id = 0;
-	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table receive list
-	 */
+	var token = '<?= $token ?>';
 	
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -126,115 +111,19 @@
 	$('#branch_list, #for_branch').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
-	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 	bind_asc_desc('order_type');
 
-	refresh_table();
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'poreceive' });
+
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
+											deleteEventsAfterCallback : actionAfterDelete } );
+
+	tableHelper.contentHelper.refreshTable(getSearchFilter);
 	
-	/**
-	 * Bind event for clicking create new button. Generates reference number and redirect to detail view 
-	 */
-
-	$('#create_new').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var arr = 	{ 
-						fnc : 'create_reference_number'
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_1',response.error,'danger');
-				else
-					window.location = '<?= base_url() ?>poreceive/view/'+response.id;
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('.tddelete').live('click',function(){
-		global_row_index 			= $(this).parent().index();
-		global_purchase_receive_id 	= table_get_column_data(global_row_index,'id');
-
-		$('#deletePurchaseReceiveModal').modal('show');
-	});
-
-	$('#search').click(function(){
-    	refresh_table();
-    });
-
-    $('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var row_index 		= global_row_index;
-		var purchase_receive_id_val = global_purchase_receive_id;
-
-		var arr = 	{ 
-						fnc : 'delete_purchase_receive_head', 
-						purchase_receive_id : purchase_receive_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(row_index);
-					recompute_row_count(myjstbl,colarray);
-
-					if (myjstbl.get_row_count() == 1) 
-					{
-						$('#tbl').hide();
-					}
-
-					$('#deletePurchaseReceiveModal').modal('hide');
-
-					build_message_box('messagebox_1','Purchase Received entry successfully deleted!','success');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-
-    $('.column_click').live('click',function(){
-		
-		var row_index 	= $(this).parent().index();
-		var purchase_received_id = table_get_column_data(row_index,'id');
-
-		window.open('<?= base_url() ?>poreceive/view/' + purchase_received_id);
-	});
-
-    $('#deletePurchaseReceiveModal').live('hidden.bs.modal', function (e) {
-		global_row_index = 0;
-		global_purchase_receive_id = 0;
-	});
-
-	function refresh_table()
+	function getSearchFilter()
 	{
-		if (flag == 1)
-			return;
-
-		flag = 1;
-
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
 		var orde_type_val 	= $('#order_type').val();
@@ -254,37 +143,11 @@
 						for_branch 		: for_branch_val	
 					};
 
-		$('#loadingimg').show();
+		return arr;
+	}
 
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
-
-				if (response.rowcnt == 0) 
-				{
-					$('#tbl').hide();
-					build_message_box('messagebox_1','No purchase received found!','info');
-				}
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-
-					$('#tbl').show();
-				}
-
-				$('#loadingimg').hide();
-				
-				flag = 0;
-			}       
-		});
+	function actionAfterDelete()
+	{
+		build_message_box('messagebox_1','Purchase Received entry successfully deleted!','success');
 	}
 </script>

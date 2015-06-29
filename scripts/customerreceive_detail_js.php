@@ -1,20 +1,5 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of stock receive id for delete modal
-	 * @global_row_index {Number} - Holder of stock receive row index for delete modal
-	 * @token {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var global_detail_id = 0;
-	var global_row_index = 0;
 	var token = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table stock receive details
-	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -44,10 +29,18 @@
     var spnproduct = document.createElement('span');
     var spnproductid = document.createElement('span');
     spnproductid.setAttribute('style','display:none;');
+
+    var disabledDescription = document.createElement('textarea');
+    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('style','display:none;');
+    disabledDescription.setAttribute('disabled','disabled');
+
+    var newline = document.createElement('span');
+
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [spnproduct,spnproductid],
-        disp: [spnproduct,spnproductid],
+        edit: [spnproduct,spnproductid,newline,disabledDescription],
+        disp: [spnproduct,spnproductid,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -65,14 +58,6 @@
         edit: [spnqty],
         disp: [spnqty],
         td_class: "tablerow column_click column_hover tdqty"
-    };
-
-    var spninventory = document.createElement('span');
-	colarray['inventory'] = { 
-        header_title: "Inventory",
-        edit: [spninventory],
-        disp: [spninventory],
-        td_class: "tablerow column_click column_hover tdinv"
     };
 
     var spnmemo = document.createElement('span');
@@ -117,8 +102,12 @@
 
 	$('#tbl').hide();
 
-	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray});
-	tableHelper.bindUpdateEvents(get_table_details);
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'custreceive' });
+
+	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
+												updateEventsBeforeCallback : getRowDetailsBeforeSubmit } );
+
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -149,19 +138,20 @@
 						$('#date').val(response.entry_date);	
 				}
 				
-				$('input, textarea, button, select').not('#print, #receive_date').attr('disabled','disabled');
+				$('input, textarea, button, select').not('#print, #receive_date, #save').attr('disabled','disabled');
 
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 					
 				for (var i = 1; i < myjstbl.get_row_count(); i++) 
 				{
-					var receive_qty = tableHelper.getData(i,'receiveqty');
+					var receive_qty = tableHelper.contentProvider.getData(i,'receiveqty');
 					if (receive_qty == 0) 
 						myjstbl.edit_row(i);
 				};
 				
-				recompute_total_qty(myjstbl,colarray,'total_qty');
+				tableHelper.contentProvider.recomputeTotalQuantity();
+				tableHelper.contentHelper.showDescriptionFields();
 
 				$('#tbl').show();
 			}       
@@ -170,23 +160,32 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('.imgedit').live('click',function(){
-		var row_index = $(this).parent().parent().index();
-		myjstbl.edit_row(row_index);
-	});
 
-	function get_table_details(element)
+	function getHeadDetailsBeforeSubmit()
 	{
-		var row_index 		= $(element).parent().parent().index();
-		var id_val 			= table_get_column_data(row_index,'id');
-		var receiveqty_val 	= table_get_column_data(row_index,'receiveqty');
+		var receiveDate	= $('#receive_date').val();
 
 		var arr = 	{ 
-						fnc 	 	: 'update_stock_receive_detail', 
-			     		detail_id 	: id_val,
-			     		receiveqty 	: receiveqty_val
+						fnc 	 		: 'update_customer_receive_head', 
+						receive_date 	: receiveDate
 					};
 
 		return arr;
 	}
+
+	function getRowDetailsBeforeSubmit(element)
+	{
+		var rowIndex 		= $(element).parent().parent().index();
+		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
+		var receivedQty 	= tableHelper.contentProvider.getData(rowIndex,'receiveqty');
+
+		var arr = 	{ 
+						fnc 	 	: 'update_receive_detail', 
+			     		detail_id 	: rowId,
+			     		receiveqty 	: receivedQty
+					};
+
+		return arr;
+	}
+
 </script>

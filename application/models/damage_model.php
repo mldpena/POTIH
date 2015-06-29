@@ -52,7 +52,7 @@ class Damage_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`
+						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, DD.`description`
 					FROM `damage_detail` AS DD
 					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".DAMAGE_CONST::ACTIVE."
@@ -67,9 +67,10 @@ class Damage_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
+				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id);
+				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
@@ -92,15 +93,16 @@ class Damage_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 		= array($this->_damage_head_id,$qty,$product_id,$memo);
+		$query_data 		= array($this->_damage_head_id,$qty,$product_id,$memo,$description);
 
 		$query = "INSERT INTO `damage_detail`
 					(`headid`,
 					`quantity`,
 					`product_id`,
-					`memo`)
+					`memo`,
+					`description`)
 					VALUES
-					(?,?,?,?);";
+					(?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -120,13 +122,14 @@ class Damage_Model extends CI_Model {
 
 		$response['error'] = '';
 		$damage_detail_id 	= $this->encrypt->decode($detail_id);
-		$query_data 		= array($qty,$product_id,$memo,$damage_detail_id);
+		$query_data 		= array($qty,$product_id,$memo,$description,$damage_detail_id);
 
 		$query = "UPDATE `damage_detail`
 					SET
 					`quantity` = ?,
 					`product_id` = ?,
-					`memo` = ?
+					`memo` = ?,
+					`description` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);

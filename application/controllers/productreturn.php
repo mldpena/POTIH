@@ -104,15 +104,15 @@ class ProductReturn extends CI_Controller {
 				$response = get_product_list_autocomplete($post_data);
 				break;
 
-			case 'insert_return_detail':
+			case 'insert_detail':
 				$response = $this->return_model->insert_return_detail($post_data);
 				break;
 
-			case 'update_return_detail':
+			case 'update_detail':
 				$response = $this->return_model->update_return_detail($post_data);
 				break;
 
-			case 'delete_return_detail':
+			case 'delete_detail':
 				$response = $this->return_model->delete_return_detail($post_data);
 				break;
 
@@ -124,7 +124,7 @@ class ProductReturn extends CI_Controller {
 				$response = $this->return_model->search_return_list($post_data);
 				break;
 
-			case 'delete_return_head':
+			case 'delete_head':
 				$response = $this->return_model->delete_return_head($post_data);
 				break;
 

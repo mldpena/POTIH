@@ -1,33 +1,18 @@
 <script type="text/javascript">
-	var state = {
+	var DeliveryType = {
 		Unsaved 	: 0,
 		Both 		: 1,
 		Sales 		: 2,
 		Transfer 	: 3
 	}
 
-	var inventorySate = {
-		Sufficient	: 0,
-		Minimum 	: 1,
-		Negative 	: 2
+	var TransactionState = {
+		Saved : 1,
+		Unsaved : 0
 	}
 
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of stock delivery id for delete modal
-	 * @global_row_index {Number} - Holder of stock delivery row index for delete modal
-	 * @token {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var global_detail_id = 0;
-	var global_row_index = 0;
 	var token = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table stock delivery details
-	 */
+	var isUsed = '';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -74,10 +59,22 @@
     var txtproduct = document.createElement('input');
     txtproduct.setAttribute('class','form-control txtproduct');
     spnproductid.setAttribute('style','display:none;');
+
+    var description = document.createElement('textarea');
+    description.setAttribute('class','nonStackDescription');
+    description.setAttribute('style','display:none;');
+
+    var disabledDescription = document.createElement('textarea');
+    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('style','display:none;');
+    disabledDescription.setAttribute('disabled','disabled');
+
+    var newline = document.createElement('span');
+
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid],
-        disp: [spnproduct,spnproductid],
+        edit: [txtproduct,spnproductid,newline,description],
+        disp: [spnproduct,spnproductid,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -97,14 +94,6 @@
         edit: [txtqty],
         disp: [spnqty],
         td_class: "tablerow column_click column_hover tdqty"
-    };
-
-    var spninventory = document.createElement('span');
-	colarray['inventory'] = { 
-        header_title: "Inventory",
-        edit: [spninventory],
-        disp: [spninventory],
-        td_class: "tablerow column_click column_hover tdinv"
     };
 
     var spnreceive = document.createElement('span');
@@ -162,9 +151,12 @@
 
 	$('#tbl').hide();
 
-	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray});
-	//tableHelper.bindUpdateEvents(onBeforeSubmitDetails);
-	tableHelper.bindAutoComplete(token,'stockdelivery');
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'delivery' });
+
+	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
+											 	updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+											 	addInventoryChecker : true } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -196,6 +188,9 @@
 
 					if (response.delivery_type == 2) 
 						$('#delivery_to_list').hide();
+
+					if (response.is_saved == TransactionState.Unsaved) 
+						isUsed = ", .tdreceive";
 				}
 				
 				if (response.detail_error == '') 
@@ -208,17 +203,19 @@
 				}
 				else
 				{
-					tableHelper.addRow();
+					tableHelper.contentProvider.addRow();
 				}
 
-				if (!$.inArray(response.delivery_type,[state.Both,state.Unsaved]))
+				hideTransferAndReceived();
+
+				if (!$.inArray(response.delivery_type,[DeliveryType.Both,DeliveryType.Unsaved]))
 				{
 					$('.tdistransfer').hide();
-					insert_dynamic_css();
+					hideTransferAndReceived(true);
 				} 
 					
-
-				recompute_total_qty(myjstbl,colarray,'total_qty');
+				tableHelper.contentProvider.recomputeTotalQuantity();
+				tableHelper.contentHelper.showDescriptionFields();
 
 				$('#tbl').show();
 			}       
@@ -227,96 +224,30 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('.imgedit').live('click',function(){
-		var row_index = $(this).parent().parent().index();
-		myjstbl.edit_row(row_index);
-	});
-
-	$('.txtqty').live('blur',function(e){
-		recompute_total_qty(myjstbl,colarray,'total_qty');
-	});
-
-	$('.tddelete').live('click',function(){
-		global_row_index 	= $(this).parent().index();
-		global_detail_id 	= tableHelper.getData(global_row_index,'id');
-
-		if (global_detail_id != 0) 
-			$('#deleteStockDeliveryModal').modal('show');
-	});
-
 	$('#delivery_type').live('change',function(){
-		if ($(this).val() == 2) 
+		if ($(this).val() == DeliveryType.Sales) 
 		{
 			$('#delivery_to_list').hide();
 			$('.tdistransfer').hide();
-			insert_dynamic_css();
+			hideTransferAndReceived(true);
 		}
-		else if ($(this).val() == 3) 
+		else if ($(this).val() == DeliveryType.Transfer) 
 		{
 			$('#delivery_to_list').show();
 			$('.tdistransfer').hide();
-			insert_dynamic_css();
+			hideTransferAndReceived(true);
 		}
-		else
+		else if ($(this).val() == DeliveryType.Both)
 		{
 			$('#delivery_to_list').show();
 			$('.tdistransfer').show();
 			$('#dynamic-css').html('');
+			hideTransferAndReceived();
 		}
 	});
 
-	$('.imgupdate').live('click',function(){
-		checkCurrentInventory($(this));
-    });
-
-    $('.txtmemo').live('keydown',function(e){
-        if (e.keyCode == 13) {
-            checkCurrentInventory($(this));
-            e.preventDefault();
-        };
-    });
-
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var row_index 		= global_row_index;
-		var detail_id_val 	= global_detail_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_stock_delivery_detail', 
-						detail_id 	: detail_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(row_index);
-					tableHelper.recomputeRowNumber();
-					recompute_total_qty(myjstbl,colarray,'total_qty');
-					$('#deleteStockDeliveryModal').modal('hide');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#save').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
+	function getHeadDetailsBeforeSubmit()
+	{
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var type_val 	= $('#delivery_type').val();
@@ -330,93 +261,45 @@
 						to_branch 	: to_branch
 					};
 
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				clear_message_box();
+		return arr;
+	}
 
-				if (response.error != '') 
-					build_message_box('messagebox_1',response.error,'danger');
-				else
-					window.location = "<?= base_url() ?>delivery/list";
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#deleteStockDeliveryModal').live('hidden.bs.modal', function (e) {
-		global_row_index 	= 0;
-		global_detail_id 	= 0;
-	});
-
-	function onBeforeSubmitDetails(element)
+	function getRowDetailsBeforeSubmit(element)
 	{
 		var rowIndex 		= $(element).parent().parent().index();
-		var product_id_val 	= tableHelper.getData(rowIndex,'product',1);
-		var qty_val 		= tableHelper.getData(rowIndex,'qty');
-		var memo_val 		= tableHelper.getData(rowIndex,'memo');
-		var id_val 			= tableHelper.getData(rowIndex,'id');
-		var is_transfer_val = Number(tableHelper.getData(rowIndex,'istransfer'));
-		var fnc_val 		= id_val != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
+		var productId 		= tableHelper.contentProvider.getData(rowIndex,'product',1);
+		var qty 			= tableHelper.contentProvider.getData(rowIndex,'qty');
+		var memo 			= tableHelper.contentProvider.getData(rowIndex,'memo');
+		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
+		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
+		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',3);
+		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
 		var arr = 	{ 
-						fnc 	 	: fnc_val, 
-						product_id 	: product_id_val,
-						qty     	: qty_val,
-			     		memo 		: memo_val,
-			     		detail_id 	: id_val,
-			     		istransfer 	: is_transfer_val
+						fnc 	 	: actionFunction, 
+						product_id 	: productId,
+						qty     	: qty,
+			     		memo 		: memo,
+			     		detail_id 	: rowId,
+			     		istransfer 	: isTransfer,
+			     		description : description
 					};
 
 		return arr;
 	}
 
-	function checkCurrentInventory(element)
-	{
-		var rowIndex 		= $(element).parent().parent().index();
-		var product_id_val 	= tableHelper.getData(rowIndex,'product',1);
-		var qty_val 		= tableHelper.getData(rowIndex,'qty');
-
-		var arrChecker = 	{
-								fnc : 'check_product_inventory',
-								product_id : product_id_val,
-								qty : qty_val
-							}
-
-		$.ajax({
-	        type: "POST",
-	        dataType : 'JSON',
-	        data: 'data=' + JSON.stringify(arrChecker) + token,
-	        success: function(response) {
-	            clear_message_box();
-
-	            if (response.is_insufficient != inventorySate.Sufficient) {
-	            	var confirmMessage = (response.is_insufficient == inventorySate.Minimum) ? 'Current inventory is ' + response.current_inventory + '.  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
-
-	            	var confirmation = confirm(confirmMessage);
-	            
-	            	if (!confirmation) 
-	            		return;
-	            }
-
-	            _callUpdate(element,onBeforeSubmitDetails);
-	        }       
-    	});
-	}
-
-	function hideTransferColumn()
+	function hideTransferAndReceived(isTransfer)
 	{
 		$('#dynamic-css').html('');
-		var css = "<style>.tdistransfer { display:none; }</style>";
+
+		var css = "<style>";
+		css += ".tdsample" + isUsed;
+
+		if (isTransfer) 
+			css += ", .tdistransfer";
+
+		css += " { display:none; } </style>";
+
 		$('#dynamic-css').html(css);
-	}
-
-	function hideReceiveQuantity()
-	{
-
-
 	}
 </script>

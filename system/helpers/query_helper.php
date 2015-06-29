@@ -115,22 +115,38 @@ if (!function_exists('get_next_number'))
 
 if (!function_exists('get_product_list_autocomplete')) 
 {
-	function get_product_list_autocomplete($param)
+	function get_product_list_autocomplete($param, $with_inventory = FALSE)
 	{
 		extract($param);
 		$CI =& get_instance();
 		$CI->load->helper('cookie');
 		$CI->load->library('encrypt');
-		$CI->load->library('sql');
 		$CI->load->file(CONSTANTS.'product_const.php');
 
-		$data 		= array();
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
 		$term 		= '%'.$term.'%';
-		$query_data = array($branch_id,$term,$term);
+		$join_condition = "";
+		$inventory_column = "";
+		$data 		= array();
+		$query_data = array();
 
-		$query = "SELECT P.`description`, P.`id`, P.`material_code`
+		if ($with_inventory) 
+		{
+			array_push($query_data,$branch_id);
+			$join_condition = "LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?";
+			$inventory_column = ",COALESCE(PBI.`inventory`,0) AS 'inventory'";
+		}
+
+		array_push($query_data,$term,$term);
+		
+		
+		
+
+		
+
+		$query = "SELECT P.`description`, P.`id`, P.`material_code`, P.`type` $inventory_column
 					FROM product AS P
+					$join_condition
 					WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND (P.`description` LIKE ? OR P.`material_code` LIKE ?)
 					LIMIT 10";
 
@@ -142,13 +158,49 @@ if (!function_exists('get_product_list_autocomplete'))
 		{
 			$data[$i]['label'] = $row->description;
 			$data[$i]['value'] = $row->id;
-			$data[$i]['ret_datas'] = array($row->id,$row->description,$row->material_code);
+			$data[$i]['ret_datas'] = ($with_inventory) ? array($row->id,$row->description,$row->material_code,$row->inventory) : array($row->id,$row->description,$row->material_code);
 			$i++;			
 		}
 
 		$result->free_result();
 
 		return $data;
+	}
+}
+
+if (!function_exists('check_current_inventory')) 
+{
+	function check_current_inventory($param)
+	{
+		extract($param);
+		$CI =& get_instance();
+		$CI->load->helper('cookie');
+		$CI->load->library('encrypt');
+
+		$data 		= array();
+		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
+
+		$response = array();
+		$response['is_insufficient'] = 0;
+
+		$query_data = array($product_id,$branch_id);
+
+		$query = "SELECT `inventory` AS 'current_inventory', `min_inv` FROM product_branch_inventory WHERE `product_id` = ? AND `branch_id` = ?";
+		
+		$result = $CI->db->query($query,$query_data);
+
+		$row = $result->row();
+
+		if (($row->current_inventory - $qty) < 0 && $row->min_inv != 0) 
+			$response['is_insufficient'] = DELIVERY_CONST::NEGATIVE_INV;
+		elseif (($row->current_inventory - $qty) > 0 && ($row->current_inventory - $qty) <= $row->min_inv && $row->min_inv != 0)
+			$response['is_insufficient'] = DELIVERY_CONST::MINIMUM;
+
+		$response['current_inventory'] = $row->current_inventory;
+
+		$result->free_result();
+
+		return $response;
 	}
 }
 

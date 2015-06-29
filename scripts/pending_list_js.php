@@ -1,16 +1,6 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @token_val {String} - Token for CSRF Protection
-	 */
-	
 	var flag = 0;
-	var token_val = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table details
-	 */
+	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -167,9 +157,9 @@
 	        var self = $(this);
 	        var row_index =  $(this).parent().parent().index();
 
-	        var adjust_id = tableHelper.getData(row_index,'id');
+	        var adjust_id = tableHelper.contentProvider.getData(row_index,'id');
 
-	        tableHelper.setData(row_index,'status',[$.ucfirst(action_val) + 'd']);
+	        tableHelper.contentProvider.setData(row_index,'status',[$.ucfirst(action_val) + 'd']);
 	        
 	        adjust_id_list_val.push(adjust_id);
     	});
@@ -185,7 +175,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
@@ -238,7 +228,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				myjstbl.clear_table();
 				clear_message_box();

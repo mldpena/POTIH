@@ -1,16 +1,5 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @token_val {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var token_val = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table stock receive list
-	 */
+	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -103,30 +92,17 @@
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
-
-	refresh_table();
-
 	bind_asc_desc('order_type');
 
-	$('#search').click(function(){
-    	refresh_table();
-    });
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'delreceive' });
 
-	$('.column_click').live('click',function(){
-		
-		var row_index 	= $(this).parent().index();
-		var delivery_id = table_get_column_data(row_index,'id');
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter } );
 
-		window.open('<?= base_url() ?>delreceive/view/' + delivery_id);
-	});
+	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-	function refresh_table()
+	function getSearchFilter()
 	{
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
 		var orde_type_val 	= $('#order_type').val();
@@ -146,37 +122,6 @@
 						to_branch 		: to_branch_val
 					};
 
-		$('#loadingimg').show();
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
-
-				if (response.rowcnt == 0) 
-				{
-					$('#tbl').hide();
-					build_message_box('messagebox_1','No stock delivery found!','info');
-				}
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-
-					$('#tbl').show();
-				}
-
-				$('#loadingimg').hide();
-				
-				flag = 0;
-			}       
-		});
+		return arr;
 	}
 </script>

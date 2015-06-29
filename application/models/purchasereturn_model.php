@@ -56,18 +56,14 @@ class PurchaseReturn_Model extends CI_Model {
 			$branch_id = $row->branch_id;
 		}
 
-		$query_detail_data = array($branch_id,$this->_purchase_return_head_id);
-
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
-						COALESCE(PBI.`inventory`,0) AS 'inventory'
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`
 					FROM `purchase_return_detail` AS PD
 					LEFT JOIN `purchase_return_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".PURCHASE_RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_RETURN_CONST::ACTIVE."
-					LEFT JOIN `product_branch_inventory` AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ? 
 					WHERE PD.`headid` = ?";
 
-		$result_detail = $this->db->query($query_detail,$query_detail_data);
+		$result_detail = $this->db->query($query_detail,$_purchase_return_head_id);
 
 		if ($result_detail->num_rows() == 0) 
 			$response['detail_error'] = 'No purchase return details found!';
@@ -76,12 +72,12 @@ class PurchaseReturn_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
+				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id);
+				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->inventory);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -102,15 +98,16 @@ class PurchaseReturn_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 		= array($this->_purchase_return_head_id,$qty,$product_id,$memo);
+		$query_data 		= array($this->_purchase_return_head_id,$qty,$product_id,$memo,$description);
 
 		$query = "INSERT INTO `purchase_return_detail`
 					(`headid`,
 					`quantity`,
 					`product_id`,
-					`memo`)
+					`memo`,
+					`description`)
 					VALUES
-					(?,?,?,?);";
+					(?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -130,13 +127,14 @@ class PurchaseReturn_Model extends CI_Model {
 
 		$response['error'] = '';
 		$purchase_detail_id = $this->encrypt->decode($detail_id);
-		$query_data 		= array($qty,$product_id,$memo,$purchase_detail_id);
+		$query_data 		= array($qty,$product_id,$memo,$description,$purchase_detail_id);
 
 		$query = "UPDATE `purchase_return_detail`
 					SET
 					`quantity` = ?,
 					`product_id` = ?,
-					`memo` = ?
+					`memo` = ?,
+					`description` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);
@@ -228,7 +226,7 @@ class PurchaseReturn_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`) LIKE ?";
+			$conditions .= " AND CONCAT('PR',PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -293,7 +291,7 @@ class PurchaseReturn_Model extends CI_Model {
 	{
 		extract($param);
 
-		$purchase_return_id = $this->encrypt->decode($purchase_return_id);
+		$purchase_return_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';

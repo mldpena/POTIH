@@ -19,7 +19,7 @@
  *
  */
 	define('ENVIRONMENT', 'development');
-	date_default_timezone_set('Asia/Manila'); 
+	date_default_timezone_set('Etc/GMT+8');
 /*
  *---------------------------------------------------------------
  * ERROR REPORTING
