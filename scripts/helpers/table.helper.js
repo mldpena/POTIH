@@ -29,14 +29,15 @@ var TableHelper = function(tableOptions,options) {
     this.globalId = 0;
 
     this._settings = { 
-        updateClass : 'imgupdate',
-        deleteClass : 'tddelete',
-        editClass   : 'imgedit',
+        updateIconClass : 'imgupdate',
+        deleteIconClass : 'tddelete',
+        editIconClass   : 'imgedit',
         memoClass   : 'txtmemo',
-        deleteID    : 'delete',
-        saveID      : 'save',
+        deleteButtonClass   : 'delete',
+        saveButtonId      : 'save',
         quantityClass : 'txtqty',
-        deleteModalID     : 'deleteModal',
+        deleteModalID    : 'deleteModal',
+        createModalID    : 'createModal',
         insertDetailName : 'insert_detail',
         updateDetailName : 'update_detail',
         deleteDetailName : 'delete_detail',
@@ -47,8 +48,10 @@ var TableHelper = function(tableOptions,options) {
         tableID : 'tbl',
         loadingImgID : 'loadingimg',
         searchButtonID : 'search',
+        searchTextID : 'search_string',
         columnClass : 'column_click',
-        nonStackClass : 'nonStackDescription'
+        nonStackClass : 'nonStackDescription',
+        modalFieldClass : 'modal-fields'
     };
 
     if (options) {
@@ -118,7 +121,7 @@ var TableHelper = function(tableOptions,options) {
     self.detailContent = {
         bindUpdateEvents : function(onBeforeSubmit,isCheckInventory,onAfterSubmit)
         {
-            $('.' + self._settings.updateClass).live('click',function(){
+            $('.' + self._settings.updateIconClass).live('click',function(){
                 if (isCheckInventory && isCheckInventory == true)
                     self.contentHelper.checkCurrentInventory($(this),onBeforeSubmit,onAfterSubmit);
                 else
@@ -139,7 +142,7 @@ var TableHelper = function(tableOptions,options) {
 
         bindEditEvents : function()
         {
-            $('.' + self._settings.editClass).live('click',function(){
+            $('.' + self._settings.editIconClass).live('click',function(){
                 var rowIndex = $(this).parent().parent().index();
                 self._jsTable.edit_row(rowIndex);
                 self.contentHelper.showDescriptionFields();
@@ -152,7 +155,7 @@ var TableHelper = function(tableOptions,options) {
 
         bindDeleteEvents : function(onBeforeSubmit)
         {
-            $('.' + self._settings.deleteClass).live('click',function(){
+            $('.' + self._settings.deleteIconClass).live('click',function(){
                 self.globalRowIndex    = $(this).parent().index();
                 self.globalId          = self.contentProvider.getData(self.globalRowIndex,'id');
 
@@ -160,7 +163,7 @@ var TableHelper = function(tableOptions,options) {
                     $('#' + self._settings.deleteModalID).modal('show');
             });
 
-            $('#' + self._settings.deleteID).click(function(){
+            $('#' + self._settings.deleteButtonClass).click(function(){
                 if (self._flag == 1) 
                     return;
 
@@ -254,7 +257,7 @@ var TableHelper = function(tableOptions,options) {
 
         bindSaveTransactionEvent : function(onBeforeSubmit)
         {
-            $('#' + self._settings.saveID).click(function(){
+            $('#' + self._settings.saveButtonId).click(function(){
                 if (self._flag == 1)
                     return;
 
@@ -307,9 +310,9 @@ var TableHelper = function(tableOptions,options) {
     },
 
     self.headContent = {
-        bindDeleteEvents : function(onBeforeSubmit, onAfterDelete)
+        bindDeleteEvents : function(onAfterDelete)
         {
-            $('.' + self._settings.deleteClass).live('click',function(){
+            $('.' + self._settings.deleteIconClass).live('click',function(){
                 self.globalRowIndex    = $(this).parent().index();
                 self.globalId            = self.contentProvider.getData(self.globalRowIndex,'id');
 
@@ -317,24 +320,18 @@ var TableHelper = function(tableOptions,options) {
                     $('#' + self._settings.deleteModalID).modal('show');
             });
 
-            $('#' + self._settings.deleteID).click(function(){
+            $('#' + self._settings.deleteButtonClass).click(function(){
                 if (self._flag == 1)
                     return;
 
                 self._flag = 1;
 
                 var rowIndex       = self.globalRowIndex;
-
-                if (onBeforeSubmit) 
-                    var arr = onBeforeSubmit($(this));
-                else
-                {
-                    var rowUniqueId  = self.globalId;
-                    var arr =   { 
-                                    fnc       : self._settings.deleteHeadName, 
-                                    head_id   : rowUniqueId
-                                };
-                }
+                var rowUniqueId  = self.globalId;
+                var arr =   { 
+                                fnc       : self._settings.deleteHeadName, 
+                                head_id   : rowUniqueId
+                            };
                
                 $.ajax({
                     type: "POST",
@@ -364,9 +361,14 @@ var TableHelper = function(tableOptions,options) {
                 });
             });
 
-            $('#' + self._settings.deleteModalID).live('hidden.bs.modal', function (e) {
+            $('#' + self._settings.deleteModalID + ', #' + self._settings.createModalID).live('hidden.bs.modal', function (e) {
+                $('.' + self._settings.modalFieldClass).val('');
+                $('.' + self._settings.modalFieldClass).html('');
+                $('.' + self._settings.modalFieldClass).removeAttr('checked');
+                $('#new_min').val(0);
+                $('#new_max').val(0);
                 self.globalRowIndex = 0;
-                self.globalId         = 0;
+                self.globalId       = 0;
             });
         },
 
@@ -374,6 +376,14 @@ var TableHelper = function(tableOptions,options) {
         {
             $('#' + self._settings.searchButtonID).click(function(){
                 self.contentHelper.refreshTable(onBeforeSubmit);
+            });
+
+            $('#' + self._settings.searchTextID).keypress(function(e){
+                if (e.keyCode == 13) 
+                {
+                    e.preventDefault();
+                    self.contentHelper.refreshTable(onBeforeSubmit);
+                }
             });
         },
 
@@ -456,7 +466,7 @@ var TableHelper = function(tableOptions,options) {
                                 description : nonStackDescription
                             };
             }
-            
+
             $.ajax({
                 type: "POST",
                 dataType : 'JSON',
@@ -493,9 +503,12 @@ var TableHelper = function(tableOptions,options) {
 
             var arr = onBeforeSubmit();
 
+            
+
             self._flag = 1;
 
             $('#' + self._settings.loadingImgID).show();
+            $('#' + self._settings.searchTextID).val('');
 
             $.ajax({
                 type: "POST",

@@ -9,4 +9,6 @@ TRUNCATE purchase_receive_head;
 TRUNCATE stock_delivery_detail;
 TRUNCATE stock_delivery_head;
 TRUNCATE inventory_adjust;
-UPDATE product_branch_inventory SET inventory = 0, min_inv = 1, max_inv = 1;
+TRUNCATE release_head;
+TRUNCATE release_detail;
+UPDATE product_branch_inventory SET inventory = 0, min_inv = 0, max_inv = 0;

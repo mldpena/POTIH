@@ -1,20 +1,9 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of product detail id for delete modal
-	 * @global_row_index {Number} - Holder of product detail row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
-	 */
 	
 	var flag = 0;
 	var global_product_id = 0;
 	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table details
-	 */
+	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -92,13 +81,12 @@
 
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
-	colarray['coldelete'] = { 
+	colarray['delete'] = { 
 		header_title: "",
 		edit: [imgDelete],
 		disp: [imgDelete],
 		td_class: "tablerow column_hover tddelete"
 	};
-
 
 	var tab_min_max = document.createElement('table');
 	tab_min_max.className = "tblstyle";
@@ -136,7 +124,7 @@
     };
 
 	var txtmininv = document.createElement('input');
-	txtmininv.setAttribute('class','form-control');
+	txtmininv.setAttribute('class','form-control minvalue');
 	colarray_min_max['min_inv'] = { 
         header_title: "Min. Inv.",
         edit: [txtmininv],
@@ -145,7 +133,7 @@
     };
 
 	var txtmaxinv = document.createElement('input');
-	txtmaxinv.setAttribute('class','form-control');
+	txtmaxinv.setAttribute('class','form-control maxvalue');
 	colarray_min_max['max_inv'] = { 
         header_title: "Max. Inv.",
         edit: [txtmaxinv],
@@ -176,23 +164,62 @@
 	root_min_max.appendChild(myjstbl_min_max.tab);
 
 	$('#tbl').hide();
-	//Call refresh function after loading the page
-	refresh_table();
+	$('.minvalue, .maxvalue').binder('setBinder','numeric');
+	$('#new_itemcode').binder('setBinder','alphaNumeric');
 
 	$('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
-    //Event for calling search function
-    $('#search').click(function(){
-    	refresh_table();
-    });
+    var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray }, { deleteHeadName : 'delete_product' });
+    var minMaxTableHelper = new TableHelper({ tableObject : myjstbl_min_max, tableArray : colarray_min_max });
+
+    tableHelper.headContent.bindSearchEvent(getSearchFilter);
+    tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
+    tableHelper.contentHelper.refreshTable(getSearchFilter);
+
+
+    function getSearchFilter()
+	{
+		var itemcode_val 	= $('#itemcode').val();
+		var product_val 	= $('#product').val();
+		var subgroup_val 	= $('#subgroup').val();
+		var type_val 		= $('#type').val();
+		var material_val	= $('#material').val();
+		var datefrom_val	= $('#date_from').val();
+		var dateto_val		= $('#date_to').val();
+		var branch_val		= $('#branch').val();
+		var inv_val			= $('#invstatus').val();
+		var orderby_val		= $('#orderby').val();
+
+
+		var arr = 	{ 
+						fnc 	 : 'get_product_list', 
+						code 	 : itemcode_val,
+						product  : product_val,
+						subgroup : subgroup_val,
+						type 	 : type_val,
+						material : material_val,
+						datefrom : datefrom_val,
+						dateto 	 : dateto_val,
+						branch 	 : branch_val,
+						invstat  : inv_val,
+						orderby  : orderby_val
+					};
+
+		return arr;
+	}
+
+	function actionAfterDelete()
+	{
+		build_message_box('messagebox_1','Product successfully deleted!','success');
+	}
 
     //Event for edit product
     $('.column_click').live('click',function(){
     	//Assign values to global variables to be used for saving
 
     	global_row_index 	= $(this).parent().index();
-    	global_product_id 	= table_get_column_data(global_row_index,'id');
+    	global_product_id 	= tableHelper.contentProvider.getData(global_row_index,'id');
 
     	var arr = 	{ 
 						fnc 	 	: 'get_product_details', 
@@ -202,7 +229,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 				myjstbl_min_max.clear_table();
@@ -226,20 +253,11 @@
 
 					myjstbl_min_max.insert_multiplerow_with_value(1,response.branch_inventory);
 
-					$('#createProductModal').modal('show');
+					$('#createModal').modal('show');
 				}
 			}       
 		});
     });
-	
-	//Event for delete popup
-	$('.tddelete').live('click',function(){
-		//Assign values to global variables for deleting
-		global_row_index 	= $(this).parent().index();
-		global_product_id 	= table_get_column_data(global_row_index,'id');
-
-		$('#deleteProductModal').modal('show');
-	});
 
 	//Event for create product popup
 	$('#create_product').click(function(){
@@ -255,7 +273,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 				myjstbl_min_max.clear_table();
@@ -269,8 +287,6 @@
     $('#save').click(function(){
     	if (flag == 1) 
     		return;
-
-		flag = 1;
 
 		var row_index 		= global_row_index;
 		var product_id_val 	= global_product_id;
@@ -286,12 +302,18 @@
 		var min_max_values 	= [];
 		var fnc_val 		= product_id_val == 0 ? 'insert_new_product' : 'update_product_details';
 
+		var error = $.dataValidation({ value : product_val,
+					                    fieldName : 'Product',
+					                    required : true });
+
+		alert(error);
+		return;
 		//Get list of min and max values
 		for (var i = 1; i < myjstbl_min_max.get_row_count(); i++) {
-			var branch_inventory_id = table_get_column_data(i,'id',0,myjstbl_min_max,colarray_min_max);
-			var branch_id = table_get_column_data(i,'branch',1,myjstbl_min_max,colarray_min_max);
-			var min_inv = table_get_column_data(i,'min_inv',0,myjstbl_min_max,colarray_min_max);
-			var max_inv = table_get_column_data(i,'max_inv',0,myjstbl_min_max,colarray_min_max);
+			var branch_inventory_id = minMaxTableHelper.contentProvider.getData(i,'id');
+			var branch_id = minMaxTableHelper.contentProvider.getData(i,'branch',1);
+			var min_inv = minMaxTableHelper.contentProvider.getData(i,'min_inv');
+			var max_inv = minMaxTableHelper.contentProvider.getData(i,'max_inv');
 
 			min_max_values.push([branch_inventory_id,branch_id,min_inv,max_inv]);
 		};
@@ -309,10 +331,12 @@
 						min_max_values : min_max_values
 					};
 
+		flag = 1;
+		
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -329,20 +353,20 @@
             		{
             			myjstbl.add_new_row();
         				row_index = myjstbl.get_row_count() - 1;
-        				table_set_column_data(row_index,'id',[response.id]);
-        				table_set_column_data(row_index,'number',[row_index]);
+        				tableHelper.contentProvider.setData(row_index,'id',[response.id]);
+        				tableHelper.contentProvider.setData(row_index,'number',[row_index]);
+        				tableHelper.contentProvider.setData(row_index,'inv',[0]);
             		}
 
             		var type_name = (is_nonstack_val == 0) ? 'Non - Stock' : 'Stock';
 
-            		table_set_column_data(row_index,'material_code',[itemcode_val]);
-        			table_set_column_data(row_index,'name',[product_val]);
-        			table_set_column_data(row_index,'type',[type_name]);
-        			table_set_column_data(row_index,'material',[material_text]);
-        			table_set_column_data(row_index,'subgroup',[subgroup_text]);
-        			table_set_column_data(row_index,'inv',[0]);
+            		tableHelper.contentProvider.setData(row_index,'material_code',[itemcode_val]);
+        			tableHelper.contentProvider.setData(row_index,'name',[product_val]);
+        			tableHelper.contentProvider.setData(row_index,'type',[type_name]);
+        			tableHelper.contentProvider.setData(row_index,'material',[material_text]);
+        			tableHelper.contentProvider.setData(row_index,'subgroup',[subgroup_text]);
 
-        			$('#createProductModal').modal('hide');
+        			$('#createModal').modal('hide');
 					build_message_box('messagebox_1','Product successfully saved!','success');
 				}
 
@@ -351,49 +375,6 @@
 		});
 
     });
-	
-	//Event for confirming delete action
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var row_index 		= global_row_index;
-		var product_id_val 	= global_product_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_product', 
-						product_id 	: product_id_val
-					};
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_3',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(row_index);
-					
-					recompute_row_count(myjstbl,colarray);
-
-					if (myjstbl.get_row_count() == 1) 
-						$('#tbl').hide();
-
-					$('#deleteProductModal').modal('hide');
-
-					build_message_box('messagebox_1','Product successfully deleted!','success');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
 
 	//Event for detecting material type and subgroup after losing focus in material code
 	$('#new_itemcode').blur(function(){
@@ -416,7 +397,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -445,83 +426,4 @@
 			$('#subgroup_text').html('');
 		};
 	});
-
-	//Callback function for modals. Will reset values to default
-    $('#createProductModal, #deleteProductModal').live('hidden.bs.modal', function (e) {
-		$('.modal-fields').val('');
-		$('.modal-fields').html('');
-		$('.modal-fields').removeAttr('checked');
-		$('#new_min').val(1);
-		$('#new_max').val(1);
-		global_row_index 	= 0;
-		global_product_id 	= 0;
-	});
-
-    //Function for refreshing table content
-	function refresh_table()
-	{
-		if (flag == 1)
-			return;
-
-		flag = 1;
-
-		var itemcode_val 	= $('#itemcode').val();
-		var product_val 	= $('#product').val();
-		var subgroup_val 	= $('#subgroup').val();
-		var type_val 		= $('#type').val();
-		var material_val	= $('#material').val();
-		var datefrom_val	= $('#date_from').val();
-		var dateto_val		= $('#date_to').val();
-		var branch_val		= $('#branch').val();
-		var inv_val			= $('#invstatus').val();
-		var orderby_val		= $('#orderby').val();
-
-
-		var arr = 	{ 
-						fnc 	 : 'get_product_list', 
-						code 	 : itemcode_val,
-						product  : product_val,
-						subgroup : subgroup_val,
-						type 	 : type_val,
-						material : material_val,
-						datefrom : datefrom_val,
-						dateto 	 : dateto_val,
-						branch 	 : branch_val,
-						invstat  : inv_val,
-						orderby  : orderby_val
-					};
-
-		$('#loadingimg').show();
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
-
-				if (response.rowcnt == 0) 
-				{
-					$('#tbl').hide();
-					build_message_box('messagebox_1','No product found!','info');
-				}
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-
-					$('#tbl').show();
-				}
-
-				$('#loadingimg').hide();
-
-				flag = 0;
-			}       
-		});
-	}
 </script>

@@ -83,7 +83,6 @@
 	$('#branch_list').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
-	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
 	bind_asc_desc('order_type');

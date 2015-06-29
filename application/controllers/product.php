@@ -97,53 +97,59 @@ class Product extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'get_product_list':
-				$response = $this->product_model->get_product_list($post_data);
-				break;
+		$response['error'] = '';
 
-			case 'get_material_and_subgroup':
-				$response = $this->product_model->get_product_material_subgroup($post_data);
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'get_product_list':
+					$response = $this->product_model->get_product_list($post_data);
+					break;
 
-			case 'insert_new_product':
-				$response = $this->product_model->insert_new_product($post_data);
-				break;
+				case 'get_material_and_subgroup':
+					$response = $this->product_model->get_product_material_subgroup($post_data);
+					break;
 
-			case 'get_product_details':
-				$response = $this->product_model->get_product_details($post_data);
-				break;
+				case 'insert_new_product':
+					$response = $this->product_model->insert_new_product($post_data);
+					break;
 
-			case 'update_product_details':
-				$response = $this->product_model->update_product_details($post_data);
-				break;
+				case 'get_product_details':
+					$response = $this->product_model->get_product_details($post_data);
+					break;
 
-			case 'delete_product':
-				$response = $this->product_model->delete_product($post_data);
-				break;
+				case 'update_product_details':
+					$response = $this->product_model->update_product_details($post_data);
+					break;
 
-			case 'get_branch_list_for_min_max':
-				$response = $this->_get_branch_list();
-				break;
+				case 'delete_product':
+					$response = $this->product_model->delete_product($post_data);
+					break;
 
-			case 'get_inventory_warning_list':
-				$response = $this->product_model->get_product_warning_list($post_data);
-				break;
+				case 'get_branch_list_for_min_max':
+					$response = $this->_get_branch_list();
+					break;
 
-			case 'get_branch_list':
-				$response['branches'] = get_name_list_from_table(FALSE,'branch',FALSE);
-				break;
+				case 'get_inventory_warning_list':
+					$response = $this->product_model->get_product_warning_list($post_data);
+					break;
 
-			case 'get_branch_inventory_list':
-				$response = $this->product_model->get_product_branch_inventory_list($post_data);
-				break;
+				case 'get_branch_list':
+					$response['branches'] = get_name_list_from_table(FALSE,'branch',FALSE);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				case 'get_branch_inventory_list':
+					$response = $this->product_model->get_product_branch_inventory_list($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 

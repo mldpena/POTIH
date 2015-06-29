@@ -10,7 +10,7 @@
 		<div class="form-body">
 			<div class="sub-panel">
 				Search: 
-				<input id="searchstring"type="text" class="form-control form-control mod">
+				<input id="search_string"type="text" class="form-control form-control mod">
 				Order By:
 				<select id="orderby" class="form-control form-control mod">
 					<option value="1">Code</option>
@@ -19,7 +19,7 @@
 				<input type="button" class="btn btn-success" value="Search " id="search">
 			</div>
 			<div class="max-row">
-				<button class="btn btn-primary" data-toggle="modal" data-target="#createSubgroupModal">Create New Subgroup</button>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#createModal">Create New Subgroup</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -34,7 +34,7 @@
 	</div>
 </div>
 
-<div class="modal fade" id="createSubgroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -61,7 +61,7 @@
 </div>
 
 <!-- Modal for delete confirmation -->
-<div class="modal fade" id="deleteSubgroupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">

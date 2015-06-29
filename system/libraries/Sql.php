@@ -45,19 +45,25 @@ class CI_Sql{
 
 		for ($i=0; $i < count($queryArray); $i++) { 
 			for ($x=0; $x < 5; $x++) { 
-				if (count($dataArray) == 0) {
-					$CI->db->query($queryArray[$i]);
+				if ($queryArray[$i] == "SELECT @insert_id AS 'id';") {
+					$result = $CI->db->query($queryArray[$i]);
+					$row = $result->row();
+					$data['id'] = $CI->encrypt->encode($row->id);
+					$result->free_result();
 				}
 				else{
-					$CI->db->query($queryArray[$i],$dataArray[$i]);
+					if (count($dataArray) == 0) {
+						$CI->db->query($queryArray[$i]);
+					}
+					else{
+						$CI->db->query($queryArray[$i],$dataArray[$i]);
+					}	
 				}
-
+				
 				if ($CI->db->_error_number() == 0){
 					break;
 				}
 			}
-
-			$data['id'] = $CI->encrypt->encode($CI->db->insert_id());
 		}
 
 		$CI->db->trans_complete();

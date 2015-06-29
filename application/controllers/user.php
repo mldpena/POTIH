@@ -111,7 +111,7 @@ class User extends CI_Controller {
 				break;
 
 			default:
-				
+				$response['error'] = 'Invalid arguments!';
 				break;
 		}
 

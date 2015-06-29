@@ -146,7 +146,6 @@ class InventoryAdjust extends CI_Controller {
 					$response['error'] = 'Invalid arguments!';
 					break;
 			}
-
 		} catch (Exception $e) {
 			$response['error'] = $e->getMessage();
 		}

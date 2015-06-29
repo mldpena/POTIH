@@ -9,6 +9,8 @@
 		const INACTIVE 	= 0;
 		const ORDER_BY_CODE = 1;
 		const ORDER_BY_NAME = 2;
+		const OWN_PROFILE = 1;
+		const OTHER_PROFILE = 0;
 	}
 
 ?>

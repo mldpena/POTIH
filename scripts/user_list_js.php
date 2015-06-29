@@ -1,20 +1,5 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of user detail id for delete modal
-	 * @global_row_index {Number} - Holder of user detail row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var global_user_id = 0;
-	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table details
-	 */
+	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -103,77 +88,19 @@
 	root.appendChild(myjstbl.mypage.pagingtable);
 
 	$('#tbl').hide();
-	
-	refresh_table();
+
 	bind_asc_desc('order_type');
 
-	$('#search').click(function(){
-    	refresh_table();
-    });
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", controller : 'user', deleteHeadName : 'delete_user' });
 
-	$('.column_click').live('click',function(){
-		var row_index 	= $(this).parent().index();
-		var user_id 	= table_get_column_data(row_index,'id');
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
+											deleteEventsAfterCallback : actionAfterDelete } );
 
-		window.open('<?= base_url() ?>user/view/' + user_id);
-	});
+	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-	$('.tddelete').live('click',function(){
-		global_row_index 	= $(this).parent().index();
-		global_user_id 		= table_get_column_data(global_row_index,'id');
-
-		$('#deleteUserModal').modal('show');
-	});
-
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var row_index 		= global_row_index;
-		var user_id_val 	= global_user_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_user', 
-						user_id 	: user_id_val
-					};
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(row_index);
-					
-					recompute_row_count(myjstbl,colarray);
-
-					if (myjstbl.get_row_count() == 1) 
-						$('#tbl').hide();
-
-					$('#deleteUserModal').modal('hide');
-
-					build_message_box('messagebox_1','User successfully deleted!','success');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-
-    function refresh_table()
+    function getSearchFilter()
 	{
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
 		var search_string_val = $('#search_string').val();
 		var order_by_val 	= $('#order_by').val();
 		var status_val 		= $('#status').val();
@@ -187,38 +114,11 @@
 						status 		: status_val
 					};
 
-		$('#loadingimg').show();
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
-
-				if (response.rowcnt == 0) 
-				{
-					$('#tbl').hide();
-					build_message_box('messagebox_1','No user found!','info');
-				}
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-
-					$('#tbl').show();
-				}
-
-				$('#loadingimg').hide();
-
-				flag = 0;
-			}       
-		});
+		return arr;
 	}
 
+	function actionAfterDelete()
+	{
+		build_message_box('messagebox_1','Material successfully deleted!','success');
+	}
 </script>

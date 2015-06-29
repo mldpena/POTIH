@@ -94,7 +94,7 @@ class User_Model extends CI_Model {
 		extract($param);
 
 		$this->_current_date = date('Y-m-d h:i:s');
-		$user_id 	= $this->encrypt->decode($user_id);
+		$user_id 	= $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';
@@ -267,7 +267,7 @@ class User_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$query = "SELECT `code`, `full_name`, `is_active`, `username`, `password`, `contact_number`
+		$query = "SELECT `code`, `full_name`, `is_active`, `username`, `password`, `contact_number`, `id`
 					FROM `user` 
 					WHERE `is_show` = ".USER_CONST::ACTIVE." AND `id` = ?";
 
@@ -284,6 +284,7 @@ class User_Model extends CI_Model {
 			$response['full_name'] 	= $row->full_name;
 			$response['is_active'] 	= $row->is_active;
 			$response['contact'] 	= $row->contact_number;
+			$response['is_own_profile'] = $this->encrypt->decode(get_cookie('temp')) == $row->id ? USER_CONST::OWN_PROFILE : USER_CONST::OTHER_PROFILE;
 
 			$query_branches = "SELECT DISTINCT(UP.`branch_id`) AS 'branch_id'
 								FROM user_permission AS UP

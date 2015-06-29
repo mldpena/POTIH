@@ -1,16 +1,11 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @token_val {String} - Token for CSRF Protection
-	 */
-	
-	var flag = 0;
-	var token_val = '<?= $token ?>';
+	var ProfileStatus = {
+		OwnProfile : 1,
+		OtherProfile : 0
+	};
 
-	/**
-	 * Initialization for JS table details
-	 */
+	var flag = 0;
+	var token = '<?= $token ?>';
 
 	$('#branches').chosen();
 
@@ -67,7 +62,7 @@
 			type: "POST",
 			url: "",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -95,7 +90,7 @@
 			type: "POST",
 			url: "",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -109,10 +104,17 @@
 					$('#password').val('******');
 					$('#contact').val(response.contact);
 					$('#branches').val(response.branches);
-					$('#branches').trigger("liszt:updated");
 
 					if (response.is_active == 0) 
 						$('#is_active').removeAttr('checked');
+
+					if (response.is_own_profile == ProfileStatus.OwnProfile) 
+					{
+						$('#branches, #user_code, #full_name, #is_active, #contact').attr('disabled','disabled');
+						$('#show-info-btn').hide();
+					}
+
+					$('#branches').trigger("liszt:updated");
 				}
 
 				flag = 0;

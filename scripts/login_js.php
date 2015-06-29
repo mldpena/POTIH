@@ -54,11 +54,12 @@
 				{
 					$('#submit').removeAttr('disabled');
 					build_message_box('messagebox_1',response.error,'danger');
+					$("#username, #password").val('');
 				}
 				else
 				{
 					if(response.is_first_login == 0)
-						 alert("You are using a default password. Please change your password after logging in.");
+						 alert("You are using a default password. Please change your password after logging in. To change your password, please go to My Profile under your name.");
 
 					fill_dropdown_option('branch',response.branches);
 

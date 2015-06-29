@@ -64,7 +64,7 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<button class="btn btn-primary" data-toggle="modal" data-target="#createProductModal" id="create_product">Create New Product</button>
+				<button class="btn btn-primary" data-toggle="modal" data-target="#createModal" id="create_product">Create New Product</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -79,7 +79,7 @@
 	</div>
 </div>
 <!-- Modal for insert and update products -->
-<div class="modal fade" id="createProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -127,7 +127,7 @@
 	</div>
 </div>
 <!-- Modal for delete confirmation -->
-<div class="modal fade" id="deleteProductModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">

@@ -1,12 +1,5 @@
 <script type="text/javascript">
-    /**
-     * Initialization of global variables
-     * @flag {Number} - To prevent spam request
-     * @token_val {String} - Token for CSRF Protection
-     */
-    
-    var flag = 0;
-    var token_val = '<?= $token ?>';
+    var token = '<?= $token ?>';
 
     var tab = document.createElement('table');
     tab.className = "tblstyle";
@@ -117,27 +110,15 @@
 
     $('#tbl').hide();
 
-    /**
-     * Call refresh function after loading the page
-     */
-    refresh_table();
-
     $('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
-    //Event for calling search function
-    $('#search').click(function(){
-        refresh_table();
-    });
+    var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray });
+    tableHelper.headContent.bindSearchEvent(getSearchFilter);
+    tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-    //Function for refreshing table content
-    function refresh_table()
+    function getSearchFilter()
     {
-        if (flag == 1) 
-            return;
-
-        flag = 1;
-
         var itemcode_val    = $('#itemcode').val();
         var product_val     = $('#product').val();
         var subgroup_val    = $('#subgroup').val();
@@ -162,37 +143,6 @@
                         orderby  : orderby_val
                     };
 
-        $('#loadingimg').show();
-
-        $.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token_val,
-            success: function(response) {
-                myjstbl.clear_table();
-                clear_message_box();
-
-                if (response.rowcnt == 0) 
-                {
-                    $('#tbl').hide();
-                    build_message_box('messagebox_1','No product found!','info');
-                }
-                else
-                {
-                    if(response.rowcnt <= 10)
-                        myjstbl.mypage.set_last_page(1);
-                    else
-                        myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-                    myjstbl.insert_multiplerow_with_value(1,response.data);
-
-                    $('#tbl').show();
-                }
-
-                $('#loadingimg').hide();
-
-                flag = 0;
-            }       
-        });
+        return arr;
     }
 </script>

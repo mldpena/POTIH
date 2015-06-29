@@ -169,7 +169,7 @@ class Subgroup_Model extends CI_Model {
 	{
 		extract($param);
 
-		$subgroup_id = $this->encrypt->decode($subgroup_id);
+		$subgroup_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';

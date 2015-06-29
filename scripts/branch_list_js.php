@@ -1,21 +1,9 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_purchase_receive_id {Number} - Holder of receive detail id for delete modal
-	 * @global_row_index {Number} - Holder of receive detail row index for delete modal
-	 * @token_val {String} - Token for CSRF Protection
-	 */
-	
 	var flag = 0;
 	var global_branch_id = 0;
 	var global_row_index = 0;
-	var token_val = '<?= $token ?>';
+	var token = '<?= $token ?>';
 
-	/**
-	 * Initialization for JS table branch list
-	 */
-	
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
 	tab.id = "tableid";
@@ -79,19 +67,31 @@
 	root.appendChild(myjstbl.mypage.pagingtable);
 
 	$('#tbl').hide();
-	refresh_table();
+	
+	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray }, { deleteHeadName : 'delete_branch' });
 
-	$('.tddelete').live('click',function(){
-		global_row_index 	= $(this).parent().index();
-		global_branch_id 	= table_get_column_data(global_row_index,'id');
+    tableHelper.headContent.bindSearchEvent(getSearchFilter);
+    tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
+    tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-		$('#deleteBranchModal').modal('show');
-	});
-   
-	$('#search').click(function(){
-    	refresh_table();
-    });
-  
+    function getSearchFilter()
+	{
+		var search_val 	= $('#search_string').val();
+		var order_val 	= $('#orderby').val();
+
+		var arr = 	{ 
+						fnc 	 : 'search_branch_list', 
+						search 	 : search_val,
+						orderby  : order_val
+					};
+
+		return arr;
+	}
+
+	function actionAfterDelete()
+	{
+		build_message_box('messagebox_1','Branch successfully deleted!','success');
+	}
 
 	$('#save').click(function(){
     	if (flag == 1) 
@@ -115,7 +115,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -137,7 +137,7 @@
             		table_set_column_data(row_index,'code',[code_val]);
         			table_set_column_data(row_index,'name',[name_val]);
 
-        			$('#createBranchModal').modal('hide');
+        			$('#createModal').modal('hide');
 
 					build_message_box('messagebox_1','Branch successfully saved!','success');
 				}
@@ -161,7 +161,7 @@
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
+			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
 				clear_message_box();
 
@@ -171,141 +171,9 @@
 				{
 					$('#code').val(response.data['code']);
 					$('#name').val(response.data['name']);
-					$('#createBranchModal').modal('show');
+					$('#createModal').modal('show');
 				}
 			}       
 		});
 	});
-
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var row_index 		= global_row_index;
-		var branch_id_val 	= global_branch_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_branch', 
-						branch_id 	: branch_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_3',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(row_index);
-					recompute_row_count(myjstbl,colarray);
-
-					if (myjstbl.get_row_count() == 1) 
-						$('#tbl').hide();
-
-					$('#deleteBranchModal').modal('hide');
-
-					build_message_box('messagebox_1','Branch successfully deleted!','success');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#update_main_branch').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var branch_id_val 	= $('#main_branch').val();
-
-		var arr = 	{ 
-						fnc 	 	: 'update_main_branch', 
-						branch_id 	: branch_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_3',response.error,'danger');
-				else
-				{
-					$('#setMainBranchModal').modal('hide');
-
-					build_message_box('messagebox_1','Main Branch successfully updated!','success');
-				}
-
-				flag = 0;
-			}       
-		});
-	});
-
-	$('#createBranchModal, #deleteBranchModal').live('hidden.bs.modal', function (e) {
-		$('.modal-fields').val('');
-		$('.modal-fields').html('');
-		$('.modal-fields').removeAttr('checked');
-		global_row_index 	= 0;
-		global_branch_id 	= 0;
-	});
-
-	function refresh_table()
-	{
-
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var search_val 	= $('#searchstring').val();
-		var order_val 	= $('#orderby').val();
-
-		var arr = 	{ 
-						fnc 	 : 'search_branch_list', 
-						search 	 : search_val,
-						orderby  : order_val
-					};
-
-		$('#loadingimg').show();
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
-
-				if (response.rowcnt == 0) 
-				{
-					$('#tbl').hide();
-					build_message_box('messagebox_1','No branch found!','info');
-				}
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-
-					$('#tbl').show();
-				}
-
-				$('#loadingimg').hide();
-				
-				flag = 0;
-			}       
-		});
-	}
 </script>

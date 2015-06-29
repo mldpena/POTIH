@@ -5,6 +5,13 @@ class Product_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('CODE_EXISTS' => 'Material code already exists!',
+									'NAME_EXISTS' => 'Product Name already exists!',
+									'UNABLE_TO_INSERT' => 'Unable to insert product!',
+									'UNABLE_TO_SAVE_INVENTORY' => 'Unable to insert min and max values!',
+									'UNABLE_TO_UPDATE' => 'Unable to update product!',
+									'UNABLE_TO_SELECT' => 'Unable to get select details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete product!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -79,7 +86,7 @@ class Product_Model extends CI_Model {
 			$result_inventory->free_result();
 		}
 		else
-			$response['error'] = 'Product not found!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT']);
 
 		$result->free_result();
 
@@ -127,42 +134,44 @@ class Product_Model extends CI_Model {
 		return $response;
 	}
 
-	/**
-	 * Convert to SQL transaction
-	 */
-
 	public function insert_new_product($param)
 	{
 		extract($param);
 
 		$response 	= array();
-		$query_data = array($code,$product,$is_nonstack,$material,$subgroup,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
+		$query 		= array();
+		$query_data = array();
+
 		$response['error'] = '';
 
- 		$query = "INSERT INTO `product`
-					(`material_code`,
-					`description`,
-					`type`,
-					`material_type_id`,
-					`subgroup_id`,
-					`date_created`,
-					`last_modified_date`,
-					`created_by`,
-					`last_modified_by`)
-					VALUES
-					(?,?,?,?,?,?,?,?,?);";
+		$this->validate_product($param,PRODUCT_CONST::PRODUCT_INSERT);
 
-		$result = $this->sql->execute_query($query,$query_data);
+		$query_product = "INSERT INTO `product`
+							(`material_code`,
+							`description`,
+							`type`,
+							`material_type_id`,
+							`subgroup_id`,
+							`date_created`,
+							`last_modified_date`,
+							`created_by`,
+							`last_modified_by`)
+							VALUES
+							(?,?,?,?,?,?,?,?,?);";
 
-		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save product!';
-		else
-		{
-			$response['id'] = $result['id'];
-			$product_id 	= $this->encrypt->decode($result['id']);
-			$query_inventory_data = array();
+		$query_product_data = array($code,$product,$is_nonstack,$material,$subgroup,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 
-			$query_inventory = "INSERT INTO `product_branch_inventory`
+		array_push($query,$query_product);
+		array_push($query_data,$query_product_data);
+
+		$query_last_insert_id = "SET @insert_id = LAST_INSERT_ID();";
+
+		array_push($query,$query_last_insert_id);
+		array_push($query_data,array());
+
+		$query_inventory_data = array();
+
+		$query_inventory = "INSERT INTO `product_branch_inventory`
 						(`branch_id`,
 						`product_id`,
 						`inventory`,
@@ -170,21 +179,25 @@ class Product_Model extends CI_Model {
 						`max_inv`)
 						VALUES";
 
-			$bind_values = "";
+		$bind_values = "";
 
-			for ($i=0; $i < count($min_max_values); $i++) 
-			{ 
-				$bind_values .= ",(?,?,0,?,?)";	
-				array_push($query_inventory_data,$min_max_values[$i][1],$product_id,$min_max_values[$i][2],$min_max_values[$i][3]);
-			}
-
-			$query_inventory .= substr($bind_values,1);
-
-			$result_inventory = $this->sql->execute_query($query_inventory,$query_inventory_data);
-
-			if ($result_inventory['error'] != '') 
-				$response['error'] = 'Unable to save branch inventory!';
+		for ($i=0; $i < count($min_max_values); $i++) 
+		{ 
+			$bind_values .= ",(?,@insert_id,0,?,?)";	
+			array_push($query_inventory_data,$min_max_values[$i][1],$min_max_values[$i][2],$min_max_values[$i][3]);
 		}
+
+		$query_inventory .= substr($bind_values,1).";";
+
+		array_push($query,$query_inventory,"SELECT @insert_id AS 'id';");
+		array_push($query_data,$query_inventory_data,array());
+
+		$result = $this->sql->execute_transaction($query,$query_data);
+
+		if ($result['error'] != '') 
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
+		else
+			$response['id'] = $result['id'];
 
 		return $response;
 	}
@@ -232,7 +245,7 @@ class Product_Model extends CI_Model {
 		$result = $this->sql->execute_transaction($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save product!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 		else
 			$response['id'] = $result['id'];
 
@@ -244,7 +257,7 @@ class Product_Model extends CI_Model {
 	{
 		extract($param);
 
-		$product_id = $this->encrypt->decode($product_id);
+		$product_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';
@@ -655,5 +668,43 @@ class Product_Model extends CI_Model {
 		}
 
 		return $response;
+	}
+
+	private function validate_product($param, $function_type)
+	{
+		extract($param);
+
+		$query = "SELECT * FROM product WHERE `material_code` = ?";
+		$query .= $function_type == PRODUCT_CONST::PRODUCT_INSERT ? "" : " AND `id` <> ?";
+
+		$query_data = array($code);
+		if ($function_type == PRODUCT_CONST::PRODUCT_UPDATE) 
+		{
+			$product_id = $this->encrypt->decode($product_id);
+			array_push($query_data,$product_id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['CODE_EXISTS']);
+			
+		$result->free_result();
+
+		$query = "SELECT * FROM product WHERE `description` = ?";
+		$query .= $function_type == PRODUCT_CONST::PRODUCT_INSERT ? "" : " AND `id` <> ?";
+
+		$query_data = array($product);
+		if ($function_type == PRODUCT_CONST::PRODUCT_UPDATE) 
+		{
+			$product_id = $this->encrypt->decode($product_id);
+			array_push($query_data,$product_id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['NAME_EXISTS']);
+			
+		$result->free_result();
 	}
 }

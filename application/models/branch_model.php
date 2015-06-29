@@ -166,7 +166,7 @@ class Branch_Model extends CI_Model {
 	{
 		extract($param);
 
-		$branch_id = $this->encrypt->decode($branch_id);
+		$branch_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';

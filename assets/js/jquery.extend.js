@@ -56,4 +56,35 @@
         return equivalentValue;
     };
 
+    $.dataValidation = function(data){
+        var numericReg = /[^0-9]/;
+        /*var arr = [{ value : ss,
+                    fieldName : '',
+                    required : false,
+                    rules : 'numeric' }];*/
+
+        var error = [];
+
+        for (var i = 0; i < data.length; i++) {
+            var result;
+
+            if (data[i].required && data[i].required == true) {
+                if (data[i].value == '' || $.trim(data[i].value) == '')
+                    error.push(data[i].fieldName + ' should not be empty!');
+            }else{
+                if (data[i].rules) {
+                    switch(data[i].rules){
+                        case 'numeric':
+                            result = numericReg.test(data[i].value);
+                            break;
+                    }
+
+                    if (result) 
+                        error.push(data[i].fieldName + ' should only contain numbers!');  
+                };
+            }
+        };
+
+        return error;
+    };
 })(jQuery);

@@ -169,7 +169,7 @@ class Material_Model extends CI_Model {
 	{
 		extract($param);
 
-		$material_id = $this->encrypt->decode($material_id);
+		$material_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';

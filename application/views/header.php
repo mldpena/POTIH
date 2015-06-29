@@ -19,7 +19,7 @@
 										<?= isset($name) ? $name : '' ?> <span class="caret"></span>
 									</button>
 									<ul class="dropdown-menu" role="menu">
-										<li><a href="#">My Profile</a></li>
+										<li><a href="<?= base_url() ?>user/view/<?= get_cookie('temp') ?>">My Profile</a></li>
 										<li><a href="<?= base_url() ?>login/logout">Logout</a></li>
 									</ul>
 								</div>

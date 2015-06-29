@@ -148,6 +148,14 @@
     	refreshTable();
     });
 
+    $('#search_string').keypress(function(e){
+    	if (e.keyCode == 13) 
+    	{
+    		e.preventDefault();
+    		refreshTable();
+    	}
+    });
+
     $('.tddelete').live('click',function(){
 		global_row_index 	= $(this).parent().index();
 		global_id 			= tableHelper.contentProvider.getData(global_row_index,'id');
