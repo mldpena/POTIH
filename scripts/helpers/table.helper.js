@@ -52,7 +52,8 @@ var TableHelper = function(tableOptions,options) {
         columnClass : 'column_click',
         nonStackClass : 'nonStackDescription',
         modalFieldClass : 'modal-fields',
-        isUsingPage : false
+        isUsingPage : false,
+        notFoundMessage : 'No entry found!'
     };
 
     if (options) {
@@ -360,7 +361,10 @@ var TableHelper = function(tableOptions,options) {
                             $('#' + self._settings.deleteModalID).modal('hide');
 
                             if (onAfterDelete)
+                            {
+                                self._flag = 0;
                                 onAfterDelete();
+                            }
                         }
 
                         self._flag = 0;
@@ -510,8 +514,6 @@ var TableHelper = function(tableOptions,options) {
 
             var arr = onBeforeSubmit();
 
-            
-
             self._flag = 1;
 
             $('#' + self._settings.loadingImgID).show();
@@ -529,7 +531,7 @@ var TableHelper = function(tableOptions,options) {
                     if (response.rowcnt == 0) 
                     {
                         $('#' + self._settings.tableID).hide();
-                        build_message_box('messagebox_1','No entry found!','info');
+                        build_message_box('messagebox_1',self._settings.notFoundMessage,'info');
                     }
                     else
                     {

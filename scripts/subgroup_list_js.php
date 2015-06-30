@@ -69,7 +69,9 @@
 	$('#tbl').hide();
 	$('#code').binder('setRule','letter');
 
-	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray }, { deleteHeadName : 'delete_subgroup' });
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ deleteHeadName : 'delete_subgroup' 
+										  notFoundMessage : 'No sub group found!'});
 
     tableHelper.headContent.bindSearchEvent(getSearchFilter);
     tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
@@ -91,6 +93,7 @@
 
 	function actionAfterDelete()
 	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
 		build_message_box('messagebox_1','Sub Group successfully deleted!','success');
 	}
 	

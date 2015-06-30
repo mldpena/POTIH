@@ -91,7 +91,6 @@ if (!function_exists('get_next_number'))
 		array_push($query,"SELECT COAlESCE(MAX(`$field` + 0),$default_value) INTO @invoiceno_d FROM `$table_name` WHERE `is_show` = 1 FOR UPDATE;");
 		array_push($query_data,array());
 
-		//array_push($query,"INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`) VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1),NOW(),?,?,?)");
 		$query_temp 		= "INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`";
 		$query_temp_values 	= "VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1),NOW(),?,?,?";
 		$query_data_temp 	= array($user_id,$user_id,$branch_id);

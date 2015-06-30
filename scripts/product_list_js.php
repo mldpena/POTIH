@@ -170,7 +170,10 @@
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
-	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray }, { deleteHeadName : 'delete_product' });
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ deleteHeadName : 'delete_product', 
+										  notFoundMessage : 'No product found!' });
+	
 	var minMaxTableHelper = new TableHelper({ tableObject : myjstbl_min_max, tableArray : colarray_min_max });
 
 	tableHelper.headContent.bindSearchEvent(getSearchFilter);
@@ -211,6 +214,7 @@
 
 	function actionAfterDelete()
 	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
 		build_message_box('messagebox_1','Product successfully deleted!','success');
 	}
 
