@@ -11,6 +11,7 @@
 		const ORDER_BY_NAME = 2;
 		const OWN_PROFILE = 1;
 		const OTHER_PROFILE = 0;
+		const DUMMY_PASSWORD = "******";
 	}
 
 ?>

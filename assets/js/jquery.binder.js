@@ -16,7 +16,7 @@
 
 		},
 
-		setBinder : function(format){
+		setRule : function(format){
 			$(this).live('keydown',function (e) {
 		        if ($.inArray(e.keyCode,keyCodes) !== -1 ||
 		            (e.keyCode == 65 && e.ctrlKey === true) || 
@@ -28,16 +28,22 @@
 
 		        switch(format){
 					case 'numeric':
-				    	if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+						if (((e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105))
 				            e.preventDefault();
-				        }
 						break;
 
 					case 'alphaNumeric':
-						if (((e.keyCode < 48 || e.keyCode > 90)) && (e.keyCode < 96 || e.keyCode > 105)) {
+						if (e.shiftKey && (e.keyCode < 65 || e.keyCode > 90))
+							e.preventDefault();
+						else if ((e.keyCode < 48 || e.keyCode > 90) && (e.keyCode < 96 || e.keyCode > 105))
 				            e.preventDefault();
-				        }
 						break;
+
+					case 'letter':
+						if (e.shiftKey && (e.keyCode < 65 || e.keyCode > 90))
+							e.preventDefault();
+						else if ((e.keyCode < 65 || e.keyCode > 90) && (e.keyCode < 96 || e.keyCode > 105))
+				            e.preventDefault();
 				}
 		    });
 		}

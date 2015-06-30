@@ -150,6 +150,12 @@
     	if (flag == 1) 
     		return;
 
+    	if ($(".chkadjust:checked").length == 0) 
+    	{
+    		alert('Please select at least one request!');
+    		return;
+    	}
+
     	var action_val = $(this).attr('id');
     	var adjust_id_list_val = [];
 
@@ -183,6 +189,7 @@
 				{
 					flag = 0;
 					build_message_box('messagebox_1','Inventory adjust request successfully ' + action_val + 'd!','success');
+					refresh_table();
 				}
 
 				flag = 0;

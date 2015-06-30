@@ -67,7 +67,8 @@
 	root.appendChild(myjstbl.mypage.pagingtable);
 
 	$('#tbl').hide();
-	
+	$('#code').binder('setRule','numeric');
+
 	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray }, { deleteHeadName : 'delete_branch' });
 
     tableHelper.headContent.bindSearchEvent(getSearchFilter);
@@ -97,14 +98,31 @@
     	if (flag == 1) 
     		return;
 
-		flag = 1;
-
 		var row_index 		    = global_row_index;
 		var branch_id_val	    = global_branch_id;
 		var code_val 			= $('#code').val();
 		var name_val 		    = $('#name').val();
 	    var fnc_val 			= branch_id_val == 0 ? 'insert_new_branch' : 'edit_branch';
-		 	
+		
+		var errorList = $.dataValidation([	{ 	
+											value : code_val,
+											fieldName : 'Code',
+											required : true,
+											rules : 'numeric' 
+										},
+										{
+											value : name_val,
+											fieldName : 'Name',
+											required : true,
+											rules : 'letterChar'
+										}
+										]);
+
+		if (errorList.length > 0) {
+			build_message_box('messagebox_3',build_error_message(errorList),'danger');
+			return;
+		};
+
 		var arr = 	{ 
 						fnc 	 : fnc_val, 
 						code 	 : code_val,
@@ -112,6 +130,7 @@
 			     		branch_id : branch_id_val
 					};
 
+		flag = 1;
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -120,7 +139,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
+					build_message_box('messagebox_3',response.error,'danger');
 				else
 				{
 					if (myjstbl.get_row_count() - 1 == 0) 
@@ -158,12 +177,13 @@
 						branch_id 	: global_branch_id
 					};
 
+		clear_message_box();
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
 			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
-				clear_message_box();
 
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');

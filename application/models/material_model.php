@@ -5,6 +5,13 @@ class Material_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('CODE_EXISTS' => 'Code already exists!',
+									'NAME_EXISTS' => 'Name already exists!',
+									'CANNOT_DELETE_MATERIAL_TYPE' => 'Cannot delete material type. Material type currently being used by a product.',
+									'UNABLE_TO_INSERT' => 'Unable to insert material type!',
+									'UNABLE_TO_UPDATE' => 'Unable to update material type!',
+									'UNABLE_TO_SELECT' => 'Unable to get select details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete material type!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -27,8 +34,11 @@ class Material_Model extends CI_Model {
 		extract($param);
 
 		$response 	= array();
-		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		$response['error'] = '';
+
+		$this->validate_material_type($param,MATERIAL_CONST::INSERT_PROCESS);
+
+		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 
  		$query = "INSERT INTO `material_type`
 					(`code`,
@@ -43,7 +53,7 @@ class Material_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save material!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -112,8 +122,11 @@ class Material_Model extends CI_Model {
 		$material_id = $this->encrypt->decode($material_id);
 
 		$response 	= array();
-		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$material_id);
 		$response['error'] = '';
+
+		$this->validate_material_type($param,MATERIAL_CONST::UPDATE_PROCESS);
+
+		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$material_id);
 
 		$query = "UPDATE `material_type`
 					SET
@@ -126,7 +139,7 @@ class Material_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save material!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 		else
 			$response['id'] = $result['id'];
 
@@ -158,7 +171,7 @@ class Material_Model extends CI_Model {
 			$response['data']['name'] 	= $row->name;
 		}
 		else
-			$response['error'] = 'Material not found!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT']);
 
 		$result->free_result();
 
@@ -174,6 +187,15 @@ class Material_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
+		$query = "SELECT * FROM product WHERE `material_type_id` = ? AND `is_show` = ".MATERIAL_CONST::ACTIVE;
+
+		$result = $this->db->query($query,$material_id);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['CANNOT_DELETE_MATERIAL_TYPE']);
+
+		$result->free_result();
+
 		$query_data = array($this->_current_date,$this->_current_user,$material_id);
 		$query 	= "UPDATE `material_type` 
 					SET 
@@ -185,9 +207,47 @@ class Material_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete material!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 	}
 
+	private function validate_material_type($param, $function_type)
+	{
+		extract($param);
+
+		$query = "SELECT * FROM material_type WHERE `code` = ? AND `is_show` = ".MATERIAL_CONST::ACTIVE;
+		$query .= $function_type == MATERIAL_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array($code);
+		if ($function_type == MATERIAL_CONST::UPDATE_PROCESS) 
+		{
+			$id = $this->encrypt->decode($material_id);
+			array_push($query_data,$id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['CODE_EXISTS']);
+			
+		$result->free_result();
+
+		$query = "SELECT * FROM material_type WHERE `name` = ? AND `is_show` = ".MATERIAL_CONST::ACTIVE;
+		$query .= $function_type == MATERIAL_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array($name);
+
+		if ($function_type == MATERIAL_CONST::UPDATE_PROCESS) 
+		{
+			$id = $this->encrypt->decode($material_id);
+			array_push($query_data,$id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['NAME_EXISTS']);
+			
+		$result->free_result();
+	}
 }

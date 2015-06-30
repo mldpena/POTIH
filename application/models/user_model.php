@@ -6,6 +6,16 @@ class User_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('CODE_EXISTS' => 'Code already exists!',
+									'NAME_EXISTS' => 'Name already exists!',
+									'USERNAME_EXISTS' => 'User Name already exists!',
+									'UNABLE_TO_INSERT' => 'Unable to insert user!',
+									'UNABLE_TO_INSERT_PERMISSION' => 'Unable to insert permissions!',
+									'UNABLE_TO_UPDATE' => 'Unable to update user!',
+									'UNABLE_TO_SELECT' => 'Unable to get select details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete user!',
+									'NO_BRANCH_ASSIGNED' => 'No branch assigned to this user!',
+									'ACCOUNT_NOT_EXISTS' => 'User Account does not exists!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -34,6 +44,8 @@ class User_Model extends CI_Model {
 	{
 		extract($param);
 
+		$this->validate_user($param,USER_CONST::INSERT_PROCESS);
+
 		$password 	= $this->encrypt->encode_md5($password);
 
 		$response 	= array();
@@ -58,7 +70,7 @@ class User_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save user!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 		{
 			$insert_id = $this->encrypt->decode($result['id']);
@@ -76,7 +88,7 @@ class User_Model extends CI_Model {
 				$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
 
 				if ($result_permissions['error'] != '') 
-					$response['error'] = 'Unable to insert permissions!';
+					throw new Exception($this->_error_message['UNABLE_TO_INSERT_PERMISSION']);
 			}
 		}
 
@@ -111,7 +123,7 @@ class User_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete user!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 	}
@@ -120,18 +132,26 @@ class User_Model extends CI_Model {
 	{
 		extract($param);
 
-		$password 	= $this->encrypt->encode_md5($password);
+		$this->validate_user($param,USER_CONST::UPDATE_PROCESS);
 
 		$response 	= array();
-		$query_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$this->_current_date,$this->_current_user,$this->_user_head_id);
+		$query_data = array($user_code,$full_name,$user_name,$contact,$status,$this->_current_date,$this->_current_user,$this->_user_head_id);
 		$response['error'] = '';
+		$passwordField = '';
+
+		if ($password != USER_CONST::DUMMY_PASSWORD) 
+		{
+			$password 	= $this->encrypt->encode_md5($password);
+			array_unshift($query_data,$password);
+			$passwordField .= "`password` = ?,";
+		}
 
 		$query = "UPDATE`user`
 					SET
+					$passwordField
 					`code` = ?,
 					`full_name` = ?,
 					`username` = ?,
-					`password` = ?,
 					`contact_number` = ?,
 					`is_active` = ?,
 					`last_modified_date` = ?,
@@ -141,7 +161,7 @@ class User_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save user!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 		else
 		{
 			$query_delete_previous_permissions = "DELETE FROM user_permission WHERE `user_id` = ?";
@@ -164,7 +184,7 @@ class User_Model extends CI_Model {
 					$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
 
 					if ($result_permissions['error'] != '') 
-						$response['error'] = 'Unable to insert permissions!';
+						throw new Exception($this->_error_message['UNABLE_TO_INSERT_PERMISSION']);
 				}
 			}
 		}
@@ -274,7 +294,7 @@ class User_Model extends CI_Model {
 		$result = $this->db->query($query,$this->_user_head_id);
 
 		if ($result->num_rows() != 1) 
-			$response['error'] = 'Account does not exists!';
+			throw new Exception($this->_error_message['ACCOUNT_NOT_EXISTS']);
 		else
 		{
 			$row = $result->row();
@@ -294,7 +314,7 @@ class User_Model extends CI_Model {
 			$result_branches = $this->db->query($query_branches,$this->_user_head_id);
 			
 			if ($result_branches->num_rows() == 0) 
-				$response['error'] = 'No branch assigned to this account!';
+				throw new Exception($this->_error_message['NO_BRANCH_ASSIGNED']);
 			else
 			{
 				foreach ($result_branches->result() as $row) 
@@ -305,5 +325,53 @@ class User_Model extends CI_Model {
 		$result->free_result();
 
 		return $response;
+	}
+
+	private function validate_user($param, $function_type)
+	{
+		extract($param);
+
+		$query = "SELECT * FROM user WHERE `code` = ? AND `is_show` = ".USER_CONST::ACTIVE;
+		$query .= $function_type == USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array($user_code);
+		if ($function_type == USER_CONST::UPDATE_PROCESS) 
+			array_push($query_data,$this->_user_head_id);
+
+		$result = $this->db->query($query,$query_data);
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['CODE_EXISTS']);
+			
+		$result->free_result();
+
+		$query = "SELECT * FROM user WHERE LOWER(`full_name`) = ? AND `is_show` = ".USER_CONST::ACTIVE;
+		$query .= $function_type == USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array(strtolower($full_name));
+
+		if ($function_type == USER_CONST::UPDATE_PROCESS) 
+			array_push($query_data,$this->_user_head_id);
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['NAME_EXISTS']);
+			
+		$result->free_result();
+
+		$query = "SELECT * FROM user WHERE LOWER(`username`) = ? AND `is_show` = ".USER_CONST::ACTIVE;
+		$query .= $function_type == USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array($user_name);
+
+		if ($function_type == USER_CONST::UPDATE_PROCESS) 
+			array_push($query_data,$this->_user_head_id);
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['USERNAME_EXISTS']);
+			
+		$result->free_result();
 	}
 }

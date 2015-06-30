@@ -88,33 +88,39 @@ class User extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'insert_new_user':
-				$response = $this->user_model->insert_new_user($post_data);
-				break;
+		$response['error'] = '';
 
-			case 'get_user_list':
-				$response = $this->user_model->get_user_list($post_data);
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'insert_new_user':
+					$response = $this->user_model->insert_new_user($post_data);
+					break;
 
-			case 'delete_user':
-				$response = $this->user_model->delete_user($post_data);
-				break;
+				case 'get_user_list':
+					$response = $this->user_model->get_user_list($post_data);
+					break;
 
-			case 'get_user_details':
-				$response = $this->user_model->get_user_details($post_data);
-				break;
+				case 'delete_user':
+					$response = $this->user_model->delete_user($post_data);
+					break;
 
-			case 'update_user':
-				$response = $this->user_model->update_user($post_data);
-				break;
+				case 'get_user_details':
+					$response = $this->user_model->get_user_details($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				case 'update_user':
+					$response = $this->user_model->update_user($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}	
+		} catch (Exception $e) {
+			$response['error']  = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 }

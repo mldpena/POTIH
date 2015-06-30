@@ -51,7 +51,8 @@ var TableHelper = function(tableOptions,options) {
         searchTextID : 'search_string',
         columnClass : 'column_click',
         nonStackClass : 'nonStackDescription',
-        modalFieldClass : 'modal-fields'
+        modalFieldClass : 'modal-fields',
+        isUsingPage : false
     };
 
     if (options) {
@@ -160,7 +161,10 @@ var TableHelper = function(tableOptions,options) {
                 self.globalId          = self.contentProvider.getData(self.globalRowIndex,'id');
 
                 if (self.globalId != 0) 
+                {
+                    clear_message_box();
                     $('#' + self._settings.deleteModalID).modal('show');
+                }
             });
 
             $('#' + self._settings.deleteButtonClass).click(function(){
@@ -317,7 +321,10 @@ var TableHelper = function(tableOptions,options) {
                 self.globalId            = self.contentProvider.getData(self.globalRowIndex,'id');
 
                 if (self.globalId != 0) 
+                {
+                    clear_message_box();
                     $('#' + self._settings.deleteModalID).modal('show');
+                }
             });
 
             $('#' + self._settings.deleteButtonClass).click(function(){
@@ -328,18 +335,18 @@ var TableHelper = function(tableOptions,options) {
 
                 var rowIndex       = self.globalRowIndex;
                 var rowUniqueId  = self.globalId;
+
                 var arr =   { 
                                 fnc       : self._settings.deleteHeadName, 
                                 head_id   : rowUniqueId
                             };
-               
+
                 $.ajax({
                     type: "POST",
                     dataType : 'JSON',
                     data: 'data=' + JSON.stringify(arr) + token,
                     success: function(response) {
                         clear_message_box();
-
                         if (response.error != '') 
                             build_message_box('messagebox_2',response.error,'danger');
                         else
@@ -367,6 +374,7 @@ var TableHelper = function(tableOptions,options) {
                 $('.' + self._settings.modalFieldClass).removeAttr('checked');
                 $('#new_min').val(0);
                 $('#new_max').val(0);
+                $('#messagebox_2, #messagebox_3').html('');
                 self.globalRowIndex = 0;
                 self.globalId       = 0;
             });
@@ -448,7 +456,6 @@ var TableHelper = function(tableOptions,options) {
                 var arr = onBeforeSubmit(element);
             else
             {
-
                 var rowIndex        = $(element).parent().parent().index();
                 var productId       = self.contentProvider.getData(rowIndex,'product',1);
                 var qty             = self.contentProvider.getData(rowIndex,'qty');
@@ -509,6 +516,7 @@ var TableHelper = function(tableOptions,options) {
 
             $('#' + self._settings.loadingImgID).show();
             $('#' + self._settings.searchTextID).val('');
+            //$('input[type=text]').val('');
 
             $.ajax({
                 type: "POST",

@@ -49,7 +49,7 @@
 					<label>Name:</label>
 					<input type="text" class="form-control modal-fields" id='name'>
 				</div>
-				<div id = "messagebox_2"></div>
+				<div id = "messagebox_3"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -68,7 +68,7 @@
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete this branch?
-				<div id="messagebox_3"></div>
+				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

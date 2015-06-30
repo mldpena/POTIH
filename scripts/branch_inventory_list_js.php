@@ -12,9 +12,8 @@
         data: 'data=' + JSON.stringify(arr) + token,
         success: function(response) {
           
-            if ((Object.keys(response).length) > 0) 
+            if ((Object.keys(response.branches).length) > 0) 
             {
-
                 var tab = document.createElement('table');
                 tab.className = "tblstyle";
                 tab.id = "tableid";
@@ -110,12 +109,23 @@
         
         $('#tbl').hide();
 
-        if(branch_val == 0)
+        if(branch_val.length == 0)
         {
             alert('No branch selected!'); 
             return;
         }
 
+        if ($.inArray('0',branch_val) != -1) 
+        {
+            branch_val = [];
+            $('#branch > option').each(function(key,element){
+                var value = $(element).val();
+                
+                if (value != 0) 
+                    branch_val.push(value);
+            });
+        }
+        
         var arr =  {
                         fnc      : 'get_branch_inventory_list', 
                         code     : itemcode_val,

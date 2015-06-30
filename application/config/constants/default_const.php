@@ -14,6 +14,9 @@
 		const ZERO_INV 	= 3;
 
 		const USED = 1;
+
+		const INSERT_PROCESS = 1;
+		const UPDATE_PROCESS = 2;
 	}
 
 ?>

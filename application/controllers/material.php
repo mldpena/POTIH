@@ -82,33 +82,39 @@ class Material extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'insert_new_material':
-				$response = $this->material_model->add_new_material($post_data);
-				break;
+		$response['error'] = '';
 
-			case 'search_material_list' :
-				$response = $this->material_model->search_material_list($post_data);
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'insert_new_material':
+					$response = $this->material_model->add_new_material($post_data);
+					break;
 
-			case 'get_material_details' :
-				$response = $this->material_model->get_material_details($post_data);
-				break;
+				case 'search_material_list' :
+					$response = $this->material_model->search_material_list($post_data);
+					break;
 
-			case 'edit_material' :
-				$response = $this->material_model->update_material($post_data);
-				break;
+				case 'get_material_details' :
+					$response = $this->material_model->get_material_details($post_data);
+					break;
 
-			case 'delete_material' :
-				$response = $this->material_model->delete_material($post_data);
-				break;
+				case 'edit_material' :
+					$response = $this->material_model->update_material($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments';
-				break;
+				case 'delete_material' :
+					$response = $this->material_model->delete_material($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid arguments';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 

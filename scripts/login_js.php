@@ -59,7 +59,10 @@
 				else
 				{
 					if(response.is_first_login == 0)
-						 alert("You are using a default password. Please change your password after logging in. To change your password, please go to My Profile under your name.");
+					{
+						var defaultPasswordMessage = (response.is_default_password) ? 'You are using a default password.' : '';
+						alert(defaultPasswordMessage + "Please change your password after logging in. To change your password, please go to My Profile under your name.");
+					}
 
 					fill_dropdown_option('branch',response.branches);
 

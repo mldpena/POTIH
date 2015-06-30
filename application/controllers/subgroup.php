@@ -85,34 +85,40 @@ class Subgroup extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-		
-			case 'search_subgroup_list' :
-				$response = $this->subgroup_model->search_subgroup_list($post_data);
-				break;
+		$response['error'] = '';
 
-			case 'insert_new_subgroup' :
-				$response = $this->subgroup_model->add_new_subgroup($post_data);
-				break;
+		try {
+			switch ($fnc) 
+			{
+			
+				case 'search_subgroup_list' :
+					$response = $this->subgroup_model->search_subgroup_list($post_data);
+					break;
 
-			case 'get_subgroup_details' :
-				$response = $this->subgroup_model->get_subgroup_details($post_data);
-				break;
+				case 'insert_new_subgroup' :
+					$response = $this->subgroup_model->add_new_subgroup($post_data);
+					break;
 
-			case 'edit_subgroup' :
-				$response = $this->subgroup_model->update_subgroup($post_data);
-				break;
+				case 'get_subgroup_details' :
+					$response = $this->subgroup_model->get_subgroup_details($post_data);
+					break;
 
-			case 'delete_subgroup' :
-				$response = $this->subgroup_model->delete_subgroup($post_data);
-				break;
+				case 'edit_subgroup' :
+					$response = $this->subgroup_model->update_subgroup($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				case 'delete_subgroup' :
+					$response = $this->subgroup_model->delete_subgroup($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 }

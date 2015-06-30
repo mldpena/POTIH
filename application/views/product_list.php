@@ -117,7 +117,7 @@
 						</div>
 					</div>
 				</div>
-				<div id="messagebox_2"></div>
+				<div id="messagebox_3"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -136,7 +136,7 @@
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete this product?
-				<div id="messagebox_3"></div>
+				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

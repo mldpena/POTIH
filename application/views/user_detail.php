@@ -43,7 +43,7 @@
 									</div>
 								</td>
 								<td>Contact No.:</td>
-								<td><input type="text" class="form-control" id="contact"></td>
+								<td><input type="text" class="form-control" id="contact" maxlength="11"></td>
 							</tr>
 						</table>
 						<div id="messagebox_1"></div>

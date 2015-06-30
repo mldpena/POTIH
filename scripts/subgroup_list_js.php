@@ -67,6 +67,7 @@
 	root.appendChild(myjstbl.mypage.pagingtable);
 
 	$('#tbl').hide();
+	$('#code').binder('setRule','letter');
 
 	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray }, { deleteHeadName : 'delete_subgroup' });
 
@@ -103,13 +104,14 @@
 						subgroup_id : global_subgroup_id
 					};
 
+		clear_message_box();
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
 			data: 'data=' + JSON.stringify(arr) + token,
 			success: function(response) {
-				clear_message_box();
-
+				
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
@@ -126,21 +128,40 @@
     	if (flag == 1) 
     		return;
 
-		flag = 1;
-
 		var row_index 		= global_row_index;
 		var subgroup_id_val = global_subgroup_id;
 		var code_val 	= $('#code').val();
 		var name_val 	= $('#name').val();
 	   	var fnc_val 	= subgroup_id_val == 0 ? 'insert_new_subgroup' : 'edit_subgroup';
 		
-	   	 	
+		var errorList = $.dataValidation([	{ 	
+											value : code_val,
+											fieldName : 'Code',
+											required : true,
+											rules : 'letter' 
+										},
+										{
+											value : name_val,
+											fieldName : 'Name',
+											required : true,
+											rules : 'letterChar'
+										}
+										]);
+
+	   	if (errorList.length > 0) {
+			build_message_box('messagebox_3',build_error_message(errorList),'danger');
+			return;
+		};
+
 		var arr = 	{ 
 						fnc 	 : fnc_val, 
 						code 	 : code_val,
 						name     : name_val,
 				 		subgroup_id : subgroup_id_val
 					};
+
+		flag = 1;
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -149,7 +170,7 @@
 				clear_message_box();
 
 				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
+					build_message_box('messagebox_3',response.error,'danger');
 				else
 				{
 					if (myjstbl.get_row_count() - 1 == 0) 
@@ -157,10 +178,9 @@
 
             		if (subgroup_id_val == 0) 
             		{
-        				tableHelper.contentHelper.addRow();
+        				tableHelper.contentProvider.addRow();
         				row_index = myjstbl.get_row_count() - 1;
         				tableHelper.contentProvider.setData(row_index,'id',[response.id]);
-        				tableHelper.contentProvider.setData(row_index,'number',[row_index]);
             		}
 
             		tableHelper.contentProvider.setData(row_index,'code',[code_val]);
@@ -176,4 +196,8 @@
 		});
 
     });
+
+	$('#code').blur(function(){
+		$(this).val($(this).val().toUpperCase());
+	});
 </script>

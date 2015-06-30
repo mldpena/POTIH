@@ -144,7 +144,7 @@ class Product_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$this->validate_product($param,PRODUCT_CONST::PRODUCT_INSERT);
+		$this->validate_product($param,PRODUCT_CONST::INSERT_PROCESS);
 
 		$query_product = "INSERT INTO `product`
 							(`material_code`,
@@ -205,12 +205,15 @@ class Product_Model extends CI_Model {
 	public function update_product_details($param)
 	{
 		extract($param);
-		$product_id = $this->encrypt->decode($product_id);
 
 		$response 	= array();
 		$query 		= array();
 		$query_data = array();
 		$response['error'] = '';
+
+		$this->validate_product($param,PRODUCT_CONST::UPDATE_PROCESS);
+
+		$product_id = $this->encrypt->decode($product_id);
 
 		$query_product = "UPDATE `product`
 						SET
@@ -674,14 +677,14 @@ class Product_Model extends CI_Model {
 	{
 		extract($param);
 
-		$query = "SELECT * FROM product WHERE `material_code` = ?";
-		$query .= $function_type == PRODUCT_CONST::PRODUCT_INSERT ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM product WHERE `material_code` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
+		$query .= $function_type == PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($code);
-		if ($function_type == PRODUCT_CONST::PRODUCT_UPDATE) 
+		if ($function_type == PRODUCT_CONST::UPDATE_PROCESS) 
 		{
-			$product_id = $this->encrypt->decode($product_id);
-			array_push($query_data,$product_id);
+			$id = $this->encrypt->decode($product_id);
+			array_push($query_data,$id);
 		}
 
 		$result = $this->db->query($query,$query_data);
@@ -690,14 +693,15 @@ class Product_Model extends CI_Model {
 			
 		$result->free_result();
 
-		$query = "SELECT * FROM product WHERE `description` = ?";
-		$query .= $function_type == PRODUCT_CONST::PRODUCT_INSERT ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM product WHERE `description` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
+		$query .= $function_type == PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($product);
-		if ($function_type == PRODUCT_CONST::PRODUCT_UPDATE) 
+
+		if ($function_type == PRODUCT_CONST::UPDATE_PROCESS) 
 		{
-			$product_id = $this->encrypt->decode($product_id);
-			array_push($query_data,$product_id);
+			$id = $this->encrypt->decode($product_id);
+			array_push($query_data,$id);
 		}
 
 		$result = $this->db->query($query,$query_data);

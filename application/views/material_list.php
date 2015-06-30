@@ -43,13 +43,13 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label>Code</label>
-					<input type="text" class="form-control modal-fields" id='code'>	
+					<input type="text" class="form-control modal-fields" id='code' maxlength="1">	
 				</div>
 				<div class="form-group">
 					<label>Name:</label>
 					<input type="text" class="form-control modal-fields" id='name'>
 				</div>
-				<div id = "messagebox_2"></div>
+				<div id = "messagebox_3"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -68,7 +68,7 @@
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete this material type?
-				<div id="messagebox_3"></div>
+				<div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

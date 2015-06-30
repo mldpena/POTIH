@@ -5,6 +5,12 @@ class Branch_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('CODE_EXISTS' => 'Code already exists!',
+									'NAME_EXISTS' => 'Name already exists!',
+									'UNABLE_TO_INSERT' => 'Unable to insert branch!',
+									'UNABLE_TO_UPDATE' => 'Unable to update branch!',
+									'UNABLE_TO_SELECT' => 'Unable to get select details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete branch!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -28,9 +34,12 @@ class Branch_Model extends CI_Model {
 		extract($param);
 
 		$response 	= array();
-		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		$response['error'] = '';
 
+		$this->validate_branch($param,BRANCH_CONST::INSERT_PROCESS);
+
+		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
+		
  		$query = "INSERT INTO `branch`
 					(`code`,
 					`name`,
@@ -44,7 +53,7 @@ class Branch_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save branch!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -110,8 +119,11 @@ class Branch_Model extends CI_Model {
 		$branch_id = $this->encrypt->decode($branch_id);
 
 		$response 	= array();
+		$response['error'] = '';	
+
+		$this->validate_branch($param,BRANCH_CONST::UPDATE_PROCESS);
+
 		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$branch_id);
-		$response['error'] = '';
 
 		$query = "UPDATE `branch`
 					SET
@@ -124,7 +136,7 @@ class Branch_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save branch!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 		else
 			$response['id'] = $result['id'];
 
@@ -155,7 +167,7 @@ class Branch_Model extends CI_Model {
 			$response['data']['name'] 	= $row->name;
 		}
 		else
-			$response['error'] = 'Branch not found!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT']);
 
 		$result->free_result();
 
@@ -182,9 +194,47 @@ class Branch_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete branch!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 	}
 
+	private function validate_branch($param, $function_type)
+	{
+		extract($param);
+
+		$query = "SELECT * FROM branch WHERE `code` = ? AND `is_show` = ".BRANCH_CONST::ACTIVE;
+		$query .= $function_type == BRANCH_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array($code);
+		if ($function_type == BRANCH_CONST::UPDATE_PROCESS) 
+		{
+			$id = $this->encrypt->decode($branch_id);
+			array_push($query_data,$id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['CODE_EXISTS']);
+			
+		$result->free_result();
+
+		$query = "SELECT * FROM branch WHERE LOWER(`name`) = ? AND `is_show` = ".BRANCH_CONST::ACTIVE;
+		$query .= $function_type == BRANCH_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array(strtolower($name));
+
+		if ($function_type == BRANCH_CONST::UPDATE_PROCESS) 
+		{
+			$id = $this->encrypt->decode($branch_id);
+			array_push($query_data,$id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['NAME_EXISTS']);
+			
+		$result->free_result();
+	}
 }

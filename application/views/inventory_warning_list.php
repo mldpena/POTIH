@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>invwarning/list">Product Inventory Warning List</a></li>
+			<li class="active"><a href="<?= base_url() ?>product/warning">Product Inventory Warning List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

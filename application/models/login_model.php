@@ -27,7 +27,7 @@ class Login_Model extends CI_Model {
 
 		$response['error']		= '';
 		
-		$query 	= "SELECT `id`,`is_active`, `is_first_login` 
+		$query 	= "SELECT `id`,`is_active`, `is_first_login`, `password`
 					FROM user 
 					WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
 
@@ -67,6 +67,7 @@ class Login_Model extends CI_Model {
 
 					$response['branches'] 		= $branches;
 					$response['is_first_login'] = $row->is_first_login;
+					$response['is_default_password'] = $row->password == $this->encrypt->encode_md5('123456') ? true : false;
 
 					$result_branch->free_result();
 				}

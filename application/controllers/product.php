@@ -46,7 +46,7 @@ class Product extends CI_Controller {
 
 			case 'inventory':
 				$page = 'branch_inventory_list';
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',FALSE);
+				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
 				
 				break;
 

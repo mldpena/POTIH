@@ -12,7 +12,7 @@ function build_error_message(errors)
 		string += "<i class='fa fa-exclamation-triangle' />&nbsp;&nbsp;"+errors[i]+"<br/>";
 	};
 
-	$('#'+id).html(string);
+	return string;
 }
 
 function clear_message_box()

@@ -84,37 +84,43 @@ class Branch extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'insert_new_branch':
-				$response = $this->branch_model->add_new_branch($post_data);
-				break;
+		$response['error'] = '';
 
-			case 'search_branch_list' :
-				$response = $this->branch_model->search_branch_list($post_data);
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'insert_new_branch':
+					$response = $this->branch_model->add_new_branch($post_data);
+					break;
 
-			case 'get_branch_details' :
-				$response = $this->branch_model->get_branch_details($post_data);
-				break;
+				case 'search_branch_list' :
+					$response = $this->branch_model->search_branch_list($post_data);
+					break;
 
-			case 'edit_branch' :
-				$response = $this->branch_model->update_branch($post_data);
-				break;
+				case 'get_branch_details' :
+					$response = $this->branch_model->get_branch_details($post_data);
+					break;
 
-			case 'delete_branch' :
-				$response = $this->branch_model->delete_branch($post_data);
-				break;
+				case 'edit_branch' :
+					$response = $this->branch_model->update_branch($post_data);
+					break;
 
-			case 'update_main_branch':
-				$response = $this->_set_main_branch_config($post_data);
-				break;
+				case 'delete_branch' :
+					$response = $this->branch_model->delete_branch($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid Arguments!';
-				break;
+				case 'update_main_branch':
+					$response = $this->_set_main_branch_config($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid Arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 }

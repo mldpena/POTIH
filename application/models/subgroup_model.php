@@ -5,6 +5,13 @@ class Subgroup_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('CODE_EXISTS' => 'Code already exists!',
+									'NAME_EXISTS' => 'Name already exists!',
+									'CANNOT_DELETE_SUB_GROUP' => 'Cannot delete sub group. Sub Group currently being used by a product.',
+									'UNABLE_TO_INSERT' => 'Unable to insert sub group!',
+									'UNABLE_TO_UPDATE' => 'Unable to update sub group!',
+									'UNABLE_TO_SELECT' => 'Unable to get select details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete sub group!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -85,8 +92,11 @@ class Subgroup_Model extends CI_Model {
 		extract($param);
 
 		$response 	= array();
-		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		$response['error'] = '';
+
+		$this->validate_sub_group($param,SUBGROUP_CONST::INSERT_PROCESS);
+
+		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 
  		$query = "INSERT INTO `subgroup`
 					(`code`,
@@ -101,7 +111,7 @@ class Subgroup_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save sub group!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -119,7 +129,6 @@ class Subgroup_Model extends CI_Model {
 		$subgroup_id = $this->encrypt->decode($subgroup_id);
 
 		$query = "SELECT `code`, `name` from subgroup where `is_show` = ".SUBGROUP_CONST::ACTIVE." AND  id = ?";
-						
 
 		$result = $this->db->query($query,$subgroup_id);
 
@@ -130,7 +139,7 @@ class Subgroup_Model extends CI_Model {
 			$response['data']['name'] 	= $row->name;
 		}
 		else
-			$response['error'] = 'Subgroup not found!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT']);
 
 		$result->free_result();
 
@@ -143,8 +152,11 @@ class Subgroup_Model extends CI_Model {
 		$subgroup_id = $this->encrypt->decode($subgroup_id);
 
 		$response 	= array();
-		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$subgroup_id);
 		$response['error'] = '';
+
+		$this->validate_sub_group($param,SUBGROUP_CONST::UPDATE_PROCESS);
+
+		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$subgroup_id);
 
 		$query = "UPDATE `subgroup`
 					SET
@@ -157,7 +169,7 @@ class Subgroup_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save subgroup!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 		else
 			$response['id'] = $result['id'];
 
@@ -174,6 +186,15 @@ class Subgroup_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
+		$query = "SELECT * FROM product WHERE `subgroup_id` = ? AND `is_show` = ".SUBGROUP_CONST::ACTIVE;
+
+		$result = $this->db->query($query,$subgroup_id);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['CANNOT_DELETE_SUB_GROUP']);
+
+		$result->free_result();
+
 		$query_data = array($this->_current_date,$this->_current_user,$subgroup_id);
 		$query 	= "UPDATE `subgroup` 
 					SET 
@@ -185,9 +206,47 @@ class Subgroup_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete subgroup!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 	}
 
+	private function validate_sub_group($param, $function_type)
+	{
+		extract($param);
+
+		$query = "SELECT * FROM subgroup WHERE `code` = ? AND `is_show` = ".SUBGROUP_CONST::ACTIVE;
+		$query .= $function_type == SUBGROUP_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array($code);
+		if ($function_type == SUBGROUP_CONST::UPDATE_PROCESS) 
+		{
+			$id = $this->encrypt->decode($subgroup_id);
+			array_push($query_data,$id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['CODE_EXISTS']);
+			
+		$result->free_result();
+
+		$query = "SELECT * FROM subgroup WHERE `name` = ? AND `is_show` = ".SUBGROUP_CONST::ACTIVE;
+		$query .= $function_type == SUBGROUP_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+
+		$query_data = array($name);
+
+		if ($function_type == SUBGROUP_CONST::UPDATE_PROCESS) 
+		{
+			$id = $this->encrypt->decode($subgroup_id);
+			array_push($query_data,$id);
+		}
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+			throw new Exception($this->_error_message['NAME_EXISTS']);
+			
+		$result->free_result();
+	}
 }

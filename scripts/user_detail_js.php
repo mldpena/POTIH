@@ -4,10 +4,13 @@
 		OtherProfile : 0
 	};
 
+	var isOwnProfile = false;
 	var flag = 0;
 	var token = '<?= $token ?>';
 
 	$('#branches').chosen();
+	$('#user_code').binder('setRule','alphaNumeric');
+	$('#contact').binder('setRule','numeric');
 
 	$("#show-info-btn").click(function(){
 		var value = $(this).val();
@@ -21,20 +24,60 @@
 	});
 
 	$('#save').click(function(){
-
 		if(flag==1)
 			return;
-
-		//flag = 1;
 
 		var user_code_val	= $("#user_code").val();
 		var full_name_val 	= $("#full_name").val();
 		var status_val 		= $("#is_active").is(":checked") ? 1 : 0;
 		var user_name_val 	= $("#user_name").val();
 		var password_val 	= $("#password").val();
+		var password_temp 	= password_val == '******' ? '123456' : password_val;
 		var contact_val 	= $("#contact").val();
 		var branches_val    = $('#branches').val() == null ? '' : $('#branches').val();
 		var fnc_val 		= "<?= $this->uri->segment(3) ?>" != "" ? "update_user" : "insert_new_user";
+
+		var errorList = $.dataValidation([	{ 	
+											value : user_code_val,
+											fieldName : 'User Code',
+											required : true,
+											rules : 'code' 
+										},
+										{
+											value : full_name_val,
+											fieldName : 'Full Name',
+											required : true,
+											rules : 'letterChar'
+										},
+										{
+											value : user_name_val,
+											fieldName : 'User Name',
+											required : true,
+											rules : 'credential',
+											minLength : 4
+										},
+										{
+											value : password_temp,
+											fieldName : 'Password',
+											required : true,
+											rules : 'credential',
+											minLength : 6
+										},
+										{
+											value : contact_val,
+											fieldName : 'Contact',
+											required : false,
+											rules : 'numeric'
+										}
+										]);
+
+		if (branches_val.length == 0) 
+			errorList.push('Please select at least one branch!');
+
+		if (errorList.length > 0) {
+			build_message_box('messagebox_1',build_error_message(errorList),'danger');
+			return;
+		};
 
 		if ($.inArray('0',branches_val) != -1) 
 		{
@@ -58,6 +101,8 @@
 						branches 	: branches_val
 					};
 
+		flag = 1;
+
 		$.ajax({
 			type: "POST",
 			url: "",
@@ -71,7 +116,8 @@
 				else
 				{
 					build_message_box('messagebox_1','Account successfully saved!','success');
-					window.location = "<?= site_url() ?>/user/list";
+					var link = (isOwnProfile) ? 'controlpanel' : 'user/list'
+					window.location = "<?= site_url() ?>/" + link;
 				}
 
 				flag = 0;
@@ -110,6 +156,7 @@
 
 					if (response.is_own_profile == ProfileStatus.OwnProfile) 
 					{
+						isOwnProfile = true;
 						$('#branches, #user_code, #full_name, #is_active, #contact').attr('disabled','disabled');
 						$('#show-info-btn').hide();
 					}

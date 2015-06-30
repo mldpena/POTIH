@@ -58,10 +58,11 @@
 
     $.dataValidation = function(data){
         var numericReg = /[^0-9]/;
-        /*var arr = [{ value : ss,
-                    fieldName : '',
-                    required : false,
-                    rules : 'numeric' }];*/
+        var alphaNumericReg = /[^A-Za-z0-9 '".\/]/;
+        var codeReg = /[^A-Za-z0-9]/;
+        var letterReg = /[^A-Za-z ]/;
+        var letterWthCharReg = /[^A-Za-z '".\/]/;
+        var credentialReg = /[^A-Za-z0-9_@!]/;
 
         var error = [];
 
@@ -69,19 +70,57 @@
             var result;
 
             if (data[i].required && data[i].required == true) {
-                if (data[i].value == '' || $.trim(data[i].value) == '')
+                if ($.trim(data[i].value) == '')
+                {
                     error.push(data[i].fieldName + ' should not be empty!');
-            }else{
-                if (data[i].rules) {
-                    switch(data[i].rules){
-                        case 'numeric':
-                            result = numericReg.test(data[i].value);
-                            break;
-                    }
+                    continue;
+                }
+            }
 
-                    if (result) 
-                        error.push(data[i].fieldName + ' should only contain numbers!');  
-                };
+            if (data[i].rules && $.trim(data[i].value) != '') {
+                switch(data[i].rules){
+                    case 'numeric':
+                        result = numericReg.test(data[i].value);
+                        if (result) 
+                            error.push(data[i].fieldName + ' should only contain numbers!'); 
+                        break;
+
+                    case 'alphaNumeric':
+                        result = alphaNumericReg.test(data[i].value);
+                        if (result) 
+                            error.push(data[i].fieldName + ' should only contain numbers, letters and characters(\'".\/)!');
+                        break;
+
+                    case 'letter':
+                        result = letterReg.test(data[i].value);
+                        if (result) 
+                            error.push(data[i].fieldName + ' should only contain letters!');
+                        break;
+
+                    case 'letterChar':
+                        result = letterWthCharReg.test(data[i].value);
+                        if (result) 
+                            error.push(data[i].fieldName + ' should only contain letters and characters(\'".\/)!');
+                        break;
+
+                    case 'code':
+                        result = codeReg.test(data[i].value);
+                        if (result) 
+                            error.push(data[i].fieldName + ' should only contain numbers and letters!');
+                        break;
+
+                    case 'credential':
+                        result = credentialReg.test(data[i].value);
+                        if (result) 
+                            error.push(data[i].fieldName + ' should only contain letters, numbers and characters(_@!)!');
+                        break;
+                }       
+            };
+
+            if (data[i].minLength)
+            {
+                if (data[i].value.length < data[i].minLength)
+                    error.push(data[i].fieldName + ' should at lease contain ' + data[i].minLength + ' characters!');
             }
         };
 
