@@ -152,7 +152,7 @@ if (!function_exists('get_product_list_autocomplete'))
 		{
 			$data[$i]['label'] = $row->description;
 			$data[$i]['value'] = $row->id;
-			$data[$i]['ret_datas'] = ($with_inventory) ? array($row->id,$row->description,$row->material_code,$row->inventory) : array($row->id,$row->description,$row->material_code);
+			$data[$i]['ret_datas'] = ($with_inventory) ? array($row->id,$row->description,$row->material_code,$row->inventory) : array($row->id,$row->description,$row->material_code, $row->type);
 			$i++;			
 		}
 
