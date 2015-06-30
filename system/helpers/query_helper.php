@@ -104,8 +104,8 @@ if (!function_exists('get_next_number'))
 
 		$query_temp = $query_temp.") ".$query_temp_values.")";
 
-		array_push($query,$query_temp);
-		array_push($query_data,$query_data_temp);
+		array_push($query,$query_temp,"SET @insert_id = LAST_INSERT_ID();","SELECT @insert_id AS 'id';");
+		array_push($query_data,$query_data_temp,array(),array());
 
 		$data = $CI->sql->execute_transaction($query,$query_data);
 
@@ -139,11 +139,6 @@ if (!function_exists('get_product_list_autocomplete'))
 
 		array_push($query_data,$term,$term);
 		
-		
-		
-
-		
-
 		$query = "SELECT P.`description`, P.`id`, P.`material_code`, P.`type` $inventory_column
 					FROM product AS P
 					$join_condition
