@@ -134,7 +134,7 @@ class InventoryAdjust extends CI_Controller {
 					$response = $this->adjust_model->get_adjust_express_list($post_data);
 					break;
 					
-				case 'delete_detail':
+				case 'delete_inventory_request':
 					$response = $this->adjust_model->delete_inventory_request($post_data);
 					break;
 

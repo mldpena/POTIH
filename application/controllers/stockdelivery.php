@@ -139,81 +139,87 @@ class StockDelivery extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'create_reference_number':
-				$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d h:i:s")));
-				break;
+		$response['error'] = '';
 
-			case 'get_stock_delivery_details':
-				$response = $this->delivery_model->get_stock_delivery_details();
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'create_reference_number':
+					$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d h:i:s")));
+					break;
 
-			case 'autocomplete_product':
-				$response = get_product_list_autocomplete($post_data);
-				break;
+				case 'get_stock_delivery_details':
+					$response = $this->delivery_model->get_stock_delivery_details();
+					break;
 
-			case 'insert_stock_delivery_detail':
-				$response = $this->delivery_model->insert_stock_delivery_detail($post_data);
-				break;
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
 
-			case 'update_stock_delivery_detail':
-				$response = $this->delivery_model->update_stock_delivery_detail($post_data);
-				break;
+				case 'insert_stock_delivery_detail':
+					$response = $this->delivery_model->insert_stock_delivery_detail($post_data);
+					break;
 
-			case 'delete_detail':
-				$response = $this->delivery_model->delete_stock_delivery_detail($post_data);
-				break;
+				case 'update_stock_delivery_detail':
+					$response = $this->delivery_model->update_stock_delivery_detail($post_data);
+					break;
 
-			case 'save_stock_delivery_head':
-				$response = $this->delivery_model->update_stock_delivery_head($post_data);
-				break;
+				case 'delete_detail':
+					$response = $this->delivery_model->delete_stock_delivery_detail($post_data);
+					break;
 
-			case 'search_stock_delivery_list':
-				$response = $this->delivery_model->search_stock_delivery_list($post_data);
-				break;
+				case 'save_stock_delivery_head':
+					$response = $this->delivery_model->update_stock_delivery_head($post_data);
+					break;
 
-			case 'delete_head':
-				$response = $this->delivery_model->delete_stock_delivery_head($post_data);
-				break;
+				case 'search_stock_delivery_list':
+					$response = $this->delivery_model->search_stock_delivery_list($post_data);
+					break;
 
-			case 'search_stock_receive_list':
-				$response = $this->delivery_model->search_receive_list($post_data, 1);
-				break;
+				case 'delete_head':
+					$response = $this->delivery_model->delete_stock_delivery_head($post_data);
+					break;
 
-			case 'get_stock_receive_details':
-				$response = $this->delivery_model->get_receive_details(1);
-				break;
+				case 'search_stock_receive_list':
+					$response = $this->delivery_model->search_receive_list($post_data, 1);
+					break;
 
-			case 'update_receive_detail':
-				$response = $this->delivery_model->update_receive_detail($post_data);
-				break;
+				case 'get_stock_receive_details':
+					$response = $this->delivery_model->get_receive_details(1);
+					break;
 
-			case 'search_customer_receive_list':
-				$response = $this->delivery_model->search_receive_list($post_data, 2);
-				break;
+				case 'update_receive_detail':
+					$response = $this->delivery_model->update_receive_detail($post_data);
+					break;
 
-			case 'get_customer_receive_details':
-				$response = $this->delivery_model->get_receive_details(2);
-				break;
-				
-			case 'check_product_inventory':
-				$response = check_current_inventory($post_data);
-				break;
+				case 'search_customer_receive_list':
+					$response = $this->delivery_model->search_receive_list($post_data, 2);
+					break;
 
-			case 'update_delivery_receive_head':
-				$response = $this->delivery_model->update_receive_head($post_data, 1);
-				break;
+				case 'get_customer_receive_details':
+					$response = $this->delivery_model->get_receive_details(2);
+					break;
+					
+				case 'check_product_inventory':
+					$response = check_current_inventory($post_data);
+					break;
 
-			case 'update_customer_receive_head':
-				$response = $this->delivery_model->update_receive_head($post_data, 2);
-				break;
+				case 'update_delivery_receive_head':
+					$response = $this->delivery_model->update_receive_head($post_data, 1);
+					break;
 
-			default:
-				$response['error'] = 'Invalid Arguments!';
-				break;
+				case 'update_customer_receive_head':
+					$response = $this->delivery_model->update_receive_head($post_data, 2);
+					break;
+
+				default:
+					$response['error'] = 'Invalid Arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 

@@ -13,6 +13,7 @@
 		const INCOMPLETE = 1;
 		const COMPLETE = 2;
 		const NO_RECEIVED = 3;
+		const EXCESS = 4;
 		const IMPORTED = 1;
 		const LOCAL = 2;
 	}

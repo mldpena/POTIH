@@ -46,6 +46,7 @@
 								<option value="1">Incomplete</option>
 								<option value="2">Complete</option>
 								<option value="3">No Received</option>
+								<option value="4">Excess</option>
 							</select>
 						</td>
 					</tr>
@@ -88,7 +89,7 @@
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete this purchase entry?
-				<div id="messagebox_2"></div>
+				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

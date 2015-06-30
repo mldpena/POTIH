@@ -4,7 +4,6 @@
 
         var text = str;
 
-
         var parts = text.split(' '),
             len = parts.length,
             i, words = [];
@@ -120,8 +119,14 @@
             if (data[i].minLength)
             {
                 if (data[i].value.length < data[i].minLength)
-                    error.push(data[i].fieldName + ' should at lease contain ' + data[i].minLength + ' characters!');
+                    error.push(data[i].fieldName + ' should at least contain ' + data[i].minLength + ' characters!');
             }
+
+            if (data[i].isNotEqual) 
+            {
+                if (data[i].value == data[i].isNotEqual.value)
+                    error.push(data[i].isNotEqual.errorMessage);
+            };
         };
 
         return error;

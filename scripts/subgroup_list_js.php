@@ -70,7 +70,7 @@
 	$('#code').binder('setRule','letter');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ deleteHeadName : 'delete_subgroup' 
+										{ deleteHeadName : 'delete_subgroup', 
 										  notFoundMessage : 'No sub group found!'});
 
     tableHelper.headContent.bindSearchEvent(getSearchFilter);

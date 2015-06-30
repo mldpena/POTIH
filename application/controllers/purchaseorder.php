@@ -91,49 +91,55 @@ class PurchaseOrder extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'create_reference_number':
-				$response = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
-				break;
+		$response['error'] = '';
 
-			case 'get_purchaseorder_details':
-				$response = $this->purchaseorder_model->get_purchaseorder_details();
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'create_reference_number':
+					$response = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+					break;
 
-			case 'autocomplete_product':
-				$response = get_product_list_autocomplete($post_data);
-				break;
+				case 'get_purchaseorder_details':
+					$response = $this->purchaseorder_model->get_purchaseorder_details();
+					break;
 
-			case 'insert_detail':
-				$response = $this->purchaseorder_model->insert_purchaseorder_detail($post_data);
-				break;
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
 
-			case 'update_detail':
-				$response = $this->purchaseorder_model->update_purchaseorder_detail($post_data);
-				break;
+				case 'insert_detail':
+					$response = $this->purchaseorder_model->insert_purchaseorder_detail($post_data);
+					break;
 
-			case 'delete_detail':
-				$response = $this->purchaseorder_model->delete_purchaseorder_detail($post_data);
-				break;
+				case 'update_detail':
+					$response = $this->purchaseorder_model->update_purchaseorder_detail($post_data);
+					break;
 
-			case 'save_purchaseorder_head':
-				$response = $this->purchaseorder_model->update_purchaseorder_head($post_data);
-				break;
+				case 'delete_detail':
+					$response = $this->purchaseorder_model->delete_purchaseorder_detail($post_data);
+					break;
 
-			case 'search_purchaseorder_list':
-				$response = $this->purchaseorder_model->search_purchaseorder_list($post_data);
-				break;
+				case 'save_purchaseorder_head':
+					$response = $this->purchaseorder_model->update_purchaseorder_head($post_data);
+					break;
 
-			case 'delete_head':
-				$response = $this->purchaseorder_model->delete_purchaseorder_head($post_data);
-				break;
+				case 'search_purchaseorder_list':
+					$response = $this->purchaseorder_model->search_purchaseorder_list($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid Arguments!';
-				break;
+				case 'delete_head':
+					$response = $this->purchaseorder_model->delete_purchaseorder_head($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid Arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 

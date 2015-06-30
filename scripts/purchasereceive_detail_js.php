@@ -1,20 +1,8 @@
 <script type="text/javascript">
-	/**
-	 * Initialization of global variables
-	 * @flag {Number} - To prevent spam request
-	 * @global_detail_id {Number} - Holder of receive detail id for delete modal
-	 * @global_row_index {Number} - Holder of receive detail row index for delete modal
-	 * @token {String} - Token for CSRF Protection
-	 */
-	
 	var flag = 0;
 	var global_detail_id = 0;
 	var global_row_index = 0;
 	var token = '<?= $token ?>';
-
-	/**
-	 * Initialization for JS table details
-	 */
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -88,7 +76,7 @@
    	
    	var spnqty = document.createElement('span');
 	colarray['qty'] = { 
-        header_title: "Qty",
+        header_title: "Qty Ordered",
         edit: [spnqty],
         disp: [spnqty],
         td_class: "tablerow column_click column_hover tdqty"
@@ -103,14 +91,23 @@
     };
 
     var spnqtyremaining = document.createElement('span');
-    spnqtyremaining.setAttribute('style','display:none');
 	colarray['qtyremaining'] = { 
         header_title: "Qty Remaining",
         edit: [spnqtyremaining],
         disp: [spnqtyremaining],
-        td_class: "tablerow tdid column_click column_hover tdqtyremaining",
-        headertd_class : "tdheader_id"
+        td_class: "tablerow column_click column_hover tdqtyremaining"
     };
+
+    var chkreceiveall = document.createElement('input');
+    var spnreceive = document.createElement('span');
+	chkreceiveall.className = "chkreceiveall";
+	chkreceiveall.type = "checkbox";
+	colarray['receiveall'] = { 
+		header_title: "",
+		edit: [chkreceiveall],
+		disp: [spnreceive],
+		td_class: "tablerow tdreceiveall",
+	};
 
     var spnqtyrecv = document.createElement('span');
     var txtqtyrecv = document.createElement('input');
@@ -165,7 +162,7 @@
 
     var chkdetails = document.createElement('input');
     chkdetails.setAttribute('type','checkbox');
-    chkdetails.setAttribute('class','form-control chkdetails');
+    chkdetails.setAttribute('class','chkdetails');
 	colarray_po_list['check'] = { 
         header_title: "",
         edit: [chkdetails],
@@ -200,6 +197,8 @@
 	var myjstbl;
 	var myjstbl_po_list;
 
+	$('.txtqtyrecv').binder('setRule','numeric');
+
 	var root = document.getElementById("tbl");
 	myjstbl = new my_table(tab, colarray, {	ispaging : false, 
 											tdhighlight_when_hover : "tablerow",
@@ -219,15 +218,12 @@
 	root_po_list.appendChild(myjstbl_po_list.tab);
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'poreceive' });
+										{ baseURL : "<?= base_url() ?>", controller : 'poreceive', isAddRow : false });
 
 	var poListTableHelper = new TableHelper ({ tableObject : myjstbl_po_list, tableArray : colarray_po_list });
 
-	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit);
-	tableHelper.detailContent.bindSaveTransactionEvent(getHeadDetailsBeforeSubmit);
-	/**
-	 * Load Purchase Receive Data, Insert data in PO List table and insert purchase receive details in details table
-	 */
+	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit,false,removeCheckBoxValueAfterSubmit);
+	tableHelper.detailContent.bindEditEvents();
 	
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -246,7 +242,7 @@
 			success: function(response) {
 				clear_message_box();
 
-				if (response.head_error != '') 
+				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
 				{
@@ -273,11 +269,6 @@
 	}
 	else
 		$('input, textarea').attr('disabled','disabled');
-
-	/**
-	 * Bind event for PO List checkbox click. If checked, get the corresponding details of po together if it 
-	 * has purchase received, if unchecked, it will delete all the details of the corresponding PO.
-	 */
 	
 	$('.chkdetails').live('click',function(){
 		if (flag == 1) 
@@ -311,9 +302,9 @@
 					else
 					{
 						myjstbl.insert_multiplerow_with_value(1,response.detail);
-						checkReceivedDetails();
 						tableHelper.contentProvider.recomputeTotalQuantity();
 						tableHelper.contentHelper.showDescriptionFields();
+						checkReceivedDetails();
 					}
 
 					$(self).removeAttr('disabled');
@@ -339,6 +330,16 @@
 		}
 	});
 	
+	$('.chkreceiveall').live('click',function(){
+		var rowIndex = $(this).parent().parent().index();
+		var totalQuantity = 0;
+
+		if ($(this).is(':checked')) 
+			 totalQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qty'));
+		
+		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[totalQuantity]);
+	});
+
 	$('.tddelete').live('click',function(){
 		global_rowIndex 	= $(this).parent().index();
 		global_detail_id 	= tableHelper.contentProvider.getData(global_rowIndex,'id');
@@ -386,9 +387,53 @@
 		});
 	});
 
-	/**
-	 * Bind event for clicking update icon. Directly insert to database.
-	 */
+	$('#save').click(function(){
+        if (flag == 1)
+            return;
+
+        if (myjstbl.get_row_count() - 1 == 0) 
+        {
+            alert('Please receive at least one product!');
+            return;
+        }
+
+        for (var i = 1; i < myjstbl.get_row_count() - 1; i++) 
+        {
+            var updateImage = tableHelper.contentProvider.getElement(i,'colupdate');
+            if ($(updateImage).hasClass('imgupdate')) 
+            {
+                alert('Please finalize all rows!');
+                return;
+            }
+        };
+
+        var date_val	= $('#date').val();
+		var memo_val 	= $('#memo').val();
+
+		var arr = 	{ 
+						fnc 	 	: 'save_purchase_receive_head', 
+						entry_date 	: date_val,
+						memo 		: memo_val
+					};
+
+        flag = 1;
+
+        $.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(response) {
+                clear_message_box();
+
+                if (response.error != '') 
+                    build_message_box('messagebox_1',response.error,'danger');
+                else
+                    window.location = "<?= base_url() ?>poreceive/list";
+
+                flag = 0;
+            }       
+        });
+    });
 
 	function getRowDetailsBeforeSubmit(element)
 	{
@@ -400,9 +445,23 @@
 		var productId 			= tableHelper.contentProvider.getData(rowIndex,'product',1);
 		var actionFunction 		= receiveDetailId == 0 ? 'insert_receive_detail' : 'update_receive_detail';
 
+		var errorList = $.dataValidation(	[{
+	                                            value : receivedQty,
+	                                            fieldName : 'Quantity',
+	                                            required : true,
+	                                            rules : 'numeric',
+	                                            isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+                                        	}]);
+
+		if (errorList.length > 0) {
+            clear_message_box();
+            build_message_box('messagebox_1',build_error_message(errorList),'danger');
+            return false;
+        };
+
 		var arr = 	{ 
 						fnc : actionFunction,
-						receive_detail_id : receiveDetailId,
+						detail_id : receiveDetailId,
 						purchase_detail_id : purchaseDetailId,
 						quantity : receivedQty,
 						product_id : productId
@@ -410,25 +469,11 @@
 
 		return arr;
 	}
-	
-	function getHeadDetailsBeforeSubmit()
+
+	function removeCheckBoxValueAfterSubmit(rowIndex, response)
 	{
-		var date_val	= $('#date').val();
-		var memo_val 	= $('#memo').val();
-
-		var arr = 	{ 
-						fnc 	 	: 'save_purchase_receive_head', 
-						entry_date 	: date_val,
-						memo 		: memo_val
-					};
-
-		return arr;
+		tableHelper.contentProvider.setData(rowIndex,'receiveall',['']);
 	}
-
-	/**
-	 * Function for checking if rows have already been inserted to the database. If not inserted, 
-	 * force the row in edit mode
-	 */
 
 	function checkReceivedDetails()
 	{

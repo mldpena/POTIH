@@ -102,6 +102,7 @@
 	root.appendChild(myjstbl.mypage.pagingtable);
 
 	$('#tbl').hide();
+	$('#new_inventory').binder('setRule','numeric');
 
 	$('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
@@ -162,6 +163,19 @@
 		var new_inventory_val 	= $('#new_inventory').val();
 		var old_inventory_val 	= $('#old_inventory').html();
 		var memo_val 			= $('#memo').val();
+
+		var errorList = $.dataValidation([{
+	                                        value : new_inventory_val,
+	                                        fieldName : 'New Inventory',
+	                                        required : true,
+	                                        rules : 'numeric'
+                                         }]);
+
+		if (errorList.length > 0) {
+            clear_message_box();
+            build_message_box('messagebox_2',build_error_message(errorList),'danger');
+            return;
+        };
 
 		var arr = 	{ 
 						fnc 	 : fnc_val, 

@@ -95,7 +95,9 @@
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'delreceive' });
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'delreceive',
+										  noFoundMessage : 'No stock received found!' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter } );
 

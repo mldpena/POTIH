@@ -11,6 +11,8 @@ class Product extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->helper('cookie');
+		$this->load->library('encrypt');
 	}
 
 	/**
@@ -36,7 +38,7 @@ class Product extends CI_Controller {
 		{
 			case 'list':
 				$page = 'product_list';
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
+				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
 				break;
 			
 			case 'warning':

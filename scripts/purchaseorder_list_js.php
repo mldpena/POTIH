@@ -42,6 +42,15 @@
         td_class: "tablerow column_click column_hover tdforbranch"
     };
 
+    var spntype = document.createElement('span');
+	colarray['type'] = { 
+        header_title: "Type",
+        edit: [spntype],
+        disp: [spntype],
+        td_class: "tablerow column_click column_hover tdtype"
+    };
+
+
 	var spnreferencenumber = document.createElement('span');
 	colarray['referencenumber'] = { 
         header_title: "Reference #",
@@ -52,7 +61,7 @@
    	
    	var spndate = document.createElement('span');
 	colarray['date'] = { 
-        header_title: "Entry Date",
+        header_title: "PO Date",
         edit: [spndate],
         disp: [spndate],
         td_class: "tablerow column_click column_hover tddate"
@@ -129,7 +138,9 @@
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'purchase' });
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'purchase',
+										  notFoundMessage : 'No purchase order entry found!' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
@@ -166,6 +177,7 @@
 
 	function actionAfterDelete()
 	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
 		build_message_box('messagebox_1','Purchase Order entry successfully deleted!','success');
 	}
 

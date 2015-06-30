@@ -6,6 +6,14 @@ class PurchaseReceive_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert purchase receive detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update purchase receive detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update purchase receive head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get purchase receive head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get purchase details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete purchase receive detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete purchase receive head!',
+									'PURCHASE_NOT_FOUND' => 'No purchase');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -30,7 +38,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$response 		= array();
 		$po_head_ids 	= array();
 
-		$response['head_error'] 	= '';
+		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 		$response['po_list_error'] 	= ''; 
 
@@ -41,7 +49,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_receive_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get purchase receive head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -76,12 +84,12 @@ class PurchaseReceive_Model extends CI_Model {
 							    PH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".PURCHASE_RECEIVE_CONST::USED."
 							        AND PH.`for_branchid` = ?
 							GROUP BY PH.`id`
-							HAVING total_remaining_qty > 0";
+							HAVING total_remaining_qty > 0 OR is_received = 1";
 
 		$result_po_list = $this->db->query($query_po_list,$query_po_list_data);
 
 		if ($result_po_list->num_rows() == 0) 
-			$response['po_list_error'] = 'No purchase found!';
+			throw new Exception($this->_error_message['PURCHASE_NOT_FOUND']);
 		else
 		{
 			$i = 0;
@@ -152,7 +160,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() == 0) 
-			$response['error'] = 'No purchase detail found!';
+			throw new Exception($this->_error_message['PURCHASE_NOT_FOUND']);
 		else
 		{
 			$i = 0;
@@ -168,6 +176,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining);
+				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($row->qty_receive);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -203,7 +212,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to save purchase receive detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -233,7 +242,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update purchase receive head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}
@@ -271,7 +280,7 @@ class PurchaseReceive_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT(PRH.`reference_number`,' ',PRH.`memo`) LIKE ?";
+			$conditions .= " AND CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -339,7 +348,7 @@ class PurchaseReceive_Model extends CI_Model {
 	{
 		extract($param);
 
-		$purchase_receive_id = $this->encrypt->decode($purchase_receive_id);
+		$purchase_receive_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';
@@ -355,7 +364,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete purchase receive head!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 
 		return $response;
 	}
@@ -374,7 +383,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$purchase_receive_detail);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete purchase receive detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 
@@ -387,7 +396,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$receive_detail_id 	= $this->encrypt->decode($receive_detail_id);
+		$receive_detail_id 	= $this->encrypt->decode($detail_id);
 		$purchase_detail_id = $this->encrypt->decode($purchase_detail_id);
 		$query_data 		= array($quantity,$product_id,$purchase_detail_id,$receive_detail_id);
 
@@ -401,7 +410,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update purchase receive detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}

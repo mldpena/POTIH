@@ -36,7 +36,7 @@
 
 	var spnreferencenumber = document.createElement('span');
 	colarray['referencenumber'] = { 
-        header_title: "Reference #",
+        header_title: "Doc #",
         edit: [spnreferencenumber],
         disp: [spnreferencenumber],
         td_class: "tablerow column_click column_hover tdreference"

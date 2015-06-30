@@ -68,6 +68,13 @@
                     };
                 });
 
+                var spntotalinv = document.createElement('span');
+                colarray['totalinv'] = { 
+                    header_title: "Total Inv.",
+                    edit: [spntotalinv],
+                    disp: [spntotalinv],
+                    td_class: "tablerow column_click column_hover tdtotalinv"
+                };
 
                 var root = document.getElementById("tbl");
                 myjstbl = new my_table(tab, colarray, { ispaging : true, 

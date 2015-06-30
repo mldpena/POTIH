@@ -95,7 +95,7 @@
 
     var spnnewinv = document.createElement('span');
 	colarray['newinv'] = { 
-        header_title: "Req Inv",
+        header_title: "Requested Inv",
         edit: [spnnewinv],
         disp: [spnnewinv],
         td_class: "tablerow column_click column_hover tdnewinv"

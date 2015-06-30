@@ -6,6 +6,13 @@ class PurchaseReturn_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert purchase return detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update purchase return detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update purchase return head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get purchase return head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get purchase return details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete purchase return detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete purchase return head!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -31,7 +38,7 @@ class PurchaseReturn_Model extends CI_Model {
 
 		$branch_id 		= 0;
 
-		$response['head_error'] 	= '';
+		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('PR',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
@@ -44,7 +51,7 @@ class PurchaseReturn_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_purchase_return_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get purchase return head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -63,7 +70,7 @@ class PurchaseReturn_Model extends CI_Model {
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_RETURN_CONST::ACTIVE."
 					WHERE PD.`headid` = ?";
 
-		$result_detail = $this->db->query($query_detail,$_purchase_return_head_id);
+		$result_detail = $this->db->query($query_detail,$this->_purchase_return_head_id);
 
 		if ($result_detail->num_rows() == 0) 
 			$response['detail_error'] = 'No purchase return details found!';
@@ -112,7 +119,7 @@ class PurchaseReturn_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert purchase return detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -140,7 +147,7 @@ class PurchaseReturn_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update purchase return detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}
@@ -159,7 +166,7 @@ class PurchaseReturn_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$purchase_detail_id);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete purchase return detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 
@@ -188,7 +195,7 @@ class PurchaseReturn_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update purchase return head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}
@@ -307,7 +314,7 @@ class PurchaseReturn_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete purchase return head!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 
 		return $response;
 	}

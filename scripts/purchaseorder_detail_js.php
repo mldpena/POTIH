@@ -133,7 +133,7 @@
 			success: function(response) {
 				clear_message_box();
 
-				if (response.head_error != '') 
+				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
 				{
@@ -154,8 +154,8 @@
 
 				if (response.is_editable == false)
 				{
-					$('input, textarea, button, select').not('#print').attr('disabled','disabled');
-					$('.tdupdate, .tddelete').hide();
+					$('input, textarea, select').not('#print').attr('disabled','disabled');
+					$('.tdupdate, .tddelete, #save').hide();
 				}	
 				else
 					tableHelper.contentProvider.addRow();

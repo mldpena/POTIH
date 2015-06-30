@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>return/list">Returned Products List</a></li>
+			<li class="active"><a href="<?= base_url() ?>return/list">Customer Return List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Returned Products List</div>
+		<div class="form-header">Customer Return List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>
@@ -35,7 +35,7 @@
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_new">Create New Return Entry</button>
+				<button class="btn btn-primary" id="create_new">Create New Customer Return Entry</button>
 			</div>
 			<div class="max-row">
 				<div id="messagebox_1"></div>
@@ -54,11 +54,11 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Return Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Customer Return Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this return entry?
-				<div id="messagebox_2"></div>
+				Are you sure you want to delete this customer return entry?
+				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

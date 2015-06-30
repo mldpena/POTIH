@@ -88,7 +88,9 @@
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'custreceive' });
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'custreceive',
+										  noFoundMessage : 'No customer received found!' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter } );
 

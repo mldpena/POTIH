@@ -105,7 +105,9 @@
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'return' });
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'return',
+										  noFoundMessage: 'No customer return entry found!' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
@@ -136,6 +138,7 @@
 
 	function actionAfterDelete()
 	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
 		build_message_box('messagebox_1','Customer Return entry successfully deleted!','success');
 	}
 </script>

@@ -90,49 +90,53 @@ class PurchaseReceive extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'create_reference_number':
-				$response = get_next_number('purchase_receive_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'create_reference_number':
+					$response = get_next_number('purchase_receive_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+					break;
 
-			case 'get_purchase_receive_details':
-				$response = $this->purchasereceive_model->get_purchase_receive_details();
-				break;
+				case 'get_purchase_receive_details':
+					$response = $this->purchasereceive_model->get_purchase_receive_details();
+					break;
 
-			case 'get_po_details':
-				$response = $this->purchasereceive_model->get_po_details($post_data);
-				break;
+				case 'get_po_details':
+					$response = $this->purchasereceive_model->get_po_details($post_data);
+					break;
 
-			case 'insert_receive_detail':
-				$response = $this->purchasereceive_model->insert_receive_detail($post_data);
-				break;
+				case 'insert_receive_detail':
+					$response = $this->purchasereceive_model->insert_receive_detail($post_data);
+					break;
 
-			case 'save_purchase_receive_head':
-				$response = $this->purchasereceive_model->update_receive_head($post_data);
-				break;
+				case 'save_purchase_receive_head':
+					$response = $this->purchasereceive_model->update_receive_head($post_data);
+					break;
 
-			case 'search_purchase_receive_list':
-				$response = $this->purchasereceive_model->search_purchase_receive_list($post_data);
-				break;
+				case 'search_purchase_receive_list':
+					$response = $this->purchasereceive_model->search_purchase_receive_list($post_data);
+					break;
 
-			case 'delete_head':
-				$response = $this->purchasereceive_model->delete_purchase_receive_head($post_data);
-				break;
+				case 'delete_head':
+					$response = $this->purchasereceive_model->delete_purchase_receive_head($post_data);
+					break;
 
-			case 'delete_purchase_receive_detail':
-				$response = $this->purchasereceive_model->delete_purchase_receive_detail($post_data);
-				break;
+				case 'delete_purchase_receive_detail':
+					$response = $this->purchasereceive_model->delete_purchase_receive_detail($post_data);
+					break;
 
-			case 'update_receive_detail':
-				$response = $this->purchasereceive_model->update_purchase_receive_detail($post_data);
-				break;
+				case 'update_receive_detail':
+					$response = $this->purchasereceive_model->update_purchase_receive_detail($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 }

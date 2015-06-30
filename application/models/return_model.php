@@ -6,6 +6,13 @@ class Return_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert customer return detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update customer return detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update customer return head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get customer return head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get customer return details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete customer return detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete customer return head!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -29,7 +36,7 @@ class Return_Model extends CI_Model {
 		$response 		= array();
 		$branch_id 		= 0;
 
-		$response['head_error'] 	= '';
+		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number',
@@ -40,7 +47,7 @@ class Return_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_return_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get return head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -109,7 +116,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert return detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -137,7 +144,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update return detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}
@@ -156,7 +163,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$return_detail_id);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete return detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 
@@ -186,7 +193,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update return head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}
@@ -299,7 +306,7 @@ class Return_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete return head!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 		
 		return $response;
 	}

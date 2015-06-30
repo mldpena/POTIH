@@ -6,6 +6,14 @@ class Delivery_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert delivery detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update delivery detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update delivery head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get delivery head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get delivery details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete delivery detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete delivery head!',
+									'HAS_RECEIVED' => 'Stock Delivery can only be deleted if delivery status is no received!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -30,7 +38,7 @@ class Delivery_Model extends CI_Model {
 		$response 		= array();
 		$branch_id 		= 0;
 
-		$response['head_error'] 	= '';
+		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
@@ -43,7 +51,7 @@ class Delivery_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_delivery_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get stock delivery head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -119,7 +127,7 @@ class Delivery_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert stock delivery detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -148,7 +156,7 @@ class Delivery_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update stock delivery detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}
@@ -167,7 +175,7 @@ class Delivery_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$delivery_detail_id);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete stock delivery detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 
@@ -219,7 +227,7 @@ class Delivery_Model extends CI_Model {
 		$result = $this->sql->execute_transaction($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update stock delivery head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}
@@ -377,6 +385,16 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
+		$query 	= "SELECT SUM(`recv_quantity`) AS 'total_received' FROM stock_delivery_detail WHERE `headid` = ?";
+		$result = $this->db->query($query,$delivery_head_id);
+		$row 	= $result->row();
+
+		if ($row->total_received > 0) {
+			throw new Exception($this->_error_message['HAS_RECEIVED']);
+		}
+
+		$result->free_result();
+
 		$query_data = array($this->_current_date,$this->_current_user,$delivery_head_id);
 		$query 	= "UPDATE `stock_delivery_head` 
 					SET 
@@ -388,7 +406,7 @@ class Delivery_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete stock delivery head!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 
 		return $response;
 	}
@@ -507,7 +525,7 @@ class Delivery_Model extends CI_Model {
 		$response 		= array();
 		$branch_id 		= 0;
 
-		$response['head_error'] 	= '';
+		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
 		$receive_date_column 	= "";
@@ -533,7 +551,7 @@ class Delivery_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_delivery_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get receive head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -574,6 +592,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
+				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($row->recv_quantity);
 				$response['detail'][$i][] = array('');
 				$i++;
@@ -604,7 +623,7 @@ class Delivery_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update stock delivery detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}
@@ -626,7 +645,7 @@ class Delivery_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update stock delivery head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}

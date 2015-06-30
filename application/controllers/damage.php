@@ -11,7 +11,6 @@ class Damage extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
-		$this->load->model('damage_model');
 	}
 
 	/**
@@ -81,53 +80,61 @@ class Damage extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->model('damage_model');
+		
 		$post_data 	= array();
 		$fnc 		= '';
 
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'create_reference_number':
-				$response = get_next_number('damage_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
-				break;
+		$response['error'] = '';
 
-			case 'get_damage_details':
-				$response = $this->damage_model->get_damage_details();
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'create_reference_number':
+					$response = get_next_number('damage_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+					break;
 
-			case 'autocomplete_product':
-				$response = get_product_list_autocomplete($post_data);
-				break;
+				case 'get_damage_details':
+					$response = $this->damage_model->get_damage_details();
+					break;
 
-			case 'insert_detail':
-				$response = $this->damage_model->insert_damage_detail($post_data);
-				break;
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
 
-			case 'update_detail':
-				$response = $this->damage_model->update_damage_detail($post_data);
-				break;
+				case 'insert_detail':
+					$response = $this->damage_model->insert_damage_detail($post_data);
+					break;
 
-			case 'delete_detail':
-				$response = $this->damage_model->delete_damage_detail($post_data);
-				break;
+				case 'update_detail':
+					$response = $this->damage_model->update_damage_detail($post_data);
+					break;
 
-			case 'save_damage_head':
-				$response = $this->damage_model->update_damage_head($post_data);
-				break;
+				case 'delete_detail':
+					$response = $this->damage_model->delete_damage_detail($post_data);
+					break;
 
-			case 'search_damage_list':
-				$response = $this->damage_model->search_damage_list($post_data);
-				break;
+				case 'save_damage_head':
+					$response = $this->damage_model->update_damage_head($post_data);
+					break;
 
-			case 'delete_head':
-				$response = $this->damage_model->delete_damage_head($post_data);
-				break;
+				case 'search_damage_list':
+					$response = $this->damage_model->search_damage_list($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				case 'delete_head':
+					$response = $this->damage_model->delete_damage_head($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
 
 		echo json_encode($response);

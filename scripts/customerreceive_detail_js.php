@@ -68,9 +68,20 @@
         td_class: "tablerow column_click column_hover tdmemo"
     };
 
+    var chkreceiveall = document.createElement('input');
+    var spnreceive = document.createElement('span');
+	chkreceiveall.className = "chkreceiveall";
+	chkreceiveall.type = "checkbox";
+	colarray['receiveall'] = { 
+		header_title: "",
+		edit: [chkreceiveall],
+		disp: [spnreceive],
+		td_class: "tablerow tdreceiveall",
+	};
+
     var spnreceiveqty = document.createElement('span');
     var txtreceiveqty = document.createElement('input');
-    txtreceiveqty.setAttribute('class','form-control');
+    txtreceiveqty.setAttribute('class','receiveqty form-control');
 	colarray['receiveqty'] = { 
         header_title: "Received Qty",
         edit: [txtreceiveqty],
@@ -101,12 +112,14 @@
 	root.appendChild(myjstbl.tab);
 
 	$('#tbl').hide();
+	$('.receiveqty').binder('setRule','numeric');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", controller : 'custreceive' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
-												updateEventsBeforeCallback : getRowDetailsBeforeSubmit } );
+												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+												updateEventsAfterCallback : removeCheckBoxValueAfterSubmit } );
 
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -125,7 +138,7 @@
 			success: function(response) {
 				clear_message_box();
 
-				if (response.head_error != '') 
+				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
 				{
@@ -138,7 +151,7 @@
 						$('#date').val(response.entry_date);	
 				}
 				
-				$('input, textarea, button, select').not('#print, #receive_date, #save').attr('disabled','disabled');
+				$('input, textarea, select').not('#print, #receive_date, #save').attr('disabled','disabled');
 
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
@@ -160,6 +173,15 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
+	$('.chkreceiveall').live('click',function(){
+		var rowIndex = $(this).parent().parent().index();
+		var totalQuantity = 0;
+
+		if ($(this).is(':checked')) 
+			 totalQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qty'));
+		
+		tableHelper.contentProvider.setData(rowIndex,'receiveqty',[totalQuantity]);
+	});
 
 	function getHeadDetailsBeforeSubmit()
 	{
@@ -179,6 +201,20 @@
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var receivedQty 	= tableHelper.contentProvider.getData(rowIndex,'receiveqty');
 
+		var errorList = $.dataValidation([{
+                                            value : receivedQty,
+                                            fieldName : 'Received Quantity',
+                                            required : true,
+                                            rules : 'numeric',
+                                            isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+                                        }]);
+
+		if (errorList.length > 0) {
+            clear_message_box();
+            build_message_box('messagebox_1',build_error_message(errorList),'danger');
+            return false;
+        };
+
 		var arr = 	{ 
 						fnc 	 	: 'update_receive_detail', 
 			     		detail_id 	: rowId,
@@ -186,6 +222,11 @@
 					};
 
 		return arr;
+	}
+
+	function removeCheckBoxValueAfterSubmit(rowIndex, response)
+	{
+		tableHelper.contentProvider.setData(rowIndex,'receiveall',['']);
 	}
 
 </script>

@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>delivery/rlist">Customer Receive List</a></li>
+			<li class="active"><a href="<?= base_url() ?>custreceive/list">Customer Receive List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

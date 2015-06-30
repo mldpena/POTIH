@@ -44,16 +44,16 @@ var TableHelper = function(tableOptions,options) {
         deleteHeadName : 'delete_head',
         totalQtySpan : 'total_qty',
         productClass : 'txtproduct',
+        nonStackClass : 'nonStackDescription',
+        modalFieldClass : 'modal-fields',
         createButtonId : 'create_new',
         tableID : 'tbl',
         loadingImgID : 'loadingimg',
         searchButtonID : 'search',
         searchTextID : 'search_string',
         columnClass : 'column_click',
-        nonStackClass : 'nonStackDescription',
-        modalFieldClass : 'modal-fields',
-        isUsingPage : false,
-        notFoundMessage : 'No entry found!'
+        notFoundMessage : 'No entry found!',
+        isAddRow : true
     };
 
     if (options) {
@@ -64,6 +64,9 @@ var TableHelper = function(tableOptions,options) {
         this._jsTable = tableOptions.tableObject;
         this._jsTableArray = tableOptions.tableArray;
     };
+
+    //Bind rules to columns
+    $('.' + this._settings.quantityClass).binder('setRule','numeric');
 
     var self = this;
 
@@ -98,7 +101,7 @@ var TableHelper = function(tableOptions,options) {
 
         getElement : function(rowIndex,arrayColumn)
         {
-            return self._jsTable.getelem_by_rowindex_tdclass(rowIndex,self._jsTableArray[arrayColumn].td_class);
+            return self._jsTable.getelem_by_rowindex_tdclass(rowIndex,self._jsTableArray[arrayColumn].td_class)[0];
         },
 
         recomputeTotalQuantity : function()
@@ -165,6 +168,12 @@ var TableHelper = function(tableOptions,options) {
                 {
                     clear_message_box();
                     $('#' + self._settings.deleteModalID).modal('show');
+                }
+                else
+                {
+                    self.contentProvider.setData(self.globalRowIndex,'product',['',0,'','']);
+                    self.contentProvider.setData(self.globalRowIndex,'qty',['']);
+                    self.contentProvider.setData(self.globalRowIndex,'memo',['']);
                 }
             });
 
@@ -266,7 +275,6 @@ var TableHelper = function(tableOptions,options) {
                 if (self._flag == 1)
                     return;
 
-
                 var arr = onBeforeSubmit();
 
                 var rowsToSubtract = 0;
@@ -278,12 +286,21 @@ var TableHelper = function(tableOptions,options) {
                 else
                     rowsToSubtract = 1;
 
-
                 if (self._jsTable.get_row_count() - rowsToSubtract == 0) 
                 {
                     alert('Please encode at least one product!');
                     return;
                 }
+
+                for (var i = 1; i < self._jsTable.get_row_count() - 1; i++) 
+                {
+                    var updateImage = self.contentProvider.getElement(i,'colupdate');
+                    if ($(updateImage).hasClass('imgupdate')) 
+                    {
+                        alert('Please finalize all rows!');
+                        return;
+                    }
+                };
 
                 self._flag = 1;
 
@@ -452,21 +469,44 @@ var TableHelper = function(tableOptions,options) {
             if (self._flag == 1) 
                 return;
 
-            self._flag = 1;
-
             var rowIndex = $(element).parent().parent().index();
 
-            if (onBeforeSubmit) 
+            if (onBeforeSubmit)
+            { 
                 var arr = onBeforeSubmit(element);
+
+                if (!arr) 
+                    return;
+            }
             else
             {
-                var rowIndex        = $(element).parent().parent().index();
                 var productId       = self.contentProvider.getData(rowIndex,'product',1);
                 var qty             = self.contentProvider.getData(rowIndex,'qty');
                 var memo            = self.contentProvider.getData(rowIndex,'memo');
                 var rowUniqueId     = self.contentProvider.getData(rowIndex,'id');
                 var nonStackDescription  = self.contentProvider.getData(rowIndex,'product',3);
                 var actionFunction  = rowUniqueId != 0 ? self._settings.updateDetailName : self._settings.insertDetailName;
+
+                var errorList = $.dataValidation([  {   
+                                                        value : productId,
+                                                        fieldName : 'Product',
+                                                        required : true,
+                                                        isNotEqual : { value : 0, errorMessage : 'Please select a valid product!'}
+                                                    },
+                                                    {
+                                                        value : qty,
+                                                        fieldName : 'Quantity',
+                                                        required : true,
+                                                        rules : 'numeric',
+                                                        isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+                                                    }
+                                                    ]);
+
+                if (errorList.length > 0) {
+                    clear_message_box();
+                    build_message_box('messagebox_1',build_error_message(errorList),'danger');
+                    return;
+                };
 
                 var arr =   { 
                                 fnc         : actionFunction, 
@@ -477,6 +517,8 @@ var TableHelper = function(tableOptions,options) {
                                 description : nonStackDescription
                             };
             }
+
+            self._flag = 1;
 
             $.ajax({
                 type: "POST",
@@ -495,7 +537,8 @@ var TableHelper = function(tableOptions,options) {
                         
                         if (arr.detail_id == 0) {
                             self.contentProvider.setData(rowIndex,'id',[response.id]);
-                            self.contentProvider.addRow(self._settings.productClass);
+                            if (self._settings.isAddRow)
+                                self.contentProvider.addRow(self._settings.productClass);
                         }
 
                         if (onAfterSubmit)
@@ -518,7 +561,7 @@ var TableHelper = function(tableOptions,options) {
 
             $('#' + self._settings.loadingImgID).show();
             $('#' + self._settings.searchTextID).val('');
-            //$('input[type=text]').val('');
+            $('input[type=text]').val('');
 
             $.ajax({
                 type: "POST",
@@ -569,16 +612,42 @@ var TableHelper = function(tableOptions,options) {
 
         checkCurrentInventory : function(element,onBeforeSubmit,onAfterSubmit)
         {
+            if (self._flag == 1) 
+                return;
+
             var continueTransaction = true;
             var rowIndex    = $(element).parent().parent().index();
             var productId   = tableHelper.contentProvider.getData(rowIndex,'product',1);
             var enteredQty  = tableHelper.contentProvider.getData(rowIndex,'qty');
+
+            var errorList = $.dataValidation([  {   
+                                                    value : productId,
+                                                    fieldName : 'Product',
+                                                    required : true,
+                                                    isNotEqual : { value : 0, errorMessage : 'Please select a valid product!'}
+                                                },
+                                                {
+                                                    value : enteredQty,
+                                                    fieldName : 'Quantity',
+                                                    required : true,
+                                                    rules : 'numeric',
+                                                    isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+                                                }
+                                                ]);
+
+            if (errorList.length > 0) {
+                clear_message_box();
+                build_message_box('messagebox_1',build_error_message(errorList),'danger');
+                return;
+            };
 
             var arr =   {
                             fnc : 'check_product_inventory',
                             product_id : productId,
                             qty : enteredQty
                         }
+
+            self._flag = 1;
 
             $.ajax({
                 type: "POST",
@@ -588,9 +657,11 @@ var TableHelper = function(tableOptions,options) {
                     clear_message_box();
 
                     if (response.is_insufficient != InventoryState.Sufficient) {
-                        var confirmMessage = (response.is_insufficient == InventoryState.Minimum) ? 'Current inventory is ' + response.current_inventory + '.  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
+                        var confirmMessage = (response.is_insufficient == InventoryState.Minimum) ? 'Current inventory is (' + response.current_inventory + ' pcs).  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
                         continueTransaction = confirm(confirmMessage);
                     }
+
+                    self._flag = 0;
 
                     if (continueTransaction) 
                         self.contentHelper.sendUpdateRequest(element,onBeforeSubmit,onAfterSubmit);

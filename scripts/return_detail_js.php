@@ -122,9 +122,7 @@
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("setDate", new Date());
 
-		var arr = 	{ 
-						fnc : 'get_return_details'
-					};
+		var arr = 	{ fnc : 'get_return_details' };
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -132,7 +130,7 @@
 			success: function(response) {
 				clear_message_box();
 
-				if (response.head_error != '') 
+				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
 				{

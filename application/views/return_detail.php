@@ -2,12 +2,12 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>return/list">Return List</a></li>
-			<li class="active"><a href="<?= base_url() ?>return/detail">Return Detail</a></li>
+			<li class="active"><a href="<?= base_url() ?>return/list">Customer Return List</a></li>
+			<li class="active"><a href="<?= base_url() ?>return/view">Customer Return Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Return Detail</div>
+		<div class="form-header">Customer Return Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
 				<table>
@@ -62,7 +62,7 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Return Detail</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Customer Return Detail</h4>
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete this detail?

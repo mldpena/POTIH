@@ -12,7 +12,7 @@
 				<table>
 					<tr>
 						<td>Material Code:</td>
-						<td><input type="text" class="form-control" id="itemcode"></td>
+						<td><input type="text" class="form-control" id="itemcode" maxlength="8"></td>
 						<td>Type:</td>
 						<td>
 							<select class="form-control" id="type">
@@ -136,7 +136,7 @@
 			</div>
 			<div class="modal-body">
 				Are you sure you want to delete this product?
-				<div id="messagebox_2"></div>
+				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

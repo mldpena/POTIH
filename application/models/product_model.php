@@ -570,7 +570,9 @@ class Product_Model extends CI_Model {
 		if ($result_branch->num_rows() > 0) 
 		{
 			foreach ($result_branch->result() as $row) 
+			{
 				$branch_column .= ",(IF(PBI.`branch_id` = ".$row->id.", PBI.`inventory`, 0)) AS '".$row->name."'";		
+			}
 		}
 		
 		$result_branch->free_result();
@@ -643,10 +645,11 @@ class Product_Model extends CI_Model {
 						CASE 
 							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
 							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock' 
-						END AS 'type' 
+						END AS 'type'
 						$branch_column
+						,SUM(`inventory`) AS 'total_inventory'
 						FROM product AS P
-						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` IN($branch_list_id)
+						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id`
 						WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." 
 						$conditions
 						GROUP BY P.`id`

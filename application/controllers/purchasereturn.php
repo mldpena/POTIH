@@ -90,49 +90,55 @@ class PurchaseReturn extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'create_reference_number':
-				$response = get_next_number('purchase_return_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
-				break;
+		$response['error'] = '';
 
-			case 'get_purchasereturn_details':
-				$response = $this->purchasereturn_model->get_purchasereturn_details();
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'create_reference_number':
+					$response = get_next_number('purchase_return_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+					break;
 
-			case 'autocomplete_product':
-				$response = get_product_list_autocomplete($post_data);
-				break;
+				case 'get_purchasereturn_details':
+					$response = $this->purchasereturn_model->get_purchasereturn_details();
+					break;
 
-			case 'insert_detail':
-				$response = $this->purchasereturn_model->insert_purchasereturn_detail($post_data);
-				break;
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
 
-			case 'update_detail':
-				$response = $this->purchasereturn_model->update_purchasereturn_detail($post_data);
-				break;
+				case 'insert_detail':
+					$response = $this->purchasereturn_model->insert_purchasereturn_detail($post_data);
+					break;
 
-			case 'delete_detail':
-				$response = $this->purchasereturn_model->delete_purchasereturn_detail($post_data);
-				break;
+				case 'update_detail':
+					$response = $this->purchasereturn_model->update_purchasereturn_detail($post_data);
+					break;
 
-			case 'save_purchasereturn_head':
-				$response = $this->purchasereturn_model->update_purchasereturn_head($post_data);
-				break;
+				case 'delete_detail':
+					$response = $this->purchasereturn_model->delete_purchasereturn_detail($post_data);
+					break;
 
-			case 'search_purchasereturn_list':
-				$response = $this->purchasereturn_model->search_purchasereturn_list($post_data);
-				break;
+				case 'save_purchasereturn_head':
+					$response = $this->purchasereturn_model->update_purchasereturn_head($post_data);
+					break;
 
-			case 'delete_head':
-				$response = $this->purchasereturn_model->delete_purchasereturn_head($post_data);
-				break;
+				case 'search_purchasereturn_list':
+					$response = $this->purchasereturn_model->search_purchasereturn_list($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid Arguments!';
-				break;
+				case 'delete_head':
+					$response = $this->purchasereturn_model->delete_purchasereturn_head($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid Arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 

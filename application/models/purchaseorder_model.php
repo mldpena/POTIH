@@ -6,6 +6,14 @@ class PurchaseOrder_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert purchase detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update purchase detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update purchase head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get purchase head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get purchase details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete purchase detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete purchase head!',
+									'HAS_RECEIVED' => 'PO can only be deleted if purchase status is no received!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -28,11 +36,9 @@ class PurchaseOrder_Model extends CI_Model {
 	public function get_purchaseorder_details()
 	{
 		$response 		= array();
+		$response['error'] = '';
 
-		$branch_id 		= 0;
-
-		$response['head_error'] 	= '';
-		$response['detail_error'] 	= ''; 
+		$response['detail_error'] = '';
 
 		$query_head = "SELECT CONCAT('PO',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
 					PH.`memo`, PH.`branch_id`, PH.`supplier`, PH.`for_branchid`, SUM(PD.`recv_quantity`) AS 'total_qty', PH.`is_imported`
@@ -44,7 +50,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_purchase_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get purchase head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -55,8 +61,7 @@ class PurchaseOrder_Model extends CI_Model {
 			$response['supplier_name'] 		= $row->supplier;
 			$response['orderfor'] 			= $row->for_branchid;
 			$response['is_imported'] 		= $row->is_imported;
-			$response['is_editable'] 		= $row->total_qty == 0 ? TRUE : FALSE;
-			$branch_id = $row->for_branchid;
+			$response['is_editable'] 		= $row->total_qty == 0 ? (($row->branch_id == $this->_current_branch_id || $row->for_branchid == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
@@ -69,7 +74,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$result_detail = $this->db->query($query_detail,$this->_purchase_head_id);
 
 		if ($result_detail->num_rows() == 0) 
-			$response['detail_error'] = 'No purchase details found!';
+			$response['detail_error'] = $this->_error_message['UNABLE_TO_SELECT_DETAILS'];
 		else
 		{
 			$i = 0;
@@ -99,8 +104,8 @@ class PurchaseOrder_Model extends CI_Model {
 		extract($param);
 
 		$response = array();
-
 		$response['error'] = '';
+
 		$query_data 		= array($this->_purchase_head_id,$qty,$product_id,$memo,$description);
 
 		$query = "INSERT INTO `purchase_detail`
@@ -115,7 +120,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert purchase order detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -127,8 +132,8 @@ class PurchaseOrder_Model extends CI_Model {
 		extract($param);
 
 		$response = array();
-
 		$response['error'] = '';
+
 		$purchase_detail_id = $this->encrypt->decode($detail_id);
 		$query_data 		= array($qty,$product_id,$memo,$description,$purchase_detail_id);
 
@@ -143,7 +148,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update purchase order detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}
@@ -153,8 +158,8 @@ class PurchaseOrder_Model extends CI_Model {
 		extract($param);
 
 		$response = array();
-
 		$response['error'] 	= '';
+
 		$purchase_detail_id 	= $this->encrypt->decode($detail_id);
 
 		$query = "DELETE FROM `purchase_detail` WHERE `id` = ?";
@@ -162,7 +167,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$purchase_detail_id);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete purchase detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 
@@ -193,7 +198,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update purchase head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}
@@ -284,11 +289,15 @@ class PurchaseOrder_Model extends CI_Model {
 					break;
 				
 				case PURCHASE_CONST::COMPLETE:
-					$having = "HAVING remaining_qty <= 0";
+					$having = "HAVING remaining_qty = 0";
 					break;
 
 				case PURCHASE_CONST::NO_RECEIVED:
 					$having = "HAVING remaining_qty = total_qty";
+					break;
+
+				case PURCHASE_CONST::EXCESS:
+					$having = "HAVING remaining_qty < 0";
 					break;
 			}
 		}
@@ -298,10 +307,16 @@ class PurchaseOrder_Model extends CI_Model {
 					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
 					COALESCE(SUM(PD.`quantity`),'') AS 'total_qty', COALESCE(SUM(PD.`quantity` - PD.`recv_quantity`),'') AS 'remaining_qty',
 					COALESCE(CASE 
-						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) < SUM(PD.`quantity`) AND SUM(PD.`quantity` - PD.`recv_quantity`) <> 0 THEN 'Incomplete'
-						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) <= 0 THEN 'Complete'
-						WHEN SUM(PD.`quantity` - PD.`recv_quantity`) = SUM(PD.`quantity`) THEN 'No Received'
-					END,'') AS 'status'
+						WHEN SUM(PD.`recv_quantity`) = SUM(PD.`quantity`) THEN 'Complete'
+						WHEN SUM(PD.`recv_quantity` ) > SUM(PD.`quantity`) THEN 'Excess'
+						WHEN SUM(PD.`recv_quantity`) > 0 THEN 'Incomplete'
+						WHEN SUM(PD.`recv_quantity`) = 0 THEN 'No Received'
+					END,'') AS 'status',
+					CASE 
+						WHEN PH.`is_imported` = ".PURCHASE_CONST::IMPORTED." THEN 'Imported'
+						WHEN PH.`is_imported` = ".PURCHASE_CONST::LOCAL." THEN 'Local'
+						ELSE ''
+					END AS 'type'
 					FROM purchase_head AS PH
 					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
 					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
@@ -325,6 +340,7 @@ class PurchaseOrder_Model extends CI_Model {
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->forbranch);
 				$response['data'][$i][] = array($row->reference_number);
+				$response['data'][$i][] = array($row->type);
 				$response['data'][$i][] = array($row->entry_date);
 				$response['data'][$i][] = array($row->supplier);
 				$response['data'][$i][] = array($row->memo);
@@ -350,6 +366,16 @@ class PurchaseOrder_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
+		$query 	= "SELECT SUM(`recv_quantity`) AS 'total_received' FROM purchase_detail WHERE `headid` = ?";
+		$result = $this->db->query($query,$purchase_head_id);
+		$row 	= $result->row();
+
+		if ($row->total_received > 0) {
+			throw new Exception($this->_error_message['HAS_RECEIVED']);
+		}
+
+		$result->free_result();
+
 		$query_data = array($this->_current_date,$this->_current_user,$purchase_head_id);
 		$query 	= "UPDATE `purchase_head` 
 					SET 
@@ -361,7 +387,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete Purchase head!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 
 		return $response;
 	}

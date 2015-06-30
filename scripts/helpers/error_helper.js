@@ -9,7 +9,8 @@ function build_error_message(errors)
 	var string = '';
 
 	for (var i = 0; i < errors.length; i++) {
-		string += "<i class='fa fa-exclamation-triangle' />&nbsp;&nbsp;"+errors[i]+"<br/>";
+		//string += "<i class='fa fa-exclamation-triangle' />&nbsp;&nbsp;"+errors[i]+"<br/>";
+		string += errors[i]+"<br/>";
 	};
 
 	return string;

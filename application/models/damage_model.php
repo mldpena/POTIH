@@ -6,7 +6,13 @@ class Damage_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
-
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert damage detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update damage detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update damage head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get damage head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get damage details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete damage detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete damage head!');
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -29,7 +35,7 @@ class Damage_Model extends CI_Model {
 		$response 		= array();
 		$branch_id 		= 0;
 
-		$response['head_error'] 	= '';
+		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('DD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
@@ -39,7 +45,7 @@ class Damage_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_damage_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get damage head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -107,7 +113,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert damage detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -135,7 +141,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update damage detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}
@@ -154,7 +160,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$damage_detail_id);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete damage detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 
@@ -182,7 +188,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update damage head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}
@@ -290,7 +296,7 @@ class Damage_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete damage head!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 
 		return $response;
 	}

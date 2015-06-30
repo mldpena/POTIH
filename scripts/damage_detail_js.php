@@ -134,7 +134,7 @@
 			success: function(response) {
 				clear_message_box();
 
-				if (response.head_error != '') 
+				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
 				{

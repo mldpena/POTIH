@@ -12,7 +12,7 @@
 				<table>
 					<tr>
 						<td>Material Code:</td>
-						<td><input type="text" class="form-control" id="itemcode"></td>
+						<td><input type="text" class="form-control" id="itemcode" maxlength="8"></td>
 						<td>Type:</td>
 						<td>
 							<select class="form-control" id="type">

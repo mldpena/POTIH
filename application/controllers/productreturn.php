@@ -90,49 +90,55 @@ class ProductReturn extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			case 'create_reference_number':
-				$response = get_next_number('return_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
-				break;
+		$response['error'] = '';
 
-			case 'get_return_details':
-				$response = $this->return_model->get_return_details();
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'create_reference_number':
+					$response = get_next_number('return_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+					break;
 
-			case 'autocomplete_product':
-				$response = get_product_list_autocomplete($post_data);
-				break;
+				case 'get_return_details':
+					$response = $this->return_model->get_return_details();
+					break;
 
-			case 'insert_detail':
-				$response = $this->return_model->insert_return_detail($post_data);
-				break;
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
 
-			case 'update_detail':
-				$response = $this->return_model->update_return_detail($post_data);
-				break;
+				case 'insert_detail':
+					$response = $this->return_model->insert_return_detail($post_data);
+					break;
 
-			case 'delete_detail':
-				$response = $this->return_model->delete_return_detail($post_data);
-				break;
+				case 'update_detail':
+					$response = $this->return_model->update_return_detail($post_data);
+					break;
 
-			case 'save_return_head':
-				$response = $this->return_model->update_return_head($post_data);
-				break;
+				case 'delete_detail':
+					$response = $this->return_model->delete_return_detail($post_data);
+					break;
 
-			case 'search_return_list':
-				$response = $this->return_model->search_return_list($post_data);
-				break;
+				case 'save_return_head':
+					$response = $this->return_model->update_return_head($post_data);
+					break;
 
-			case 'delete_head':
-				$response = $this->return_model->delete_return_head($post_data);
-				break;
+				case 'search_return_list':
+					$response = $this->return_model->search_return_list($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				case 'delete_head':
+					$response = $this->return_model->delete_return_head($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 
