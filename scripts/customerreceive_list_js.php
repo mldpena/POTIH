@@ -90,7 +90,7 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'custreceive',
-										  noFoundMessage : 'No customer received found!' });
+										  notFoundMessage : 'No customer received found!' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter } );
 

@@ -1,5 +1,4 @@
 <?php
-
 	abstract class Default_Const
 	{
 		const ACTIVE 		= 1;
@@ -17,6 +16,8 @@
 
 		const INSERT_PROCESS = 1;
 		const UPDATE_PROCESS = 2;
+
+		const MINIMUM = 1;
 	}
 
 ?>

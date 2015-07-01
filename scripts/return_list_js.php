@@ -107,7 +107,7 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'return',
-										  noFoundMessage: 'No customer return entry found!' });
+										  notFoundMessage: 'No customer return entry found!' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );

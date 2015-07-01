@@ -137,6 +137,7 @@
 	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit,false,onAfterAdjustInsert);
 	tableHelper.detailContent.bindAutoComplete(onAfterProductSelect);
 
+	bind_asc_desc('order_type');
     refreshTable();
 
     $('.imgedit').live('click',function(){
@@ -280,6 +281,26 @@
 		var adjustId 	= tableHelper.contentProvider.getData(rowIndex,'id');
 		var status 		= $.getEnumValue(state,tableHelper.contentProvider.getData(rowIndex,'status'));
 		var fnc 		= adjustId != 0 ? "update_inventory_adjust" : "insert_inventory_adjust"; 
+
+		var errorList = $.dataValidation([  {   
+                                                value : productId,
+                                                fieldName : 'Product',
+                                                required : true,
+                                                isNotEqual : { value : 0, errorMessage : 'Please select a valid product!'}
+                                            },
+                                            {
+                                                value : newInventory,
+                                                fieldName : 'Quantity',
+                                                required : true,
+                                                rules : 'numeric'
+                                            }
+                                            ]);
+
+        if (errorList.length > 0) {
+            clear_message_box();
+            build_message_box('messagebox_1',build_error_message(errorList),'danger');
+            return false;
+        };
 
 		var arr = 	{
 						fnc 	 	: fnc, 

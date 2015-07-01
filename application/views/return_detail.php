@@ -2,8 +2,8 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>return/list">Customer Return List</a></li>
-			<li class="active"><a href="<?= base_url() ?>return/view">Customer Return Detail</a></li>
+			<li><a href="<?= base_url() ?>return/list">Customer Return List</a></li>
+			<li class="active"><a href="<?= base_url() ?>return/view/<?= $this->uri->segment(3) ?>">Customer Return Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

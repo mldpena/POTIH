@@ -63,6 +63,7 @@ class Delivery_Model extends CI_Model {
 			$response['delivery_type'] 		= $row->delivery_type;
 			$response['is_editable'] 		= $row->total_qty == 0 ? TRUE : FALSE;
 			$response['is_saved'] 			= $row->is_used;
+			$response['own_branch'] 		= $this->_current_branch_id;
 			$branch_id = $row->branch_id;
 		}
 

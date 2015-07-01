@@ -17,7 +17,6 @@
 		const BOTH = 1;
 		const SALES = 2;
 		const TRANSFER = 3;
-		const MINIMUM = 1;
 		const FOR_TRANSFER = 1;
 		const FOR_CUSTOMER = 2;
 	}

@@ -91,52 +91,57 @@ class Release extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
-		{
-			
-			case 'create_reference_number':
-				$response = get_next_number('release_head','reference_number', array('entry_date' => date("Y-m-d h:i:s")));
-				break;
+		$response['error'] = '';
 
-			case 'search_release_list':
-				$response = $this->release_model->search_release_list($post_data);
-				break;
+		try {
+			switch ($fnc) 
+			{
+				case 'create_reference_number':
+					$response = get_next_number('release_head','reference_number', array('entry_date' => date("Y-m-d h:i:s")));
+					break;
 
-			case 'delete_head':
-				$response = $this->release_model->delete_release_head($post_data);
-				break;
+				case 'search_release_list':
+					$response = $this->release_model->search_release_list($post_data);
+					break;
 
-			case 'get_release_details':
-				$response = $this->release_model->get_release_details();
-				break;
+				case 'delete_head':
+					$response = $this->release_model->delete_release_head($post_data);
+					break;
 
-			case 'autocomplete_product':
-				$response = get_product_list_autocomplete($post_data);
-				break;
+				case 'get_release_details':
+					$response = $this->release_model->get_release_details();
+					break;
 
-			case 'insert_detail':
-				$response = $this->release_model->insert_release_detail($post_data);
-				break;
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
 
-			case 'update_detail':
-				$response = $this->release_model->update_release_detail($post_data);
-				break;
+				case 'insert_detail':
+					$response = $this->release_model->insert_release_detail($post_data);
+					break;
 
-			case 'delete_detail':
-				$response = $this->release_model->delete_release_detail($post_data);
-				break;
+				case 'update_detail':
+					$response = $this->release_model->update_release_detail($post_data);
+					break;
 
-			case 'save_release_head':
-				$response = $this->release_model->update_release_head($post_data);
-				break;
+				case 'delete_detail':
+					$response = $this->release_model->delete_release_detail($post_data);
+					break;
 
-			case 'update_release_detail':
-				$response = $this->release_model->update_release_qty_detail($post_data);
-				break;
+				case 'save_release_head':
+					$response = $this->release_model->update_release_head($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid Arguments!';
-				break;
+				case 'update_release_detail':
+					$response = $this->release_model->update_release_qty_detail($post_data);
+					break;
+
+				default:
+					$response['error'] = 'Invalid Arguments!';
+					break;
+			}
+		}catch (Exception $e) {
+			$response['error'] = $e->getMessage();
 		}
 
 		echo json_encode($response);

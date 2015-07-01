@@ -3,8 +3,8 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>custreceive/list">Customer Receive List</a></li>
-			<li class="active"><a href="<?= base_url() ?>custreceive/view">Customer Receive Detail</a></li>
+			<li><a href="<?= base_url() ?>custreceive/list">Customer Receive List</a></li>
+			<li class="active"><a href="<?= base_url() ?>custreceive/view/<?= $this->uri->segment(3) ?>/<?= $this->uri->segment(3) ?>">Customer Receive Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

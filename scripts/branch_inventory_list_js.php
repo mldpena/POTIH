@@ -92,12 +92,20 @@
     
     $("#branch").chosen();
 
+    $('#itemcode, #product').keypress(function(e){
+        if (e.keyCode == 13) 
+        {
+            e.preventDefault();
+            refreshTable();
+        }
+    });
+
     $('#search').click(function(){
-        refresh_table();
+        refreshTable();
     });
    
   
-    function refresh_table()
+    function refreshTable()
     {
         
         if (flag == 1) 

@@ -6,7 +6,15 @@ class Release_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
-	
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert release detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update release detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update release head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get release head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get release details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete release detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete release head!',
+									'HAS_RELEASED' => 'Released entry can only be deleted if status is no received!');
+
 	public function __construct() 
 	{
 		$this->load->library('encrypt');
@@ -143,6 +151,16 @@ class Release_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
+		$query 	= "SELECT SUM(`qty_released`) AS 'total_released' FROM release_detail WHERE `headid` = ?";
+		$result = $this->db->query($query,$release_head_id);
+		$row 	= $result->row();
+
+		if ($row->total_released > 0) {
+			throw new Exception($this->_error_message['HAS_RELEASED']);
+		}
+
+		$result->free_result();
+
 		$query_data = array($this->_current_date,$this->_current_user,$release_head_id);
 		$query 	= "UPDATE `release_head` 
 					SET 
@@ -154,7 +172,7 @@ class Release_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete release head!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 		
 		return $response;
 	}
@@ -162,7 +180,7 @@ class Release_Model extends CI_Model {
 	public function get_release_details()
 	{
 		$response = array();
-		$response['head_error'] 	= '';
+		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('WR',`reference_number`) AS 'reference_number', 
@@ -173,7 +191,7 @@ class Release_Model extends CI_Model {
 		$result_head = $this->db->query($query_head,$this->_release_head_id);
 
 		if ($result_head->num_rows() != 1) 
-			$response['head_error'] = 'Unable to get release head details!';
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
 		else
 		{
 			$row = $result_head->row();
@@ -242,7 +260,7 @@ class Release_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to insert release detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 		else
 			$response['id'] = $result['id'];
 
@@ -270,7 +288,7 @@ class Release_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update release detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}
@@ -289,7 +307,7 @@ class Release_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$release_detail_id);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete release detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 
@@ -318,7 +336,7 @@ class Release_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update release head!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 
 		return $response;
 	}
@@ -341,7 +359,7 @@ class Release_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
-			$response['error'] = 'Unable to update release detail!';
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
 		return $response;
 	}  	

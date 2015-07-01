@@ -3,7 +3,7 @@
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
 			<li><a href="<?= base_url() ?>user/list">User List</a></li>
-			<li class="active"><a href="<?= base_url() ?>user/add">User Information</a></li>
+			<li class="active"><a href="<?= base_url() ?>user/<?= $this->uri->segment(2).'/'.$this->uri->segment(3) ?>">User Information</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

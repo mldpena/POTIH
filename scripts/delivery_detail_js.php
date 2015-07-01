@@ -183,6 +183,9 @@
 					$('#delivery_type').val(response.delivery_type);
 					$('#to_branch').val(response.to_branchid);
 
+					if (response.to_branchid == 0) 
+						$("#to_branch option[value='"+response.own_branch+"']").remove();
+
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 

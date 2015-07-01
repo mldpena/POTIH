@@ -2,8 +2,8 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchaseret/list">Purchase Return List</a></li>
-			<li class="active"><a href="<?= base_url() ?>purchaseret/view">Purchase Return Detail</a></li>
+			<li><a href="<?= base_url() ?>purchaseret/list">Purchase Return List</a></li>
+			<li class="active"><a href="<?= base_url() ?>purchaseret/view/<?= $this->uri->segment(3) ?>">Purchase Return Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

@@ -104,7 +104,9 @@
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'release' });
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'release',
+										  notFoundMessage : 'No warehouse release entry found!' });
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
@@ -137,6 +139,7 @@
 
 	function actionAfterDelete()
 	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
 		build_message_box('messagebox_1','Warehouse Release entry successfully deleted!','success');
 	}
 </script>

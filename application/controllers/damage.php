@@ -129,6 +129,10 @@ class Damage extends CI_Controller {
 					$response = $this->damage_model->delete_damage_head($post_data);
 					break;
 
+				case 'check_product_inventory':
+					$response = check_current_inventory($post_data);
+					break;
+					
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;

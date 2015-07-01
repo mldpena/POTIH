@@ -50,7 +50,8 @@ var TableHelper = function(tableOptions,options) {
         tableID : 'tbl',
         loadingImgID : 'loadingimg',
         searchButtonID : 'search',
-        searchTextID : 'search_string',
+        searchTextID : 'search_string, #itemcode, #material',
+        clearExcluded : '#date_from, #date_to, #tableid_txtpagenumber, #tableid_txtfilternumber',
         columnClass : 'column_click',
         notFoundMessage : 'No entry found!',
         isAddRow : true
@@ -561,7 +562,7 @@ var TableHelper = function(tableOptions,options) {
 
             $('#' + self._settings.loadingImgID).show();
             $('#' + self._settings.searchTextID).val('');
-            $('input[type=text]').val('');
+            $('input[type=text]').not(self._settings.clearExcluded).val('');
 
             $.ajax({
                 type: "POST",

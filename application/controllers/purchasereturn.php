@@ -131,6 +131,10 @@ class PurchaseReturn extends CI_Controller {
 					$response = $this->purchasereturn_model->delete_purchasereturn_head($post_data);
 					break;
 
+				case 'check_product_inventory':
+					$response = check_current_inventory($post_data);
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

@@ -171,6 +171,7 @@ if (!function_exists('check_current_inventory'))
 		$CI =& get_instance();
 		$CI->load->helper('cookie');
 		$CI->load->library('encrypt');
+		$CI->load->file(CONSTANTS.'product_const.php');
 
 		$data 		= array();
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
@@ -187,9 +188,9 @@ if (!function_exists('check_current_inventory'))
 		$row = $result->row();
 
 		if (($row->current_inventory - $qty) < 0 && $row->min_inv != 0) 
-			$response['is_insufficient'] = DELIVERY_CONST::NEGATIVE_INV;
+			$response['is_insufficient'] = PRODUCT_CONST::NEGATIVE_INV;
 		elseif (($row->current_inventory - $qty) >= 0 && ($row->current_inventory - $qty) <= $row->min_inv && $row->min_inv != 0)
-			$response['is_insufficient'] = DELIVERY_CONST::MINIMUM;
+			$response['is_insufficient'] = PRODUCT_CONST::MINIMUM;
 
 		$response['current_inventory'] = $row->current_inventory;
 
