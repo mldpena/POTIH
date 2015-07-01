@@ -69,7 +69,9 @@
 				<h4 class="modal-title" id="myModalLabel">Delete Sub Group</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this sub group?
+				<div class="message-content">
+					Are you sure you want to delete this sub group?
+				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

@@ -67,7 +67,9 @@
 				<h4 class="modal-title" id="myModalLabel">Delete Material Type</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this material type?
+				<div class="message-content">
+					Are you sure you want to delete this material type?
+				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

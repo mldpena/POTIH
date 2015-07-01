@@ -13,7 +13,7 @@ class PurchaseReceive_Model extends CI_Model {
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get purchase details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete purchase receive detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete purchase receive head!',
-									'PURCHASE_NOT_FOUND' => 'No purchase');
+									'PURCHASE_NOT_FOUND' => 'No purchase found!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants

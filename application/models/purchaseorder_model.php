@@ -300,12 +300,14 @@ class PurchaseOrder_Model extends CI_Model {
 					$having = "HAVING remaining_qty < 0";
 					break;
 			}
+
+			$having .= " AND is_used = 1";
 		}
 
 		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', 
 					CONCAT('PO',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
 					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-					COALESCE(SUM(PD.`quantity`),'') AS 'total_qty', COALESCE(SUM(PD.`quantity` - PD.`recv_quantity`),'') AS 'remaining_qty',
+					COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', COALESCE(SUM(PD.`quantity` - PD.`recv_quantity`),0) AS 'remaining_qty', PH.`is_used`,
 					COALESCE(CASE 
 						WHEN SUM(PD.`recv_quantity`) = SUM(PD.`quantity`) THEN 'Complete'
 						WHEN SUM(PD.`recv_quantity` ) > SUM(PD.`quantity`) THEN 'Excess'

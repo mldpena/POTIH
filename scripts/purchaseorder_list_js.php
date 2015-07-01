@@ -42,21 +42,20 @@
         td_class: "tablerow column_click column_hover tdforbranch"
     };
 
+    var spnreferencenumber = document.createElement('span');
+	colarray['referencenumber'] = { 
+        header_title: "Reference #",
+        edit: [spnreferencenumber],
+        disp: [spnreferencenumber],
+        td_class: "tablerow column_click column_hover tdreference"
+    };
+    
     var spntype = document.createElement('span');
 	colarray['type'] = { 
         header_title: "Type",
         edit: [spntype],
         disp: [spntype],
         td_class: "tablerow column_click column_hover tdtype"
-    };
-
-
-	var spnreferencenumber = document.createElement('span');
-	colarray['referencenumber'] = { 
-        header_title: "Reference #",
-        edit: [spnreferencenumber],
-        disp: [spnreferencenumber],
-        td_class: "tablerow column_click column_hover tdreference"
     };
    	
    	var spndate = document.createElement('span');

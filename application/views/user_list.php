@@ -51,7 +51,9 @@
 				<h4 class="modal-title" id="myModalLabel">Delete User</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this user?
+				<div class="message-content">
+					Are you sure you want to delete this user?
+				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

@@ -33,7 +33,7 @@ var TableHelper = function(tableOptions,options) {
         deleteIconClass : 'tddelete',
         editIconClass   : 'imgedit',
         memoClass   : 'txtmemo',
-        deleteButtonClass   : 'delete',
+        deleteButtonId   : 'delete',
         saveButtonId      : 'save',
         quantityClass : 'txtqty',
         deleteModalID    : 'deleteModal',
@@ -48,9 +48,9 @@ var TableHelper = function(tableOptions,options) {
         modalFieldClass : 'modal-fields',
         createButtonId : 'create_new',
         tableID : 'tbl',
-        loadingImgID : 'loadingimg',
-        searchButtonID : 'search',
-        searchTextID : 'search_string, #itemcode, #material',
+        loadingImgId : 'loadingimg',
+        searchButtonId : 'search',
+        searchTextId : 'search_string, #itemcode, #material, #product',
         clearExcluded : '#date_from, #date_to, #tableid_txtpagenumber, #tableid_txtfilternumber',
         columnClass : 'column_click',
         notFoundMessage : 'No entry found!',
@@ -159,7 +159,7 @@ var TableHelper = function(tableOptions,options) {
             });
         },
 
-        bindDeleteEvents : function(onBeforeSubmit)
+        bindDeleteEvents : function(onAfterDelete)
         {
             $('.' + self._settings.deleteIconClass).live('click',function(){
                 self.globalRowIndex    = $(this).parent().index();
@@ -168,6 +168,9 @@ var TableHelper = function(tableOptions,options) {
                 if (self.globalId != 0) 
                 {
                     clear_message_box();
+                    $('#' + self._settings.deleteModalID).find('.message-content').show();
+                    $('#' + self._settings.deleteModalID).find('.btn-default').html('Cancel');
+                    $('#' + self._settings.deleteButtonId).show();
                     $('#' + self._settings.deleteModalID).modal('show');
                 }
                 else
@@ -178,24 +181,19 @@ var TableHelper = function(tableOptions,options) {
                 }
             });
 
-            $('#' + self._settings.deleteButtonClass).click(function(){
+            $('#' + self._settings.deleteButtonId).click(function(){
                 if (self._flag == 1) 
                     return;
 
                 self._flag = 1;
 
                 var rowIndex       = self.globalRowIndex;
-
-                if (onBeforeSubmit) 
-                    var arr = onBeforeSubmit($(this));
-                else
-                {
-                    var rowUniqueId  = self.globalId;
-                    var arr =   { 
-                                    fnc         : self._settings.deleteDetailName, 
-                                    detail_id   : rowUniqueId
-                                };
-                }
+                var rowUniqueId  = self.globalId;
+                
+                var arr =   { 
+                                fnc         : self._settings.deleteDetailName, 
+                                detail_id   : rowUniqueId
+                            };
                
                 $.ajax({
                     type: "POST",
@@ -204,14 +202,25 @@ var TableHelper = function(tableOptions,options) {
                     success: function(response) {
                         clear_message_box();
 
-                        if (response.error != '') 
+                        if (response.error != '')
+                        { 
+                            $('#' + self._settings.deleteModalID).find('.message-content').hide();
+                            $('#' + self._settings.deleteModalID).find('.btn-default').html('OK');
+                            $('#' + self._settings.deleteButtonId).hide();
                             build_message_box('messagebox_2',response.error,'danger');
+                        }
                         else
                         {
                             self._jsTable.delete_row(rowIndex);
                             self.contentProvider.recomputeRowNumber();
                             self.contentProvider.recomputeTotalQuantity();
                             $('#' + self._settings.deleteModalID).modal('hide');
+
+                            if (onAfterDelete)
+                            {
+                                self._flag = 0;
+                                onAfterDelete();
+                            }
                         }
 
                         self._flag = 0;
@@ -277,15 +286,8 @@ var TableHelper = function(tableOptions,options) {
                     return;
 
                 var arr = onBeforeSubmit();
-
-                var rowsToSubtract = 0;
-
                 var addRowExist = self.contentProvider.getData(self._jsTable.get_row_count() - 1, 'id');
-                
-                if (addRowExist == 0) 
-                    rowsToSubtract = 2
-                else
-                    rowsToSubtract = 1;
+                var rowsToSubtract = addRowExist == 0 ? 2 : 1;
 
                 if (self._jsTable.get_row_count() - rowsToSubtract == 0) 
                 {
@@ -293,7 +295,7 @@ var TableHelper = function(tableOptions,options) {
                     return;
                 }
 
-                for (var i = 1; i < self._jsTable.get_row_count() - 1; i++) 
+                for (var i = 1; i <= self._jsTable.get_row_count() - rowsToSubtract; i++) 
                 {
                     var updateImage = self.contentProvider.getElement(i,'colupdate');
                     if ($(updateImage).hasClass('imgupdate')) 
@@ -326,7 +328,7 @@ var TableHelper = function(tableOptions,options) {
         {
             self.detailContent.bindUpdateEvents(callbackOptions.updateEventsBeforeCallback, callbackOptions.addInventoryChecker, callbackOptions.updateEventsAfterCallback);
             self.detailContent.bindEditEvents();
-            self.detailContent.bindDeleteEvents(callbackOptions.deleteEventsBeforeCallback);
+            self.detailContent.bindDeleteEvents(callbackOptions.deleteEventsAfterCallback);
             self.detailContent.bindAutoComplete();
             self.detailContent.bindSaveTransactionEvent(callbackOptions.saveEventsBeforeCallback);
         }
@@ -342,11 +344,14 @@ var TableHelper = function(tableOptions,options) {
                 if (self.globalId != 0) 
                 {
                     clear_message_box();
+                    $('#' + self._settings.deleteModalID).find('.message-content').show();
+                    $('#' + self._settings.deleteModalID).find('.btn-default').html('Cancel');
+                    $('#' + self._settings.deleteButtonId).show();
                     $('#' + self._settings.deleteModalID).modal('show');
                 }
             });
 
-            $('#' + self._settings.deleteButtonClass).click(function(){
+            $('#' + self._settings.deleteButtonId).click(function(){
                 if (self._flag == 1)
                     return;
 
@@ -366,8 +371,14 @@ var TableHelper = function(tableOptions,options) {
                     data: 'data=' + JSON.stringify(arr) + token,
                     success: function(response) {
                         clear_message_box();
+
                         if (response.error != '') 
+                        {
+                            $('#' + self._settings.deleteModalID).find('.message-content').hide();
+                            $('#' + self._settings.deleteModalID).find('.btn-default').html('OK');
+                            $('#' + self._settings.deleteButtonId).hide();
                             build_message_box('messagebox_2',response.error,'danger');
+                        }
                         else
                         {
                             self._jsTable.delete_row(rowIndex);
@@ -402,17 +413,17 @@ var TableHelper = function(tableOptions,options) {
             });
         },
 
-        bindSearchEvent : function(onBeforeSubmit)
+        bindSearchEvent : function(onBeforeSubmit, onAfterSubmit)
         {
-            $('#' + self._settings.searchButtonID).click(function(){
-                self.contentHelper.refreshTable(onBeforeSubmit);
+            $('#' + self._settings.searchButtonId).click(function(){
+                self.contentHelper.refreshTable(onBeforeSubmit,onAfterSubmit);
             });
 
-            $('#' + self._settings.searchTextID).keypress(function(e){
+            $('#' + self._settings.searchTextId).keypress(function(e){
                 if (e.keyCode == 13) 
                 {
                     e.preventDefault();
-                    self.contentHelper.refreshTable(onBeforeSubmit);
+                    self.contentHelper.refreshTable(onBeforeSubmit,onAfterSubmit);
                 }
             });
         },
@@ -457,8 +468,8 @@ var TableHelper = function(tableOptions,options) {
 
         bindAllEvents : function(callbackOptions)
         {
-            self.headContent.bindDeleteEvents(callbackOptions.deleteEventsBeforeCallback,callbackOptions.deleteEventsAfterCallback);
-            self.headContent.bindSearchEvent(callbackOptions.searchEventsBeforeCallback);
+            self.headContent.bindDeleteEvents(callbackOptions.deleteEventsAfterCallback);
+            self.headContent.bindSearchEvent(callbackOptions.searchEventsBeforeCallback, callbackOptions.searchEventsAfterCallback);
             self.headContent.bindViewEvent();
             self.headContent.bindCreateReferenceEvent();
         }
@@ -551,17 +562,17 @@ var TableHelper = function(tableOptions,options) {
             });
         },
 
-        refreshTable : function(onBeforeSubmit)
+        refreshTable : function(onBeforeSubmit,onAfterSubmit)
         {
             if (self._flag == 1)
                 return;
 
             var arr = onBeforeSubmit();
-
+            
             self._flag = 1;
 
-            $('#' + self._settings.loadingImgID).show();
-            $('#' + self._settings.searchTextID).val('');
+            $('#' + self._settings.loadingImgId).show();
+            $('#' + self._settings.searchTextId).val('');
             $('input[type=text]').not(self._settings.clearExcluded).val('');
 
             $.ajax({
@@ -589,7 +600,10 @@ var TableHelper = function(tableOptions,options) {
                         $('#' + self._settings.tableID).show();
                     }
 
-                    $('#' + self._settings.loadingImgID).hide();
+                    if (onAfterSubmit) 
+                        onAfterSubmit(response);
+
+                    $('#' + self._settings.loadingImgId).hide();
                     
                     self._flag = 0;
                 }       

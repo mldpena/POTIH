@@ -67,7 +67,9 @@
 				<h4 class="modal-title" id="myModalLabel">Delete Branch</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this branch?
+				<div class="message-content">
+					Are you sure you want to delete this branch?	
+				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

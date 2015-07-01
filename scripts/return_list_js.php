@@ -68,7 +68,7 @@
 
     var spnmemo = document.createElement('span');
 	colarray['memo'] = { 
-        header_title: "Reference #",
+        header_title: "Memo",
         edit: [spnmemo],
         disp: [spnmemo],
         td_class: "tablerow column_click column_hover tdmemo"

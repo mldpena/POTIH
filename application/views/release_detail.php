@@ -4,7 +4,7 @@
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
 			<li class="active"><a href="<?= base_url() ?>release/list">Warehouse Release List</a></li>
-			<li class="active"><a href="<?= base_url() ?>release/add">Warehouse Release Detail</a></li>
+			<li class="active"><a href="<?= base_url() ?>release/view/<?= $this->uri->segment(3) ?>">Warehouse Release Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -62,8 +62,10 @@
 				<h4 class="modal-title" id="myModalLabel">Delete Warehouse Release Detail</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this detail?
-				<div id="messagebox_2"></div>
+				<div class="message-content">
+					Are you sure you want to delete this detail?
+				</div>
+				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

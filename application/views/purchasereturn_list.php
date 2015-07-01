@@ -60,7 +60,9 @@
 				<h4 class="modal-title" id="myModalLabel">Delete Purchase Return Entry</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this purchase return entry?
+				<div class="message-content">
+					Are you sure you want to delete this purchase return entry?
+				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

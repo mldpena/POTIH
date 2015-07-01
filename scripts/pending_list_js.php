@@ -139,12 +139,13 @@
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
     $('#date_from, #date_to').datepicker("setDate", new Date());
 
-    refresh_table();
+    var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'pending',
+										  notFoundMessage : 'No inventory adjustment found!' });
 
-    //Event for calling search function
-    $('#search').click(function(){
-    	refresh_table();
-    });
+	tableHelper.headContent.bindSearchEvent(getSearchFilter,isShowButtonActions);
+	tableHelper.contentHelper.refreshTable(getSearchFilter,isShowButtonActions);
 
     $('#approve, #decline').click(function(){
     	if (flag == 1) 
@@ -197,14 +198,8 @@
 		});
     });
 
-    //Function for refreshing table content
-	function refresh_table()
+	function getSearchFilter()
 	{
-		if (flag == 1)
-			return;
-
-		flag = 1;
-
 		var itemcode_val 	= $('#itemcode').val();
 		var product_val 	= $('#product').val();
 		var subgroup_val 	= $('#subgroup').val();
@@ -230,37 +225,14 @@
 						status 	 : status_val
 					};
 
-		$('#loadingimg').show();
+		return arr;
+	}
 
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
-
-				if (response.rowcnt == 0) 
-				{
-					$('#tbl, #action-button').hide();
-					build_message_box('messagebox_1','No inventory adjust found!','info');
-				}
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-
-					$('#tbl, #action-button').show();
-				}
-
-				$('#loadingimg').hide();
-
-				flag = 0;
-			}       
-		});
+	function isShowButtonActions(response)
+	{
+		if (response.rowcnt == 0) 
+			$('#tbl, #action-button').hide();
+		else
+			$('#tbl, #action-button').show();
 	}
 </script>

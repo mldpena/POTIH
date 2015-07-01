@@ -282,9 +282,7 @@
 
 		flag = 1;
 
-		var arr = 	{ 
-						fnc : 'get_branch_list_for_min_max'
-					};
+		var arr = { fnc : 'get_branch_list_for_min_max' };
 
 		$.ajax({
 			type: "POST",
@@ -318,7 +316,7 @@
 		var min_max_values 	= [];
 		var fnc_val 		= product_id_val == 0 ? 'insert_new_product' : 'update_product_details';
 
-		var errorList = $.dataValidation([	{ 	
+		var errorList = $.dataValidation([{ 	
 											value : itemcode_val,
 											fieldName : 'Material Code',
 											required : true,
@@ -326,7 +324,7 @@
 										},
 										{
 											value : product_val,
-											fieldName : 'Product',
+											fieldName : 'Material Name',
 											required : true
 										}
 										]);

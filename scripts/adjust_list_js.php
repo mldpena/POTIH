@@ -108,7 +108,9 @@
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
     var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'adjust' });
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'adjust',
+										  notFoundMessage : 'No product found!' });
 
 	tableHelper.headContent.bindSearchEvent(getSearchFilter);
 	tableHelper.contentHelper.refreshTable(getSearchFilter);

@@ -61,12 +61,14 @@
 		<div class="form-body">
 			<div class="max-row">
 				<div class="tbl-checkbtn">
-					<input type="checkbox">
+					<input type="checkbox" class="preset" id="admin-permission">
 					<span>Admin</span>
 				</div>
 			</div>
 			<div class="sub-panel header-section">
-				<div align="left">Data Section</div>
+				<div align="left">
+					<input type="checkbox" class="permission-section" id="data-permission"> Data Section
+				</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
@@ -81,53 +83,55 @@
 					</tr>
 					<tr>
 						<td>Product</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="101"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="102"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="103"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="104"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Material Type</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="105"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="106"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="107"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="108"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Sub Grouping</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="109"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="110"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="111"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="112"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>User</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="113"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="114"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="115"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="116"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="117"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Branch</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="118"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="119"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="120"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="121"></td>
 						<td></td>
 					</tr>
 				</table>
 			</div>
 			<div class="sub-panel header-section">
-				<div align="left">Purchase Section</div>
+				<div align="left">
+					<input type="checkbox" class="permission-section" id="purchase-permission"> Purchase Section
+				</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
@@ -142,53 +146,73 @@
 					</tr>
 					<tr>
 						<td>Purchase Order</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="131"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="132"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="133"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="134"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="135"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Purchase Receive</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="136"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="136"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="138"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="139"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="140"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Damage</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Return</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td></td>
-					</tr>
-					<tr>
-						<td>Purchase Return</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="141"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="142"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="144"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="145"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="146"></td>
 						<td></td>
 					</tr>
 				</table>
 			</div>
 			<div class="sub-panel header-section">
-				<div align="left">Stock Transferring Section</div>
+				<div align="left">
+					<input type="checkbox" class="permission-section" id="return-permission"> Returns Section
+				</div>
+			</div>
+			<div class="max-row tbl max user">
+				<table>
+					<tr class="tableheader">
+						<td style="width:345px;">Page</td>
+						<td style="width:130px;">View</td>
+						<td style="width:130px;">View Detail</td>
+						<td style="width:130px;">Add</td>
+						<td style="width:130px;">Edit</td>
+						<td style="width:130px;">Delete</td>
+						<td style="width:320px;">Others</td>
+					</tr>
+					<tr>
+						<td>Customer Return</td>
+						<td><input type="checkbox" class="check-detail return-detail" value="156"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="156"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="157"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="158"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="159"></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Purchase Return</td>
+						<td><input type="checkbox" class="check-detail return-detail" value="160"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="161"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="162"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="163"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="164"></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="sub-panel header-section">
+				<div align="left">
+					<input type="checkbox" class="permission-section" id="transfer-permission"> Stock Transaferring Section
+				</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
@@ -203,35 +227,37 @@
 					</tr>
 					<tr>
 						<td>Stock Delivery</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="171"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="172"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="173"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="174"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="175"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Stock Receive</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="176"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="177"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="178"></td>
 						<td></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Customer Receive</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="179"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="180"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="181"></td>
 						<td></td>
 						<td></td>
 					</tr>
 				</table>
 			</div>
 			<div class="sub-panel header-section">
-				<div align="left">Others Section</div>
+				<div align="left">
+					<input type="checkbox" class="permission-section" id="other-permission"> Others Section
+				</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
@@ -246,35 +272,40 @@
 					</tr>
 					<tr>
 						<td>Inventory Adjust</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="103"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="191"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="192"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="193"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="194"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="195"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Pending Inventory Adjust</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="96"></td>
 						<td></td>
 						<td></td>
 						<td></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail" value="104">Allow to Approve / Decline</td>
+						<td>
+							<input type="checkbox" class="check-detail other-detail" value="197"> Allow to Approve / Decline<br/>
+							<input type="checkbox" class="check-detail other-detail" value="198"> Automatically approve request
+						</td>
 					</tr>
 					<tr>
 						<td>Warehouse Release</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
-						<td><input type="checkbox" class="check-detail" value="104"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="199"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="200"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="201"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="202"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="203"></td>
 						<td></td>
 					</tr>
 				</table>
 			</div>
 			<div class="sub-panel header-section">
-				<div align="left">Reports Section</div>
+				<div align="left">
+					<input type="checkbox" class="permission-section" id="reports-permission"> Reports Section
+				</div>
 			</div>
 			<div class="max-row tbl max user">
 				<table>
@@ -289,7 +320,7 @@
 					</tr>
 					<tr>
 						<td>Product Inventory Warning</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail reports-detail" value="211"></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -298,7 +329,7 @@
 					</tr>
 					<tr>
 						<td>Product Branch Inventory</td>
-						<td><input type="checkbox" class="check-detail" value="101"></td>
+						<td><input type="checkbox" class="check-detail reports-detail" value="212"></td>
 						<td></td>
 						<td></td>
 						<td></td>

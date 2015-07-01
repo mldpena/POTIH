@@ -97,7 +97,7 @@
 					<input type="text" class="form-control modal-fields" id="new_itemcode" maxlength="8">
 				</div>
 				<div class="form-group">
-					Material Description:
+					Material Name:
 					<textarea class="form-control modal-fields" rows="4" id="new_product"></textarea>
 				</div>
 				<div class="form-group">
@@ -135,7 +135,9 @@
 				<h4 class="modal-title" id="myModalLabel">Delete Product</h4>
 			</div>
 			<div class="modal-body">
-				Are you sure you want to delete this product?
+				<div class="message-content">
+					Are you sure you want to delete this product?
+				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>
 			<div class="modal-footer">

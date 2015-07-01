@@ -12,6 +12,32 @@
 	$('#user_code').binder('setRule','alphaNumeric');
 	$('#contact').binder('setRule','numeric');
 
+	$('.preset').click(function(){
+
+		var id = $(this).attr('id');
+		id = id.replace('-permission','');
+
+		var presetDetailPermissionClass = (id == 'admin')  ?  'check-detail, .permission-section' : id + '-preset';
+
+		if ($(this).is(':checked')) 
+			$('.' + presetDetailPermissionClass).attr('checked','checked');
+		else
+			$('.' + presetDetailPermissionClass).removeAttr('checked');
+	});
+
+	$('.permission-section').click(function(){
+
+		var id = $(this).attr('id');
+		id = id.replace('-permission','');
+
+		var detailPermissionClass = id + '-detail';
+
+		if ($(this).is(':checked')) 
+			$('.' + detailPermissionClass).attr('checked','checked');
+		else
+			$('.' + detailPermissionClass).removeAttr('checked');
+	});
+
 	$("#show-info-btn").click(function(){
 		var value = $(this).val();
 

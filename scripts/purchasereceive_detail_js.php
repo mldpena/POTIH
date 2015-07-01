@@ -102,10 +102,14 @@
     var spnreceive = document.createElement('span');
 	chkreceiveall.className = "chkreceiveall";
 	chkreceiveall.type = "checkbox";
+
+	var chkReceiveAllDis = document.createElement('input');
+	chkReceiveAllDis.setAttribute('type','checkbox');
+	chkReceiveAllDis.setAttribute('disabled','disabled');
 	colarray['receiveall'] = { 
 		header_title: "",
 		edit: [chkreceiveall],
-		disp: [spnreceive],
+		disp: [chkReceiveAllDis],
 		td_class: "tablerow tdreceiveall",
 	};
 
@@ -222,7 +226,7 @@
 
 	var poListTableHelper = new TableHelper ({ tableObject : myjstbl_po_list, tableArray : colarray_po_list });
 
-	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit,false,removeCheckBoxValueAfterSubmit);
+	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit);
 	tableHelper.detailContent.bindEditEvents();
 	
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -341,50 +345,8 @@
 	});
 
 	$('.tddelete').live('click',function(){
-		global_rowIndex 	= $(this).parent().index();
-		global_detail_id 	= tableHelper.contentProvider.getData(global_rowIndex,'id');
-
-		if (global_detail_id != 0) 
-			$('#deletePurchaseReceiveModal').modal('show');
-		else{
-			myjstbl.delete_row(global_rowIndex);
-			tableHelper.contentProvider.recomputeTotalQuantity();
-		}
-	});
-
-	$('#delete').click(function(){
-		if (flag == 1) 
-			return;
-
-		flag = 1;
-
-		var rowIndex 		= global_rowIndex;
-		var detail_id_val 	= global_detail_id;
-
-		var arr = 	{ 
-						fnc 	 	: 'delete_purchase_receive_detail', 
-						detail_id 	: detail_id_val
-					};
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '') 
-					build_message_box('messagebox_2',response.error,'danger');
-				else
-				{
-					myjstbl.delete_row(rowIndex);
-					tableHelper.contentProvider.recomputeTotalQuantity();
-					tableHelper.contentProvider.recomputeRowNumber();
-					$('#deletePurchaseReceiveModal').modal('hide');
-				}
-
-				flag = 0;
-			}       
-		});
+		var rowIndex = $(this).parent().index();
+		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[0]);
 	});
 
 	$('#save').click(function(){
@@ -397,7 +359,7 @@
             return;
         }
 
-        for (var i = 1; i < myjstbl.get_row_count() - 1; i++) 
+        for (var i = 1; i <= myjstbl.get_row_count() - 1; i++) 
         {
             var updateImage = tableHelper.contentProvider.getElement(i,'colupdate');
             if ($(updateImage).hasClass('imgupdate')) 
@@ -468,11 +430,6 @@
 					};
 
 		return arr;
-	}
-
-	function removeCheckBoxValueAfterSubmit(rowIndex, response)
-	{
-		tableHelper.contentProvider.setData(rowIndex,'receiveall',['']);
 	}
 
 	function checkReceivedDetails()

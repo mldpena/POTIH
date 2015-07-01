@@ -257,7 +257,7 @@ class Adjust_Model extends CI_Model {
 
 		$status 	= ADJUST_CONST::PENDING; //$config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
-		$adjust_id 	= $this->encrypt->decode($adjust_id);
+		$adjust_id 	= $this->encrypt->decode($detail_id);
 
 		$query_validation_data = array($product_id,$this->_current_branch_id,$adjust_id);
 		$query_validation = "SELECT `id` FROM inventory_adjust WHERE `product_id` = ? AND `branch_id` = ? AND `id` <> ? AND `status` = ".ADJUST_CONST::PENDING." AND `is_show` = ".ADJUST_CONST::ACTIVE;

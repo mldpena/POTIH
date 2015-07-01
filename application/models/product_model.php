@@ -571,7 +571,7 @@ class Product_Model extends CI_Model {
 		{
 			foreach ($result_branch->result() as $row) 
 			{
-				$branch_column .= ",(IF(PBI.`branch_id` = ".$row->id.", PBI.`inventory`, 0)) AS '".$row->name."'";		
+				$branch_column .= ",SUM(IF(PBI.`branch_id` = ".$row->id.", PBI.`inventory`, 0)) AS '".$row->name."'";		
 			}
 		}
 		

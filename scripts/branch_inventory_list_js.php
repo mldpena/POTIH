@@ -84,33 +84,22 @@
 
                 root.appendChild(myjstbl.tab);
                 root.appendChild(myjstbl.mypage.pagingtable);
+
+                var tableHelper = new TableHelper(  { tableObject : myjstbl, tableArray : colarray }, 
+                                                    { baseURL : "<?= base_url() ?>", 
+                                                      controller : 'product',
+                                                      notFoundMessage : 'No product found!' });
+
+                tableHelper.headContent.bindSearchEvent(getSearchFilter,showSelectedBranches);
             }         
         }
     });
                                    
-    $('#tbl').hide();
-    
+    $('#tbl').hide();    
     $("#branch").chosen();
 
-    $('#itemcode, #product').keypress(function(e){
-        if (e.keyCode == 13) 
-        {
-            e.preventDefault();
-            refreshTable();
-        }
-    });
-
-    $('#search').click(function(){
-        refreshTable();
-    });
-   
-  
-    function refreshTable()
+    function getSearchFilter()
     {
-        
-        if (flag == 1) 
-            return;
-
         var token_val       = '<?= $token ?>';
         var itemcode_val    = $('#itemcode').val();
         var product_val     = $('#product').val();
@@ -121,8 +110,6 @@
         var dateto_val      = $('#date_to').val();
         var branch_val      = $('#branch').chosen().val() == null ? '' : $('#branch').chosen().val();
         var orderby_val     = $('#orderby').val();
-        
-        $('#tbl').hide();
 
         if(branch_val.length == 0)
         {
@@ -154,49 +141,21 @@
                         orderby  : orderby_val
                     }  
 
-                
-        flag = 1;
-      
-        $('#loadingimg').show();
+        return arr;
+    }
 
-        $.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(response) {
-                myjstbl.clear_table();
-                clear_message_box();
-   
-                if (response.rowcnt == 0) 
-                {
-                    $('#tbl').hide();
-                    build_message_box('messagebox_1','No product found!','info');
-                }
-                else
-                {
-                    
-                    if(response.rowcnt <= 10)
-                        myjstbl.mypage.set_last_page(3);
-                    else
-                        myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
-                     
-                    myjstbl.insert_multiplerow_with_value(1,response.data);
-                    
-                    $('.tdbranches').hide();
+    function showSelectedBranches(response)
+    {
+        if (response.rowcnt > 0)
+        {
+            var input = getSearchFilter();
 
-                    for (var i = 0; i < branch_val.length; i++)
-                    {
-                        var branch_name = $('#branch [value='+branch_val[i]+']').text();
-                        $('.tdbranch' + branch_name).show();
-                    }
-
-                    $('#tbl').show();
-                }
-
-                $('#loadingimg').hide();
-
-                flag = 0;
-            }       
-        });
+            $('.tdbranches').hide();
+            for (var i = 0; i < input.branch.length; i++)
+            {
+                var branch_name = $('#branch [value='+input.branch[i]+']').text();
+                $('.tdbranch' + branch_name).show();
+            }
+        } 
     }
 </script>

@@ -76,7 +76,7 @@
 
     var spntotalqty = document.createElement('span');
 	colarray['total_qty'] = { 
-        header_title: "Total qty",
+        header_title: "Total Qty",
         edit: [spntotalqty],
         disp: [spntotalqty],
         td_class: "tablerow column_click column_hover tdtotalqty"
@@ -102,7 +102,7 @@
 
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
-
+	
 	/**
 	 * Bind datepicker and chosen functionality 
 	 */
