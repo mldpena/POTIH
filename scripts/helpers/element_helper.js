@@ -22,7 +22,7 @@ function clear_dropdown_option(id,options,is_chosen)
 		$('#'+id).trigger("liszt:updated");
 }
 
-function bind_asc_desc(eununalement)
+function bind_asc_desc(element)
 {
 	$('#' + element).click(function(){
 		var value = $(this).val();

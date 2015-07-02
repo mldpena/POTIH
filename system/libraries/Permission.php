@@ -2,6 +2,8 @@
 
 	class Permission 
 	{
+		private $CI 
+
 		function __construct()
 		{
 			$CI =& get_instance();
