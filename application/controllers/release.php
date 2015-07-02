@@ -136,6 +136,10 @@ class Release extends CI_Controller {
 					$response = $this->release_model->update_release_qty_detail($post_data);
 					break;
 
+				case 'check_product_inventory':
+					$response = check_current_inventory($post_data);
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

@@ -114,7 +114,7 @@
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'purchaseret' });
 
-	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true } );
+	tableHelper.detailContent.bindAllEvents({ saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true });
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{

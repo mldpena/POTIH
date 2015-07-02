@@ -172,7 +172,7 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				var helperCallback = response.is_saved == TransactionState.Unsaved ? { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit } : { updateEventsBeforeCallback : getReleaseDetailsBeforeSubmit }
+				var helperCallback = response.is_saved == TransactionState.Unsaved ? { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true } : { updateEventsBeforeCallback : getReleaseDetailsBeforeSubmit }
 
 				tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 									{ baseURL : "<?= base_url() ?>", controller : 'release' });
