@@ -77,19 +77,26 @@ class Login extends CI_Controller {
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
-		switch ($fnc) 
+		$response['error'] = '';
+
+		try
 		{
-			case 'check_user':
-				$response = $this->login_model->check_user_credential($post_data);
-				break;
+			switch ($fnc) 
+			{
+				case 'check_user':
+					$response = $this->login_model->check_user_credential($post_data);
+					break;
 
-			case 'set_branch_user_session':
-				$response = $this->login_model->set_user_session($post_data);
-				break;
+				case 'set_branch_user_session':
+					$response = $this->login_model->set_user_session($post_data);
+					break;
 
-			default:
-				$response['error'] = 'Invalid arguments!';
-				break;
+				default:
+					$response['error'] = 'Invalid arguments!';
+					break;
+			}
+		}catch (Exception $e){
+			$response['error'] = $e->getMessage();
 		}
 
 		echo json_encode($response);

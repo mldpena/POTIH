@@ -3,6 +3,9 @@
 	<div class="title">Hi - Top Merchandising, Inc.</div>
 </div>
 <div class="main-content cpanel">
+	<?php
+		var_dump($permissions);
+	?>
 	<div class="content-form">
 		<div class="form-header">
 			Data
@@ -57,10 +60,10 @@
 					<div class="btn-title">Purchase Receive</div>
 				</div>
 			</a>
-			<a href="<?= base_url() ?>damage/list">
+			<a href="<?= base_url() ?>return/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>damage.png">
-					<div class="btn-title">Damage</div>
+					<img src="<?= base_url().IMG ?>return.png">
+					<div class="btn-title">Customer Return</div>
 				</div>
 			</a>
 		</div>
@@ -70,10 +73,10 @@
 			Return
 		</div>
 		<div class="form-body default">
-			<a href="<?= base_url() ?>return/list">
+			<a href="<?= base_url() ?>damage/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>return.png">
-					<div class="btn-title">Customer Return</div>
+					<img src="<?= base_url().IMG ?>damage.png">
+					<div class="btn-title">Damage</div>
 				</div>
 			</a>
 			<a href="<?= base_url() ?>purchaseret/list">

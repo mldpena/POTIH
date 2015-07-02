@@ -178,6 +178,7 @@ var TableHelper = function(tableOptions,options) {
                     self.contentProvider.setData(self.globalRowIndex,'product',['',0,'','']);
                     self.contentProvider.setData(self.globalRowIndex,'qty',['']);
                     self.contentProvider.setData(self.globalRowIndex,'memo',['']);
+                    self.contentProvider.setData(self.globalRowIndex,'code',['']);
                 }
             });
 

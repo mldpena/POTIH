@@ -8,8 +8,7 @@
 			</div>
 		</div>
 		<script type="text/javascript" src="<?= base_url().SCRIPTS ?>helpers/element_helper.js"></script>   
-		<script type="text/javascript" src="<?= base_url().SCRIPTS ?>helpers/error_helper.js"></script>   
-		<script type="text/javascript" src="<?= base_url().SCRIPTS ?>helpers/table_helper.js"></script>   
+		<script type="text/javascript" src="<?= base_url().SCRIPTS ?>helpers/error_helper.js"></script>    
 		<script type="text/javascript" src="<?= base_url().SCRIPTS ?>helpers/table.helper.js"></script>   
 		<?php if(isset($script)) { require_once(SCRIPTS.$script); } ?>
 	</body>	

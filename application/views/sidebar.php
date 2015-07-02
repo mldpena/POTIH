@@ -61,10 +61,10 @@
 						<div>Purchase Receive</div>
 					</div>
 				</a>
-				<a href="<?= base_url() ?>damage/list">
+				<a href="<?= base_url() ?>return/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>damage.png">
-						<div>Damage</div>
+						<img src="<?= base_url().IMG ?>return.png">
+						<div>Customer Return</div>
 					</div>
 				</a>
 			</div>
@@ -75,10 +75,10 @@
 				<div><i class="fa fa-plus-square"></i></div>
 			</div>
 			<div class="link-menu">
-				<a href="<?= base_url() ?>return/list">
+				<a href="<?= base_url() ?>damage/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>return.png">
-						<div>Customer Return</div>
+						<img src="<?= base_url().IMG ?>damage.png">
+						<div>Damage</div>
 					</div>
 				</a>
 				<a href="<?= base_url() ?>purchaseret/list">

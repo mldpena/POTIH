@@ -172,4 +172,9 @@ class Product extends CI_Controller {
 
 		return $response;
 	}
+
+	private function _remapData($response)
+	{
+		
+	}
 }

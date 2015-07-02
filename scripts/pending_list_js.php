@@ -190,7 +190,7 @@
 				{
 					flag = 0;
 					build_message_box('messagebox_1','Inventory adjust request successfully ' + action_val + 'd!','success');
-					refresh_table();
+					tableHelper.contentHelper.refreshTable(getSearchFilter,isShowButtonActions);
 				}
 
 				flag = 0;

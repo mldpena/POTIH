@@ -114,7 +114,7 @@
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'return' });
 
-	tableHelper.detailContent.bindAllEvents({ saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true });
+	tableHelper.detailContent.bindAllEvents({ saveEventsBeforeCallback : getHeadDetailsBeforeSubmit});
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{

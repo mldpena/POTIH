@@ -11,6 +11,8 @@ class ControlPanel extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->file(CONSTANTS.'permission_const.php');
+		$this->load->library('PermissionChecker');
 	}
 
 	/**
@@ -21,7 +23,6 @@ class ControlPanel extends CI_Controller {
 	public function index()
 	{	
 		$this->_load_libraries();
-
 		check_user_credentials();
 
 		$page = $this->uri->segment(2);
@@ -32,6 +33,10 @@ class ControlPanel extends CI_Controller {
 			exit();
 		}
 
+		//$data['permissions'] = array('data' => $this->PermissionChecker->checkSectionPermission('data'));
+		$this->PermissionChecker->sample();
+
+		exit();
 		$data['name']	= get_user_fullname();
 		$data['branch']	= get_branch_name();
 		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();

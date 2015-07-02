@@ -119,45 +119,4 @@
 			}       
 		});
 	}
-
-	function update_firstlogin()
-	{
-		if (flag == 0) { return; };
-		flag = 0;
-		
-
-		var token_val		= '<?= $token ?>';
-		var username_val	= $("#username").val();
-		var password_val 	= $("#password").val();
-		var branch_val		= $('#branch').val();
-
-		var arr = 	{ 
-						fnc : 'update_first_login', 
-						user_name : username_val, 
-						password : password_val,
-						branch_id : branch_val 
-					};
-
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token_val,
-			success: function(response) {
-			
-				if (response.error != '') 
-				{
-					build_message_box('messagebox_2',response.error,'danger');
-				}
-				else
-				{
-					flag = 0;
-			}       
-				
-
-				flag = 0;
-			}       
-		});
-	}
-	
 </script>

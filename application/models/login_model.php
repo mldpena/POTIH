@@ -1,7 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Login_Model extends CI_Model {
-
+	private $_error_message = array('INVALID_CREDENTIAL' => 'Invalid User Name / Password!',
+									'ACCOUNT_DEACTIVATED' => 'Account currently deactivated!',
+									'NO_BRANCH' => 'No branch exists for your account!',
+									'NO_PERMISSION' => 'No permission exists!');
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -34,13 +37,13 @@ class Login_Model extends CI_Model {
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
-			$response['error'] = 'Invalid User Name / Password!';
+			throw new Exception($this->_error_message['INVALID_CREDENTIAL']);
 		else
 		{
 			$row = $result->row();
 
 			if ($row->is_active == LOGIN_CONST::INACTIVE) 
-				$response['error'] = 'Account currently deactivated!';
+				throw new Exception($this->_error_message['ACCOUNT_DEACTIVATED']);
 			else
 			{
 				$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
@@ -51,7 +54,7 @@ class Login_Model extends CI_Model {
 				$result_branch = $this->db->query($query,$row->id);
 
 				if ($result_branch->num_rows() == 0)
-					$response['error'] = 'No branch exists for your account!';
+					throw new Exception($this->_error_message['NO_BRANCH']);
 				else
 				{
 					$i = 0;
@@ -103,15 +106,31 @@ class Login_Model extends CI_Model {
 		$result = $this->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
-			$response['error']	= 'Invalid User Name / Password!';
+			throw new Exception($this->_error_message['INVALID_CREDENTIAL']);
 		else
 		{
 			$row = $result->row();
 
 			if ($row->is_active == LOGIN_CONST::INACTIVE) 
-				$response['error'] = 'Account currently deactivated!';
+				throw new Exception($this->_error_message['ACCOUNT_DEACTIVATED']);
 			else
 			{
+				$permissions 		= array();
+				$query_permission 	= "SELECT DISTINCT `permission_code` FROM user_permission WHERE `user_id` = ? AND `branch_id` = ?";
+				$result_permission 	= $this->db->query($query_permission, array($row->id,$branch_id));
+
+				if ($result->num_rows() != 1) 
+					throw new Exception($this->_error_message['NO_PERMISSION']);
+				else
+				{
+					foreach ($result_permission->result() as $row_permission) 
+						array_push($permissions,$row_permission->permission_code);
+
+					set_cookie('permissions',json_encode($permissions));
+				}
+
+				$result_permission->free_result();
+
 				set_cookie('username',$this->encrypt->encode($row->username));
 				set_cookie('fullname',$this->encrypt->encode($row->full_name));
 				set_cookie('temp',$this->encrypt->encode($row->id));
@@ -136,7 +155,4 @@ class Login_Model extends CI_Model {
 
 		$result = $this->db->query($query,$id);
 	}
-
-
-
 }	

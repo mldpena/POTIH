@@ -35,7 +35,28 @@
 		if ($(this).is(':checked')) 
 			$('.' + detailPermissionClass).attr('checked','checked');
 		else
+		{
+			$('#admin-permission').removeAttr('checked');
 			$('.' + detailPermissionClass).removeAttr('checked');
+		}
+	});
+
+	$('.check-detail').click(function(){
+		var permissionSection = $(this).attr('class');
+		permissionSection = permissionSection.split(' ');
+		permissionSectionId = permissionSection[1].replace('-detail','');
+
+		
+		if ($('.check-detail').length == $('.check-detail:checked').length)
+			$('#admin-permission').attr('checked','checked');
+		else if ($('.check-detail').length != $('.check-detail:checked').length)
+			$('#admin-permission').removeAttr('checked');
+
+		if ($('.' + permissionSection[1]).length == $('.' + permissionSection[1] + ':checked').length)
+			$('#' + permissionSectionId + '-permission').attr('checked','checked');
+		else if ($('.' + permissionSection[1]).length != $('.' + permissionSection[1] + ':checked').length)
+			$('#' + permissionSectionId + '-permission').removeAttr('checked');
+
 	});
 
 	$("#show-info-btn").click(function(){
@@ -61,7 +82,9 @@
 		var password_temp 	= password_val == '******' ? '123456' : password_val;
 		var contact_val 	= $("#contact").val();
 		var branches_val    = $('#branches').val() == null ? '' : $('#branches').val();
+		var permission_list = [];
 		var fnc_val 		= "<?= $this->uri->segment(3) ?>" != "" ? "update_user" : "insert_new_user";
+		
 
 		var errorList = $.dataValidation([	{ 	
 											value : user_code_val,
@@ -100,6 +123,9 @@
 		if (branches_val.length == 0) 
 			errorList.push('Please select at least one branch!');
 
+		if ($('.check-detail:checked').length == 0) 
+			errorList.push('Please select at one permission!');
+
 		if (errorList.length > 0) {
 			build_message_box('messagebox_1',build_error_message(errorList),'danger');
 			return;
@@ -116,6 +142,15 @@
 			});
 		}
 
+		if ($('#admin-permission').is(':checked'))
+			permission_list.push($('#admin-permission').val());
+		else
+		{
+			$('.check-detail:checked').each(function(key,element){
+				permission_list.push($(element).val());
+			});
+		}
+
 		var arr = 	{ 
 						fnc 		: fnc_val, 
 						user_code 	: user_code_val, 
@@ -124,7 +159,8 @@
 						user_name 	: user_name_val,
 						password 	: password_val,
 						contact 	: contact_val,
-						branches 	: branches_val
+						branches 	: branches_val,
+						permission_list : permission_list
 					};
 
 		flag = 1;
@@ -187,6 +223,18 @@
 						$('#show-info-btn').hide();
 					}
 
+					if (response.permissions.length == 1 && response.permissions[0] == 100)
+					{
+						$('#admin-permission').attr('checked','checked');
+						$('.permission-section').attr('checked','checked');
+						$('.check-detail').attr('checked','checked');
+					}
+					else
+					{
+						for (var i = 0; i < response.permissions.length; i++)
+							$('.check-detail[value=' + response.permissions[i] + ']').attr('checked','checked');
+					}
+						
 					$('#branches').trigger("liszt:updated");
 				}
 

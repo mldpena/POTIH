@@ -163,7 +163,7 @@
 						<td></td>
 					</tr>
 					<tr>
-						<td>Damage</td>
+						<td>Customer Return</td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="141"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="142"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="144"></td>
@@ -190,21 +190,21 @@
 						<td style="width:320px;">Others</td>
 					</tr>
 					<tr>
-						<td>Customer Return</td>
-						<td><input type="checkbox" class="check-detail return-detail" value="156"></td>
+						<td>Damage</td>
 						<td><input type="checkbox" class="check-detail return-detail" value="156"></td>
 						<td><input type="checkbox" class="check-detail return-detail" value="157"></td>
 						<td><input type="checkbox" class="check-detail return-detail" value="158"></td>
 						<td><input type="checkbox" class="check-detail return-detail" value="159"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="160"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Purchase Return</td>
-						<td><input type="checkbox" class="check-detail return-detail" value="160"></td>
 						<td><input type="checkbox" class="check-detail return-detail" value="161"></td>
 						<td><input type="checkbox" class="check-detail return-detail" value="162"></td>
 						<td><input type="checkbox" class="check-detail return-detail" value="163"></td>
 						<td><input type="checkbox" class="check-detail return-detail" value="164"></td>
+						<td><input type="checkbox" class="check-detail return-detail" value="165"></td>
 						<td></td>
 					</tr>
 				</table>
@@ -227,28 +227,28 @@
 					</tr>
 					<tr>
 						<td>Stock Delivery</td>
-						<td><input type="checkbox" class="check-detail return-detail" value="171"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="172"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="173"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="174"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="175"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="171"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="172"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="173"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="174"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="175"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Stock Receive</td>
-						<td><input type="checkbox" class="check-detail return-detail" value="176"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="177"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="176"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="177"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="178"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="178"></td>
 						<td></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Customer Receive</td>
-						<td><input type="checkbox" class="check-detail return-detail" value="179"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="180"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="179"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="180"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="181"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="181"></td>
 						<td></td>
 						<td></td>
 					</tr>
@@ -281,7 +281,7 @@
 					</tr>
 					<tr>
 						<td>Pending Inventory Adjust</td>
-						<td><input type="checkbox" class="check-detail other-detail" value="96"></td>
+						<td><input type="checkbox" class="check-detail other-detail" value="196"></td>
 						<td></td>
 						<td></td>
 						<td></td>

@@ -14,7 +14,9 @@ class User_Model extends CI_Model {
 									'UNABLE_TO_UPDATE' => 'Unable to update user!',
 									'UNABLE_TO_SELECT' => 'Unable to get select details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete user!',
+									'UNABLE_TO_DELETE_PERMISSION' => 'Unable to delete permissions',
 									'NO_BRANCH_ASSIGNED' => 'No branch assigned to this user!',
+									'UNABLE_TO_GET_PERMISSIONS' => 'Unable to get user permissions!',
 									'ACCOUNT_NOT_EXISTS' => 'User Account does not exists!');
 
 	/**
@@ -49,11 +51,13 @@ class User_Model extends CI_Model {
 		$password 	= $this->encrypt->encode_md5($password);
 
 		$response 	= array();
-		$query_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
-		
+		$query 		= array();
+		$query_data = array();
+
 		$response['error'] = '';
 
- 		$query = "INSERT INTO `user`
+		$query_user_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
+ 		$query_user = "INSERT INTO `user`
 					(`code`,
 					`full_name`,
 					`username`,
@@ -65,32 +69,36 @@ class User_Model extends CI_Model {
 					`created_by`,
 					`last_modified_by`)
 					VALUES
-					(?,?,?,?,?,?,?,?,?,?)";
+					(?,?,?,?,?,?,?,?,?,?);";
 
-		$result = $this->sql->execute_query($query,$query_data);
+		array_push($query,$query_user,"SET @insert_id := LAST_INSERT_ID();");
+		array_push($query_data,$query_user_data,array());
 
-		if ($result['error'] != '') 
-			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
-		else
+		$query_permissions = "INSERT INTO `user_permission`
+					(`branch_id`,
+					`user_id`,
+					`permission_code`)
+					VALUES";
+
+		$query_permission_code = "";
+		$query_permissions_data = array();
+
+		foreach ($branches as $key => $value) 
 		{
-			$insert_id = $this->encrypt->decode($result['id']);
-
-			$query_permissions = "INSERT INTO `user_permission`
-						(`branch_id`,
-						`user_id`,
-						`permission_code`)
-						VALUES
-						(?,?,?)";
-
-			foreach ($branches as $key => $value) 
+			foreach ($permission_list as $key_permission => $value_permission) 
 			{
-				$query_permissions_data = array($value,$insert_id,100);
-				$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
-
-				if ($result_permissions['error'] != '') 
-					throw new Exception($this->_error_message['UNABLE_TO_INSERT_PERMISSION']);
+				$query_permission_code .= ",(?,@insert_id,?)";
+				array_push($query_permissions_data,$value,$value_permission);
 			}
 		}
+
+		array_push($query,$query_permissions.substr($query_permission_code,1).";");
+		array_push($query_data,$query_permissions_data);
+
+		$result = $this->sql->execute_transaction($query,$query_data);
+		
+		if ($result['error'] != '') 
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);	
 
 		return $response;
 	}
@@ -135,10 +143,14 @@ class User_Model extends CI_Model {
 		$this->validate_user($param,USER_CONST::UPDATE_PROCESS);
 
 		$response 	= array();
-		$query_data = array($user_code,$full_name,$user_name,$contact,$status,$this->_current_date,$this->_current_user,$this->_user_head_id);
+		$query = array();
+		$query_data = array();
+
 		$response['error'] = '';
 		$passwordField = '';
 
+		$query_user_data = array($user_code,$full_name,$user_name,$contact,$status,$this->_current_date,$this->_current_user,$this->_user_head_id);
+		
 		if ($password != USER_CONST::DUMMY_PASSWORD) 
 		{
 			$password 	= $this->encrypt->encode_md5($password);
@@ -146,48 +158,47 @@ class User_Model extends CI_Model {
 			$passwordField .= "`password` = ?,";
 		}
 
-		$query = "UPDATE`user`
-					SET
-					$passwordField
-					`code` = ?,
-					`full_name` = ?,
-					`username` = ?,
-					`contact_number` = ?,
-					`is_active` = ?,
-					`last_modified_date` = ?,
-					`last_modified_by` = ?
-					WHERE `id` = ?;";
+		$query_user = "UPDATE`user`
+						SET
+						$passwordField
+						`code` = ?,
+						`full_name` = ?,
+						`username` = ?,
+						`contact_number` = ?,
+						`is_active` = ?,
+						`last_modified_date` = ?,
+						`last_modified_by` = ?
+						WHERE `id` = ?;";
 
-		$result = $this->sql->execute_query($query,$query_data);
+		array_push($query,$query_user,"DELETE FROM user_permission WHERE `user_id` = ?;");
+		array_push($query_data,$query_user_data,$this->_user_head_id);
 
-		if ($result['error'] != '') 
-			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
-		else
+		$query_permissions = "INSERT INTO `user_permission`
+					(`branch_id`,
+					`user_id`,
+					`permission_code`)
+					VALUES";
+
+		$query_permission_code = "";
+		$query_permissions_data = array();
+
+		foreach ($branches as $key => $value) 
 		{
-			$query_delete_previous_permissions = "DELETE FROM user_permission WHERE `user_id` = ?";
-			$result_delete_previous_permissions = $this->sql->execute_query($query_delete_previous_permissions,$this->_user_head_id);
-
-			if ($result_delete_previous_permissions['error'] != '') 
-				$response['error'] = 'Unable to delete permissions!';
-			else
+			foreach ($permission_list as $key_permission => $value_permission) 
 			{
-				$query_permissions = "INSERT INTO `user_permission`
-										(`branch_id`,
-										`user_id`,
-										`permission_code`)
-										VALUES
-										(?,?,?)";
-
-				foreach ($branches as $key => $value) 
-				{
-					$query_permissions_data = array($value,$this->_user_head_id,100);
-					$result_permissions = $this->sql->execute_query($query_permissions,$query_permissions_data);
-
-					if ($result_permissions['error'] != '') 
-						throw new Exception($this->_error_message['UNABLE_TO_INSERT_PERMISSION']);
-				}
+				$query_permission_code .= ",(?,?,?)";
+				array_push($query_permissions_data,$value,$this->_user_head_id,$value_permission);
 			}
 		}
+
+		array_push($query,$query_permissions.substr($query_permission_code,1).";");
+		array_push($query_data,$query_permissions_data);
+
+		$result = $this->sql->execute_transaction($query,$query_data);
+		
+		if ($result['error'] != '') 
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
+
 		return $response;
 	}
 
@@ -320,6 +331,24 @@ class User_Model extends CI_Model {
 				foreach ($result_branches->result() as $row) 
 					$response['branches'][] = $row->branch_id;
 			}
+
+			$result_branches->free_result();
+
+			$query_permissions = "SELECT DISTINCT(UP.`permission_code`) AS 'permissions'
+								FROM user_permission AS UP
+								WHERE `user_id` = ?";
+
+			$result_permissions = $this->db->query($query_permissions,$this->_user_head_id);
+			
+			if ($result_permissions->num_rows() == 0) 
+				throw new Exception($this->_error_message['UNABLE_TO_GET_PERMISSIONS']);
+			else
+			{
+				foreach ($result_permissions->result() as $row) 
+					$response['permissions'][] = $row->permissions;
+			}
+
+			$result_permissions->free_result();
 		}
 
 		$result->free_result();

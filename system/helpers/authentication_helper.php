@@ -7,16 +7,12 @@ if (!function_exists('check_user_credentials'))
 		$isset_cookies = check_set_cookies();
 
 		if (!$isset_cookies) 
-		{
 			logout_user();
-		}
 
 		$is_exists = check_user_exists();
 
 		if (!$is_exists) 
-		{
 			logout_user();
-		}
 
 		return true;
 	}
@@ -31,10 +27,11 @@ if (!function_exists('check_set_cookies'))
 
 		$isset = true;
 
-		if (!isset($_COOKIE['username']) || !isset($_COOKIE['fullname']) || !isset($_COOKIE['temp']) || !isset($_COOKIE['branch'])) 
-		{
+		if (!isset($_COOKIE['username']) || !isset($_COOKIE['fullname']) || !isset($_COOKIE['temp']) || !isset($_COOKIE['branch']) || !isset($_COOKIE['permissions']))
 			$isset = false;
-		}
+
+		if (isset($_COOKIE['permissions']) && count(json_decode($_COOKIE['permissions'])) == 0)
+			$isset = false;
 
 		return $isset;
 	}
@@ -61,9 +58,7 @@ if (!function_exists('check_user_exists'))
 		$result = $CI->db->query($query,$query_data);
 
 		if ($result->num_rows() != 1) 
-		{
 			$isset = false;
-		}
 
 		$result->free_result();
 
@@ -88,6 +83,7 @@ if (!function_exists('delete_user_cookies'))
 		$CI =& get_instance();
 		$CI->load->helper('cookie');
 
+		delete_cookie('permissions');
 		delete_cookie('username');
 		delete_cookie('fullname');
 		delete_cookie('temp');
