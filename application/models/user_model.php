@@ -154,7 +154,7 @@ class User_Model extends CI_Model {
 		if ($password != USER_CONST::DUMMY_PASSWORD) 
 		{
 			$password 	= $this->encrypt->encode_md5($password);
-			array_unshift($query_data,$password);
+			array_unshift($query_user_data,$password);
 			$passwordField .= "`password` = ?,";
 		}
 

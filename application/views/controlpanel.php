@@ -3,9 +3,8 @@
 	<div class="title">Hi - Top Merchandising, Inc.</div>
 </div>
 <div class="main-content cpanel">
-	<?php
-		var_dump($permissions);
-	?>
+	<?php if($permissions['data']) : ?>
+
 	<div class="content-form">
 		<div class="form-header">
 			Data
@@ -43,6 +42,11 @@
 			</a>
 		</div>
 	</div>
+
+	<?php endif; ?>
+
+	<?php if($permissions['purchase']) : ?>
+
 	<div class="content-form">
 		<div class="form-header">
 			Purchase
@@ -87,6 +91,11 @@
 			</a>
 		</div>
 	</div>
+
+	<?php endif; ?>
+
+	<?php if($permissions['delivery']) : ?>
+
 	<div class="content-form">
 		<div class="form-header">
 			Delivery and Stock Transferring
@@ -112,6 +121,11 @@
 			</a>
 		</div>
 	</div>
+
+	<?php endif; ?>
+
+	<?php if($permissions['others']) : ?>
+
 	<div class="content-form">
 		<div class="form-header">
 			Others
@@ -137,6 +151,11 @@
 			</a>
 		</div>
 	</div>
+
+	<?php endif; ?>
+
+	<?php if($permissions['reports']) : ?>
+
 	<div class="content-form">
 		<div class="form-header">
 			Reports
@@ -156,4 +175,6 @@
 			</a>
 		</div>
 	</div>
+
+	<?php endif; ?>
 </div>

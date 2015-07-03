@@ -12,7 +12,7 @@ class ControlPanel extends CI_Controller {
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 		$this->load->file(CONSTANTS.'permission_const.php');
-		$this->load->library('PermissionChecker');
+		$this->load->library('permissionchecker');
 	}
 
 	/**
@@ -33,15 +33,18 @@ class ControlPanel extends CI_Controller {
 			exit();
 		}
 
-		//$data['permissions'] = array('data' => $this->PermissionChecker->checkSectionPermission('data'));
-		$this->PermissionChecker->sample();
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> 'controlpanel',
+						'script'		=> 'controlpanel_js.php',
+						'permissions' 	=> array(	'data' => $this->permissionchecker->check_section_permission('data'),
+													'purchase' => $this->permissionchecker->check_section_permission('purchase'),
+													'return' => $this->permissionchecker->check_section_permission('return'),
+													'delivery' => $this->permissionchecker->check_section_permission('delivery'),
+													'others' => $this->permissionchecker->check_section_permission('others'),
+													'reports' => $this->permissionchecker->check_section_permission('reports')));
 
-		exit();
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= 'controlpanel';
-		$data['script'] = 'controlpanel_js.php';
 
 		$this->load->view('master', $data);
 	}
