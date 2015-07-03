@@ -891,7 +891,7 @@ body .ui-tooltip {
 	background: #d0e5f5 url("images/ui-bg_glass_75_d0e5f5_1x400.png") 50% 50% repeat-x;
 	font-weight: bold;
 	color: #1d5987;
-	width: 100%;
+	/*width: 100%;*/
 }
 .ui-state-hover a,
 .ui-state-hover a:hover,

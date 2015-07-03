@@ -33,11 +33,12 @@
     spnproductid.setAttribute('style','display:none;');
 
     var description = document.createElement('textarea');
-    description.setAttribute('class','nonStackDescription');
+    description.setAttribute('class','nonStackDescription form-control desc-margin');
+    description.setAttribute('placeholder', 'Description');
     description.setAttribute('style','display:none;');
 
     var disabledDescription = document.createElement('textarea');
-    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('class','nonStackDescription form-control');
     disabledDescription.setAttribute('style','display:none;');
     disabledDescription.setAttribute('disabled','disabled');
 
