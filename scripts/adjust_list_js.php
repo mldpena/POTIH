@@ -182,7 +182,7 @@
 		var arr = 	{ 
 						fnc 	 : fnc_val, 
 						product_id : global_product_id,
-						adjust_id  : global_adjust_id,
+						detail_id  : global_adjust_id,
 						old_inventory : old_inventory_val,
 						new_inventory : new_inventory_val,
 						memo : memo_val

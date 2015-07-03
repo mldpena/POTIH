@@ -13,7 +13,8 @@ class Delivery_Model extends CI_Model {
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get delivery details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete delivery detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete delivery head!',
-									'HAS_RECEIVED' => 'Stock Delivery can only be deleted if delivery status is no received!');
+									'HAS_RECEIVED' => 'Stock Delivery can only be deleted if delivery status is no received!',
+									'NOT_OWN_BRANCH' => 'Cannot delete stock delivery entry of other branches!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -61,16 +62,15 @@ class Delivery_Model extends CI_Model {
 			$response['memo'] 				= $row->memo;
 			$response['to_branchid'] 		= $row->to_branchid;
 			$response['delivery_type'] 		= $row->delivery_type;
-			$response['is_editable'] 		= $row->total_qty == 0 ? TRUE : FALSE;
+			$response['is_editable'] 		= ($row->total_qty == 0 && $row->branch_id == $this->_current_branch_id) ? TRUE : FALSE;
 			$response['is_saved'] 			= $row->is_used;
 			$response['own_branch'] 		= $this->_current_branch_id;
-			$branch_id = $row->branch_id;
 		}
 
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity` AS 'receiveqty', SD.`description`
+						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
@@ -89,7 +89,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($row->is_for_branch);
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->receiveqty);
@@ -386,12 +386,20 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
-		$query 	= "SELECT SUM(`recv_quantity`) AS 'total_received' FROM stock_delivery_detail WHERE `headid` = ?";
+		$query 	= "SELECT SUM(D.`recv_quantity`) AS 'total_received', H.`branch_id` 
+						FROM stock_delivery_head AS H
+						LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id` 
+						WHERE H.`id` = ? AND H.`is_show` = ".DELIVERY_CONST::ACTIVE;
+
 		$result = $this->db->query($query,$delivery_head_id);
 		$row 	= $result->row();
 
 		if ($row->total_received > 0) {
 			throw new Exception($this->_error_message['HAS_RECEIVED']);
+		}
+
+		if ($row->branch_id != $this->_current_branch_id) {
+			throw new Exception($this->_error_message['NOT_OWN_BRANCH']);
 		}
 
 		$result->free_result();
@@ -524,7 +532,6 @@ class Delivery_Model extends CI_Model {
 	public function get_receive_details($receive_type)
 	{
 		$response 		= array();
-		$branch_id 		= 0;
 
 		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
@@ -561,17 +568,21 @@ class Delivery_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 
-			if ($receive_type == DELIVERY_CONST::FOR_TRANSFER) 
-				$response['to_branchid'] 		= $row->to_branchid;
-
+			if ($receive_type == DELIVERY_CONST::FOR_TRANSFER)
+			{
+				$response['to_branchid'] 	= $row->to_branchid;
+				$response['is_editable'] 	= $row->to_branchid == $this->_current_branch_id ? TRUE : FALSE;
+			}
+			else
+				$response['is_editable'] 	= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
+				
 			$response['delivery_type'] 		= $row->delivery_type;
 			$response['receive_date'] 		= $row->receive_date;
-			$branch_id = $row->branch_id;
 		}
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity`, SD.`description`
+						SD.`recv_quantity`, SD.`description`, P.`type`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
@@ -589,7 +600,7 @@ class Delivery_Model extends CI_Model {
 				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line,$row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);

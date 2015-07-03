@@ -3,7 +3,7 @@
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
 			<li><a href="<?= base_url() ?>damage/list">Damage Products List</a></li>
-			<li class="active"><a href="<?= base_url() ?>damage/add">Create New Damage Entry</a></li>
+			<li class="active"><a href="<?= base_url() ?>damage/view/<?= $this->uri->segment(3) ?>">Create New Damage Entry</a></li>
 		</ol>
 	</div>
 	<div class="content-form">

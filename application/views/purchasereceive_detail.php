@@ -42,7 +42,7 @@
 				</center>
 			</div>
 			<div class="max-row" align="right">
-				<input type="button" class="btn btn-primary" value="Print">
+				<input type="button" class="btn btn-primary" value="Print" id="print">
 				<input type="button" class="btn btn-success" value="Save" id="save">
 			</div>
 		</div>

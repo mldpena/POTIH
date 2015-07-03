@@ -53,16 +53,19 @@
     spnproductid.setAttribute('style','display:none;');
 
     var disabledDescription = document.createElement('textarea');
-    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('class','nonStackDescription form-control');
     disabledDescription.setAttribute('style','display:none;');
     disabledDescription.setAttribute('disabled','disabled');
+
+    var productType = document.createElement('span');
+    productType.setAttribute('style','display:none;');
 
     var newline = document.createElement('span');
 
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [spnproduct,spnproductid,newline,disabledDescription],
-        disp: [spnproduct,spnproductid,newline,disabledDescription],
+        edit: [spnproduct,spnproductid,productType,newline,disabledDescription],
+        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -131,7 +134,8 @@
 		header_title: "",
 		edit: [imgUpdate],
 		disp: [imgEdit],
-		td_class: "tablerow column_hover tdupdate"
+		td_class: "tablerow column_hover tdupdate",
+		headertd_class : "tdupdate"
 	};
 
     var imgDelete = document.createElement('i');
@@ -140,7 +144,8 @@
 		header_title: "",
 		edit: [imgDelete],
 		disp: [imgDelete],
-		td_class: "tablerow column_hover tddelete"
+		td_class: "tablerow column_hover tddelete",
+		headertd_class : "tddelete"
 	};
 
 	/**
@@ -266,8 +271,14 @@
 				if (response.po_list_error == '') 
 					myjstbl_po_list.insert_multiplerow_with_value(1,response.po_lists);
 
+				if (!response.is_editable)
+				{
+					$('input, textarea, select').not('#print').attr('disabled','disabled');
+					$('.tdupdate, .tddelete, #save').hide();
+				}
+
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.showDescriptionFields();
+				tableHelper.contentHelper.checkProductTypeDescription();
 			}       
 		});
 	}
@@ -307,7 +318,7 @@
 					{
 						myjstbl.insert_multiplerow_with_value(1,response.detail);
 						tableHelper.contentProvider.recomputeTotalQuantity();
-						tableHelper.contentHelper.showDescriptionFields();
+						tableHelper.contentHelper.checkProductTypeDescription();
 						checkReceivedDetails();
 					}
 
@@ -320,6 +331,7 @@
 		else
 		{
 			var po_number = poListTableHelper.contentProvider.getData(rowIndex,'ponumber');
+
 			for(var i = myjstbl.get_row_count() - 1; i > 0; i--)
 			{
 				var row_po_number = tableHelper.contentProvider.getData(i,'ponumber');
@@ -328,7 +340,6 @@
 			};
 
 			tableHelper.contentProvider.recomputeTotalQuantity();
-			tableHelper.contentHelper.showDescriptionFields();
 
 			flag = 0;
 		}
@@ -339,7 +350,7 @@
 		var totalQuantity = 0;
 
 		if ($(this).is(':checked')) 
-			 totalQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qty'));
+			 totalQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyremaining'));
 		
 		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[totalQuantity]);
 	});
@@ -439,7 +450,10 @@
 			var rowReceiveDetailId = tableHelper.contentProvider.getData(i,'id');
 
 			if (rowReceiveDetailId == 0) 
+			{
 				myjstbl.edit_row(i);
+				tableHelper.contentHelper.descriptionAccessibilty(i);
+			}
 		};
 	}
 </script>

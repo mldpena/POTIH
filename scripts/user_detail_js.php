@@ -124,7 +124,7 @@
 			errorList.push('Please select at least one branch!');
 
 		if ($('.check-detail:checked').length == 0) 
-			errorList.push('Please select at one permission!');
+			errorList.push('Please select at least one permission!');
 
 		if (errorList.length > 0) {
 			build_message_box('messagebox_1',build_error_message(errorList),'danger');

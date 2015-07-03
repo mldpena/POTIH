@@ -42,12 +42,15 @@
     disabledDescription.setAttribute('style','display:none;');
     disabledDescription.setAttribute('disabled','disabled');
 
+    var productType = document.createElement('span');
+    productType.setAttribute('style','display:none;');
+
     var newline = document.createElement('span');
 
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid,newline,description],
-        disp: [spnproduct,spnproductid,newline,disabledDescription],
+        edit: [txtproduct,spnproductid,productType,newline,description],
+        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -153,7 +156,7 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				if (response.is_editable == false)
+				if (!response.is_editable)
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save').hide();
@@ -162,7 +165,7 @@
 					tableHelper.contentProvider.addRow();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.showDescriptionFields();
+				tableHelper.contentHelper.checkProductTypeDescription();
 
 			}       
 		});

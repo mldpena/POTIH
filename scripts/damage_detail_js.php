@@ -43,12 +43,15 @@
     disabledDescription.setAttribute('style','display:none;');
     disabledDescription.setAttribute('disabled','disabled');
 
+    var productType = document.createElement('span');
+    productType.setAttribute('style','display:none;');
+
     var newline = document.createElement('span');
 
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid,newline,description],
-        disp: [spnproduct,spnproductid,newline,disabledDescription],
+        edit: [txtproduct,spnproductid,productType,newline,description],
+        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -88,7 +91,8 @@
 		header_title: "",
 		edit: [imgUpdate],
 		disp: [imgEdit],
-		td_class: "tablerow column_hover tdupdate"
+		td_class: "tablerow column_hover tdupdate",
+		headertd_class : "tdupdate"
 	};
 
     var imgDelete = document.createElement('i');
@@ -97,7 +101,8 @@
 		header_title: "",
 		edit: [imgDelete],
 		disp: [imgDelete],
-		td_class: "tablerow column_hover tddelete"
+		td_class: "tablerow column_hover tddelete",
+		headertd_class : "tddelete"
 	};
 
 
@@ -149,9 +154,17 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
+
+				if (!response.is_editable)
+				{
+					$('input, textarea, select').not('#print').attr('disabled','disabled');
+					$('.tdupdate, .tddelete, #save').hide();
+				}	
+				else
+					tableHelper.contentProvider.addRow();
+				
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentProvider.addRow();
-				tableHelper.contentHelper.showDescriptionFields();
+				tableHelper.contentHelper.checkProductTypeDescription();
 			}       
 		});
 	}

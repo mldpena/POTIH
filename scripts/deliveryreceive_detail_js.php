@@ -31,16 +31,19 @@
     spnproductid.setAttribute('style','display:none;');
 
     var disabledDescription = document.createElement('textarea');
-    disabledDescription.setAttribute('class','nonStackDescription');
+    disabledDescription.setAttribute('class','nonStackDescription form-control');
     disabledDescription.setAttribute('style','display:none;');
     disabledDescription.setAttribute('disabled','disabled');
+
+    var productType = document.createElement('span');
+    productType.setAttribute('style','display:none;');
 
     var newline = document.createElement('span');
 
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [spnproduct,spnproductid,newline,disabledDescription],
-        disp: [spnproduct,spnproductid,newline,disabledDescription],
+        edit: [spnproduct,spnproductid,productType,newline,disabledDescription],
+        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -97,7 +100,8 @@
 		header_title: "",
 		edit: [imgUpdate],
 		disp: [imgEdit],
-		td_class: "tablerow column_hover tdupdate"
+		td_class: "tablerow column_hover tdupdate",
+		headertd_class : "tdupdate"
 	};
 
 	var myjstbl;
@@ -155,20 +159,27 @@
 						$('#delivery_to_list').hide();
 				}
 				
-				$('input, textarea, select').not('#print, #receive_date, #save').attr('disabled','disabled');
-
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				for (var i = 1; i < myjstbl.get_row_count(); i++) 
+				if (!response.is_editable)
 				{
-					var receive_qty = tableHelper.contentProvider.getData(i,'receiveqty');
-					if (receive_qty == 0) 
-						myjstbl.edit_row(i);
-				};
+					$('input, textarea, select').attr('disabled','disabled');
+					$('.imgedit, .imgupdate').hide();
+				}
+				else
+				{
+					$('input, textarea, select').not('#print, #receive_date, #save').attr('disabled','disabled');
+					for (var i = 1; i < myjstbl.get_row_count(); i++) 
+					{
+						var receive_qty = tableHelper.contentProvider.getData(i,'receiveqty');
+						if (receive_qty == 0) 
+							myjstbl.edit_row(i);
+					};
+				}
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.showDescriptionFields();
+				tableHelper.contentHelper.checkProductTypeDescription();
 
 				$('#tbl').show();
 			}       

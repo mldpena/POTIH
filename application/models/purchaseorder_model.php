@@ -13,7 +13,8 @@ class PurchaseOrder_Model extends CI_Model {
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get purchase details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete purchase detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete purchase head!',
-									'HAS_RECEIVED' => 'PO can only be deleted if purchase status is no received!');
+									'HAS_RECEIVED' => 'PO can only be deleted if purchase status is no received!',
+									'NOT_OWN_BRANCH' => 'Cannot delete purchase order entry of other branches!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -61,11 +62,11 @@ class PurchaseOrder_Model extends CI_Model {
 			$response['supplier_name'] 		= $row->supplier;
 			$response['orderfor'] 			= $row->for_branchid;
 			$response['is_imported'] 		= $row->is_imported;
-			$response['is_editable'] 		= $row->total_qty == 0 ? (($row->branch_id == $this->_current_branch_id || $row->for_branchid == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
+			$response['is_editable'] 		= $row->total_qty == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`
 					FROM `purchase_detail` AS PD
 					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".PURCHASE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_CONST::ACTIVE."
@@ -83,7 +84,7 @@ class PurchaseOrder_Model extends CI_Model {
 				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
@@ -368,12 +369,20 @@ class PurchaseOrder_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
-		$query 	= "SELECT SUM(`recv_quantity`) AS 'total_received' FROM purchase_detail WHERE `headid` = ?";
+		$query 	= "SELECT SUM(D.`recv_quantity`) AS 'total_received', H.`branch_id` 
+						FROM purchase_head AS H
+						LEFT JOIN purchase_detail AS D ON D.`headid` = H.`id` 
+						WHERE H.`id` = ? AND H.`is_show` = ".PURCHASE_CONST::ACTIVE;
+
 		$result = $this->db->query($query,$purchase_head_id);
 		$row 	= $result->row();
 
 		if ($row->total_received > 0) {
 			throw new Exception($this->_error_message['HAS_RECEIVED']);
+		}
+
+		if ($row->branch_id != $this->_current_branch_id) {
+			throw new Exception($this->_error_message['NOT_OWN_BRANCH']);
 		}
 
 		$result->free_result();

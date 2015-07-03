@@ -157,12 +157,21 @@
     	}
     });
 
-    $('.tddelete').live('click',function(){
-		global_row_index 	= $(this).parent().index();
+    $('.imgdel').live('click',function(){
+		global_row_index 	= $(this).parent().parent().index();
 		global_id 			= tableHelper.contentProvider.getData(global_row_index,'id');
 
 		if (global_id != 0)
 			$('#deleteAdjustRequest').modal('show');
+		else
+		{
+			tableHelper.contentProvider.setData(global_row_index,'product',['','']);
+			tableHelper.contentProvider.setData(global_row_index,'material_code',['']);
+			tableHelper.contentProvider.setData(global_row_index,'oldinventory',['']);
+			tableHelper.contentProvider.setData(global_row_index,'newinventory',['']);
+			tableHelper.contentProvider.setData(global_row_index,'memo',['']);
+
+		}
 	});
 
     $('#delete').click(function(){
@@ -190,7 +199,7 @@
 				else
 				{
 					myjstbl.delete_row(row_index);
-					recompute_row_count(myjstbl,colarray);
+					tableHelper.contentProvider.recomputeRowNumber();
 
 					if (myjstbl.get_row_count() == 1) 
 						$('#tbl').hide();

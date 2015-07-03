@@ -117,7 +117,7 @@
 											value : name_val,
 											fieldName : 'Name',
 											required : true,
-											rules : 'letterChar'
+											rules : 'alphaNumeric'
 										}
 										]);
 
@@ -150,14 +150,13 @@
 
             		if (branch_id_val == 0) 
             		{
-            			myjstbl.add_new_row();
+            			tableHelper.contentProvider.addRow();
         				row_index = myjstbl.get_row_count() - 1;
-        				table_set_column_data(row_index,'id',[response.id]);
-        				table_set_column_data(row_index,'number',[row_index]);
+        				tableHelper.contentProvider.setData(row_index,'id',[response.id]);
             		}
 
-            		table_set_column_data(row_index,'code',[code_val]);
-        			table_set_column_data(row_index,'name',[name_val]);
+            		tableHelper.contentProvider.setData(row_index,'code',[code_val]);
+        			tableHelper.contentProvider.setData(row_index,'name',[name_val]);
 
         			$('#createModal').modal('hide');
 
@@ -199,4 +198,9 @@
 			}       
 		});
 	});
+
+	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
+        global_branch_id 	= 0;
+        global_row_index 	= 0;
+    });
 </script>

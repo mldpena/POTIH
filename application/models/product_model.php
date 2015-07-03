@@ -691,6 +691,7 @@ class Product_Model extends CI_Model {
 		}
 
 		$result = $this->db->query($query,$query_data);
+
 		if ($result->num_rows() > 0) 
 			throw new Exception($this->_error_message['CODE_EXISTS']);
 			

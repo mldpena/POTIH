@@ -70,12 +70,15 @@
     disabledDescription.setAttribute('style','display:none;');
     disabledDescription.setAttribute('disabled','disabled');
 
+    var productType = document.createElement('span');
+    productType.setAttribute('style','display:none;');
+
     var newline = document.createElement('span');
 
 	colarray['product'] = { 
         header_title: "Product",
-        edit: [txtproduct,spnproductid,newline,description],
-        disp: [spnproduct,spnproductid,newline,disabledDescription],
+        edit: [txtproduct,spnproductid,productType,newline,description],
+        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
@@ -184,8 +187,8 @@
 					$('#delivery_type').val(response.delivery_type);
 					$('#to_branch').val(response.to_branchid);
 
-					if (response.to_branchid == 0) 
-						$("#to_branch option[value='"+response.own_branch+"']").remove();
+					if (response.to_branchid != response.own_branch)
+						$("#to_branch option[value="+response.own_branch+"]").remove();
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
@@ -217,7 +220,7 @@
 				} 
 					
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.showDescriptionFields();
+				tableHelper.contentHelper.checkProductTypeDescription();
 
 				$('#tbl').show();
 			}       
@@ -274,7 +277,7 @@
 		var memo 			= tableHelper.contentProvider.getData(rowIndex,'memo');
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
-		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',3);
+		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',4);
 		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
 		var arr = 	{ 

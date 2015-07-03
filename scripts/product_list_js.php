@@ -297,6 +297,11 @@
 		});
 	});
 
+	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
+        global_product_id 	= 0;
+        global_row_index 	= 0;
+    });
+
 	//Event for saving and updating product
 	$('#save').click(function(){
 		if (flag == 1) 
@@ -340,7 +345,7 @@
 				errorList.push('Please fill up all the min and max values!');
 				break;
 			}
-			else if ((min_inv > max_inv && max_inv != 0)) 
+			else if (Number(min_inv) > Number(max_inv) && Number(max_inv) != 0) 
 			{
 				errorList.push('Minimum inventory should not be greater than maximum inventory!');
 				break;

@@ -12,7 +12,8 @@ class Damage_Model extends CI_Model {
 									'UNABLE_TO_SELECT_HEAD' => 'Unable to get damage head details!',
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get damage details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete damage detail!',
-									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete damage head!');
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete damage head!',
+									'NOT_OWN_BRANCH' => 'Cannot delete damage entry of other branches!');
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
@@ -53,12 +54,11 @@ class Damage_Model extends CI_Model {
 			$response['reference_number'] 	= $row->reference_number;
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
-
-			$branch_id = $row->branch_id;
+			$response['is_editable']		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, DD.`description`
+						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
 					FROM `damage_detail` AS DD
 					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".DAMAGE_CONST::ACTIVE."
@@ -76,7 +76,7 @@ class Damage_Model extends CI_Model {
 				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
@@ -284,6 +284,16 @@ class Damage_Model extends CI_Model {
 
 		$response = array();
 		$response['error'] = '';
+
+		$query 	= "SELECT `branch_id` FROM damage_head WHERE id = ?";
+		$result = $this->db->query($query,$damage_head_id);
+		$row 	= $result->row();
+
+		if ($row->branch_id != $this->_current_branch_id) {
+			throw new Exception($this->_error_message['NOT_OWN_BRANCH']);
+		}
+
+		$result->free_result();
 
 		$query_data = array($this->_current_date,$this->_current_user,$damage_head_id);
 		$query 	= "UPDATE `damage_head` 

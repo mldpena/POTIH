@@ -114,7 +114,7 @@
         if(branch_val.length == 0)
         {
             alert('No branch selected!'); 
-            return;
+            return false;
         }
 
         if ($.inArray('0',branch_val) != -1) 

@@ -12,7 +12,7 @@ class ControlPanel extends CI_Controller {
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 		$this->load->file(CONSTANTS.'permission_const.php');
-		$this->load->library('permissionchecker');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -38,12 +38,12 @@ class ControlPanel extends CI_Controller {
 						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
 						'page' 			=> 'controlpanel',
 						'script'		=> 'controlpanel_js.php',
-						'permissions' 	=> array(	'data' => $this->permissionchecker->check_section_permission('data'),
-													'purchase' => $this->permissionchecker->check_section_permission('purchase'),
-													'return' => $this->permissionchecker->check_section_permission('return'),
-													'delivery' => $this->permissionchecker->check_section_permission('delivery'),
-													'others' => $this->permissionchecker->check_section_permission('others'),
-													'reports' => $this->permissionchecker->check_section_permission('reports')));
+						'permissions' 	=> array(	'data' => $this->permission_checker->check_section_permission('data'),
+													'purchase' => $this->permission_checker->check_section_permission('purchase'),
+													'return' => $this->permission_checker->check_section_permission('return'),
+													'delivery' => $this->permission_checker->check_section_permission('delivery'),
+													'others' => $this->permission_checker->check_section_permission('others'),
+													'reports' => $this->permission_checker->check_section_permission('reports')));
 
 
 		$this->load->view('master', $data);

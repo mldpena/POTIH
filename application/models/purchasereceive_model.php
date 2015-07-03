@@ -13,7 +13,8 @@ class PurchaseReceive_Model extends CI_Model {
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get purchase details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete purchase receive detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete purchase receive head!',
-									'PURCHASE_NOT_FOUND' => 'No purchase found!');
+									'PURCHASE_NOT_FOUND' => 'No purchase order found!',
+									'NOT_OWN_BRANCH' => 'Cannot delete purchase receive entry of other branches!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -42,7 +43,8 @@ class PurchaseReceive_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 		$response['po_list_error'] 	= ''; 
 
-		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
+		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', 
+				COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
 					FROM `purchase_receive_head`
 					WHERE `is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND `id` = ?";
 
@@ -58,6 +60,7 @@ class PurchaseReceive_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 			$response['branch_id'] 			= $row->branch_id;
+			$response['is_editable'] 		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
 		}
 
 		$result_head->free_result();
@@ -75,20 +78,20 @@ class PurchaseReceive_Model extends CI_Model {
 							    purchase_head AS PH
 								LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
 							    LEFT JOIN (
-									SELECT PRD.`purchase_detail_id`, PRD.`id`
+									SELECT PRD.`purchase_detail_id`, PRD.`id`, PRH.`branch_id`
 							        FROM purchase_receive_head AS PRH
 							        LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
 							        WHERE PRH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
 							    )AS PRD ON PRD.`purchase_detail_id` = PD.`id`
 							WHERE
 							    PH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".PURCHASE_RECEIVE_CONST::USED."
-							        AND PH.`for_branchid` = ?
+							        AND (PH.`for_branchid` = ? OR PH.`for_branchid` = PRD.`branch_id`)
 							GROUP BY PH.`id`
 							HAVING total_remaining_qty > 0 OR is_received = 1";
 
 		$result_po_list = $this->db->query($query_po_list,$query_po_list_data);
 
-		if ($result_po_list->num_rows() == 0) 
+		if ($result_po_list->num_rows() == 0 && $response['branch_id'] == $this->_current_branch_id) 
 			throw new Exception($this->_error_message['PURCHASE_NOT_FOUND']);
 		else
 		{
@@ -143,7 +146,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
-						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`,
+						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
 						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining'
 					FROM `purchase_head` AS PH
 					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id` 
@@ -171,7 +174,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['detail'][$i][] = array($this->encrypt->encode($row->po_detail_id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->po_number);
-				$response['detail'][$i][] = array($row->product,$row->product_id,$break_line,$row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
@@ -303,7 +306,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$query = "SELECT 
 						PRH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'for_branch',
 						CONCAT('PR',PRH.`reference_number`) AS 'reference_number', COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PO',PH.`reference_number`)),'') AS 'po_numbers',
-					    COALESCE(PRH.`entry_date`,'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
+					    COALESCE(DATE(PRH.`entry_date`),'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
 					    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'
 					FROM
 						purchase_receive_head AS PRH
@@ -352,6 +355,16 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$response = array();
 		$response['error'] = '';
+
+		$query 	= "SELECT `branch_id` FROM purchase_receive_head WHERE id = ?";
+		$result = $this->db->query($query,$purchase_receive_id);
+		$row 	= $result->row();
+
+		if ($row->branch_id != $this->_current_branch_id) {
+			throw new Exception($this->_error_message['NOT_OWN_BRANCH']);
+		}
+
+		$result->free_result();
 
 		$query_data = array($this->_current_date,$this->_current_user,$purchase_receive_id);
 		$query 	= "UPDATE `purchase_receive_head` 

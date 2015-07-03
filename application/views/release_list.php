@@ -38,7 +38,7 @@
 				<input type="text" class="form-control form-control mod" id="search_string">
 				Order By:
 				<select class="form-control form-control mod" id="order_by">
-					<option value="1">Reference #</option>
+					<option value="1">Doc #</option>
 					<option value="2">Location</option>
 					<option value="3">Customer</option>
 				</select>

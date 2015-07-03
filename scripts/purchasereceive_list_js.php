@@ -60,7 +60,7 @@
 
    	var spndate = document.createElement('span');
 	colarray['date'] = { 
-        header_title: "Entry Date",
+        header_title: "Received Date",
         edit: [spndate],
         disp: [spndate],
         td_class: "tablerow column_click column_hover tddate"

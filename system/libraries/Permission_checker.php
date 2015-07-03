@@ -1,6 +1,6 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class CI_PermissionChecker
+class CI_Permission_checker
 {
 	private $_CI;
 	private $_current_permission_list = array();
@@ -82,5 +82,12 @@ class CI_PermissionChecker
 		}
 
 		return $permission_exists;
+	}
+
+	public function check_permission($permission_needed)
+	{
+		array_push($permission_needed,\Permission\SuperAdmin_Code::ADMIN);
+		
+		return $permission_exists = $this->_check_permission_exists($permission_needed);
 	}
 }

@@ -127,6 +127,12 @@
 		});
 	});
 
+	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
+        global_subgroup_id 	= 0;
+        global_row_index 	= 0;
+    });
+
+
 	$('#save').click(function(){
     	if (flag == 1) 
     		return;
@@ -147,7 +153,7 @@
 											value : name_val,
 											fieldName : 'Name',
 											required : true,
-											rules : 'letterChar'
+											rules : 'alphaNumeric'
 										}
 										]);
 

@@ -151,7 +151,7 @@ var TableHelper = function(tableOptions,options) {
             $('.' + self._settings.editIconClass).live('click',function(){
                 var rowIndex = $(this).parent().parent().index();
                 self._jsTable.edit_row(rowIndex);
-                self.contentHelper.showDescriptionFields();
+                self.contentHelper.descriptionAccessibilty(rowIndex);
             });
 
             $('.' + self._settings.quantityClass).live('blur',function(){
@@ -175,10 +175,11 @@ var TableHelper = function(tableOptions,options) {
                 }
                 else
                 {
-                    self.contentProvider.setData(self.globalRowIndex,'product',['',0,'','']);
+                    self.contentProvider.setData(self.globalRowIndex,'product',['',0,'','','']);
                     self.contentProvider.setData(self.globalRowIndex,'qty',['']);
                     self.contentProvider.setData(self.globalRowIndex,'memo',['']);
                     self.contentProvider.setData(self.globalRowIndex,'code',['']);
+                    self.contentHelper.descriptionAccessibilty(self.globalRowIndex,true);
                 }
             });
 
@@ -248,7 +249,7 @@ var TableHelper = function(tableOptions,options) {
                         var descriptionElement = $(x).parent().find('.' + self._settings.nonStackClass);
 
                         if (error.length > 0) {
-                            self.contentProvider.setData(rowIndex,'product',['',0,'','']);
+                            self.contentProvider.setData(rowIndex,'product',['',0,'','','']);
                             self.contentProvider.setData(rowIndex,'code',['']);
                             self.contentProvider.setData(rowIndex,'qty',['']);
                             self.contentProvider.setData(rowIndex,'memo',['']);
@@ -265,10 +266,8 @@ var TableHelper = function(tableOptions,options) {
                             else
                                 $(descriptionElement).val('').hide();
 
-                            self.contentProvider.setData(rowIndex,'product',[ret_datas[1],ret_datas[0],newLine,'']);
+                            self.contentProvider.setData(rowIndex,'product',[ret_datas[1],ret_datas[0],ret_datas[3],newLine,'']);
                             self.contentProvider.setData(rowIndex,'code',[ret_datas[2]]);
-
-                            
                         }
                     }
                     
@@ -497,7 +496,7 @@ var TableHelper = function(tableOptions,options) {
                 var qty             = self.contentProvider.getData(rowIndex,'qty');
                 var memo            = self.contentProvider.getData(rowIndex,'memo');
                 var rowUniqueId     = self.contentProvider.getData(rowIndex,'id');
-                var nonStackDescription  = self.contentProvider.getData(rowIndex,'product',3);
+                var nonStackDescription  = self.contentProvider.getData(rowIndex,'product',4);
                 var actionFunction  = rowUniqueId != 0 ? self._settings.updateDetailName : self._settings.insertDetailName;
 
                 var errorList = $.dataValidation([  {   
@@ -546,7 +545,7 @@ var TableHelper = function(tableOptions,options) {
                     {
                         self._jsTable.update_row(rowIndex);
 
-                        self.contentHelper.showDescriptionFields();
+                        self.contentHelper.descriptionAccessibilty(rowIndex);
                         
                         if (arr.detail_id == 0) {
                             self.contentProvider.setData(rowIndex,'id',[response.id]);
@@ -570,11 +569,14 @@ var TableHelper = function(tableOptions,options) {
 
             var arr = onBeforeSubmit();
             
-            self._flag = 1;
-
             $('#' + self._settings.loadingImgId).show();
             $('#' + self._settings.searchTextId).val('');
             $('input[type=text]').not(self._settings.clearExcluded).val('');
+
+            if (!arr) 
+                return;
+
+            self._flag = 1;
 
             $.ajax({
                 type: "POST",
@@ -611,19 +613,30 @@ var TableHelper = function(tableOptions,options) {
             });
         },
 
-        showDescriptionFields : function()
+        checkProductTypeDescription : function()
         {
             for (var i = 1; i < self._jsTable.get_row_count(); i++) 
-            {
-                var description = self.contentProvider.getData(i,'product',3);
-                if (description != '')
-                {
-                    var productElement = self.contentProvider.getElement(i,'product');
-                    var descriptionElement = $(productElement).parent().find('.' + self._settings.nonStackClass);
+                self.contentHelper.descriptionAccessibilty(i);
+        },
 
+        descriptionAccessibilty : function(rowIndex ,isForceHide)
+        {
+            var productType = Number(self.contentProvider.getData(rowIndex,'product',2));
+            var productId   = Number(self.contentProvider.getData(rowIndex,'product',1));
+
+            var productElement = self.contentProvider.getElement(rowIndex,'product');
+            var descriptionElement = $(productElement).parent().find('.' + self._settings.nonStackClass);
+
+            if (productId != 0) 
+            {
+                if (productType == ProductType.NonStock)
                     $(descriptionElement).show();
-                }
+                else
+                   $(descriptionElement).hide();  
             };
+            
+            if (isForceHide)
+                $(descriptionElement).hide();  
         },
 
         checkCurrentInventory : function(element,onBeforeSubmit,onAfterSubmit)

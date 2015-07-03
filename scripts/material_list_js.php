@@ -117,7 +117,7 @@
 											value : name_val,
 											fieldName : 'Name',
 											required : true,
-											rules : 'letterChar'
+											rules : 'alphaNumeric'
 										}
 										]);
 
@@ -198,6 +198,11 @@
 			}       
 		});
 	});
+
+	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
+        global_material_id 	= 0;
+        global_row_index 	= 0;
+    });
 
 	$('#code').blur(function(){
 		$(this).val($(this).val().toUpperCase());

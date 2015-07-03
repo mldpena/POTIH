@@ -13,7 +13,8 @@ class Release_Model extends CI_Model {
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get release details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete release detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete release head!',
-									'HAS_RELEASED' => 'Released entry can only be deleted if status is no received!');
+									'HAS_RELEASED' => 'Released entry can only be deleted if status is no received!',
+									'NOT_OWN_BRANCH' => 'Cannot delete warehouse release entry of other branches!');
 
 	public function __construct() 
 	{
@@ -161,6 +162,16 @@ class Release_Model extends CI_Model {
 
 		$result->free_result();
 
+		$query 	= "SELECT `branch_id` FROM release_head WHERE id = ?";
+		$result = $this->db->query($query,$release_head_id);
+		$row 	= $result->row();
+
+		if ($row->branch_id != $this->_current_branch_id) {
+			throw new Exception($this->_error_message['NOT_OWN_BRANCH']);
+		}
+
+		$result->free_result();
+
 		$query_data = array($this->_current_date,$this->_current_user,$release_head_id);
 		$query 	= "UPDATE `release_head` 
 					SET 
@@ -184,7 +195,8 @@ class Release_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('WR',`reference_number`) AS 'reference_number', 
-					COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `customer`, `is_used`
+					COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `customer`, `is_used`,
+					`branch_id`
 					FROM `release_head`
 					WHERE `is_show` = ".RELEASE_CONST::ACTIVE." AND `id` = ?";
 
@@ -201,10 +213,11 @@ class Release_Model extends CI_Model {
 			$response['memo'] 				= $row->memo;
 			$response['customer_name'] 		= $row->customer;
 			$response['is_saved'] 			= $row->is_used;
+			$response['is_editable'] 		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`qty_released`, RD.`description`
+						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`qty_released`, RD.`description`, P.`type`
 					FROM `release_detail` AS RD
 					LEFT JOIN `release_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".RELEASE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".RELEASE_CONST::ACTIVE."
@@ -222,7 +235,7 @@ class Release_Model extends CI_Model {
 				$break_line = empty($row->description) ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id,$break_line,$row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);

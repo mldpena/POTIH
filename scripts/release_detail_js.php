@@ -76,6 +76,9 @@
 				    disabledDescription.setAttribute('style','display:none;');
 				    disabledDescription.setAttribute('disabled','disabled');
 
+				    var productType = document.createElement('span');
+				    productType.setAttribute('style','display:none;');
+
 				    var newline = document.createElement('span');
 
 				    var editableProduct = response.is_saved == TransactionState.Unsaved ? txtproduct : spnproduct;
@@ -83,8 +86,8 @@
 
 					colarray['product'] = { 
 				        header_title: "Product",
-				        edit: [editableProduct,spnproductid,newline,editableDescription],
-				        disp: [spnproduct,spnproductid,newline,disabledDescription],
+				        edit: [editableProduct,spnproductid,productType,newline,editableDescription],
+				        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
 				        td_class: "tablerow column_click column_hover tdproduct"
 				    };
 
@@ -144,7 +147,8 @@
 						header_title: "",
 						edit: [imgUpdate],
 						disp: [imgEdit],
-						td_class: "tablerow column_hover tdupdate"
+						td_class: "tablerow column_hover tdupdate",
+						headertd_class : "tdupdate"
 					};
 
 				    var imgDelete = document.createElement('i');
@@ -176,33 +180,47 @@
 				var helperCallback = response.is_saved == TransactionState.Unsaved ? { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true } : { updateEventsBeforeCallback : getReleaseDetailsBeforeSubmit }
 
 				tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-									{ baseURL : "<?= base_url() ?>", controller : 'release' });
-
-				tableHelper.detailContent.bindAllEvents(helperCallback);
-				tableHelper.contentHelper.showDescriptionFields();
-				tableHelper.contentProvider.recomputeTotalQuantity();
-
+												{ baseURL : "<?= base_url() ?>", controller : 'release' });
+				
 				if (response.is_saved == TransactionState.Unsaved)
 				{
 					$('#dynamic-css').html('');
 					var css = "<style>.tdqty_release{ display:none; } </style>";
 					$('#dynamic-css').html(css);
-					tableHelper.contentProvider.addRow();
+					if (response.is_editable) 
+						tableHelper.contentProvider.addRow();
+					else
+					{
+						$('input, textarea, select').not('#print').attr('disabled','disabled');
+						$('.tdupdate, .tddelete, #save').hide();
+					}
 				}
 					
 				if (response.is_saved == TransactionState.Saved)
 				{
-					$('.tddelete').hide();
-					$('#save').hide();
-					$('#customer_name, #memo, #date').attr('disabled','disabled');
-
-					for (var i = 1; i < myjstbl.get_row_count(); i++) 
+					if (response.is_editable) 
 					{
-						var releasedQty = Number(tableHelper.contentProvider.getData(i,'qty_release'));
-						if (releasedQty == 0) 
-							myjstbl.edit_row(i);
-					};
+						$('.tddelete').hide();
+						$('#save').hide();
+						$('#customer_name, #memo, #date').attr('disabled','disabled');
+
+						for (var i = 1; i < myjstbl.get_row_count(); i++) 
+						{
+							var releasedQty = Number(tableHelper.contentProvider.getData(i,'qty_release'));
+							if (releasedQty == 0) 
+								myjstbl.edit_row(i);
+						};
+					}
+					else
+					{
+						$('input, textarea, select').not('#print').attr('disabled','disabled');
+						$('.tdupdate, .tddelete, #save').hide();
+					}
 				}
+
+				tableHelper.detailContent.bindAllEvents(helperCallback);
+				tableHelper.contentHelper.checkProductTypeDescription();
+				tableHelper.contentProvider.recomputeTotalQuantity();
 
 				$('#tbl').show();
 			}       
