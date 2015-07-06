@@ -56,6 +56,12 @@ class Product extends CI_Controller {
 
 				break;
 
+
+			case 'transaction':
+				$page = 'transaction_list';
+				$allow_user = $this->permission_checker->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING);
+				break;
+
 			case 'inventory':
 				$page = 'branch_inventory_list';
 				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);

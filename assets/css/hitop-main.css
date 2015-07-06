@@ -435,7 +435,9 @@ body{
 	height: 194px;
 	overflow-y: auto; 
 }
-
+.tbl-filters table td.txtbx-equal{
+	width: 188px;
+}
 
 /*Module Classes*/
 .po-container{
