@@ -404,6 +404,9 @@ body{
 	width: 100%;
 	border-top: 1px #ddd solid;
 }
+#show-info{
+	display: none;
+}
 
 /*Table Form Fields*/
 .tbl-filters table td,
