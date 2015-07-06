@@ -27,7 +27,7 @@
 	{
 		const VIEW_SUBGROUP = 109;
 		const ADD_SUBGROUP = 110;
-		const EDIT_SUGBROUP = 111;
+		const EDIT_SUBGROUP = 111;
 		const DELETE_SUBGROUP = 112;
 	}
 

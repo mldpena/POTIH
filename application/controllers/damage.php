@@ -11,6 +11,7 @@ class Damage extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -32,16 +33,25 @@ class Damage extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+		$branch_list = '';
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'damage_list';
 				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+				$allow_user = $this->permission_checker->check_permission(\Permission\Damage_Code::VIEW_DAMAGE);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Damage_Code::ADD_DAMAGE),
+									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Damage_Code::VIEW_DAMAGE_DETAIL),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Damage_Code::DELETE_DAMAGE));
+
 				break;
 
-			case 'add':
 			case 'view':
 				$page = 'damage_detail';
+				$allow_user = $this->permission_checker->check_permission(\Permission\Damage_Code::VIEW_DAMAGE);
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Damage_Code::EDIT_DAMAGE));
 				break;
 			
 			default:
@@ -50,11 +60,16 @@ class Damage extends CI_Controller {
 				break;
 		}
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
+
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'branch_list' 	=> $branch_list,
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

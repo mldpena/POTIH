@@ -11,6 +11,7 @@ class Material extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -32,10 +33,17 @@ class Material extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'material_list';
+				$allow_user = $this->permission_checker->check_permission(\Permission\Material_Code::VIEW_MATERIAL);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Material_Code::ADD_MATERIAL),
+									'allow_to_edit' => $this->permission_checker->check_permission(\Permission\Material_Code::EDIT_MATERIAL),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Material_Code::DELETE_MATERIAL));
+
 				break;
 			
 			default:
@@ -44,11 +52,15 @@ class Material extends CI_Controller {
 				break;
 		}
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
+
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

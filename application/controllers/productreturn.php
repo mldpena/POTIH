@@ -11,6 +11,7 @@ class ProductReturn extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -32,16 +33,24 @@ class ProductReturn extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+		$branch_list = '';
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'return_list';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::ADD_CUSTOMER_RETURN),
+									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN_DETAIL),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::DELETE_CUSTOMER_RETURN));
 				break;
 
-			case 'add':
 			case 'view':
 				$page = 'return_detail';
+				$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN);
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::EDIT_CUSTOMER_RETURN));
 				break;
 			
 			default:
@@ -50,13 +59,16 @@ class ProductReturn extends CI_Controller {
 				break;
 		}
 
-		
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'branch_list' 	=> $branch_list,
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

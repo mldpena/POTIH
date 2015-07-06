@@ -12,6 +12,7 @@ class Branch extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -33,11 +34,17 @@ class Branch extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'branch_list';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
+				$allow_user = $this->permission_checker->check_permission(\Permission\Branch_Code::VIEW_BRANCH);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Branch_Code::ADD_BRANCH),
+									'allow_to_edit' => $this->permission_checker->check_permission(\Permission\Branch_Code::EDIT_BRANCH),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Branch_Code::DELETE_BRANCH));
+
 				break;
 			
 			default:
@@ -46,11 +53,15 @@ class Branch extends CI_Controller {
 				break;
 		}
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
+
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

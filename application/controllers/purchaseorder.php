@@ -11,6 +11,7 @@ class PurchaseOrder extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -32,17 +33,25 @@ class PurchaseOrder extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'purchaseorder_list';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE),
+									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE_DETAIL),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Purchase_Code::DELETE_PURCHASE));
 				break;
 
-			case 'add':
 			case 'view':
 				$page = 'purchaseorder_detail';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
+				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Purchase_Code::EDIT_PURCHASE));
+				
 				break;
 
 			default:
@@ -51,13 +60,16 @@ class PurchaseOrder extends CI_Controller {
 				break;
 		}
 
-		
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'branch_list' 	=> $branch_list,
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

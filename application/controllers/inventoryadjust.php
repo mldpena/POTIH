@@ -12,6 +12,7 @@ class InventoryAdjust extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -34,18 +35,31 @@ class InventoryAdjust extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+		$material_list = '';
+		$subgroup_list = '';
+		$branch_list = '';
+
 		if ($controller == 'adjust') 
 		{
 			switch ($page) 
 			{
 				case 'list':
 					$page = 'adjust_list';
-					$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
-					$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+					$material_list 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+					$subgroup_list 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+					$allow_user = $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST);
+					$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::ADD_INVENTORY_ADJUST),
+										'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST_DETAIL),
+										'allow_to_edit' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::EDIT_INVENTORY_ADJUST));
 					break;
 				
 				case 'express':
 					$page = 'adjust_express_list';
+					$allow_user = $this->permission_checker->check_permission(array(\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST,\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST_DETAIL));
+					$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::ADD_INVENTORY_ADJUST),
+										'allow_to_delete' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::DELETE_INVENTORY_ADJUST),
+										'allow_to_edit' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::EDIT_INVENTORY_ADJUST));
 					break;
 
 				default:
@@ -57,17 +71,26 @@ class InventoryAdjust extends CI_Controller {
 		else if ($controller == 'pending') 
 		{
 			$page = 'pending_list';
-			$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
-			$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
-			$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+			$material_list 	= get_name_list_from_table(TRUE,'material_type',TRUE);
+			$branch_list 	= get_name_list_from_table(TRUE,'branch',TRUE);
+			$subgroup_list 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+			$allow_user = $this->permission_checker->check_permission(\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST);
+			$permissions = array('allow_to_approve' => $this->permission_checker->check_permission(\Permission\PendingAdjust_Code::ALLOW_TO_APPROVE_AND_DECLINE));
 		}
 		
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
+
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'branch_list' 	=> $branch_list,
+						'subgroup_list' => $subgroup_list,
+						'material_list' => $material_list,
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

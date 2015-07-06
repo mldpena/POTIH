@@ -47,6 +47,13 @@
    
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
+
+	<?php if (!$permission_list['allow_to_delete']) : ?>
+
+	imgDelete.setAttribute("style","display:none;");
+
+	<?php endif; ?>
+
 	colarray['coldelete'] = { 
 		header_title: "",
 		edit: [imgDelete],
@@ -97,6 +104,8 @@
 		build_message_box('messagebox_1','Sub Group successfully deleted!','success');
 	}
 	
+	<?php if($permission_list['allow_to_edit']) : ?>
+
 	$('.column_click').live('click',function(){
 
     	global_row_index 	= $(this).parent().index();
@@ -127,6 +136,8 @@
 		});
 	});
 
+	<?php endif; ?>
+	
 	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
         global_subgroup_id 	= 0;
         global_row_index 	= 0;

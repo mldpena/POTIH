@@ -123,6 +123,12 @@
     	global_product_id = tableHelper.contentProvider.getData(global_row_index,'id');
     	global_adjust_id = tableHelper.contentProvider.getData(global_row_index,'request',1);
     	
+    	if (Boolean(<?= $permission_list['allow_to_add'] ?>) == false && global_adjust_id == 0)
+    		return;
+
+    	if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && global_adjust_id != 0)
+    		return;
+
     	var arr = 	{ 
 						fnc 	 : 'get_adjust_details', 
 						product_id : global_product_id,

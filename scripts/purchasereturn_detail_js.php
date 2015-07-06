@@ -152,7 +152,7 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				if (!response.is_editable)
+				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true))
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save').hide();

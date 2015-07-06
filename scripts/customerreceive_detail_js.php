@@ -71,13 +71,17 @@
     };
 
     var chkreceiveall = document.createElement('input');
-    var spnreceive = document.createElement('span');
 	chkreceiveall.className = "chkreceiveall";
 	chkreceiveall.type = "checkbox";
+
+	var chkreceiveallDis = document.createElement('input');
+	chkreceiveallDis.setAttribute('type','checkbox');
+	chkreceiveallDis.setAttribute('disabled','disabled');
+	
 	colarray['receiveall'] = { 
 		header_title: "",
 		edit: [chkreceiveall],
-		disp: [spnreceive],
+		disp: [chkreceiveallDis],
 		td_class: "tablerow tdreceiveall",
 	};
 
@@ -121,8 +125,7 @@
 										{ baseURL : "<?= base_url() ?>", controller : 'custreceive' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
-												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
-												updateEventsAfterCallback : removeCheckBoxValueAfterSubmit } );
+												updateEventsBeforeCallback : getRowDetailsBeforeSubmit} );
 
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -157,7 +160,7 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				if (!response.is_editable)
+				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false))
 				{
 					$('input, textarea, select').attr('disabled','disabled');
 					$('.imgedit, .imgupdate').hide();
@@ -233,10 +236,4 @@
 
 		return arr;
 	}
-
-	function removeCheckBoxValueAfterSubmit(rowIndex, response)
-	{
-		tableHelper.contentProvider.setData(rowIndex,'receiveall',['']);
-	}
-
 </script>

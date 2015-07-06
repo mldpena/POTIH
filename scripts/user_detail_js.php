@@ -32,8 +32,12 @@
 
 		var detailPermissionClass = id + '-detail';
 
-		if ($(this).is(':checked')) 
+		if ($(this).is(':checked'))
+		{
 			$('.' + detailPermissionClass).attr('checked','checked');
+			if ($('.check-detail').length == $('.check-detail:checked').length)
+				$('#admin-permission').attr('checked','checked');
+		}
 		else
 		{
 			$('#admin-permission').removeAttr('checked');
@@ -235,6 +239,9 @@
 							$('.check-detail[value=' + response.permissions[i] + ']').attr('checked','checked');
 					}
 						
+					if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && response.is_own_profile != ProfileStatus.OwnProfile)
+						$('#save').hide();
+
 					$('#branches').trigger("liszt:updated");
 				}
 

@@ -206,7 +206,7 @@ class Adjust_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$status 	= ADJUST_CONST::PENDING; //$config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
+		$status 	= $this->permission_checker->check_permission(\Permission\PendingAdjust_Code::AUTO_APPROVE) == TRUE ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING; 
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 
 		$query_validation_data = array($product_id,$this->_current_branch_id);

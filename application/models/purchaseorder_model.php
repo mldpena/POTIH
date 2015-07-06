@@ -42,7 +42,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$response['detail_error'] = '';
 
 		$query_head = "SELECT CONCAT('PO',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
-					PH.`memo`, PH.`branch_id`, PH.`supplier`, PH.`for_branchid`, SUM(PD.`recv_quantity`) AS 'total_qty', PH.`is_imported`
+					PH.`memo`, PH.`branch_id`, PH.`supplier`, PH.`for_branchid`, SUM(PD.`recv_quantity`) AS 'total_qty', PH.`is_imported`, PH.`is_used`
 					FROM `purchase_head` AS PH
 					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
 					WHERE PH.`is_show` = ".PURCHASE_CONST::ACTIVE." AND PH.`id` = ?
@@ -63,6 +63,7 @@ class PurchaseOrder_Model extends CI_Model {
 			$response['orderfor'] 			= $row->for_branchid;
 			$response['is_imported'] 		= $row->is_imported;
 			$response['is_editable'] 		= $row->total_qty == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
+			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 

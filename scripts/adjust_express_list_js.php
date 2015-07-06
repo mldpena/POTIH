@@ -93,8 +93,16 @@
 
     var imgUpdate = document.createElement('i');
 	imgUpdate.setAttribute("class","imgupdate fa fa-check");
+
+	var imgEdit = document.createElement('span');
+	
+	<?php if ($permission_list['allow_to_edit']) : ?>
+
 	var imgEdit = document.createElement('i');
 	imgEdit.setAttribute("class","imgedit fa fa-pencil");
+
+	<?php endif; ?>
+
 	colarray['update'] = { 
 		header_title: "",
 		edit: [imgUpdate],
@@ -105,6 +113,13 @@
 
 	var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
+
+	<?php if (!$permission_list['allow_to_delete']) : ?>
+
+	imgDelete.setAttribute("style","display:none;");
+
+	<?php endif; ?>
+
 	colarray['delete'] = { 
 		header_title: "",
 		edit: [imgDelete],
@@ -271,7 +286,8 @@
 					}
 				};
 
-				tableHelper.contentProvider.addRow();
+				if (Boolean(<?= $permission_list['allow_to_add']?>) != false)
+					tableHelper.contentProvider.addRow();
 
 				$('#loadingimg').hide();
 				$('#tbl').show();

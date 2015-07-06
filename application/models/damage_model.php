@@ -39,7 +39,7 @@ class Damage_Model extends CI_Model {
 		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT CONCAT('DD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
+		$query_head = "SELECT CONCAT('DD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `is_used`
 					FROM `damage_head`
 					WHERE `is_show` = ".DAMAGE_CONST::ACTIVE." AND `id` = ?";
 
@@ -55,6 +55,7 @@ class Damage_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 			$response['is_editable']		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
+			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 

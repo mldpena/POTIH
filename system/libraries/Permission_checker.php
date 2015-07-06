@@ -9,6 +9,7 @@ class CI_Permission_checker
 	{
 		$this->_CI =& get_instance();
 		$this->_CI->load->helper('cookie');
+		$this->_CI->load->file(CONSTANTS.'permission_const.php');
 		$this->_current_permission_list = json_decode(get_cookie('permissions'));
 	}
 
@@ -86,8 +87,14 @@ class CI_Permission_checker
 
 	public function check_permission($permission_needed)
 	{
-		array_push($permission_needed,\Permission\SuperAdmin_Code::ADMIN);
+		if (!is_array($permission_needed))
+			$permission_list = array(\Permission\SuperAdmin_Code::ADMIN,$permission_needed);
+		else
+		{
+			$permission_list = array(\Permission\SuperAdmin_Code::ADMIN);
+			$permission_list = array_merge($permission_list,$permission_needed);
+		}
 		
-		return $permission_exists = $this->_check_permission_exists($permission_needed);
+		return $permission_exists = $this->_check_permission_exists($permission_list);
 	}
 }

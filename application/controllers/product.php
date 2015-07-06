@@ -13,6 +13,7 @@ class Product extends CI_Controller {
 		$this->load->helper('query');
 		$this->load->helper('cookie');
 		$this->load->library('encrypt');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -34,22 +35,32 @@ class Product extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'product_list';
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+				$allow_user = $this->permission_checker->check_permission(\Permission\Product_Code::VIEW_PRODUCT);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Product_Code::ADD_PRODUCT),
+									'allow_to_edit' => $this->permission_checker->check_permission(\Permission\Product_Code::EDIT_PRODUCT),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Product_Code::DELETE_PRODUCT));
+
 				break;
 			
 			case 'warning':
 				$page = 'inventory_warning_list';
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',FALSE);
+				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+				$allow_user = $this->permission_checker->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING);
+
 				break;
 
 			case 'inventory':
 				$page = 'branch_inventory_list';
-				$data['branch_list'] 	= get_name_list_from_table(TRUE,'branch',TRUE);
-				
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$allow_user = $this->permission_checker->check_permission(\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY);
+
 				break;
 
 			default:
@@ -58,14 +69,18 @@ class Product extends CI_Controller {
 				break;
 		}
 
-		$data['material_list'] 	= get_name_list_from_table(TRUE,'material_type',TRUE);
-		$data['subgroup_list'] 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'material_list' => get_name_list_from_table(TRUE,'material_type',TRUE),
+						'subgroup_list' => get_name_list_from_table(TRUE,'subgroup',TRUE),
+						'branch_list' 	=> $branch_list,
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

@@ -47,6 +47,13 @@
    
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
+
+	<?php if (!$permission_list['allow_to_delete']) : ?>
+
+	imgDelete.setAttribute("style","display:none;");
+
+	<?php endif; ?>
+
 	colarray['coldelete'] = { 
 		header_title: "",
 		edit: [imgDelete],
@@ -168,6 +175,8 @@
 		});
 
     });
+	
+	<?php if($permission_list['allow_to_edit']) : ?>
 
     $('.column_click').live('click',function(){
 
@@ -199,6 +208,8 @@
 		});
 	});
 
+    <?php endif; ?>
+    
 	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
         global_branch_id 	= 0;
         global_row_index 	= 0;

@@ -71,10 +71,14 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
+				<?php if($permission_list['allow_to_approve']) : ?>
+
 				<div id="action-button">
 					<input type="button" class="btn btn-danger" value="Approve" id="approve">
 					<input type="button" class="btn btn-warning" value="Decline" id="decline">
 				</div>
+
+				<?php endif; ?>
 			</div>
 		</div>
 	</div>

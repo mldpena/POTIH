@@ -81,6 +81,13 @@
 
 	var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
+
+	<?php if (!$permission_list['allow_to_delete']) : ?>
+
+	imgDelete.setAttribute("style","display:none;");
+
+	<?php endif; ?>
+
 	colarray['delete'] = { 
 		header_title: "",
 		edit: [imgDelete],
@@ -219,6 +226,8 @@
 	}
 
 	//Event for edit product
+	<?php if($permission_list['allow_to_edit']) : ?>
+
 	$('.column_click').live('click',function(){
 		global_row_index 	= $(this).parent().index();
 		global_product_id 	= tableHelper.contentProvider.getData(global_row_index,'id');
@@ -261,7 +270,9 @@
 			}       
 		});
 	});
-	
+
+	<?php endif; ?>
+
 	//Event for detecting material type and subgroup after losing focus in material code
 	$('#new_itemcode').blur(function(){
 		checkProductCodeGroup();

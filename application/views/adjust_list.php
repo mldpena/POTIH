@@ -59,9 +59,15 @@
 				</select>
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
+
+			<?php if($permission_list['allow_to_view_detail']) : ?>
+				
 			<div class="max-row">
 				<a href="<?= base_url() ?>adjust/express"><button class="btn btn-primary">Inventory Adjust Express</button></a>
 			</div>
+
+			<?php endif; ?>
+
 			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>

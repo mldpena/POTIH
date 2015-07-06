@@ -13,6 +13,7 @@ class StockDelivery extends CI_Controller {
 		$this->load->library('encrypt');
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -35,21 +36,29 @@ class StockDelivery extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+		$branch_list = '';
+		$to_branch_list = '';
+
 		if ($controller == 'delivery') 
 		{
 			switch ($page) 
 			{
 				case 'list':
 					$page = 'delivery_list';
-					$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+					$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+					$allow_user = $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY);
+					$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::ADD_STOCK_DELIVERY),
+										'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY_DETAIL),
+										'allow_to_delete' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::DELETE_STOCK_DELIVERY));
+
 					break;
 
-				
-
-				case 'add':
 				case 'view':
 					$page = 'delivery_detail';
-					$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
+					$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+					$allow_user = $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY);
+					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY));
 					break;
 
 				default:
@@ -65,13 +74,17 @@ class StockDelivery extends CI_Controller {
 			{
 				case 'list':
 					$page = 'deliveryreceive_list';
-					$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
-					$data['to_branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+					$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+					$to_branch_list = get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+					$allow_user = $this->permission_checker->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE);
+					$permissions = array('allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE_DETAIL));
 					break;
 
 				case 'view':
 					$page = 'deliveryreceive_detail';
-					$data['branch_list'] = get_name_list_from_table(TRUE,'branch',FALSE);
+					$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+					$allow_user = $this->permission_checker->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE);
+					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\StockReceive_Code::EDIT_STOCK_RECEIVE));
 					break;
 
 				default:
@@ -87,11 +100,15 @@ class StockDelivery extends CI_Controller {
 			{
 				case 'list':
 					$page = 'customerreceive_list';
-					$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+					$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+					$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE);
+					$permissions = array('allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE_DETAIL));
 					break;
 
 				case 'view':
 					$page = 'customerreceive_detail';
+					$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE);
+					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::EDIT_CUSTOMER_RECEIVE));
 					break;
 
 				default:
@@ -101,11 +118,17 @@ class StockDelivery extends CI_Controller {
 			}
 		}
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
+
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'branch_list' 	=> $branch_list,
+						'to_branch_list' => $to_branch_list,
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

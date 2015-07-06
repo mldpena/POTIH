@@ -25,11 +25,17 @@
 				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
+
+			<?php if($permission_list['allow_to_add']) : ?>
+
 			<div class="max-row">
 				<a href="<?= base_url() ?>user/add">
 					<button class="btn btn-primary" data-toggle="modal">Create New User</button>
 				</a>
 			</div>
+
+			<?php endif; ?>
+			
 			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>

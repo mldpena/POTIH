@@ -97,7 +97,9 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'delreceive',
-										  notFoundMessage : 'No stock received found!' });
+										  notFoundMessage : 'No stock received found!',
+										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) }
+										});
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter } );
 

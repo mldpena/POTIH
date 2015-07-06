@@ -9,9 +9,9 @@ class Subgroup extends CI_Controller {
 	
 	private function _load_libraries()
 	{
-		
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -33,10 +33,16 @@ class Subgroup extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'subgroup_list';
+				$allow_user = $this->permission_checker->check_permission(\Permission\SubGroup_Code::VIEW_SUBGROUP);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\SubGroup_Code::ADD_SUBGROUP),
+									'allow_to_edit' => $this->permission_checker->check_permission(\Permission\SubGroup_Code::EDIT_SUBGROUP),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\SubGroup_Code::DELETE_SUBGROUP));
 				break;
 			
 			default:
@@ -45,13 +51,16 @@ class Subgroup extends CI_Controller {
 				break;
 		}
 
-		
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'permission_list' => $permissions);
+
 
 		$this->load->view('master', $data);
 	}

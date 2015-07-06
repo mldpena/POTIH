@@ -68,6 +68,13 @@
 
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
+
+	<?php if (!$permission_list['allow_to_delete']) : ?>
+
+	imgDelete.setAttribute("style","display:none;");
+
+	<?php endif; ?>
+
 	colarray['coldelete'] = { 
 		header_title: "",
 		edit: [imgDelete],
@@ -95,7 +102,9 @@
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'user', 
 										  deleteHeadName : 'delete_user',
-										  notFoundMessage : 'No user found!' });
+										  notFoundMessage : 'No user found!',
+										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
+										});
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );

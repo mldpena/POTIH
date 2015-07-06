@@ -44,7 +44,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$response['po_list_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', 
-				COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`
+				COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `is_used`
 					FROM `purchase_receive_head`
 					WHERE `is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND `id` = ?";
 
@@ -61,6 +61,7 @@ class PurchaseReceive_Model extends CI_Model {
 			$response['memo'] 				= $row->memo;
 			$response['branch_id'] 			= $row->branch_id;
 			$response['is_editable'] 		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
+			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
 		$result_head->free_result();

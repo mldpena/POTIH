@@ -41,7 +41,7 @@ class Return_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number',
-					COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`, `received_by`
+					COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`, `received_by`, `is_used`
 					FROM `return_head`
 					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
 
@@ -59,6 +59,7 @@ class Return_Model extends CI_Model {
 			$response['customer_name'] 		= $row->customer;
 			$response['received_by'] 		= $row->received_by;
 			$response['is_editable'] 		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
+			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 

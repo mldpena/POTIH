@@ -90,9 +90,15 @@
         td_class: "tablerow column_click column_hover tdstatus"
     };
 
-
     var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
+
+	<?php if (!$permission_list['allow_to_delete']) : ?>
+
+	imgDelete.setAttribute("style","display:none;");
+
+	<?php endif; ?>
+
 	colarray['coldelete'] = { 
 		header_title: "",
 		edit: [imgDelete],
@@ -124,7 +130,9 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'delivery',
-										  notFoundMessage : 'No stock delivery entry found!' });
+										  notFoundMessage : 'No stock delivery entry found!',
+										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
+										});
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );

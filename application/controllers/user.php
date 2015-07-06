@@ -11,6 +11,8 @@ class User extends CI_Controller {
 	{
 		$this->load->helper('authentication');
 		$this->load->helper('query');
+		$this->load->helper('cookie');
+		$this->load->library('permission_checker');
 	}
 
 	/**
@@ -32,16 +34,35 @@ class User extends CI_Controller {
 			exit();
 		}
 
+		$permissions = array();
+		$branch_list = '';
+
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'user_list';
+				$allow_user = $this->permission_checker->check_permission(\Permission\User_Code::VIEW_USER);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\User_Code::ADD_USER),
+									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\User_Code::VIEW_USER_DETAIL),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\User_Code::DELETE_USER));
 				break;
 			
 			case 'add':
+				$page = 'user_detail';
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$allow_user = $this->permission_checker->check_permission(array(\Permission\User_Code::VIEW_USER,\Permission\User_Code::ADD_USER));
+				break;
+
 			case 'view':
 				$page = 'user_detail';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+
+				if ($this->uri->segment(3) != get_cookie('temp'))
+					$allow_user = $this->permission_checker->check_permission(array(\Permission\User_Code::VIEW_USER,\Permission\User_Code::VIEW_USER_DETAIL));
+				else 
+					$allow_user = TRUE;
+				
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\User_Code::EDIT_USER));
 				break;
 
 			default:
@@ -50,11 +71,16 @@ class User extends CI_Controller {
 				break;
 		}
 
-		$data['name']	= get_user_fullname();
-		$data['branch']	= get_branch_name();
-		$data['token']	= '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash();
-		$data['page'] 	= $page;
-		$data['script'] = $page.'_js.php';
+		if (!$allow_user) 
+			header('Location:'.base_url().'login');
+
+		$data = array(	'name' 			=> get_user_fullname(),
+						'branch' 		=> get_branch_name(),
+						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
+						'page' 			=> $page,
+						'script'		=> $page.'_js.php',
+						'branch_list' 	=> $branch_list,
+						'permission_list' => $permissions);
 
 		$this->load->view('master', $data);
 	}

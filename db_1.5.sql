@@ -1,5 +1,3 @@
-CREATE DATABASE  IF NOT EXISTS `dbs_hitop` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `dbs_hitop`;
 -- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: dbs_hitop
@@ -65,6 +63,39 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `daily_transaction_summary`
+--
+
+DROP TABLE IF EXISTS `daily_transaction_summary`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `daily_transaction_summary` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `date` date DEFAULT '0000-00-00',
+  `purchase_receive` int(11) DEFAULT '0',
+  `customer_return` int(11) DEFAULT '0',
+  `stock_receive` int(11) DEFAULT '0',
+  `adjust_increase` int(11) DEFAULT '0',
+  `damage` int(11) DEFAULT '0',
+  `purchase_return` int(11) DEFAULT '0',
+  `stock_delivery` int(11) DEFAULT '0',
+  `customer_delivery` int(11) DEFAULT '0',
+  `adjust_decrease` int(11) DEFAULT '0',
+  `warehouse_release` int(11) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `daily_transaction_summary`
+--
+
+LOCK TABLES `daily_transaction_summary` WRITE;
+/*!40000 ALTER TABLE `daily_transaction_summary` DISABLE KEYS */;
+/*!40000 ALTER TABLE `daily_transaction_summary` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `damage_detail`
@@ -273,7 +304,11 @@ DELIMITER ;
 DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`inventory_adjust_BEFORE_UPDATE` BEFORE UPDATE ON `inventory_adjust` FOR EACH ROW
 F:BEGIN
-	IF(NEW.`status` <> 1 AND NEW.`status` <> OLD.`status`) THEN
+	IF(NEW.`is_show` <> 1 AND OLD.`status` = 1) THEN
+		SET @quantity := (OLD.`new_inventory` - OLD.`old_inventory`) * -1;
+        
+		CALL process_compute_inventory_for_detail(OLD.`product_id`,@quantity,OLD.`id`,'INVENTORY ADJUST');
+	ELSEIF(NEW.`status` <> 1 AND NEW.`status` <> OLD.`status`) THEN
 		IF(OLD.`status` IN(1,3) AND NEW.`status` = 2) THEN
 			SET @quantity := NEW.`new_inventory` - NEW.`old_inventory`;
 		ELSEIF(OLD.`status` = 2 AND NEW.`status` = 3) THEN
@@ -619,7 +654,7 @@ CREATE TABLE `purchase_return_detail` (
   PRIMARY KEY (`id`),
   KEY `idx_headid` (`headid`),
   KEY `idx_id_headid` (`id`,`headid`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -628,7 +663,7 @@ CREATE TABLE `purchase_return_detail` (
 
 LOCK TABLES `purchase_return_detail` WRITE;
 /*!40000 ALTER TABLE `purchase_return_detail` DISABLE KEYS */;
-INSERT INTO `purchase_return_detail` VALUES (1,1,7,1,'',''),(2,1,10,12,'CUTTINGS',''),(3,1,8,10,'SAMPLE','');
+INSERT INTO `purchase_return_detail` VALUES (1,1,7,1,'',''),(2,1,10,12,'CUTTINGS',''),(3,1,8,10,'SAMPLE',''),(4,3,5,7,'','');
 /*!40000 ALTER TABLE `purchase_return_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -716,7 +751,7 @@ CREATE TABLE `purchase_return_head` (
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -725,7 +760,7 @@ CREATE TABLE `purchase_return_head` (
 
 LOCK TABLES `purchase_return_head` WRITE;
 /*!40000 ALTER TABLE `purchase_return_head` DISABLE KEYS */;
-INSERT INTO `purchase_return_head` VALUES (1,100001,1,'2015-06-28 02:56:09','LAWRENCE','SAMPLE',1,1,1,1,'2015-06-28 14:48:23','2015-06-28 02:56:09'),(2,100002,1,'2015-07-01 06:53:57','','',1,0,1,1,'2015-07-01 02:53:57','0000-00-00 00:00:00');
+INSERT INTO `purchase_return_head` VALUES (1,100001,1,'2015-06-28 02:56:09','LAWRENCE','SAMPLE',1,1,1,1,'2015-06-28 14:48:23','2015-06-28 02:56:09'),(2,100002,1,'2015-07-01 06:53:57','','',1,0,1,1,'2015-07-01 02:53:57','0000-00-00 00:00:00'),(3,100003,2,'2015-07-06 06:55:07','','',1,1,5,5,'2015-07-06 02:54:59','2015-07-06 06:55:07');
 /*!40000 ALTER TABLE `purchase_return_head` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -892,7 +927,7 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`return_detail_BEFORE_INSERT` BEFORE INSERT ON `return_detail` 
 FOR EACH ROW
 BEGIN
-	CALL process_compute_inventory_for_detail(NEW.`product_id`,NEW.`quantity`,NEW.`headid`,'RETURN DETAIL');
+	CALL process_compute_inventory_for_detail(NEW.`product_id`,NEW.`quantity`,NEW.`headid`,'CUSTOMER RETURN DETAIL');
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -912,11 +947,11 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 	IF (OLD.`product_id` <> NEW.`product_id`) THEN
-		CALL process_compute_inventory_for_detail(OLD.`product_id`,(-1 * OLD.`quantity`),OLD.`headid`,'RETURN DETAIL');
-        CALL process_compute_inventory_for_detail(NEW.`product_id`,NEW.`quantity`,NEW.`headid`,'RETURN DETAIL');
+		CALL process_compute_inventory_for_detail(OLD.`product_id`,(-1 * OLD.`quantity`),OLD.`headid`,'CUSTOMER RETURN DETAIL');
+        CALL process_compute_inventory_for_detail(NEW.`product_id`,NEW.`quantity`,NEW.`headid`,'CUSTOMER RETURN DETAIL');
 	ELSEIF (OLD.`quantity` <> NEW.`quantity`) THEN
 		SET @qty := NEW.`quantity` - OLD.`quantity`;
-		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'RETURN DETAIL');
+		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'CUSTOMER RETURN DETAIL');
     END IF;
 END */;;
 DELIMITER ;
@@ -990,7 +1025,7 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 	IF(NEW.`is_show` <> 1) THEN
-		CALL process_compute_inventory_for_head('RETURN HEAD',NEW.`id`);
+		CALL process_compute_inventory_for_head('CUSTOMER RETURN HEAD',NEW.`id`);
     END IF;
 END */;;
 DELIMITER ;
@@ -1039,6 +1074,27 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
 DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_detail_BEFORE_INSERT` BEFORE INSERT ON `stock_delivery_detail` 
+FOR EACH ROW
+BEGIN
+	IF(NEW.`is_for_branch` = 1) THEN
+		CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,'DELIVERY DETAIL');
+	END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_detail_BEFORE_UPDATE` BEFORE UPDATE ON `stock_delivery_detail` 
 FOR EACH ROW
 BEGIN
@@ -1051,6 +1107,46 @@ BEGIN
             SET @qty := @qty * -1;
         END IF;
 		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,@table_detail_name);
+    ELSEIF (OLD.`product_id` <> NEW.`product_id`) THEN
+		IF(OLD.`is_for_branch` = 1) THEN
+			CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
+		END IF;
+        
+        IF(NEW.`is_for_branch` = 1 ) THEN
+			CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,'DELIVERY DETAIL');
+        END IF;
+	ELSEIF (OLD.`quantity` <> NEW.`quantity` AND NEW.`is_for_branch` = 1) THEN
+		SET @qty := (NEW.`quantity` - OLD.`quantity`) * -1;
+		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'DELIVERY DETAIL');
+	ELSEIF(OLD.`is_for_branch` <> NEW.`is_for_branch`) THEN
+		IF(OLD.`is_for_branch` = 1) THEN
+			CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
+        END IF;
+        
+        IF(NEW.`is_for_branch` = 1) THEN
+			CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,'DELIVERY DETAIL');
+        END IF;
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_detail_BEFORE_DELETE` BEFORE DELETE ON `stock_delivery_detail` 
+FOR EACH ROW
+BEGIN
+	IF(OLD.`is_for_branch` = 1) THEN
+		CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
     END IF;
 END */;;
 DELIMITER ;
@@ -1095,6 +1191,27 @@ LOCK TABLES `stock_delivery_head` WRITE;
 /*!40000 ALTER TABLE `stock_delivery_head` DISABLE KEYS */;
 /*!40000 ALTER TABLE `stock_delivery_head` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_head_BEFORE_UPDATE` BEFORE UPDATE ON `stock_delivery_head` 
+FOR EACH ROW
+BEGIN
+	IF(NEW.`is_show` <> 1) THEN
+		CALL process_compute_inventory_for_head('DELIVERY HEAD',NEW.`id`);
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `subgroup`
@@ -1158,7 +1275,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','83703b5229462cb6bfaf425152e46a8c','09263188835',1,1,1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(3,'02','Gian Egamino','gegamino','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,0,0,'2015-05-22 04:56:20','2015-05-26 03:47:06',1,1),(5,'04','Kryzza Garra','kryzza','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,1,1,'2015-05-23 06:31:47','2015-06-30 03:47:26',1,5),(6,'05','Enerick Pangilinan','enerick','f3e97dcba0a308db57b1aeaee5a43d4c','12345678',1,1,0,'2015-06-30 03:52:24','2015-06-30 03:53:07',1,1);
+INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','83703b5229462cb6bfaf425152e46a8c','09263188835',1,1,1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(3,'02','Gian Egamino','gegamino','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,0,0,'2015-05-22 04:56:20','2015-05-26 03:47:06',1,1),(5,'04','Kryzza Garra','kryzza','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,1,1,'2015-05-23 06:31:47','2015-07-06 07:53:18',1,1),(6,'05','Enerick Pangilinan','enerick','f3e97dcba0a308db57b1aeaee5a43d4c','12345678',1,1,1,'2015-06-30 03:52:24','2015-07-03 04:16:32',1,6);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1175,7 +1292,7 @@ CREATE TABLE `user_permission` (
   `user_id` bigint(20) DEFAULT '0',
   `permission_code` int(5) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2216 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1184,7 +1301,7 @@ CREATE TABLE `user_permission` (
 
 LOCK TABLES `user_permission` WRITE;
 /*!40000 ALTER TABLE `user_permission` DISABLE KEYS */;
-INSERT INTO `user_permission` VALUES (1,1,1,100),(21,1,3,100),(22,2,3,100),(35,1,5,100),(36,2,5,100),(42,1,6,100),(43,2,6,100),(44,3,6,100),(45,4,6,100),(46,6,6,100);
+INSERT INTO `user_permission` VALUES (1,1,1,100),(21,1,3,100),(22,2,3,100),(137,1,6,102),(138,1,6,103),(139,1,6,104),(140,1,6,106),(141,1,6,107),(142,1,6,108),(143,1,6,110),(144,1,6,111),(145,1,6,112),(146,1,6,113),(147,1,6,114),(148,1,6,115),(149,1,6,116),(150,1,6,117),(151,1,6,118),(152,1,6,119),(153,1,6,120),(154,1,6,121),(155,2,6,102),(156,2,6,103),(157,2,6,104),(158,2,6,106),(159,2,6,107),(160,2,6,108),(161,2,6,110),(162,2,6,111),(163,2,6,112),(164,2,6,113),(165,2,6,114),(166,2,6,115),(167,2,6,116),(168,2,6,117),(169,2,6,118),(170,2,6,119),(171,2,6,120),(172,2,6,121),(173,3,6,102),(174,3,6,103),(175,3,6,104),(176,3,6,106),(177,3,6,107),(178,3,6,108),(179,3,6,110),(180,3,6,111),(181,3,6,112),(182,3,6,113),(183,3,6,114),(184,3,6,115),(185,3,6,116),(186,3,6,117),(187,3,6,118),(188,3,6,119),(189,3,6,120),(190,3,6,121),(191,4,6,102),(192,4,6,103),(193,4,6,104),(194,4,6,106),(195,4,6,107),(196,4,6,108),(197,4,6,110),(198,4,6,111),(199,4,6,112),(200,4,6,113),(201,4,6,114),(202,4,6,115),(203,4,6,116),(204,4,6,117),(205,4,6,118),(206,4,6,119),(207,4,6,120),(208,4,6,121),(209,6,6,102),(210,6,6,103),(211,6,6,104),(212,6,6,106),(213,6,6,107),(214,6,6,108),(215,6,6,110),(216,6,6,111),(217,6,6,112),(218,6,6,113),(219,6,6,114),(220,6,6,115),(221,6,6,116),(222,6,6,117),(223,6,6,118),(224,6,6,119),(225,6,6,120),(226,6,6,121),(2177,2,5,101),(2178,2,5,105),(2179,2,5,109),(2180,2,5,113),(2181,2,5,118),(2182,2,5,131),(2183,2,5,132),(2184,2,5,133),(2185,2,5,135),(2186,2,5,136),(2187,2,5,137),(2188,2,5,138),(2189,2,5,141),(2190,2,5,142),(2191,2,5,143),(2192,2,5,145),(2193,2,5,156),(2194,2,5,157),(2195,2,5,158),(2196,2,5,159),(2197,2,5,160),(2198,2,5,161),(2199,2,5,162),(2200,2,5,171),(2201,2,5,172),(2202,2,5,173),(2203,2,5,176),(2204,2,5,177),(2205,2,5,178),(2206,2,5,179),(2207,2,5,180),(2208,2,5,181),(2209,2,5,191),(2210,2,5,192),(2211,2,5,193),(2212,2,5,196),(2213,2,5,199),(2214,2,5,200),(2215,2,5,201);
 /*!40000 ALTER TABLE `user_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1215,7 +1332,7 @@ BEGIN
 	SET @branch_id := 0;
     
 	CASE 
-		WHEN table_name_d = 'RETURN DETAIL' THEN
+		WHEN table_name_d = 'CUSTOMER RETURN DETAIL' THEN
 			SELECT `branch_id` INTO @branch_id FROM return_head WHERE `id` = head_id_d;
 		WHEN table_name_d = 'DAMAGE DETAIL' THEN
 			SELECT `branch_id` INTO @branch_id FROM damage_head WHERE `id` = head_id_d;
@@ -1229,14 +1346,10 @@ BEGIN
 			SELECT `branch_id` INTO @branch_id FROM release_head WHERE `id` = head_id_d;
         WHEN table_name_d = 'INVENTORY ADJUST' THEN
 			SELECT `branch_id` INTO @branch_id FROM inventory_adjust WHERE `id` = head_id_d;
+		WHEN table_name_d = 'DELIVERY DETAIL' THEN
+			SELECT `branch_id` INTO @branch_id FROM stock_delivery_head WHERE `id` = head_id_d;
 		WHEN table_name_d = 'TRANSFER DETAIL' THEN
 			SELECT `to_branchid` INTO @branch_id FROM stock_delivery_head WHERE `id` = head_id_d;
-			SET @from_branch_id := 0;
-            SELECT `branch_id` INTO @from_branch_id FROM stock_delivery_head WHERE `id` = head_id_d;
-            
-            UPDATE product_branch_inventory
-				SET `inventory` = `inventory` + (qty_d * -1)
-				WHERE `branch_id` = @from_branch_id AND `product_id` = product_id_d;
 	END CASE;
     
     UPDATE product_branch_inventory
@@ -1267,15 +1380,18 @@ BEGIN
 	DECLARE cursor_quantity INT;
     DECLARE cursor_other_id BIGINT;
 	DECLARE done INT DEFAULT FALSE;
+    
     DECLARE cursor_return CURSOR FOR SELECT `product_id`, `quantity` FROM return_detail WHERE `headid` = head_id_d;
     DECLARE cursor_damage CURSOR FOR SELECT `product_id`, `quantity` FROM damage_detail WHERE `headid` = head_id_d;
     DECLARE cursor_release CURSOR FOR SELECT `product_id`, `quantity` FROM release_detail WHERE `headid` = head_id_d;
     DECLARE cursor_purchase_return CURSOR FOR SELECT `product_id`, `quantity` FROM purchase_return_detail WHERE `headid` = head_id_d;
     DECLARE cursor_received CURSOR FOR SELECT `product_id`, `quantity`, `purchase_detail_id` FROM purchase_receive_detail WHERE `headid` = head_id_d;
+    DECLARE cursor_delivery CURSOR FOR SELECT `product_id`, `quantity` FROM stock_delivery_detail WHERE `headid` = head_id_d AND `is_for_branch` = 1; 
+    
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;		
 	
     
-    IF (table_name_d = 'RETURN HEAD') THEN
+    IF (table_name_d = 'CUSTOMER RETURN HEAD') THEN
 		OPEN cursor_return;
 	ELSEIF (table_name_d = 'DAMAGE HEAD') THEN
 		OPEN cursor_damage;
@@ -1285,10 +1401,12 @@ BEGIN
 		OPEN cursor_received;
 	ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
 		OPEN cursor_purchase_return;
+	ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
+		OPEN cursor_delivery;
 	END IF;
         
 	read_loop: LOOP
-		IF (table_name_d = 'RETURN HEAD') THEN
+		IF (table_name_d = 'CUSTOMER RETURN HEAD') THEN
 			FETCH cursor_return INTO cursor_product_id, cursor_quantity;
 		ELSEIF (table_name_d = 'DAMAGE HEAD') THEN
 			FETCH cursor_damage INTO cursor_product_id, cursor_quantity;
@@ -1298,14 +1416,16 @@ BEGIN
 			FETCH cursor_received INTO cursor_product_id, cursor_quantity, cursor_other_id;
 		ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
 			FETCH cursor_purchase_return INTO cursor_product_id, cursor_quantity;
+		ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
+			FETCH cursor_delivery INTO cursor_product_id, cursor_quantity;
 		END IF;
         
 		IF done THEN
 			LEAVE read_loop;
 		END IF;
         
-			IF (table_name_d = 'RETURN HEAD') THEN
-				CALL process_compute_inventory_for_detail(cursor_product_id,(-1 * cursor_quantity),head_id_d,'RETURN DETAIL');
+			IF (table_name_d = 'CUSTOMER RETURN HEAD') THEN
+				CALL process_compute_inventory_for_detail(cursor_product_id,(-1 * cursor_quantity),head_id_d,'CUSTOMER RETURN DETAIL');
 			ELSEIF (table_name_d = 'DAMAGE HEAD') THEN
 				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'DAMAGE DETAIL');
 			ELSEIF (table_name_d = 'RELEASE HEAD') THEN
@@ -1315,10 +1435,12 @@ BEGIN
 				CALL process_update_receive(cursor_other_id,(-1 * cursor_quantity),'RECEIVE DETAIL');
 			ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
 				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'PURCHASE RETURN DETAIL');
+			ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
+				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'DELIVERY DETAIL');
             END IF;
 	END LOOP;
     
-    IF (table_name_d = 'RETURN HEAD') THEN
+    IF (table_name_d = 'CUSTOMER RETURN HEAD') THEN
 		CLOSE cursor_return;
 	ELSEIF (table_name_d = 'DAMAGE HEAD') THEN
 		CLOSE cursor_damage;
@@ -1328,6 +1450,8 @@ BEGIN
 		CLOSE cursor_received;
 	ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
 		CLOSE cursor_purchase_return;
+	ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
+		CLOSE cursor_delivery;
 	END IF;
 END ;;
 DELIMITER ;
@@ -1398,4 +1522,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-01  3:15:20
+-- Dump completed on 2015-07-06  3:54:12

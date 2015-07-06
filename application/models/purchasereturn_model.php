@@ -42,12 +42,11 @@ class PurchaseReturn_Model extends CI_Model {
 		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
 
-		$query_head = "SELECT CONCAT('PR',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
-					PH.`memo`, PH.`branch_id`, PH.`supplier`
-					FROM `purchase_return_head` AS PH
-					LEFT JOIN purchase_return_detail AS PD ON PD.`headid` = PH.`id`
-					WHERE PH.`is_show` = ".PURCHASE_RETURN_CONST::ACTIVE." AND PH.`id` = ?
-					GROUP BY PH.`id`";
+		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', 
+					`memo`, `branch_id`, `supplier`, `is_used`
+					FROM `purchase_return_head`
+					WHERE `is_show` = ".PURCHASE_RETURN_CONST::ACTIVE." AND `id` = ?
+					GROUP BY `id`";
 
 		$result_head = $this->db->query($query_head,$this->_purchase_return_head_id);
 
@@ -62,6 +61,7 @@ class PurchaseReturn_Model extends CI_Model {
 			$response['memo'] 				= $row->memo;
 			$response['supplier_name'] 		= $row->supplier;
 			$response['is_editable'] 		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
+			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 

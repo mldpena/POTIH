@@ -156,7 +156,7 @@
 					<tr>
 						<td>Purchase Receive</td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="136"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="136"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="137"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="138"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="139"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="140"></td>
@@ -166,9 +166,9 @@
 						<td>Customer Return</td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="141"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="142"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="143"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="144"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="145"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="146"></td>
 						<td></td>
 					</tr>
 				</table>

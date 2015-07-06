@@ -30,7 +30,7 @@ var TableHelper = function(tableOptions,options) {
 
     this._settings = { 
         updateIconClass : 'imgupdate',
-        deleteIconClass : 'tddelete',
+        deleteIconClass : 'imgdel',
         editIconClass   : 'imgedit',
         memoClass   : 'txtmemo',
         deleteButtonId   : 'delete',
@@ -162,7 +162,7 @@ var TableHelper = function(tableOptions,options) {
         bindDeleteEvents : function(onAfterDelete)
         {
             $('.' + self._settings.deleteIconClass).live('click',function(){
-                self.globalRowIndex    = $(this).parent().index();
+                self.globalRowIndex    = $(this).parent().parent().index();
                 self.globalId          = self.contentProvider.getData(self.globalRowIndex,'id');
 
                 if (self.globalId != 0) 
@@ -338,7 +338,7 @@ var TableHelper = function(tableOptions,options) {
         bindDeleteEvents : function(onAfterDelete)
         {
             $('.' + self._settings.deleteIconClass).live('click',function(){
-                self.globalRowIndex    = $(this).parent().index();
+                self.globalRowIndex    = $(this).parent().parent().index();
                 self.globalId            = self.contentProvider.getData(self.globalRowIndex,'id');
 
                 if (self.globalId != 0) 
@@ -430,6 +430,9 @@ var TableHelper = function(tableOptions,options) {
 
         bindViewEvent : function()
         {
+            if (self._settings.permissions !== undefined && self._settings.permissions.allow_to_view == false)
+                return;
+
             $('.' + self._settings.columnClass).live('click',function(){
                 var rowIndex = $(this).parent().index();
                 var headId   = self.contentProvider.getData(rowIndex,'id');

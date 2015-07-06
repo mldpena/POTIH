@@ -45,9 +45,15 @@
 				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
+
+			<?php if($permission_list['allow_to_add']) : ?>
+
 			<div class="max-row">
 				<button class="btn btn-primary" id="create_new">Create New Warehouse Release Entry</button>
 			</div>
+
+			<?php endif; ?>
+			
 			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>

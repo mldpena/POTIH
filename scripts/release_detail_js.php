@@ -187,18 +187,25 @@
 					$('#dynamic-css').html('');
 					var css = "<style>.tdqty_release{ display:none; } </style>";
 					$('#dynamic-css').html(css);
-					if (response.is_editable) 
-						tableHelper.contentProvider.addRow();
-					else
+
+
+					if (!response.is_editable) 
 					{
 						$('input, textarea, select').not('#print').attr('disabled','disabled');
 						$('.tdupdate, .tddelete, #save').hide();
 					}
+					else
+						tableHelper.contentProvider.addRow();
 				}
 					
 				if (response.is_saved == TransactionState.Saved)
 				{
-					if (response.is_editable) 
+					if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false))
+					{
+						$('input, textarea, select').not('#print').attr('disabled','disabled');
+						$('.tdupdate, .tddelete, #save').hide();
+					}
+					else
 					{
 						$('.tddelete').hide();
 						$('#save').hide();
@@ -210,11 +217,6 @@
 							if (releasedQty == 0) 
 								myjstbl.edit_row(i);
 						};
-					}
-					else
-					{
-						$('input, textarea, select').not('#print').attr('disabled','disabled');
-						$('.tdupdate, .tddelete, #save').hide();
 					}
 				}
 
