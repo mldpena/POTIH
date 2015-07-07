@@ -1,5 +1,7 @@
 /*Table Style CSS by Gian Egamino*/
-.tbl{
+.tbl,
+.tbl.single,
+.tbl.max{
 	overflow-x: auto;
 }
 .tbl.single table:last-child{
