@@ -407,10 +407,10 @@ body{
 #show-info{
 	display: none;
 }
-.tdinv span{
+.clickable span{
 	color: #337ab7;
 }
-.tdinv span:hover{
+.clickable span:hover{
 	text-decoration: underline;
 }
 

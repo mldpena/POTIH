@@ -76,7 +76,7 @@
 		header_title: "Inv",
 		edit: [spninv],
 		disp: [spninv],
-		td_class: "tablerow column_hover tdinv"
+		td_class: "tablerow column_hover tdinv clickable"
 	};
 
 	var imgDelete = document.createElement('i');
