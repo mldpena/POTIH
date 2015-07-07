@@ -426,6 +426,8 @@ class Product_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+		
 		return $response;
 	}
 
@@ -675,6 +677,8 @@ class Product_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+
 		return $response;
 	}
 
@@ -891,6 +895,8 @@ class Product_Model extends CI_Model {
 			}
 		}
 
+		$result->free_result();
+
 		return $response;
 	}
 
@@ -1021,6 +1027,8 @@ class Product_Model extends CI_Model {
 				$i++;
 			}
 		}
+
+		$result->free_result();
 
 		return $response;	
 	}
@@ -1189,6 +1197,8 @@ class Product_Model extends CI_Model {
 		}
 		else
 			throw new Exception($this->_error_message['NO_TRANSACTION_FOUND']);
+
+		$result->free_result();
 
 		return $response;
 	}

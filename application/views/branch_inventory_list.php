@@ -63,6 +63,7 @@
 			</div>
 			<div class="max-row">
 				<center>
+					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>

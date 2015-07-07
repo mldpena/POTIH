@@ -96,6 +96,7 @@
     });
                                    
     $('#tbl').hide();    
+    $('#loadingimg').hide();    
     $("#branch").chosen();
 
     function getSearchFilter()

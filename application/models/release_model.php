@@ -22,7 +22,7 @@ class Release_Model extends CI_Model {
 		$this->load->file(CONSTANTS.'release_const.php');
 		$this->load->library('sql');
 		$this->load->helper('cookie');
-		     
+
 		$this->_release_head_id 	= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
@@ -381,4 +381,59 @@ class Release_Model extends CI_Model {
 
 		return $response;
 	}  	
+
+	public function get_release_printout_detail()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$release_id = $this->encrypt->decode($this->session->userdata('release_slip'));
+
+		$query_head = "SELECT CONCAT('WR',`reference_number`) AS 'reference_number', 
+						DATE(`entry_date`) AS 'entry_date', `customer`, `memo`
+					FROM release_head 
+					WHERE `id` = ?";
+
+		$result_head = $this->db->query($query_head,$release_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$query_detail = "SELECT D.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							FROM release_head AS H
+							LEFT JOIN release_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN product AS P ON P.`id` = D.`product_id`
+							WHERE H.`id` = ?";
+
+		$result_detail = $this->db->query($query_detail,$release_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
+
+		return $response;
+	}
 }
