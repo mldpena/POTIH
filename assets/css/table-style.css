@@ -1,4 +1,7 @@
 /*Table Style CSS by Gian Egamino*/
+.tbl{
+	overflow-x: auto;
+}
 .tbl.single table:last-child{
 	margin-top: 0px;
 	margin-bottom: 0px;

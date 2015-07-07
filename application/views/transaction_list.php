@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>product/summary">Product Inventory Warning List</a></li>
+			<li class="active"><a href="<?= base_url() ?>product/summary">Product Transaction Summary List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Product Inventory Warning List</div>
+		<div class="form-header">Product Transaction Summary List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters equal-sizes" align="center">
 				<table>

@@ -270,7 +270,7 @@
 
 			<a href="<?= base_url() ?>product/summary">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>productbranchinventory.png">
+					<img src="<?= base_url().IMG ?>producttransactionsummary.png">
 					<div class="btn-title">Product Transaction Summary</div>
 				</div>
 			</a>

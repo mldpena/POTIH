@@ -278,7 +278,7 @@
 
 				<a href="<?= base_url() ?>product/summary">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>productbranchinventory.png">
+						<img src="<?= base_url().IMG ?>producttransactionsummary.png">
 						<div>Product Transaction Summary</div>
 					</div>
 				</a>
