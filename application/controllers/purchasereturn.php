@@ -40,7 +40,7 @@ class PurchaseReturn extends CI_Controller {
 		{
 			case 'list':
 				$page = 'purchasereturn_list';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::ADD_PURCHASE_RETURN),
 									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN_DETAIL),
@@ -50,7 +50,8 @@ class PurchaseReturn extends CI_Controller {
 			case 'view':
 				$page = 'purchasereturn_detail';
 				$allow_user = $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::EDIT_PURCHASE_RETURN));
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::EDIT_PURCHASE_RETURN),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::ADD_PURCHASE_RETURN));
 				
 				break;
 

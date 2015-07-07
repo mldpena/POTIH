@@ -101,6 +101,26 @@
         td_class: "tablerow column_click column_hover tdqtyremaining"
     };
 
+    var spnreceivedby = document.createElement('span');
+    var txtreceivedby = document.createElement('input');
+    txtreceivedby.setAttribute('class','form-control');
+	colarray['receivedby'] = { 
+        header_title: "Recvd By",
+        edit: [txtreceivedby],
+        disp: [spnreceivedby],
+        td_class: "tablerow column_click column_hover tdrecvdby"
+    };
+
+    var spnnote = document.createElement('span');
+    var txtnote = document.createElement('input');
+    txtnote.setAttribute('class','form-control');
+	colarray['note'] = { 
+        header_title: "Note",
+        edit: [txtnote],
+        disp: [spnnote],
+        td_class: "tablerow column_click column_hover tdnote"
+    };
+
     var chkreceiveall = document.createElement('input');
     var spnreceive = document.createElement('span');
 	chkreceiveall.className = "chkreceiveall";
@@ -407,12 +427,30 @@
                 if (response.error != '') 
                     build_message_box('messagebox_1',response.error,'danger');
                 else
-                    window.location = "<?= base_url() ?>poreceive/list";
+                    goToPrintOut();
 
                 flag = 0;
             }       
         });
     });
+	
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session' }
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(data) {
+                window.location = '<?= base_url() ?>printout/purchase_receive/Receive';
+            }
+        });
+	}
 
 	function getRowDetailsBeforeSubmit(element)
 	{
@@ -422,6 +460,8 @@
 		var purchaseDetailId 	= tableHelper.contentProvider.getData(rowIndex,'podetailid');
 		var receivedQty 		= tableHelper.contentProvider.getData(rowIndex,'qtyrecv');
 		var productId 			= tableHelper.contentProvider.getData(rowIndex,'product',1);
+		var receivedBy 			= tableHelper.contentProvider.getData(rowIndex,'receivedby');
+		var note 				= tableHelper.contentProvider.getData(rowIndex,'note');
 		var actionFunction 		= receiveDetailId == 0 ? 'insert_receive_detail' : 'update_receive_detail';
 
 		var errorList = $.dataValidation(	[{
@@ -443,7 +483,9 @@
 						detail_id : receiveDetailId,
 						purchase_detail_id : purchaseDetailId,
 						quantity : receivedQty,
-						product_id : productId
+						product_id : productId,
+						receivedby 	: receivedBy,
+			     		note 		: note
 					};
 
 		return arr;

@@ -72,11 +72,21 @@
         td_class: "tablerow column_click column_hover tdqty"
     };
 
+    var spnreceivedby = document.createElement('span');
+    var txtreceivedby = document.createElement('input');
+    txtreceivedby.setAttribute('class','form-control');
+	colarray['receivedby'] = { 
+        header_title: "Recvd By",
+        edit: [txtreceivedby],
+        disp: [spnreceivedby],
+        td_class: "tablerow column_click column_hover tdrecvdby"
+    };
+
     var spnmemo = document.createElement('span');
     var txtmemo = document.createElement('input');
     txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
-        header_title: "Remarks",
+        header_title: "Note",
         edit: [txtmemo],
         disp: [spnmemo],
         td_class: "tablerow column_click column_hover tdmemo"
@@ -120,7 +130,9 @@
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'return' });
 
-	tableHelper.detailContent.bindAllEvents({ saveEventsBeforeCallback : getHeadDetailsBeforeSubmit});
+	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
+												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+												saveEventsAfterCallback : goToPrintOut } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -169,6 +181,24 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session' }
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(data) {
+                window.location = '<?= site_url() ?>printout/customer_return/Receive';
+            }
+        });
+	}
+
 	function getHeadDetailsBeforeSubmit()
 	{
 		var date_val	= $('#date').val();
@@ -183,6 +213,51 @@
 						customer_name : customer_name_val,
 						received_by : received_by_val
 					};
+
+		return arr;
+	}
+
+	function getRowDetailsBeforeSubmit(element)
+	{
+		var rowIndex 		= $(element).parent().parent().index();
+		var productId       = tableHelper.contentProvider.getData(rowIndex,'product',1);
+	    var qty             = tableHelper.contentProvider.getData(rowIndex,'qty');
+	    var memo            = tableHelper.contentProvider.getData(rowIndex,'memo');
+	    var rowUniqueId     = tableHelper.contentProvider.getData(rowIndex,'id');
+	    var nonStackDescription  = tableHelper.contentProvider.getData(rowIndex,'product',4);
+	    var receivedBy 		= tableHelper.contentProvider.getData(rowIndex,'receivedby');
+	    var actionFunction  = rowUniqueId != 0 ? tableHelper._settings.updateDetailName : tableHelper._settings.insertDetailName;
+
+	    var errorList = $.dataValidation([  {   
+	                                            value : productId,
+	                                            fieldName : 'Product',
+	                                            required : true,
+	                                            isNotEqual : { value : 0, errorMessage : 'Please select a valid product!'}
+	                                        },
+	                                        {
+	                                            value : qty,
+	                                            fieldName : 'Quantity',
+	                                            required : true,
+	                                            rules : 'numeric',
+	                                            isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+	                                        }
+	                                        ]);
+
+	    if (errorList.length > 0) {
+	        clear_message_box();
+	        build_message_box('messagebox_1',build_error_message(errorList),'danger');
+	        return;
+	    };
+
+	    var arr =   { 
+                        fnc         : actionFunction, 
+                        product_id  : productId,
+                        qty         : qty,
+                        memo        : memo,
+                        detail_id   : rowUniqueId,
+                        description : nonStackDescription,
+                        received_by : receivedBy
+                    };
 
 		return arr;
 	}

@@ -8,7 +8,7 @@
 <?php require_once('internal_css.php'); ?>
 
 <script type="text/javascript"> 
-	var current_url = "<?= base_url().$this->uri->segment(1).'/' ?><?= ($this->uri->segment(2) == 'view' || $this->uri->segment(2) == 'add' || $this->uri->segment(2) == 'express'? 'list' : $this->uri->segment(2))?>";
+	var current_url = "<?= base_url().$this->uri->segment(1).'/' ?><?= (in_array($this->uri->segment(2),array('view','express','record'))) ? 'list' : $this->uri->segment(2)?>";
 </script>
 <script type="text/javascript" src="<?= base_url().JS ?>jquery-1.8.0.min.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>jquery-ui-1.8.23.custom.min.js"></script>

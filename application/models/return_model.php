@@ -63,7 +63,7 @@ class Return_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`description`, P.`type`
+						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
 					FROM `return_detail` AS RD
 					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".RETURN_CONST::ACTIVE."
@@ -84,6 +84,7 @@ class Return_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
+				$response['detail'][$i][] = array($row->received_by);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -104,16 +105,17 @@ class Return_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 		= array($this->_return_head_id,$qty,$product_id,$memo,$description);
+		$query_data 		= array($this->_return_head_id,$qty,$product_id,$memo,$description,$received_by);
 
 		$query = "INSERT INTO `return_detail`
 					(`headid`,
 					`quantity`,
 					`product_id`,
 					`memo`,
-					`description`)
+					`description`,
+					`received_by`)
 					VALUES
-					(?,?,?,?,?);";
+					(?,?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -133,14 +135,15 @@ class Return_Model extends CI_Model {
 
 		$response['error'] = '';
 		$return_detail_id 	= $this->encrypt->decode($detail_id);
-		$query_data 		= array($qty,$product_id,$memo,$description,$return_detail_id);
+		$query_data 		= array($qty,$product_id,$memo,$description,$received_by,$return_detail_id);
 
 		$query = "UPDATE `return_detail`
 					SET
 					`quantity` = ?,
 					`product_id` = ?,
 					`memo` = ?,
-					`description` = ?
+					`description` = ?,
+					`received_by` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);
@@ -323,4 +326,58 @@ class Return_Model extends CI_Model {
 		return $response;
 	}
 
+	public function get_receive_printout_detail()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$return_id = $this->encrypt->decode($this->session->userdata('delivery_receive'));
+
+		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number', 
+						DATE(`delivery_receive_date`) AS 'entry_date'
+					FROM stock_delivery_head
+					WHERE `id` = ?";
+
+		$result_head = $this->db->query($query_head,$return_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`memo` AS 'receive_memo'
+							FROM return_head AS H
+							LEFT JOIN return_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN product AS P ON P.`id` = D.`product_id`
+							WHERE H.`id` = ?";
+
+		$result_detail = $this->db->query($query_detail,$return_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
+
+		return $response;
+	}
 }

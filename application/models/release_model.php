@@ -73,7 +73,7 @@ class Release_Model extends CI_Model {
 			switch ($status) 
 			{
 				case RELEASE_CONST::INCOMPLETE:
-					$having = "HAVING remaining_qty < total_qty AND remaining_qty <> 0";
+					$having = "HAVING remaining_qty < total_qty AND remaining_qty > 0";
 					break;
 				
 				case RELEASE_CONST::COMPLETE:
@@ -417,6 +417,143 @@ class Release_Model extends CI_Model {
 							WHERE H.`id` = ?";
 
 		$result_detail = $this->db->query($query_detail,$release_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
+
+		return $response;
+	}
+
+	public function get_pickup_summary_detail($param)
+	{
+		extract($param);
+
+		$conditions		= "";
+		$order_field 	= "";
+
+		$response 	= array();
+		$query_data = array();
+
+		$response['rowcnt'] = 0;
+
+		if (!empty($date_from))
+		{
+			$conditions .= " AND RH.`entry_date` >= ?";
+			array_push($query_data,$date_from.' 00:00:00');
+		}
+
+		if (!empty($date_to))
+		{
+			$conditions .= " AND RH.`entry_date` <= ?";
+			array_push($query_data,$date_to.' 23:59:59');
+		}
+
+		if ($branch != 0) 
+		{
+			$conditions .= " AND RH.`branch_id` = ?";
+			array_push($query_data,$branch);
+		}
+
+		if (!empty($search_string)) 
+		{
+			$conditions .= " AND CONCAT('WR',RH.`reference_number`,' ',RH.`memo`,' ',RH.`customer`) LIKE ?";
+			array_push($query_data,'%'.$search_string.'%');
+		}
+
+		switch ($order_by) 
+		{
+			case RELEASE_CONST::ORDER_BY_REFERENCE:
+				$order_field = "RH.`reference_number`";
+				break;
+			
+			case RELEASE_CONST::ORDER_BY_LOCATION:
+				$order_field = "B.`name`";
+				break;
+
+			case RELEASE_CONST::ORDER_BY_CUSTOMER:
+				$order_field = "RH.`customer`";
+				break;
+		}
+
+
+		$query = "SELECT RH.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('WR',RH.`reference_number`) AS 'reference_number',
+					COALESCE(DATE(`entry_date`),'') AS 'entry_date',RH. `is_used`, IF(RH.`is_used` = 0, 'Unused', RH.`memo`) AS 'memo', RH.`customer`,
+					COALESCE(SUM(RD.`quantity`),'') AS 'total_qty', SUM(RD.`quantity` - RD.`qty_released`) AS 'remaining_qty',
+					COALESCE(CASE
+						WHEN SUM(RD.`qty_released`) = SUM(RD.`quantity`) THEN 'Complete'
+						WHEN SUM(RD.`qty_released` ) > SUM(RD.`quantity`) THEN 'Excess'
+						WHEN SUM(RD.`qty_released`) > 0 THEN 'Incomplete'
+						WHEN SUM(RD.`qty_released`) = 0 THEN 'No Received'
+					END,'') AS 'status'
+					FROM release_head AS RH
+					LEFT JOIN release_detail AS RD ON RD.`headid` = RH.`id`
+					LEFT JOIN branch AS B ON B.`id` = RH.`branch_id` AND B.`is_show` = ".RELEASE_CONST::ACTIVE."
+					WHERE RH.`is_show` = ".RELEASE_CONST::ACTIVE." AND RD.`qty_released` > 0 $conditions
+					GROUP BY RH.`id`
+					ORDER BY $order_field $order_type";
+					
+		$result = $this->db->query($query,$query_data);
+		
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array('');
+				$response['data'][$i][] = array($this->encrypt->encode($row->id));
+				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row->location);
+				$response['data'][$i][] = array($row->reference_number);
+				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array($row->customer);
+				$response['data'][$i][] = array($row->memo);
+				$response['data'][$i][] = array($row->status);
+				$response['data'][$i][] = array('');
+				$i++;
+			}
+		}
+
+		return $response;
+	}
+
+	public function get_pickup_printout_details()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$temp_release_id = array();
+		$release_id_enc = $this->session->userdata('pickup_summary');
+
+		for ($i=0; $i < count($release_id_enc); $i++)
+			array_push($temp_release_id,$this->encrypt->decode($release_id_enc[$i]));
+
+		$release_id = implode(",",$temp_release_id);
+
+		$query_detail = "SELECT D.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`, 
+							CONCAT('WR',H.`reference_number`) AS 'reference_number', H.`customer`
+							FROM release_head AS H
+							LEFT JOIN release_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN product AS P ON P.`id` = D.`product_id`
+							WHERE H.`id` IN($release_id) ";
+
+		$result_detail = $this->db->query($query_detail);
 
 		if ($result_detail->num_rows() > 0) 
 		{

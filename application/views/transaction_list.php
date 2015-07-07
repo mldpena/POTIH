@@ -59,9 +59,9 @@
 							<tr>
 								<td><input type="checkbox" id="is_include_date"></td>
 								<td>Date From:</td>
-								<td><input type="text" class="form-control" id="date_from"></td>
+								<td><input type="text" class="form-control" id="date_from" disabled></td>
 								<td>Date To:</td>
-								<td><input type="text" class="form-control" id="date_to"></td>
+								<td><input type="text" class="form-control" id="date_to" disabled></td>
 							</tr>
 						</table>
 					</center>

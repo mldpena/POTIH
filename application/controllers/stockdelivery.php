@@ -14,6 +14,7 @@ class StockDelivery extends CI_Controller {
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 		$this->load->library('permission_checker');
+		$this->load->library('session');
 	}
 
 	/**
@@ -240,6 +241,18 @@ class StockDelivery extends CI_Controller {
 					$response = $this->delivery_model->update_receive_head($post_data, 2);
 					break;
 
+				case 'update_stock_receive_detail':
+					$response = $this->delivery_model->update_stock_receive_detail($post_data);
+					break;
+
+				case 'set_session':
+					$this->set_session_data('delivery_receive');
+					break;
+
+				case 'set_session_delivery':
+					$this->set_session_data('delivery');
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
@@ -249,6 +262,11 @@ class StockDelivery extends CI_Controller {
 		}
 		
 		echo json_encode($response);
+	}
+
+	private function set_session_data($session_name)
+	{
+		$this->session->set_userdata($session_name,$this->uri->segment(3));
 	}
 
 }

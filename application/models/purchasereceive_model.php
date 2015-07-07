@@ -148,16 +148,16 @@ class PurchaseReceive_Model extends CI_Model {
 						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
 						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
-						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining'
+						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining',
+						COALESCE(PRD.`receive_memo`,'') AS 'receive_memo', COALESCE(PRD.`received_by`,'') AS 'received_by'
 					FROM `purchase_head` AS PH
 					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id` 
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE."
 					LEFT JOIN (
-								SELECT PRD.`purchase_detail_id`, SUM(PRD.`quantity`) AS 'quantity', PRD.`id`
+								SELECT PRD.`purchase_detail_id`, PRD.`quantity`, PRD.`id`, PRD.`receive_memo`, PRD.`received_by`
 						        FROM purchase_receive_head AS PRH
 						        LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
 						        WHERE PRH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
-						        GROUP BY PRD.`id`
 					)AS PRD ON PRD.`purchase_detail_id` = PD.`id`
 					WHERE PH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".PURCHASE_RECEIVE_CONST::USED." AND PH.`id` $condition";
 
@@ -180,6 +180,8 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining);
+				$response['detail'][$i][] = array($row->received_by);
+				$response['detail'][$i][] = array($row->receive_memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($row->qty_receive,$row->qty_receive);
 				$response['detail'][$i][] = array('');
@@ -203,15 +205,17 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$purchase_detail_id = $this->encrypt->decode($purchase_detail_id);
 
-		$query_data = array($this->_receive_head_id,$quantity,$product_id,$purchase_detail_id);
+		$query_data = array($this->_receive_head_id,$quantity,$product_id,$purchase_detail_id,$note,$receivedby);
 
 		$query = "INSERT INTO `purchase_receive_detail`
 					(`headid`,
 					`quantity`,
 					`product_id`,
-					`purchase_detail_id`)
+					`purchase_detail_id`,
+					`receive_memo`,
+					`received_by`)
 					VALUES
-					(?,?,?,?);";
+					(?,?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -412,19 +416,78 @@ class PurchaseReceive_Model extends CI_Model {
 		$response['error'] = '';
 		$receive_detail_id 	= $this->encrypt->decode($detail_id);
 		$purchase_detail_id = $this->encrypt->decode($purchase_detail_id);
-		$query_data 		= array($quantity,$product_id,$purchase_detail_id,$receive_detail_id);
+		$query_data 		= array($quantity,$product_id,$purchase_detail_id,$note,$receivedby,$receive_detail_id);
 
 		$query = "UPDATE `purchase_receive_detail`
 					SET
 					`quantity` = ?,
 					`product_id` = ?,
-					`purchase_detail_id` = ?
+					`purchase_detail_id` = ?,
+					`receive_memo` = ?,
+					`received_by` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'] != '') 
 			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
+
+		return $response;
+	}
+
+	public function get_receive_printout_detail()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$receive_id = $this->encrypt->decode($this->session->userdata('delivery_receive'));
+
+		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', 
+						DATE(`entry_date`) AS 'entry_date'
+					FROM stock_delivery_head
+					WHERE `id` = ?";
+
+		$result_head = $this->db->query($query_head,$receive_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$query_detail = "SELECT D.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
+							COALESCE(PD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', 
+							D.`received_by`, D.`receive_memo`
+							FROM purchase_receive_head AS H
+							LEFT JOIN purchase_receive_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN product AS P ON P.`id` = D.`product_id`
+							LEFT JOIN purchase_detail AS PD ON PD.`id` = D.`purchase_detail_id`
+							WHERE H.`id` = ?";
+
+		$result_detail = $this->db->query($query_detail,$receive_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
 
 		return $response;
 	}

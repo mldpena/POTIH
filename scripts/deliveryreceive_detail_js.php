@@ -71,6 +71,26 @@
         td_class: "tablerow column_click column_hover tdmemo"
     };
 
+    var spnreceivedby = document.createElement('span');
+    var txtreceivedby = document.createElement('input');
+    txtreceivedby.setAttribute('class','form-control');
+	colarray['receivedby'] = { 
+        header_title: "Recvd By",
+        edit: [txtreceivedby],
+        disp: [spnreceivedby],
+        td_class: "tablerow column_click column_hover tdrecvdby"
+    };
+
+    var spnnote = document.createElement('span');
+    var txtnote = document.createElement('input');
+    txtnote.setAttribute('class','form-control');
+	colarray['note'] = { 
+        header_title: "Note",
+        edit: [txtnote],
+        disp: [spnnote],
+        td_class: "tablerow column_click column_hover tdnote"
+    };
+
     var chkreceiveall = document.createElement('input');
     chkreceiveall.className = "chkreceiveall";
 	chkreceiveall.type = "checkbox";
@@ -126,7 +146,8 @@
 										{ baseURL : "<?= base_url() ?>", controller : 'delreceive' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
-												updateEventsBeforeCallback : getRowDetailsBeforeSubmit } );
+												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+												saveEventsAfterCallback : goToPrintOut } );
 
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -201,6 +222,24 @@
 		tableHelper.contentProvider.setData(rowIndex,'receiveqty',[totalQuantity]);
 	});
 
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session' }
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(data) {
+                window.location = '<?= base_url() ?>printout/delivery_receive/Receive';
+            }
+        });
+	}
+
 	function getHeadDetailsBeforeSubmit()
 	{
 		var receiveDate	= $('#receive_date').val();
@@ -218,6 +257,8 @@
 		var rowIndex 		= $(element).parent().parent().index();
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var receivedQty 	= tableHelper.contentProvider.getData(rowIndex,'receiveqty');
+		var receivedBy 		= tableHelper.contentProvider.getData(rowIndex,'receivedby');
+		var note 			= tableHelper.contentProvider.getData(rowIndex,'note');
 
 		var errorList = $.dataValidation([{
                                             value : receivedQty,
@@ -234,9 +275,11 @@
         };
 
 		var arr = 	{ 
-						fnc 	 	: 'update_receive_detail', 
+						fnc 	 	: 'update_stock_receive_detail', 
 			     		detail_id 	: rowId,
-			     		receiveqty 	: receivedQty
+			     		receiveqty 	: receivedQty,
+			     		receivedby 	: receivedBy,
+			     		note 		: note
 					};
 
 		return arr;

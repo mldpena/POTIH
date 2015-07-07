@@ -286,7 +286,7 @@ var TableHelper = function(tableOptions,options) {
             });
         },
 
-        bindSaveTransactionEvent : function(onBeforeSubmit)
+        bindSaveTransactionEvent : function(onBeforeSubmit, onAfterSubmit)
         {
             $('#' + self._settings.saveButtonId).click(function(){
                 if (self._flag == 1)
@@ -324,7 +324,12 @@ var TableHelper = function(tableOptions,options) {
                         if (response.error != '') 
                             build_message_box('messagebox_1',response.error,'danger');
                         else
-                            window.location = self._settings.baseURL + self._settings.controller + "/list";
+                        {
+                            if (onAfterSubmit) 
+                                onAfterSubmit();
+                            else
+                                window.location = self._settings.baseURL + self._settings.controller + "/list";
+                        }
 
                         self._flag = 0;
                     }       
@@ -337,7 +342,7 @@ var TableHelper = function(tableOptions,options) {
             self.detailContent.bindEditEvents();
             self.detailContent.bindDeleteEvents(callbackOptions.deleteEventsAfterCallback);
             self.detailContent.bindAutoComplete();
-            self.detailContent.bindSaveTransactionEvent(callbackOptions.saveEventsBeforeCallback);
+            self.detailContent.bindSaveTransactionEvent(callbackOptions.saveEventsBeforeCallback,callbackOptions.saveEventsAfterCallback);
         }
     },
 

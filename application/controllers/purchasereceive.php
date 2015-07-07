@@ -12,6 +12,7 @@ class PurchaseReceive extends CI_Controller {
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 		$this->load->library('permission_checker');
+		$this->load->library('session');
 	}
 
 	/**
@@ -145,6 +146,10 @@ class PurchaseReceive extends CI_Controller {
 					$response = $this->purchasereceive_model->update_purchase_receive_detail($post_data);
 					break;
 
+				case 'set_session':
+					$this->set_session_data();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;
@@ -155,4 +160,10 @@ class PurchaseReceive extends CI_Controller {
 		
 		echo json_encode($response);
 	}
+
+	private function set_session_data()
+	{
+		$this->session->set_userdata('release_slip',$this->uri->segment(3));
+	}
+
 }

@@ -160,7 +160,8 @@
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 											 	updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
-											 	addInventoryChecker : true } );
+											 	addInventoryChecker : true,
+											 	saveEventsAfterCallback : goToPrintOut } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -250,6 +251,24 @@
 			hideTransferAndReceived();
 		}
 	});
+
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session_delivery' }
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(data) {
+                window.location = '<?= base_url() ?>printout/delivery/Delivery';
+            }
+        });
+	}
 
 	function getHeadDetailsBeforeSubmit()
 	{

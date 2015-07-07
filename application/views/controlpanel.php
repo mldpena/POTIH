@@ -231,6 +231,13 @@
 				</div>
 			</a>
 
+			<a href="<?= base_url() ?>release/pickup">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>warehouserelease.png">
+					<div class="btn-title">Pick-Up Summary</div>
+				</div>
+			</a>
+
 			<?php endif; ?>
 		</div>
 	</div>

@@ -13,6 +13,7 @@ class Release extends CI_Controller {
 		$this->load->helper('query');
 		$this->load->library('permission_checker');
 		$this->load->library('session');
+		$this->load->library('encrypt');
 	}
 
 	/**
@@ -53,6 +54,13 @@ class Release extends CI_Controller {
 				$allow_user = $this->permission_checker->check_permission(\Permission\Release_Code::VIEW_RELEASE);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Release_Code::EDIT_RELEASE),
 									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Release_Code::ADD_RELEASE));
+				break;
+
+			case 'pickup':
+				$page = 'pickup_list';
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$allow_user = TRUE;
+				
 				break;
 
 			default:
@@ -160,6 +168,14 @@ class Release extends CI_Controller {
 					$this->set_session_data();
 					break;
 
+				case 'set_session_pickup':
+					$this->set_session_pickup_data($post_data);
+					break;
+
+				case 'get_pickup_summary':
+					$response = $this->release_model->get_pickup_summary_detail($post_data);
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
@@ -174,5 +190,17 @@ class Release extends CI_Controller {
 	private function set_session_data()
 	{
 		$this->session->set_userdata('release_slip',$this->uri->segment(3));
+	}
+
+	private function set_session_pickup_data($param)
+	{
+		extract($param);
+
+		$release_id_list = array();
+
+		for ($i = 0; $i < count($release_id); $i++)
+			array_push($release_id_list,$release_id[$i]);
+
+		$this->session->set_userdata('pickup_summary',$release_id_list);
 	}
 }

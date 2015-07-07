@@ -34,9 +34,41 @@ class Printout extends CI_Controller {
 				$response 	= $this->release_model->get_release_printout_detail();
 				break;
 
-			case 'view':
-				$page = 'release_detail';
+			case 'delivery_receive':
+				$this->load->model('delivery_model');
 
+				$page 		= 'pdf/receive_summary.php';
+				$response 	= $this->delivery_model->get_receive_printout_detail();
+
+				break;
+
+			case 'purchase_receive':
+				$this->load->model('purchasereceive_model');
+
+				$page 		= 'pdf/receive_summary.php';
+				$response 	= $this->purchasereceive_model->get_receive_printout_detail();
+
+				break;
+
+			case 'customer_return':
+				$this->load->model('return_model');
+
+				$page 		= 'pdf/receive_summary.php';
+				$response 	= $this->return_model->get_receive_printout_detail();
+				break;
+
+			case 'delivery':
+				$this->load->model('delivery_model');
+
+				$page 		= 'pdf/delivery_summary.php';
+				$response 	= $this->delivery_model->get_delivery_printout_details();
+				break;
+
+			case 'pickup':
+				$this->load->model('release_model');
+
+				$page 		= 'pdf/pickup_summary.php';
+				$response 	= $this->release_model->get_pickup_printout_details();
 				break;
 
 			default:

@@ -40,7 +40,7 @@ class Damage extends CI_Controller {
 		{
 			case 'list':
 				$page = 'damage_list';
-				$data['branch_list'] = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\Damage_Code::VIEW_DAMAGE);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Damage_Code::ADD_DAMAGE),
 									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Damage_Code::VIEW_DAMAGE_DETAIL),
@@ -51,7 +51,8 @@ class Damage extends CI_Controller {
 			case 'view':
 				$page = 'damage_detail';
 				$allow_user = $this->permission_checker->check_permission(\Permission\Damage_Code::VIEW_DAMAGE);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Damage_Code::EDIT_DAMAGE));
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Damage_Code::EDIT_DAMAGE),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Damage_Code::ADD_DAMAGE));
 				break;
 			
 			default:

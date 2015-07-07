@@ -797,54 +797,54 @@ class Product_Model extends CI_Model {
 		}
 
 		if ($purchase_receive == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR purchase_receive > 0";
+			$having .= " OR `purchase_receive` > 0";
 		else if ($purchase_receive == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR purchase_receive = 0";
+			$having .= " OR `purchase_receive` = 0";
 
 		if ($customer_return == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR customer_return > 0";
+			$having .= " OR `customer_return` > 0";
 		else if ($customer_return == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR customer_return = 0";
+			$having .= " OR `customer_return` = 0";
 
 		if ($stock_receive == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR stock_receive > 0";
+			$having .= " OR `stock_receive` > 0";
 		else if ($stock_receive == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR stock_receive = 0";
+			$having .= " OR `stock_receive` = 0";
 
 		if ($adjust_increase == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR adjust_increase > 0";
+			$having .= " OR `adjust_increase` > 0";
 		else if ($adjust_increase == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR adjust_increase = 0";
+			$having .= " OR `adjust_increase` = 0";
 
 		if ($damage == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR damage > 0";
+			$having .= " OR `damage` > 0";
 		else if ($damage == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR damage = 0";
+			$having .= " OR `damage` = 0";
 
 		if ($purchase_return == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR purchase_return > 0";
+			$having .= " OR `purchase_return` > 0";
 		else if ($purchase_return == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR purchase_return = 0";
+			$having .= " OR `purchase_return` = 0";
 
 		if ($stock_delivery == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR stock_delivery > 0";
+			$having .= " OR `stock_delivery` > 0";
 		else if ($stock_delivery == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR stock_delivery = 0";
+			$having .= " OR `stock_delivery` = 0";
 
 		if ($customer_delivery == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR customer_delivery > 0";
+			$having .= " OR `customer_delivery` > 0";
 		else if ($customer_delivery == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR customer_delivery = 0";
+			$having .= " OR `customer_delivery` = 0";
 
 		if ($adjust_decrease == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR adjust_decrease > 0";
+			$having .= " OR `adjust_decrease` > 0";
 		else if ($adjust_decrease == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR adjust_decrease = 0";
+			$having .= " OR `adjust_decrease` = 0";
 
 		if ($release == PRODUCT_CONST::WITH_TRANSACTION)
-			$having .= " OR release > 0";
+			$having .= " OR `release` > 0";
 		else if ($release == PRODUCT_CONST::WITHOUT_TRANSACTION)
-			$having .= " OR release = 0";
+			$having .= " OR `release` = 0";
 
 		if (!empty($having)) 
 			$having = "HAVING (".substr($having, 4).")";
@@ -1088,6 +1088,7 @@ class Product_Model extends CI_Model {
 			$quantity_column 		= "D.`quantity`";
 			$date_column 			= "H.`entry_date`";
 			$branch_column 			= "H.`branch_id`";
+			$link_location 			= "";
 
 			switch ($module_access) 
 			{
@@ -1095,12 +1096,14 @@ class Product_Model extends CI_Model {
 					$head_table 	= "purchase_receive_head";
 					$detail_table 	= "purchase_receive_detail";
 					$reference_character = "PR";
+					$link_location 	= "poreceive";
 					break;
 
 				case 'customereturn':
 					$head_table 	= "return_head";
 					$detail_table 	= "return_detail";
 					$reference_character = "RD";
+					$link_location 	= "return";
 					break;
 
 				case 'stockreceive':
@@ -1111,18 +1114,21 @@ class Product_Model extends CI_Model {
 					$quantity_column = "D.`recv_quantity`";
 					$date_column = "H.`delivery_receive_date`";
 					$branch_column = "H.`to_branchid`";
+					$link_location 	= "delreceive";
 					break;
 
 				case 'damage':
 					$head_table 	= "damage_head";
 					$detail_table 	= "damage_detail";
 					$reference_character = "DD";
+					$link_location 	= "damage";
 					break;
 
 				case 'purchasereturn':
 					$head_table 	= "purchase_return_head";
 					$detail_table 	= "purchase_return_detail";
 					$reference_character = "PR";
+					$link_location 	= "purchaseret";
 					break;
 
 				case 'stockdelivery':
@@ -1131,6 +1137,7 @@ class Product_Model extends CI_Model {
 					$reference_character = "SD";
 					$additional_condition = " AND D.`is_for_branch` = 1";
 					$date_column = "H.`entry_date`";
+					$link_location 	= "delivery";
 					break;
 
 				case 'customerdelivery':
@@ -1140,12 +1147,14 @@ class Product_Model extends CI_Model {
 					$additional_condition = " AND D.`is_for_branch` = 0";
 					$quantity_column = "D.`recv_quantity`";
 					$date_column = "H.`customer_receive_date`";
+					$link_location 	= "custreceive";
 					break;
 
 				case 'release':
 					$head_table 	= "release_head";
 					$detail_table 	= "release_detail";
 					$reference_character = "WR";
+					$link_location 	= "release";
 					break;
 			}
 
@@ -1170,7 +1179,7 @@ class Product_Model extends CI_Model {
 	  		array_push($query_data,$product_id);
 
 			$query = "SELECT DATE($date_column) AS 'entry_date', CONCAT('$reference_character',H.`reference_number`) AS 'reference_number', 
-							SUM($quantity_column) AS 'quantity', COALESCE(U.`full_name`,'') AS 'prepared_by', H.`memo`
+							SUM($quantity_column) AS 'quantity', COALESCE(U.`full_name`,'') AS 'prepared_by', H.`memo`, H.`id`
 							FROM $head_table AS H
 							LEFT JOIN $detail_table AS D ON D.`headid` = H.`id`
 							LEFT JOIN user AS U ON U.`id` = H.`created_by`
@@ -1189,8 +1198,16 @@ class Product_Model extends CI_Model {
 
 			foreach ($result->result() as $row) 
 			{
+
 				foreach ($row as $key => $value)
+				{
+					if ($key == 'reference_number') 
+						$value = "<a href ='".base_url()."$link_location/view/".$this->encrypt->encode($row->id)."'>".$value."</a>";
+					else if ($key == 'id')
+						continue;
+
       				$response['data'][$i][] = array($value);
+				}
 
 				$i++;
 			}

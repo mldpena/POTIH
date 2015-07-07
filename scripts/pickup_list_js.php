@@ -1,5 +1,5 @@
 <script type="text/javascript">
-	var token = "<?= $token ?>";
+	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -9,6 +9,18 @@
     
     var colarray = [];
 	
+	var chkchecktransfer = document.createElement('input');
+    chkchecktransfer.setAttribute('type','checkbox');
+    chkchecktransfer.setAttribute('class','chkforprint');
+
+	colarray['print'] = { 
+        header_title: "",
+        edit: [chkchecktransfer],
+        disp: [chkchecktransfer],
+        td_class: "tablerow tdview tdistransfer",
+		headertd_class : "tdview tdistransfer"
+    };
+
 	var spnid = document.createElement('span');
 	colarray['id'] = { 
         header_title: "",
@@ -36,7 +48,7 @@
 
 	var spnreferencenumber = document.createElement('span');
 	colarray['referencenumber'] = { 
-        header_title: "Reference #",
+        header_title: "Doc #",
         edit: [spnreferencenumber],
         disp: [spnreferencenumber],
         td_class: "tablerow column_click column_hover tdreference"
@@ -58,38 +70,21 @@
         td_class: "tablerow column_click column_hover tdcustomer"
     };
 
-    var spnreceiveby = document.createElement('span');
-	colarray['receivedby'] = { 
-        header_title: "Received By",
-        edit: [spnreceiveby],
-        disp: [spnreceiveby],
-        td_class: "tablerow column_click column_hover tdhide tdreceivedby",
-        headertd_class: "tdhide"
-    };
-
     var spnmemo = document.createElement('span');
 	colarray['memo'] = { 
         header_title: "Memo",
         edit: [spnmemo],
         disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tdmemo"
+        td_class: "tablerow column_click column_hover tddate"
     };
-
-    var imgDelete = document.createElement('i');
-	imgDelete.setAttribute("class","imgdel fa fa-trash");
-
-	<?php if (!$permission_list['allow_to_delete']) : ?>
-
-	imgDelete.setAttribute("style","display:none;");
-
-	<?php endif; ?>
-	
-	colarray['coldelete'] = { 
-		header_title: "",
-		edit: [imgDelete],
-		disp: [imgDelete],
-		td_class: "tablerow column_hover tddelete"
-	};
+  	
+  	var spnstatus = document.createElement('span');
+	colarray['status'] = { 
+        header_title: "Status",
+        edit: [spnstatus],
+        disp: [spnstatus],
+        td_class: "tablerow column_click column_hover tdstatus"
+    };
 
 	var myjstbl;
 
@@ -107,22 +102,46 @@
 	$('#branch_list').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
-	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'return',
-										  notFoundMessage: 'No customer return entry found!',
-										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) }
-										});
+										{ notFoundMessage : 'No pick-up summary entry found!' });
 
-	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
-											deleteEventsAfterCallback : actionAfterDelete } );
-
+	tableHelper.headContent.bindSearchEvent(getSearchFilter);
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
+
+	$('#print').click(function(){
+		var idList = [];
+
+		$('.chkforprint:checked').each(function(index,element){
+			var rowIndex = $(this).parent().parent().index();
+			var rowId = tableHelper.contentProvider.getData(rowIndex,'id');
+			idList.push(rowId);
+		});
+
+		if (idList.length == 0)
+		{
+			alert('Please select at least one entry!');
+			return;
+		}
+
+		var arr = 	{ 
+						fnc : 'set_session_pickup',
+					 	release_id : idList
+					}
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(data) {
+                window.location = '<?= base_url() ?>printout/pickup/Pickup';
+            }
+        });
+
+	});
 
 	function getSearchFilter()
 	{
@@ -134,7 +153,7 @@
 		var branch_val 		= $('#branch_list').val();
 
 		var arr = 	{ 
-						fnc 	 		: 'search_return_list', 
+						fnc 	 		: 'get_pickup_summary', 
 						search_string 	: search_val,
 						order_by  		: order_val,
 						order_type 		: orde_type_val,
@@ -146,9 +165,4 @@
 		return arr;
 	}
 
-	function actionAfterDelete()
-	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Customer Return entry successfully deleted!','success');
-	}
 </script>

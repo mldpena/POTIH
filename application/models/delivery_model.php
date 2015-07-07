@@ -585,7 +585,7 @@ class Delivery_Model extends CI_Model {
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity`, SD.`description`, P.`type`
+						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
@@ -607,6 +607,13 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
+
+				if ($receive_type == DELIVERY_CONST::FOR_TRANSFER)
+				{
+					$response['detail'][$i][] = array($row->received_by);
+					$response['detail'][$i][] = array($row->receive_memo);
+				}
+
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($row->recv_quantity);
 				$response['detail'][$i][] = array('');
@@ -643,6 +650,31 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
+	public function update_stock_receive_detail($param)
+	{
+		extract($param);
+
+		$response = array();
+
+		$response['error'] = '';
+		$delivery_detail_id = $this->encrypt->decode($detail_id);
+		$query_data 		= array($receiveqty,$note,$receivedby,$delivery_detail_id);
+
+		$query = "UPDATE `stock_delivery_detail`
+					SET
+					`recv_quantity` = ?,
+					`receive_memo` = ?,
+					`received_by` = ?
+					WHERE `id` = ?;";
+
+		$result = $this->sql->execute_query($query,$query_data);
+
+		if ($result['error'] != '') 
+			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
+
+		return $response;
+	}
+
 	public function update_receive_head($param, $receive_type)
 	{
 		extract($param);
@@ -661,6 +693,116 @@ class Delivery_Model extends CI_Model {
 
 		if ($result['error'] != '') 
 			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
+
+		return $response;
+	}
+
+	public function get_receive_printout_detail()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$delivery_id = $this->encrypt->decode($this->session->userdata('delivery_receive'));
+
+		$query_head = "SELECT CONCAT('SD',`reference_number`) AS 'reference_number', 
+						DATE(`delivery_receive_date`) AS 'entry_date'
+					FROM stock_delivery_head
+					WHERE `id` = ?";
+
+		$result_head = $this->db->query($query_head,$delivery_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$query_detail = "SELECT D.`recv_quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`receive_memo`
+							FROM stock_delivery_head AS H
+							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN product AS P ON P.`id` = D.`product_id`
+							WHERE H.`id` = ? AND D.`is_for_branch` = 1";
+
+		$result_detail = $this->db->query($query_detail,$delivery_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
+
+		return $response;
+	}
+
+	public function get_delivery_printout_details()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$delivery_id = $this->encrypt->decode($this->session->userdata('delivery'));
+
+		$query_head = "SELECT CONCAT('SD',`reference_number`) AS 'reference_number', 
+						DATE(`delivery_receive_date`) AS 'entry_date'
+					FROM stock_delivery_head
+					WHERE `id` = ?";
+
+		$result_head = $this->db->query($query_head,$delivery_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							FROM stock_delivery_head AS H
+							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN product AS P ON P.`id` = D.`product_id`
+							WHERE H.`id` = ? AND D.`is_for_branch` = 1";
+
+		$result_detail = $this->db->query($query_detail,$delivery_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
 
 		return $response;
 	}

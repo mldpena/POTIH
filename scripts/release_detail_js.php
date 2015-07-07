@@ -177,7 +177,7 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				var helperCallback = response.is_saved == TransactionState.Unsaved ? { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true } : { updateEventsBeforeCallback : getReleaseDetailsBeforeSubmit }
+				var helperCallback = response.is_saved == TransactionState.Unsaved ? { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true, saveEventsAfterCallback : goToPrintOut } : { updateEventsBeforeCallback : getReleaseDetailsBeforeSubmit }
 
 				tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 												{ baseURL : "<?= base_url() ?>", controller : 'release' });
@@ -233,7 +233,11 @@
 	}
 
 	$('#print').click(function(){
+		goToPrintOut();
+	});
 
+	function goToPrintOut()
+	{
 		var arr = { fnc : 'set_session' }
 
 		$.ajax({
@@ -241,11 +245,10 @@
             dataType : 'JSON',
             data: 'data=' + JSON.stringify(arr) + token,
             success: function(data) {
-                window.open('<?= site_url() ?>/printout/release/Release');
+                window.location = '<?= base_url() ?>printout/release/Release';
             }
         });
-
-	});
+	}
 
 	function getHeadDetailsBeforeSubmit()
 	{

@@ -6,20 +6,16 @@
 		$y += 6;
 		$x = 10;
 
-		$pdf->writeHTMLCell('', '', $x, $y,'Release Slip Done by : _____________________', 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'Summary Report Done by : _____________________', 0, 1, 0, true, 'L', true);
 
-		$y += 6 * 2;
+		$x = 165;
 
-		$pdf->writeHTMLCell('', '', $x, $y,'Checker : _____________________', 0, 1, 0, true, 'L', true);
-
-		$x = 115;
-
-		$pdf->writeHTMLCell('', '', $x, $y,'Counter Checker : _____________________', 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'Signature : _____________________', 0, 1, 0, true, 'L', true);
 	}
 
 	//ob_start();
 
-	$pdf = new TCPDF('P', PDF_UNIT, 'FOLIO', true, 'UTF-8', false);
+	$pdf = new TCPDF('L', PDF_UNIT, 'FOLIO', true, 'UTF-8', false);
 
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 	$pdf->setFontSubsetting(false);
@@ -40,13 +36,9 @@
 	$margin_right = 120;
 	$margin_top = 5;
 
-	$half_page_y = 164;
-	$whole_page_y = 329;
-
 	$linegap = 6;
 
 	$is_finished = FALSE;
-	$page_number = 0;
 	$product_count = 0;
 	$print_description = FALSE;
 
@@ -64,21 +56,14 @@
 		</style>
 	";
 
-	$column_width = array("55px","430px","95px","120px");
+	$column_width = array("60px","435px","95px","105px","400px");
 
 	while ($is_finished == FALSE) 
 	{
-		$page_number++;
-
 		$x = $margin_left;
+		$y = $margin_top;
 
-		if ($page_number % 2 == 0 )
-			$y = $half_page_y + $margin_top;
-		else
-		{
-			$pdf->AddPage();
-			$y = $margin_top;
-		}
+		$pdf->AddPage();
 
 		$pdf->SetFont($font,'B',20,'','','');
 
@@ -86,7 +71,7 @@
 
 		$y+= $linegap;
 
-		$pdf->writeHTMLCell('', '', $x, $y,'WAREHOUSE RELEASE SLIP', 0, 1, 0, true, 'C', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'RECEIVING SUMMARY', 0, 1, 0, true, 'C', true);
 
 		$y+= $linegap * 2;
 
@@ -98,14 +83,6 @@
 
 		$y+= $linegap * 2;
 
-		$pdf->writeHTMLCell('', '', $x, $y,'Customer : '.$customer, 0, 1, 0, true, 'L', true);
-
-		$y+= $linegap + 4;
-
-		$pdf->writeHTMLCell('', '', $x, $y,'Special Instruction : '.$memo, 0, 1, 0, true, 'L', true);
-
-		$y+= $linegap + 4;
-
 		$html = <<<EOD
 				$style
 				<table>
@@ -113,7 +90,8 @@
 						<td style="width:$column_width[0];" class="tdleft">Qty</td>
 						<td style="width:$column_width[1];">Item Description</td>
 						<td style="width:$column_width[2];">Item Code</td>
-						<td style="width:$column_width[3];">Doc #</td>
+						<td style="width:$column_width[3];">Rcvd By</td>
+						<td style="width:$column_width[4];">Note</td>
 					</tr>
 				</table>
 EOD;
@@ -131,39 +109,28 @@ EOD;
 							<td style=\"width:".$column_width[0].";\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[1].";\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\">".$detail[$i]["item_code"]."</td>
-							<td style=\"width:".$column_width[3].";\">".$detail[$i]["memo"]."</td>
+							<td style=\"width:".$column_width[3].";\">".$detail[$i]["received_by"]."</td>
+							<td style=\"width:".$column_width[4].";\">".$detail[$i]["receive_memo"]."</td>
 						</tr>
 					</table>";
+
 				$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
 
 				$y = $pdf->GetY();
 
-				if($y+40 >= $half_page_y && $page_number % 2 != 0 )
+				if($y >= 200)
 				{
-		            $product_count = $i;
+					$product_count = $i;
 
-		            if (empty($detail[$i]['description'])) 
-		            	$product_count++;
-		            else
-		            	$print_description = TRUE;
+					if (empty($detail[$i]['description'])) 
+						$product_count++;
+					else
+						$print_description = TRUE;
 
-		           	set_footer($pdf,$y);
+					set_footer($pdf,$y);
 
-		            break;
-		        }
-		        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
-		        {
-		            $product_count = $i;
-
-		            if (empty($detail[$i]['description'])) 
-		            	$product_count++;
-		            else
-		            	$print_description = TRUE;
-
-		           	set_footer($pdf,$y);
-
-		            break;
-		        }
+					break;
+				}
 			}
 
 			if (!empty($detail[$i]['description']))
@@ -172,7 +139,7 @@ EOD;
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[0].";\"></td>
-							<td colspan = \"3\" style=\"width:645px;\">".$detail[$i]["description"]."</td>
+							<td colspan = \"4\" style=\"width:1035px;\">".$detail[$i]["description"]."</td>
 						</tr>
 					</table>";
 					
@@ -182,38 +149,36 @@ EOD;
 
 				$print_description = FALSE;
 
-				if($y+40 >= $half_page_y && $page_number % 2 != 0 )
+				if($y >= 200)
 				{
-		            $product_count = $i+1;
+					$product_count = $i;
+
+					if (empty($detail[$i]['description'])) 
+						$product_count++;
+					else
+						$print_description = TRUE;
+
 					set_footer($pdf,$y);
-		            break;
-		        }
-		        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
-		        {
-		            $product_count = $i+1;
-		            set_footer($pdf,$y);
-		            break;
-		        }
+
+					break;
+				}
 
 				$y = $pdf->GetY();
 			}
 
 			if($i+1 >= count($detail) && !$print_description)
-	            $is_finished = TRUE;
+				$is_finished = TRUE;
+			
 		}
 	}
 
 	$y += $linegap;
 
-	$pdf->writeHTMLCell('', '', $x, $y,'Release Slip Done by : _____________________', 0, 1, 0, true, 'L', true);
+	$pdf->writeHTMLCell('', '', $x, $y,'Summary Report Done by : _____________________', 0, 1, 0, true, 'L', true);
 
-	$y += $linegap * 2;
+	$x = 165;
 
-	$pdf->writeHTMLCell('', '', $x, $y,'Checker : _____________________', 0, 1, 0, true, 'L', true);
-
-	$x = 115;
-
-	$pdf->writeHTMLCell('', '', $x, $y,'Counter Checker : _____________________', 0, 1, 0, true, 'L', true);
+	$pdf->writeHTMLCell('', '', $x, $y,'Signature : _____________________', 0, 1, 0, true, 'L', true);
 
 	//ob_end_clean();
 

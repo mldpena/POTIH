@@ -65,6 +65,13 @@
 		$("#show-info").toggle("fast");
 	});
 
+    $('#is_include_date').click(function(){
+        if ($(this).is(':checked')) 
+            $('#date_from, #date_to').removeAttr('disabled');
+        else
+            $('#date_from, #date_to').attr('disabled','disabled');
+    });
+
 	$('.transaction').click(function(){
 		var elementAllClass = $(this).attr('class');
 		var specificClass = elementAllClass.split(' ');

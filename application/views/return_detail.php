@@ -19,7 +19,7 @@
 						<td>Customer:</td>
 						<td><input type="text" class="form-control" id="customer_name"></td>
 					</tr>
-					<tr>
+					<tr style="display:none;">
 						<td>Received By:</td>
 						<td><input type="text" class="form-control" id="received_by"></td>
 					</tr>
