@@ -373,10 +373,10 @@
 			min_max_values.push([branch_inventory_id,branch_id,min_inv,max_inv]);
 		};
 
-		if (is_nonstack_val == 0 && material_val == 0)
+		if (is_nonstack_val == 1 && material_val == 0)
 			errorList.push('Product should have a valid Material Type!');
 
-		if (is_nonstack_val == 0 && subgroup_val == 0)
+		if (is_nonstack_val == 1 && subgroup_val == 0)
 			errorList.push('Product should have a valid Sub Group!');
 
 		if (errorList.length > 0) {

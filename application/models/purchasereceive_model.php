@@ -181,7 +181,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining);
 				$response['detail'][$i][] = array('');
-				$response['detail'][$i][] = array($row->qty_receive);
+				$response['detail'][$i][] = array($row->qty_receive,$row->qty_receive);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
 				$i++;

@@ -117,12 +117,15 @@
 	};
 
     var spnqtyrecv = document.createElement('span');
+    var spnqtyrecvHidden = document.createElement('span');
+   	spnqtyrecvHidden.setAttribute('style','display:none;');
+
     var txtqtyrecv = document.createElement('input');
     txtqtyrecv.setAttribute('class','form-control txtqtyrecv');
 	colarray['qtyrecv'] = { 
         header_title: "Qty Received",
-        edit: [txtqtyrecv],
-        disp: [spnqtyrecv],
+        edit: [txtqtyrecv,spnqtyrecvHidden],
+        disp: [spnqtyrecv,spnqtyrecvHidden],
         td_class: "tablerow column_click column_hover tdqtyrecv"
     };
 
@@ -348,16 +351,13 @@
 	$('.chkreceiveall').live('click',function(){
 		var rowIndex = $(this).parent().parent().index();
 		var totalQuantity = 0;
+		var remainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyremaining'));
+		var receivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyrecv',1));
 
-		if ($(this).is(':checked')) 
-		{
-			 remainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyremaining'));
-			 receivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyrecv'));
-
-			 totalQuantity = receivedQuantity + remainingQuantity;
-		}
+		if ($(this).is(':checked'))
+			totalQuantity = receivedQuantity + remainingQuantity;
 		
-		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[totalQuantity]);
+		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[totalQuantity,receivedQuantity]);
 	});
 
 	$('.tddelete').live('click',function(){

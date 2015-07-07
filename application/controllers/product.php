@@ -190,6 +190,10 @@ class Product extends CI_Controller {
 					$response = $this->product_model->get_transaction_record($post_data);
 					break;
 
+				case 'get_transaction_breakdown':
+					$response = $this->product_model->get_transaction_breakdown($post_data);
+					break;
+
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;

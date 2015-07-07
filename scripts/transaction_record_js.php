@@ -26,6 +26,9 @@
     for (var i = 0; i < tableColumns.length; i++) 
     {
         var spntransaction = document.createElement('a');
+        spntransaction.setAttribute('id',tableColumns[i].className);
+        spntransaction.setAttribute('class','breakdown-link');
+
         colarray[tableColumns[i].className] = { 
             header_title: tableColumns[i].headerName,
             edit: [spntransaction],
@@ -34,7 +37,36 @@
         };
     };
 
+    var tabBreakDown = document.createElement('table');
+    tabBreakDown.className = "tblstyle";
+    tabBreakDown.id = "tableBreakDown";
+    tabBreakDown.setAttribute("style","border-collapse:collapse;");
+    tabBreakDown.setAttribute("class","border-collapse:collapse;");
+    
+    var colarrayBreakDown = [];
+
+    var tableColumnsBreakDown = [{ headerName : 'Entry Date', className : 'entrydate' },
+                                { headerName : 'Reference #', className : 'reference' },
+                                { headerName : 'Qty', className : 'qty' },
+                                { headerName : 'Prepared By', className : 'preparedby' },
+                                { headerName : 'Memo', className : 'memo' }];
+
+
+    for (var i = 0; i < tableColumnsBreakDown.length; i++) 
+    {
+        var spnbreakdown = document.createElement('span');
+
+        colarrayBreakDown[tableColumnsBreakDown[i].className] = { 
+            header_title: tableColumnsBreakDown[i].headerName,
+            edit: [spnbreakdown],
+            disp: [spnbreakdown],
+            td_class: "tablerow column_click column_hover td" + tableColumnsBreakDown[i].className,
+            headertd_class : "td" + tableColumnsBreakDown[i].className
+        };
+    };
+
     var myjstbl;
+    var myjstblBreakDown;
 
     var root = document.getElementById("tbl");
     myjstbl = new my_table(tab, colarray, { ispaging : false, 
@@ -44,6 +76,15 @@
                             });
 
     root.appendChild(myjstbl.tab);
+
+    var rootBreakDown = document.getElementById("tbl_breakdown");
+    myjstblBreakDown = new my_table(tabBreakDown, colarrayBreakDown, { ispaging : false, 
+                                            tdhighlight_when_hover : "tablerow",
+                                            iscursorchange_when_hover : false,
+                                            isdeleteicon_when_hover : false
+                            });
+
+    rootBreakDown.appendChild(myjstblBreakDown.tab);
 
     $('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
@@ -69,14 +110,74 @@
                     $('#branch').val('<?= $this->uri->segment(4) ?>');
                     $('#product_search').val(response.product_name);
                     $('#product_id').val(response.product_id);
-                   refreshTable();
+                    refreshTable();
                 }
             }
         });
     }
-    else
-        refreshTable();
     
+    $('#search').click(function(){
+        refreshTable();
+    });
+
+    $('.breakdown-link').live('click',function(){
+        
+        if (flag == 1)
+            return;
+
+        var date_from_val   = $('#date_from').val();
+        var date_to_val     = $('#date_to').val();
+        var branch_val      = $('#branch').val();
+        var product_id_val  = $('#product_id').val();
+        var module_val      = $(this).attr('id');
+
+        
+        if ($.inArray(module_val,['beginv','totalinv']) != -1) 
+            return;
+
+        var arr =   { 
+                        fnc     : 'get_transaction_breakdown',
+                        date_from : date_from_val,
+                        date_to : date_to_val,
+                        branch : branch_val,
+                        product_id : product_id_val,
+                        module_access : module_val 
+                    } 
+
+        $('#loadingimg').show();
+        $('#tbl_breakdown').hide();
+
+        flag = 1;
+
+        $.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(response) {
+                myjstblBreakDown.clear_table();
+
+                clear_message_box();
+
+                if (response.error != '') 
+                    build_message_box('messagebox_1',response.error,'danger');
+                else
+                {
+                    myjstblBreakDown.insert_multiplerow_with_value(1,response.data);
+
+                    if ($.inArray(module_val,['adjustdec','adjustinc']) != -1) 
+                        $('.tdreference').hide();
+                    else
+                        $('.tdreference').show();
+
+                    $('#tbl_breakdown').show();
+                }
+
+                $('#loadingimg').hide();
+                flag = 0;
+            }       
+        });
+    });
+
     function refreshTable()
     {
         if (flag == 1)
@@ -87,13 +188,17 @@
         var branch_val      = $('#branch').val();
         var product_id_val  = $('#product_id').val();
 
-        var arr = { fnc     : 'get_transaction_record',
-                    date_from : date_from_val,
-                    date_to : date_to_val,
-                    branch : branch_val,
-                    product_id : product_id_val }
+        var arr =   { 
+                        fnc     : 'get_transaction_record',
+                        date_from : date_from_val,
+                        date_to : date_to_val,
+                        branch : branch_val,
+                        product_id : product_id_val 
+                    }
 
         $('#loadingimg').show();
+        $('#tbl').hide();
+        $('#tbl_breakdown').hide();
 
         flag = 1;
 
@@ -103,6 +208,8 @@
             data: 'data=' + JSON.stringify(arr) + token,
             success: function(response) {
                 myjstbl.clear_table();
+                myjstblBreakDown.clear_table();
+
                 clear_message_box();
 
                 if (response.error != '') 

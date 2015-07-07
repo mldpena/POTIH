@@ -12,7 +12,8 @@ class Product_Model extends CI_Model {
 									'UNABLE_TO_UPDATE' => 'Unable to update product!',
 									'UNABLE_TO_SELECT' => 'Unable to get select details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete product!',
-									'UNABLE_TO_GET_TRANSACTION' => 'Error while processing your requests. Please try again.');
+									'UNABLE_TO_GET_TRANSACTION' => 'Error while processing your requests. Please try again.',
+									'NO_TRANSACTION_FOUND' => 'No transaction found!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -849,7 +850,7 @@ class Product_Model extends CI_Model {
 							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non-Stock'
 							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock'
 						END AS 'type',
-						COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',
+						$temp_beginning
 						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
 						COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
 						COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',
@@ -1022,6 +1023,174 @@ class Product_Model extends CI_Model {
 		}
 
 		return $response;	
+	}
+
+	public function get_transaction_breakdown($param)
+	{
+		extract($param);
+
+		$response 	= array();
+		$custom_query_module = array('adjustdec','adjustinc');
+
+		$response['error'] = '';
+
+		$conditions 	= "";
+		$query_data 	= array();
+
+		if (in_array($module_access,$custom_query_module)) 
+		{
+			$adjust_condition = ($module_access == 'adjustinc') ? '>' : '<';
+			$absolute = ($module_access == 'adjustinc') ? '' : '* -1';
+
+			if ($branch != PRODUCT_CONST::ALL_OPTION)
+	      	{
+	      		$conditions = " AND IA.`branch_id` = ?";
+	      		array_push($query_data,$branch);
+	      	}
+
+	  		if (!empty($date_from)) 
+	  		{
+	  			$conditions .= " AND IA.`date_created` >= ?";
+				array_push($query_data,$date_from.' 00:00:00');
+	  		}
+
+	  		if (!empty($date_to)) 
+	  		{
+	  			$conditions .= " AND IA.`date_created` <= ?";
+				array_push($query_data,$date_to.' 00:00:00');
+	  		}
+
+	  		array_push($query_data,$product_id);
+
+			$query = "SELECT DATE(IA.`date_created`) AS 'entry_date', '' AS 'reference_number', 
+						(IA.`new_inventory` - IA.`old_inventory`) $absolute AS 'quantity', 
+						COALESCE(U.`full_name`,'') AS 'prepared_by', IA.`memo` 
+						FROM inventory_adjust AS IA
+						LEFT JOIN user AS U ON U.`id` = IA.`created_by`
+						WHERE IA.`is_show` = ".PRODUCT_CONST::ACTIVE." AND IA.`status` = 2 $conditions
+						AND IA.`product_id` = ? AND (IA.`new_inventory` - IA.`old_inventory`) $adjust_condition 0
+						ORDER BY IA.`date_created`";
+		}
+		else
+		{
+			$head_table 			= "";
+			$detail_table 			= "";
+			$reference_character 	= "";
+			$additional_condition 	= "";
+			$quantity_column 		= "D.`quantity`";
+			$date_column 			= "H.`entry_date`";
+			$branch_column 			= "H.`branch_id`";
+
+			switch ($module_access) 
+			{
+				case 'purchasereceive':
+					$head_table 	= "purchase_receive_head";
+					$detail_table 	= "purchase_receive_detail";
+					$reference_character = "PR";
+					break;
+
+				case 'customereturn':
+					$head_table 	= "return_head";
+					$detail_table 	= "return_detail";
+					$reference_character = "RD";
+					break;
+
+				case 'stockreceive':
+					$head_table 	= "stock_delivery_head";
+					$detail_table 	= "stock_delivery_detail";
+					$reference_character = "SD";
+					$additional_condition = " AND D.`is_for_branch` = 1";
+					$quantity_column = "D.`recv_quantity`";
+					$date_column = "H.`delivery_receive_date`";
+					$branch_column = "H.`to_branchid`";
+					break;
+
+				case 'damage':
+					$head_table 	= "damage_head";
+					$detail_table 	= "damage_detail";
+					$reference_character = "DD";
+					break;
+
+				case 'purchasereturn':
+					$head_table 	= "purchase_return_head";
+					$detail_table 	= "purchase_return_detail";
+					$reference_character = "PR";
+					break;
+
+				case 'stockdelivery':
+					$head_table 	= "stock_delivery_head";
+					$detail_table 	= "stock_delivery_detail";
+					$reference_character = "SD";
+					$additional_condition = " AND D.`is_for_branch` = 1";
+					$date_column = "H.`entry_date`";
+					break;
+
+				case 'customerdelivery':
+					$head_table 	= "stock_delivery_head";
+					$detail_table 	= "stock_delivery_detail";
+					$reference_character = "SD";
+					$additional_condition = " AND D.`is_for_branch` = 0";
+					$quantity_column = "D.`recv_quantity`";
+					$date_column = "H.`customer_receive_date`";
+					break;
+
+				case 'release':
+					$head_table 	= "release_head";
+					$detail_table 	= "release_detail";
+					$reference_character = "WR";
+					break;
+			}
+
+	      	if ($branch != PRODUCT_CONST::ALL_OPTION)
+	      	{
+	      		$conditions = " AND $branch_column = ?";
+	      		array_push($query_data,$branch);
+	      	}
+
+	  		if (!empty($date_from)) 
+	  		{
+	  			$conditions .= " AND H.`entry_date` >= ?";
+				array_push($query_data,$date_from.' 00:00:00');
+	  		}
+
+	  		if (!empty($date_to)) 
+	  		{
+	  			$conditions .= " AND H.`entry_date` <= ?";
+				array_push($query_data,$date_to.' 00:00:00');
+	  		}
+
+	  		array_push($query_data,$product_id);
+
+			$query = "SELECT DATE($date_column) AS 'entry_date', CONCAT('$reference_character',H.`reference_number`) AS 'reference_number', 
+							SUM($quantity_column) AS 'quantity', COALESCE(U.`full_name`,'') AS 'prepared_by', H.`memo`
+							FROM $head_table AS H
+							LEFT JOIN $detail_table AS D ON D.`headid` = H.`id`
+							LEFT JOIN user AS U ON U.`id` = H.`created_by`
+							WHERE H.`is_show` = ".PRODUCT_CONST::ACTIVE." $conditions AND D.`product_id` = ?
+							$additional_condition
+							GROUP BY H.`id`
+							ORDER BY $date_column";
+
+		}
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+
+			foreach ($result->result() as $row) 
+			{
+				foreach ($row as $key => $value)
+      				$response['data'][$i][] = array($value);
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['NO_TRANSACTION_FOUND']);
+
+		return $response;
 	}
 
 	private function validate_product($param, $function_type)
