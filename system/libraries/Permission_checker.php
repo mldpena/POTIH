@@ -57,7 +57,8 @@ class CI_Permission_checker
 			case 'reports':
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
 											\Permission\InventoryWarning_Code::VIEW_WARNING,
-											\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY);
+											\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY,
+											\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY);
 				break;
 		}
 
@@ -96,5 +97,38 @@ class CI_Permission_checker
 		}
 		
 		return $permission_exists = $this->_check_permission_exists($permission_list);
+	}
+
+	public function get_section_permissions()
+	{
+		return array('data' => $this->check_section_permission('data'),
+					'purchase' => $this->check_section_permission('purchase'),
+					'return' => $this->check_section_permission('return'),
+					'delivery' => $this->check_section_permission('delivery'),
+					'others' => $this->check_section_permission('others'),
+					'reports' => $this->check_section_permission('reports'));
+	}
+
+	public function get_page_permissions()
+	{
+		return  array('product' => $this->check_permission(\Permission\Product_Code::VIEW_PRODUCT),
+						'material' => $this->check_permission(\Permission\Material_Code::VIEW_MATERIAL),
+						'subgroup' => $this->check_permission(\Permission\SubGroup_Code::VIEW_SUBGROUP),
+						'user' => $this->check_permission(\Permission\User_Code::VIEW_USER),
+						'branch' => $this->check_permission(\Permission\Branch_Code::VIEW_BRANCH),
+						'purchase' => $this->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE),
+						'purchase_receive' => $this->check_permission(\Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE),
+						'customer_return' => $this->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN),
+						'damage' => $this->check_permission(\Permission\Damage_Code::VIEW_DAMAGE),
+						'purchase_return' => $this->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN),
+						'stock_delivery' => $this->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY),
+						'stock_receive' => $this->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE),
+						'customer_receive' => $this->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE),
+						'inventory_adjust' => $this->check_permission(\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST),
+						'pending_adjust' => $this->check_permission(\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST),
+						'release' => $this->check_permission(\Permission\Release_Code::VIEW_RELEASE),
+						'inventory_warning' => $this->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING),
+						'branch_inventory' => $this->check_permission(\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY),
+						'transaction_summary' => $this->check_permission(\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY));
 	}
 }

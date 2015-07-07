@@ -189,7 +189,7 @@
 					$('#dynamic-css').html(css);
 
 
-					if (!response.is_editable) 
+					if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_add']?>) == false)) 
 					{
 						$('input, textarea, select').not('#print').attr('disabled','disabled');
 						$('.tdupdate, .tddelete, #save').hide();

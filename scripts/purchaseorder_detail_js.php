@@ -119,7 +119,8 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
 										{ baseURL : "<?= base_url() ?>", controller : 'purchase' } );
 
-	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit} );
+	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
+											   addInventoryChecker : true } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -156,7 +157,7 @@
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 
-				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true))
+				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save').hide();

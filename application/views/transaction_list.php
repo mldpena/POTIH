@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>product/warning">Product Inventory Warning List</a></li>
+			<li class="active"><a href="<?= base_url() ?>product/summary">Product Inventory Warning List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
@@ -40,10 +40,6 @@
 						<td>
 							<select class="form-control" id="subgroup"><?= $subgroup_list ?></select>
 						</td>
-						<td style="display:none;">Date To:</td>
-						<td style="display:none;"><input type="text" class="form-control" id="date_from"></td>
-						<td style="display:none;">Date From:</td>
-						<td style="display:none;"><input type="text" class="form-control" id="date_to"></td>
 					</tr>
 				</table>
 			</div>
@@ -61,11 +57,11 @@
 					<center>
 						<table>
 							<tr>
-								<td><input type="checkbox"></td>
+								<td><input type="checkbox" id="is_include_date"></td>
 								<td>Date From:</td>
-								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control" id="date_from"></td>
 								<td>Date To:</td>
-								<td><input type="text" class="form-control"></td>
+								<td><input type="text" class="form-control" id="date_to"></td>
 							</tr>
 						</table>
 					</center>
@@ -83,30 +79,33 @@
 							<td>Stock Delivery</td>
 							<td>Customer Delivery</td>
 							<td>Adjust Decreased</td>
+							<td>Warehouse Release</td>
 						</tr>
 						<tr>
 							<td>With Transactions</td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
+							<td><input type="checkbox" class="transaction purchase-receive-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction customer-return-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction stock-receive-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction adjust-increase-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction damage-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction purchase-return-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction stock-delivery-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction customer-delivery-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction adjust-decrease-transaction" value="1"></td>
+							<td><input type="checkbox" class="transaction release-transaction" value="1"></td>
 						</tr>
 						<tr>
 							<td>Without Transactions</td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
-							<td><input type="checkbox"></td>
+							<td><input type="checkbox" class="transaction purchase-receive-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction customer-return-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction stock-receive-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction adjust-increase-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction damage-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction purchase-return-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction stock-delivery-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction customer-delivery-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction adjust-decrease-transaction" value="2"></td>
+							<td><input type="checkbox" class="transaction release-transaction" value="2"></td>
 						</tr>
 					</table>
 				</div>

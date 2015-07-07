@@ -61,7 +61,7 @@
 		<div class="form-body">
 			<div class="max-row">
 				<div class="tbl-checkbtn">
-					<input type="checkbox" class="preset" id="admin-permission">
+					<input type="checkbox" class="preset" id="admin-permission" value="100">
 					<span>Admin</span>
 				</div>
 			</div>
@@ -330,6 +330,15 @@
 					<tr>
 						<td>Product Branch Inventory</td>
 						<td><input type="checkbox" class="check-detail reports-detail" value="212"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Product Transaction Summary</td>
+						<td><input type="checkbox" class="check-detail reports-detail" value="213"></td>
 						<td></td>
 						<td></td>
 						<td></td>

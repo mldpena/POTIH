@@ -50,7 +50,8 @@ class PurchaseReceive extends CI_Controller {
 			case 'view':
 				$page = 'purchasereceive_detail';
 				$allow_user = $this->permission_checker->check_permission(\Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\PurchaseReceive_Code::EDIT_PURCHASE_RECEIVE));
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\PurchaseReceive_Code::EDIT_PURCHASE_RECEIVE),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\PurchaseReceive_Code::ADD_PURCHASE_RECEIVE));
 				break;
 			
 			default:
@@ -68,7 +69,9 @@ class PurchaseReceive extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}

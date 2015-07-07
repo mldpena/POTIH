@@ -70,7 +70,6 @@
 
 	<?php endif; ?>
 
-
 	<?php if($section_permissions['purchase']) : ?>
 
 	<div class="content-form">
@@ -261,11 +260,23 @@
 			<a href="<?= base_url() ?>product/inventory">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>productbranchinventory.png">
-					<div class="btn-title">Product Branch Inventory </div>
+					<div class="btn-title">Product Branch Inventory</div>
 				</div>
 			</a>
 
 			<?php endif; ?>
+
+			<?php if($page_permissions['transaction_summary']) : ?>
+
+			<a href="<?= base_url() ?>product/summary">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>productbranchinventory.png">
+					<div class="btn-title">Product Transaction Summary</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+
 		</div>
 	</div>
 

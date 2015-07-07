@@ -164,7 +164,7 @@
 											value : name_val,
 											fieldName : 'Name',
 											required : true,
-											rules : 'alphaNumeric'
+											rules : 'alphaNumericChar'
 										}
 										]);
 

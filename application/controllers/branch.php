@@ -61,7 +61,9 @@ class Branch extends CI_Controller {
 						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}

@@ -287,7 +287,7 @@ class PurchaseOrder_Model extends CI_Model {
 			switch ($status) 
 			{
 				case PURCHASE_CONST::INCOMPLETE:
-					$having = "HAVING remaining_qty < total_qty AND remaining_qty <> 0";
+					$having = "HAVING remaining_qty < total_qty AND remaining_qty > 0";
 					break;
 				
 				case PURCHASE_CONST::COMPLETE:

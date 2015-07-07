@@ -11,7 +11,8 @@ class Product_Model extends CI_Model {
 									'UNABLE_TO_SAVE_INVENTORY' => 'Unable to insert min and max values!',
 									'UNABLE_TO_UPDATE' => 'Unable to update product!',
 									'UNABLE_TO_SELECT' => 'Unable to get select details!',
-									'UNABLE_TO_DELETE' => 'Unable to delete product!');
+									'UNABLE_TO_DELETE' => 'Unable to delete product!',
+									'UNABLE_TO_GET_TRANSACTION' => 'Error while processing your requests. Please try again.');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -674,6 +675,353 @@ class Product_Model extends CI_Model {
 		}
 
 		return $response;
+	}
+
+	public function get_transaction_summary($param)
+	{
+		extract($param);
+
+		$response 	= array();
+
+		$response['rowcnt'] = 0;
+
+		$conditions 	= "";
+		$date_condition = "";
+		$branch_condition = "";
+		$order_field 	= "";
+		$having 		= "";
+		$temp_table 	= "";
+		$temp_beginning = "0 AS 'beginv', ";
+		$query_data 	= array();
+      	
+
+      	if ($branch != PRODUCT_CONST::ALL_OPTION)
+      	{
+      		$branch_condition = " AND TS.`branch_id` = ?";
+      		array_push($query_data,$branch);
+      	}
+
+      	if ($is_include_date)
+      	{
+      		if (!empty($date_from)) 
+      		{
+      			$date_condition .= " AND TS.`date` >= ?";
+				array_push($query_data,$date_from);
+
+				$temp_beginning = "COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',";
+				$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id`";
+
+				$query_truncate = "TRUNCATE temp_beginning_transaction;";
+				$result_truncate = $this->sql->execute_query($query_truncate);
+
+				if ($result_truncate['error'])
+					throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+
+				$query_temp = "INSERT INTO temp_beginning_transaction(`product_id`,`beginning_inventory`)
+								SELECT P.`id`, COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
+													- `damage` - `purchase_return` - `stock_delivery` - `customer_delivery` 
+													- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
+									FROM product AS P
+									LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
+									WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE."
+									GROUP BY P.`id`";
+
+				$result_temp = $this->sql->execute_query($query_temp,$query_data);
+
+				if ($result_temp['error'])
+					throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+      		}
+
+      		if (!empty($date_to)) 
+      		{
+      			$date_condition .= " AND TS.`date` <= ?";
+				array_push($query_data,$date_to);
+      		}
+      	}
+
+		if (!empty($code)) 
+		{
+			$conditions .= " AND P.`material_code` LIKE ?";
+			array_push($query_data,'%'.$code.'%');
+		}
+
+		if (!empty($product)) 
+		{
+			$conditions .= " AND P.`description` LIKE ?";
+			array_push($query_data,'%'.$product.'%');
+		}
+
+		if ($subgroup != PRODUCT_CONST::ALL_OPTION) 
+		{
+			$conditions .= " AND P.`subgroup_id` = ?";
+			array_push($query_data,$subgroup);
+		}
+
+		if ($material !=  PRODUCT_CONST::ALL_OPTION) 
+		{
+			$conditions .= " AND P.`material_type_id` = ?";
+			array_push($query_data,$material);
+		}
+
+		if ($type !=  PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type =  PRODUCT_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type =  PRODUCT_CONST::NON_STOCK;
+					break;
+			}
+
+			$conditions .= " AND P.`type` = ?";
+			array_push($query_data,$type);
+		}
+
+		switch ($orderby) 
+		{
+			case  PRODUCT_CONST::ORDER_BY_NAME:
+				$order_field = "P.`description`";
+				break;
+			
+			case  PRODUCT_CONST::ORDER_BY_CODE:
+				$order_field = "P.`material_code`";
+				break;
+		}
+
+		if ($purchase_receive == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR purchase_receive > 0";
+		else if ($purchase_receive == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR purchase_receive = 0";
+
+		if ($customer_return == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR customer_return > 0";
+		else if ($customer_return == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR customer_return = 0";
+
+		if ($stock_receive == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR stock_receive > 0";
+		else if ($stock_receive == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR stock_receive = 0";
+
+		if ($adjust_increase == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR adjust_increase > 0";
+		else if ($adjust_increase == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR adjust_increase = 0";
+
+		if ($damage == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR damage > 0";
+		else if ($damage == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR damage = 0";
+
+		if ($purchase_return == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR purchase_return > 0";
+		else if ($purchase_return == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR purchase_return = 0";
+
+		if ($stock_delivery == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR stock_delivery > 0";
+		else if ($stock_delivery == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR stock_delivery = 0";
+
+		if ($customer_delivery == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR customer_delivery > 0";
+		else if ($customer_delivery == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR customer_delivery = 0";
+
+		if ($adjust_decrease == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR adjust_decrease > 0";
+		else if ($adjust_decrease == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR adjust_decrease = 0";
+
+		if ($release == PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR release > 0";
+		else if ($release == PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR release = 0";
+
+		if (!empty($having)) 
+			$having = "HAVING (".substr($having, 4).")";
+
+		$query = "SELECT P.`material_code`, P.`description` AS 'product', 
+						CASE 
+							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non-Stock'
+							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock'
+						END AS 'type',
+						COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',
+						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
+						COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
+						COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',
+						COALESCE(SUM(TS.`adjust_increase`),0) AS 'adjust_increase',
+						COALESCE(SUM(TS.`damage`),0) AS 'damage',
+						COALESCE(SUM(TS.`purchase_return`),0) AS 'purchase_return',
+						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
+						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
+						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+				FROM product AS P
+				$temp_table
+				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
+				WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." $conditions
+				GROUP BY P.`id`
+				$having
+				ORDER BY $order_field";
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($i+1);
+				
+				foreach ($row as $key => $value)
+      				$response['data'][$i][] = array($value);
+
+      			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
+      											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
+      											- $row->adjust_decrease - $row->release);
+
+				$i++;
+			}
+		}
+
+		return $response;
+	}
+
+	public function get_product_name()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$product_id = $this->encrypt->decode($this->uri->segment(3));
+
+		$query = "SELECT `id`, `description` AS 'product' FROM product WHERE `id` = ?";
+
+		$result = $this->db->query($query,$product_id);
+
+		if ($result->num_rows() != 1)
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT']);
+		else
+		{
+			$row = $result->row();
+			$response['product_id'] = $row->id;
+			$response['product_name'] = $row->product;
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	public function get_transaction_record($param)
+	{
+		extract($param);
+
+		$response 	= array();
+
+		$response['error'] = '';
+
+		$conditions 	= "";
+		$date_condition = "";
+		$branch_condition = "";
+		$order_field 	= "";
+		$having 		= "";
+		$temp_table 	= "";
+		$temp_beginning = "0 AS 'beginv', ";
+		$query_data 	= array();
+      	
+
+      	if ($branch != PRODUCT_CONST::ALL_OPTION)
+      	{
+      		$branch_condition = " AND TS.`branch_id` = ?";
+      		array_push($query_data,$branch);
+      	}
+
+  		if (!empty($date_from)) 
+  		{
+  			$date_condition .= " AND TS.`date` >= ?";
+			array_push($query_data,$date_from);
+
+			$temp_beginning = "COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',";
+			$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id`";
+
+			$query_truncate = "TRUNCATE temp_beginning_transaction;";
+			$result_truncate = $this->sql->execute_query($query_truncate);
+
+			if ($result_truncate['error'])
+				throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+
+			$query_temp_data = $query_data;
+			array_push($query_temp_data,$product_id);
+
+			$query_temp = "INSERT INTO temp_beginning_transaction(`product_id`,`beginning_inventory`)
+							SELECT P.`id`, COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
+												- `damage` - `purchase_return` - `stock_delivery` - `customer_delivery` 
+												- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
+								FROM product AS P
+								LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
+								WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND P.`id` = ?
+								GROUP BY P.`id`";
+
+			$result_temp = $this->sql->execute_query($query_temp,$query_temp_data);
+
+			if ($result_temp['error'])
+				throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+  		}
+
+  		if (!empty($date_to)) 
+  		{
+  			$date_condition .= " AND TS.`date` <= ?";
+			array_push($query_data,$date_to);
+  		}
+
+  		array_push($query_data,$product_id);
+
+		$query = "SELECT 
+						$temp_beginning
+						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
+						COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
+						COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',
+						COALESCE(SUM(TS.`adjust_increase`),0) AS 'adjust_increase',
+						COALESCE(SUM(TS.`damage`),0) AS 'damage',
+						COALESCE(SUM(TS.`purchase_return`),0) AS 'purchase_return',
+						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
+						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
+						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+				FROM product AS P
+				$temp_table
+				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
+				WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND P.`id` = ?
+				GROUP BY P.`id`";
+
+		$result = $this->db->query($query,$query_data);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{
+				foreach ($row as $key => $value)
+      				$response['data'][$i][] = array($value);
+
+      			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
+      											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
+      											- $row->adjust_decrease - $row->release);
+
+				$i++;
+			}
+		}
+
+		return $response;	
 	}
 
 	private function validate_product($param, $function_type)

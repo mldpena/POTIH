@@ -71,6 +71,7 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
+				
 				<?php if($permission_list['allow_to_approve']) : ?>
 
 				<div id="action-button">

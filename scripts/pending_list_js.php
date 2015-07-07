@@ -22,6 +22,13 @@
 	var chkadjust = document.createElement('input');
 	chkadjust.setAttribute('type','checkbox');
 	chkadjust.setAttribute('class','chkadjust');
+
+	<?php if(!$permission_list['allow_to_approve']) : ?>
+
+	chkadjust.setAttribute('style','display:none;');
+
+	<?php endif; ?>
+
 	colarray['checkbox'] = { 
         header_title: "",
         edit: [chkadjust],

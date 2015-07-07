@@ -83,6 +83,10 @@ class Release_Model extends CI_Model {
 				case RELEASE_CONST::NO_RECEIVED:
 					$having = "HAVING remaining_qty = total_qty";
 					break;
+
+				case RELEASE_CONST::EXCESS:
+					$having = "HAVING remaining_qty < 0";
+					break;
 			}
 		}
 
@@ -106,9 +110,10 @@ class Release_Model extends CI_Model {
 					COALESCE(DATE(`entry_date`),'') AS 'entry_date',RH. `is_used`, IF(RH.`is_used` = 0, 'Unused', RH.`memo`) AS 'memo', RH.`customer`,
 					COALESCE(SUM(RD.`quantity`),'') AS 'total_qty', SUM(RD.`quantity` - RD.`qty_released`) AS 'remaining_qty',
 					COALESCE(CASE
-						WHEN SUM(RD.`quantity` - RD.`qty_released`) < SUM(RD.`quantity`) AND SUM(RD.`quantity` - RD.`qty_released`) <> 0 THEN 'Incomplete'
-						WHEN SUM(RD.`quantity` - RD.`qty_released`) = 0 THEN 'Complete'
-						WHEN SUM(RD.`quantity` - RD.`qty_released`) = SUM(RD.`quantity`) THEN 'No Received'
+						WHEN SUM(RD.`qty_released`) = SUM(RD.`quantity`) THEN 'Complete'
+						WHEN SUM(RD.`qty_released` ) > SUM(RD.`quantity`) THEN 'Excess'
+						WHEN SUM(RD.`qty_released`) > 0 THEN 'Incomplete'
+						WHEN SUM(RD.`qty_released`) = 0 THEN 'No Received'
 					END,'') AS 'status'
 					FROM release_head AS RH
 					LEFT JOIN release_detail AS RD ON RD.`headid` = RH.`id`

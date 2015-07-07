@@ -90,7 +90,9 @@ class InventoryAdjust extends CI_Controller {
 						'branch_list' 	=> $branch_list,
 						'subgroup_list' => $subgroup_list,
 						'material_list' => $material_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}

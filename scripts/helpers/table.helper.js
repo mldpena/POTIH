@@ -19,6 +19,11 @@ var InventoryState = {
     Negative    : 2
 }
 
+var InventoryCheckerType = {
+    MaxInv  : 1,
+    MinInv : 0
+}
+
 var TableHelper = function(tableOptions,options) {
 
     this._flag = 0;
@@ -164,7 +169,7 @@ var TableHelper = function(tableOptions,options) {
             $('.' + self._settings.deleteIconClass).live('click',function(){
                 self.globalRowIndex    = $(this).parent().parent().index();
                 self.globalId          = self.contentProvider.getData(self.globalRowIndex,'id');
-
+                
                 if (self.globalId != 0) 
                 {
                     clear_message_box();
@@ -232,7 +237,7 @@ var TableHelper = function(tableOptions,options) {
 
             $('#' + self._settings.deleteModalID).live('hidden.bs.modal', function (e) {
                 self.globalRowIndex = 0;
-                self.globalId         = 0;
+                self.globalId = 0;
             });
         },
 
@@ -688,10 +693,21 @@ var TableHelper = function(tableOptions,options) {
                 success: function(response) {
                     clear_message_box();
 
-                    if (response.is_insufficient != InventoryState.Sufficient) {
-                        var confirmMessage = (response.is_insufficient == InventoryState.Minimum) ? 'Current inventory is (' + response.current_inventory + ' pcs).  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
-                        continueTransaction = confirm(confirmMessage);
+                    if (response.checker == InventoryCheckerType.MinInv)
+                    {
+                        if (response.is_insufficient != InventoryState.Sufficient) {
+                            var confirmMessage = (response.is_insufficient == InventoryState.Minimum) ? 'Current inventory is (' + response.current_inventory + ' pcs).  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
+                            continueTransaction = confirm(confirmMessage);
+                        } 
                     }
+                    else
+                    {
+                        if (response.is_excess) {
+                            var confirmMessage = 'Current inventory is (' + response.current_inventory + ' pcs).  You will reach maximum inventory level. Do you want to continue?';
+                            continueTransaction = confirm(confirmMessage);
+                        }
+                    }
+                    
 
                     self._flag = 0;
 

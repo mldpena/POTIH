@@ -50,7 +50,8 @@ class ProductReturn extends CI_Controller {
 			case 'view':
 				$page = 'return_detail';
 				$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::EDIT_CUSTOMER_RETURN));
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::EDIT_CUSTOMER_RETURN),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::ADD_CUSTOMER_RETURN));
 				break;
 			
 			default:
@@ -68,7 +69,9 @@ class ProductReturn extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}
@@ -144,7 +147,7 @@ class ProductReturn extends CI_Controller {
 					break;
 
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data);
+					$response = check_current_inventory($post_data,0);
 					break;
 					
 				default:

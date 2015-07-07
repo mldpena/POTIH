@@ -217,6 +217,9 @@
 					$('#contact').val(response.contact);
 					$('#branches').val(response.branches);
 
+					if (response.branches.length == ($('#branches option').length - 1))
+						$('#branches').val(0);
+
 					if (response.is_active == 0) 
 						$('#is_active').removeAttr('checked');
 
@@ -238,7 +241,9 @@
 						for (var i = 0; i < response.permissions.length; i++)
 							$('.check-detail[value=' + response.permissions[i] + ']').attr('checked','checked');
 					}
-						
+					
+					checkSectionPermission();
+
 					if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && response.is_own_profile != ProfileStatus.OwnProfile)
 						$('#save').hide();
 
@@ -249,4 +254,25 @@
 			}       
 		});
 	};
+
+	function checkSectionPermission()
+	{
+		if ($('.data-detail').length == $('.data-detail:checked').length)
+			$('#data-permission').attr('checked','checked');
+
+		if ($('.purchase-detail').length == $('.purchase-detail:checked').length)
+			$('#purchase-permission').attr('checked','checked');
+
+		if ($('.return-detail').length == $('.return-detail:checked').length)
+			$('#return-permission').attr('checked','checked');
+
+		if ($('.transfer-detail').length == $('.transfer-detail:checked').length)
+			$('#transfer-permission').attr('checked','checked');
+
+		if ($('.other-detail').length == $('.other-detail:checked').length)
+			$('#other-permission').attr('checked','checked');
+
+		if ($('.reports-detail').length == $('.reports-detail:checked').length)
+			$('#reports-permission').attr('checked','checked');
+	}
 </script>

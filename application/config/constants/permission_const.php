@@ -150,4 +150,9 @@
 	{
 		const VIEW_BRANCH_INVENTORY = 212;
 	}
+
+	class TransactionSummary_Code
+	{
+		const VIEW_TRANSACTION_SUMMARY = 213;
+	}
 ?>

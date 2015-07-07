@@ -56,8 +56,9 @@
     };
 
     $.dataValidation = function(data){
-        var numericReg = /[^0-9]/;
-        var alphaNumericReg = /[^A-Za-z0-9 '".\/]/;
+        var numericReg = /[^0-9-]/;
+        var alphaNumericCharReg = /[^A-Za-z0-9 '".\/]/;
+        var alphaNumericReg = /[^A-Za-z0-9 ]/;
         var codeReg = /[^A-Za-z0-9]/;
         var letterReg = /[^A-Za-z ]/;
         var letterWthCharReg = /[^A-Za-z '".\/]/;
@@ -79,15 +80,21 @@
             if (data[i].rules && $.trim(data[i].value) != '') {
                 switch(data[i].rules){
                     case 'numeric':
-                        result = numericReg.test(data[i].value);
+                        result = isNaN(data[i].value);
                         if (result) 
                             error.push(data[i].fieldName + ' should only contain numbers!'); 
+                        break;
+
+                    case 'alphaNumericChar':
+                        result = alphaNumericCharReg.test(data[i].value);
+                        if (result) 
+                            error.push(data[i].fieldName + ' should only contain numbers, letters and characters!');
                         break;
 
                     case 'alphaNumeric':
                         result = alphaNumericReg.test(data[i].value);
                         if (result) 
-                            error.push(data[i].fieldName + ' should only contain numbers, letters and characters(\'".\/)!');
+                            error.push(data[i].fieldName + ' should only contain numbers and letters!');
                         break;
 
                     case 'letter':
@@ -99,7 +106,7 @@
                     case 'letterChar':
                         result = letterWthCharReg.test(data[i].value);
                         if (result) 
-                            error.push(data[i].fieldName + ' should only contain letters and characters(\'".\/)!');
+                            error.push(data[i].fieldName + ' should only contain letters and characters!');
                         break;
 
                     case 'code':
@@ -111,7 +118,7 @@
                     case 'credential':
                         result = credentialReg.test(data[i].value);
                         if (result) 
-                            error.push(data[i].fieldName + ' should only contain letters, numbers and characters(_@!)!');
+                            error.push(data[i].fieldName + ' should only contain letters, numbers and characters!');
                         break;
                 }       
             };

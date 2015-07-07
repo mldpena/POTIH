@@ -58,7 +58,8 @@ class StockDelivery extends CI_Controller {
 					$page = 'delivery_detail';
 					$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
 					$allow_user = $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY);
-					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY));
+					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY),
+										'allow_to_add' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::ADD_STOCK_DELIVERY));
 					break;
 
 				default:
@@ -128,7 +129,9 @@ class StockDelivery extends CI_Controller {
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
 						'to_branch_list' => $to_branch_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}
@@ -168,7 +171,9 @@ class StockDelivery extends CI_Controller {
 			switch ($fnc) 
 			{
 				case 'create_reference_number':
-					$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d h:i:s")));
+					$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d h:i:s"),
+																								'delivery_receive_date' => date("Y-m-d h:i:s"),
+																								'customer_receive_date' => date("Y-m-d h:i:s")));
 					break;
 
 				case 'get_stock_delivery_details':
@@ -224,7 +229,7 @@ class StockDelivery extends CI_Controller {
 					break;
 					
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data);
+					$response = check_current_inventory($post_data,0);
 					break;
 
 				case 'update_delivery_receive_head':

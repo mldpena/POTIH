@@ -7,7 +7,7 @@ class CI_Sql{
 		$CI->load->library('encrypt');
 	}
 
-	public function execute_query($query,$dataArray)
+	public function execute_query($query,$dataArray = array())
 	{
 		$CI =& get_instance();
 		$data = array();
@@ -16,11 +16,14 @@ class CI_Sql{
 		$data['errmsg'] = '';
 
 		for ($i=0; $i < 5; $i++) { 
-			$CI->db->query($query,$dataArray);
+			if (count($dataArray) == 0)
+				$CI->db->query($query);
+			else
+				$CI->db->query($query,$dataArray);
+
 			$data['id'] = $CI->encrypt->encode($CI->db->insert_id());
-			if ($CI->db->_error_number() == 0){
+			if ($CI->db->_error_number() == 0)
 				break;
-			}
 		}
 
 		$err = $CI->db->_error_message();

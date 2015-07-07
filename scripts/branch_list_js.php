@@ -124,7 +124,7 @@
 											value : name_val,
 											fieldName : 'Name',
 											required : true,
-											rules : 'alphaNumeric'
+											rules : 'alphaNumericChar'
 										}
 										]);
 
@@ -181,7 +181,7 @@
     $('.column_click').live('click',function(){
 
     	global_row_index 	= $(this).parent().index();
-    	global_branch_id 	= table_get_column_data(global_row_index,'id');
+    	global_branch_id 	= tableHelper.contentProvider.getData(global_row_index,'id');
 
     	var arr = 	{ 
 						fnc 	 	: 'get_branch_details', 

@@ -28,6 +28,9 @@
 
 		        switch(format){
 					case 'numeric':
+						if (e.keyCode == 173) 
+							return;
+
 						if (((e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105))
 				            e.preventDefault();
 						break;

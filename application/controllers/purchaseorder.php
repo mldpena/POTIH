@@ -50,7 +50,8 @@ class PurchaseOrder extends CI_Controller {
 				$page = 'purchaseorder_detail';
 				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Purchase_Code::EDIT_PURCHASE));
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Purchase_Code::EDIT_PURCHASE),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE));
 				
 				break;
 
@@ -69,7 +70,9 @@ class PurchaseOrder extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}
@@ -142,6 +145,10 @@ class PurchaseOrder extends CI_Controller {
 
 				case 'delete_head':
 					$response = $this->purchaseorder_model->delete_purchaseorder_head($post_data);
+					break;
+
+				case 'check_product_inventory':
+					$response = check_current_inventory($post_data,1);
 					break;
 
 				default:

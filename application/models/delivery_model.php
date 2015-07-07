@@ -194,13 +194,11 @@ class Delivery_Model extends CI_Model {
 		$query_data 		= array();
 		$query 				= array();
 
-		$query_delivery_head_data = array($entry_date,$entry_date,$entry_date,$memo,$to_branch,$type,$this->_current_user,$this->_current_date,$this->_delivery_head_id); 
+		$query_delivery_head_data = array($entry_date,$memo,$to_branch,$type,$this->_current_user,$this->_current_date,$this->_delivery_head_id); 
 
 		$query_delivery_head = "UPDATE `stock_delivery_head`
 					SET
 					`entry_date` = ?,
-					`delivery_receive_date` = ?,
-					`customer_receive_date` = ?,
 					`memo` = ?,
 					`to_branchid` = ?,
 					`delivery_type` = ?,
@@ -311,7 +309,7 @@ class Delivery_Model extends CI_Model {
 			switch ($status) 
 			{
 				case DELIVERY_CONST::INCOMPLETE:
-					$having = "HAVING remaining_qty < total_qty AND remaining_qty <> 0";
+					$having = "HAVING remaining_qty < total_qty AND remaining_qty > 0";
 					break;
 				
 				case DELIVERY_CONST::COMPLETE:
@@ -320,6 +318,10 @@ class Delivery_Model extends CI_Model {
 
 				case DELIVERY_CONST::NO_RECEIVED:
 					$having = "HAVING remaining_qty = total_qty";
+					break;
+
+				case DELIVERY_CONST::EXCESS:
+					$having = "HAVING remaining_qty < 0";
 					break;
 			}
 		}
@@ -335,9 +337,10 @@ class Delivery_Model extends CI_Model {
 						ELSE 'Unused'
 					END AS 'delivery_type',
 					COALESCE(CASE
-						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) < SUM(SD.`quantity`) AND SUM(SD.`quantity` - SD.`recv_quantity`) <> 0 THEN 'Incomplete'
-						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) = 0 THEN 'Complete'
-						WHEN SUM(SD.`quantity` - SD.`recv_quantity`) = SUM(SD.`quantity`) THEN 'No Received'
+						WHEN SUM(SD.`recv_quantity`) = SUM(SD.`quantity`) THEN 'Complete'
+						WHEN SUM(SD.`recv_quantity` ) > SUM(SD.`quantity`) THEN 'Excess'
+						WHEN SUM(SD.`recv_quantity`) > 0 THEN 'Incomplete'
+						WHEN SUM(SD.`recv_quantity`) = 0 THEN 'No Received'
 					END,'') AS 'status'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
@@ -432,17 +435,17 @@ class Delivery_Model extends CI_Model {
 		$query_data = array();
 
 		$response['rowcnt'] = 0;
-		
+		$date_type = $search_type == DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
 		
 		if (!empty($date_from))
 		{
-			$conditions .= " AND SH.`entry_date` >= ?";
+			$conditions .= " AND SH.`$date_type` >= ?";
 			array_push($query_data,$date_from.' 00:00:00');
 		}
 
 		if (!empty($date_to))
 		{
-			$conditions .= " AND SH.`entry_date` <= ?";
+			$conditions .= " AND SH.`$date_type` <= ?";
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
@@ -488,7 +491,7 @@ class Delivery_Model extends CI_Model {
 
 		$query = "SELECT SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
 					CONCAT('SD',SH.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', SH.`memo`,
+					COALESCE(DATE(SH.`$date_type`),'') AS 'entry_date', SH.`memo`,
 					SUM(SD.`quantity`) AS 'total_qty'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`

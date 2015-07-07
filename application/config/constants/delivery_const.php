@@ -14,6 +14,7 @@
 		const INCOMPLETE = 1;
 		const COMPLETE = 2;
 		const NO_RECEIVED = 3;
+		const EXCESS = 4;
 		const BOTH = 1;
 		const SALES = 2;
 		const TRANSFER = 3;

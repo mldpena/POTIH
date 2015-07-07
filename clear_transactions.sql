@@ -11,4 +11,8 @@ TRUNCATE stock_delivery_head;
 TRUNCATE inventory_adjust;
 TRUNCATE release_head;
 TRUNCATE release_detail;
+TRUNCATE purchase_return_head;
+TRUNCATE purchase_return_detail;
+TRUNCATE daily_transaction_summary;
+TRUNCATE temp_beginning_transaction;
 UPDATE product_branch_inventory SET inventory = 0, min_inv = 0, max_inv = 0;

@@ -57,9 +57,10 @@ class Product extends CI_Controller {
 				break;
 
 
-			case 'transaction':
+			case 'summary':
 				$page = 'transaction_list';
-				$allow_user = $this->permission_checker->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING);
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+				$allow_user = $this->permission_checker->check_permission(\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY);
 				break;
 
 			case 'inventory':
@@ -67,6 +68,12 @@ class Product extends CI_Controller {
 				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY);
 
+				break;
+
+			case 'record':
+				$page = 'transaction_record';
+				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$allow_user = TRUE;
 				break;
 
 			default:
@@ -86,7 +93,9 @@ class Product extends CI_Controller {
 						'material_list' => get_name_list_from_table(TRUE,'material_type',TRUE),
 						'subgroup_list' => get_name_list_from_table(TRUE,'subgroup',TRUE),
 						'branch_list' 	=> $branch_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}
@@ -163,6 +172,22 @@ class Product extends CI_Controller {
 
 				case 'get_branch_inventory_list':
 					$response = $this->product_model->get_product_branch_inventory_list($post_data);
+					break;
+
+				case 'get_transaction_list':
+					$response = $this->product_model->get_transaction_summary($post_data);
+					break;
+
+				case 'get_product_name':
+					$response = $this->product_model->get_product_name();
+					break;
+
+				case 'autocomplete_product':
+					$response = get_product_list_autocomplete($post_data);
+					break;
+
+				case 'get_transaction_record':
+					$response = $this->product_model->get_transaction_record($post_data);
 					break;
 
 				default:

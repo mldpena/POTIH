@@ -76,7 +76,7 @@
 		header_title: "Inv",
 		edit: [spninv],
 		disp: [spninv],
-		td_class: "tablerow column_click column_hover tdinv"
+		td_class: "tablerow column_hover tdinv"
 	};
 
 	var imgDelete = document.createElement('i');
@@ -225,6 +225,14 @@
 		build_message_box('messagebox_1','Product successfully deleted!','success');
 	}
 
+	$('.tdinv').live('click',function(){
+		var rowIndex = $(this).parent().index();
+		var productId = tableHelper.contentProvider.getData(rowIndex,'id');
+		var branchId = $('#branch').val();
+
+		window.location = "<?= base_url() ?>product/record/" + productId + "/" + branchId;
+	});
+
 	//Event for edit product
 	<?php if($permission_list['allow_to_edit']) : ?>
 
@@ -364,6 +372,12 @@
 
 			min_max_values.push([branch_inventory_id,branch_id,min_inv,max_inv]);
 		};
+
+		if (is_nonstack_val == 0 && material_val == 0)
+			errorList.push('Product should have a valid Material Type!');
+
+		if (is_nonstack_val == 0 && subgroup_val == 0)
+			errorList.push('Product should have a valid Sub Group!');
 
 		if (errorList.length > 0) {
 			build_message_box('messagebox_3',build_error_message(errorList),'danger');

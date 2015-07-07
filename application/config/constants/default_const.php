@@ -18,6 +18,9 @@
 		const UPDATE_PROCESS = 2;
 
 		const MINIMUM = 1;
+
+		const MIN_CHECKER = 0;
+		const MAX_CHECKER = 1;
 	}
 
 ?>

@@ -121,7 +121,7 @@ if (!function_exists('get_product_list_autocomplete'))
 		$CI =& get_instance();
 		$CI->load->helper('cookie');
 		$CI->load->library('encrypt');
-		$CI->load->file(CONSTANTS.'product_const.php');
+		//$CI->load->file(CONSTANTS.'product_const.php');
 
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
 		$term 		= '%'.$term.'%';
@@ -142,7 +142,7 @@ if (!function_exists('get_product_list_autocomplete'))
 		$query = "SELECT P.`description`, P.`id`, P.`material_code`, P.`type` $inventory_column
 					FROM product AS P
 					$join_condition
-					WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND (P.`description` LIKE ? OR P.`material_code` LIKE ?)
+					WHERE P.`is_show` = 1 AND (P.`description` LIKE ? OR P.`material_code` LIKE ?)
 					LIMIT 10";
 
 		$result = $CI->db->query($query,$query_data);
@@ -165,7 +165,7 @@ if (!function_exists('get_product_list_autocomplete'))
 
 if (!function_exists('check_current_inventory')) 
 {
-	function check_current_inventory($param)
+	function check_current_inventory($param,$checker)
 	{
 		extract($param);
 		$CI =& get_instance();
@@ -178,20 +178,30 @@ if (!function_exists('check_current_inventory'))
 
 		$response = array();
 		$response['is_insufficient'] = 0;
+		$response['is_excess'] = 0;
 
 		$query_data = array($product_id,$branch_id);
 
-		$query = "SELECT `inventory` AS 'current_inventory', `min_inv` FROM product_branch_inventory WHERE `product_id` = ? AND `branch_id` = ?";
+		$query = "SELECT `inventory` AS 'current_inventory', `min_inv`, `max_inv` FROM product_branch_inventory WHERE `product_id` = ? AND `branch_id` = ?";
 		
 		$result = $CI->db->query($query,$query_data);
 
 		$row = $result->row();
 
-		if (($row->current_inventory - $qty) < 0 && $row->min_inv != 0) 
-			$response['is_insufficient'] = PRODUCT_CONST::NEGATIVE_INV;
-		elseif (($row->current_inventory - $qty) >= 0 && ($row->current_inventory - $qty) <= $row->min_inv && $row->min_inv != 0)
-			$response['is_insufficient'] = PRODUCT_CONST::MINIMUM;
-
+		if ($checker == PRODUCT_CONST::MIN_CHECKER) 
+		{
+			if (($row->current_inventory - $qty) < 0 && $row->min_inv != 0) 
+				$response['is_insufficient'] = PRODUCT_CONST::NEGATIVE_INV;
+			elseif (($row->current_inventory - $qty) >= 0 && ($row->current_inventory - $qty) <= $row->min_inv && $row->min_inv != 0)
+				$response['is_insufficient'] = PRODUCT_CONST::MINIMUM;
+		}
+		else
+		{
+			if (($row->current_inventory + $qty) >= $row->max_inv && $row->max_inv != 0) 
+				$response['is_excess'] = TRUE;
+		}
+		
+		$response['checker'] = $checker;
 		$response['current_inventory'] = $row->current_inventory;
 
 		$result->free_result();

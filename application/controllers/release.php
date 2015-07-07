@@ -50,7 +50,8 @@ class Release extends CI_Controller {
 				$page = 'release_detail';
 				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\Release_Code::VIEW_RELEASE);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Release_Code::EDIT_RELEASE));
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Release_Code::EDIT_RELEASE),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Release_Code::ADD_RELEASE));
 				break;
 
 			default:
@@ -68,7 +69,9 @@ class Release extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}
@@ -149,7 +152,7 @@ class Release extends CI_Controller {
 					break;
 
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data);
+					$response = check_current_inventory($post_data,0);
 					break;
 					
 				default:

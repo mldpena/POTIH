@@ -28,6 +28,7 @@
 								<option value="1">Incomplete</option>
 								<option value="2">Complete</option>
 								<option value="3">No Received</option>
+								<option value="4">Excess</option>
 							</select>
 						</td>
 					</tr>

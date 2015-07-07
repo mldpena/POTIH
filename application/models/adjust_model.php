@@ -35,7 +35,7 @@ class Adjust_Model extends CI_Model {
 
 		$conditions 		= "";
 		$order_field 		= "";
-		$query_data = array($this->_current_branch_id);
+		$query_data = array($this->_current_branch_id,$this->_current_branch_id);
 
 		if (!empty($code)) 
 		{
@@ -130,7 +130,7 @@ class Adjust_Model extends CI_Model {
 						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".ADJUST_CONST::ACTIVE."
 						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".ADJUST_CONST::ACTIVE."
 						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
-						LEFT JOIN inventory_adjust AS IA ON IA.`product_id` = P.`id` AND IA.`status` = ".ADJUST_CONST::PENDING."
+						LEFT JOIN inventory_adjust AS IA ON IA.`product_id` = P.`id` AND IA.`branch_id` = ? AND IA.`status` = ".ADJUST_CONST::PENDING."
 						WHERE P.`is_show` = ".ADJUST_CONST::ACTIVE." $conditions
 						ORDER BY $order_field";
 

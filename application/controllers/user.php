@@ -51,6 +51,7 @@ class User extends CI_Controller {
 				$page = 'user_detail';
 				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
 				$allow_user = $this->permission_checker->check_permission(array(\Permission\User_Code::VIEW_USER,\Permission\User_Code::ADD_USER));
+				$permissions = array('allow_to_edit' => TRUE);
 				break;
 
 			case 'view':
@@ -80,7 +81,9 @@ class User extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
-						'permission_list' => $permissions);
+						'permission_list' => $permissions,
+						'section_permissions' => $this->permission_checker->get_section_permissions(),
+						'page_permissions' => $this->permission_checker->get_page_permissions());
 
 		$this->load->view('master', $data);
 	}

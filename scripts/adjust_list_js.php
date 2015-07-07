@@ -231,6 +231,7 @@
 		global_row_index 	= 0;
 		global_adjust_id 	= 0;
 		global_product_id 	= 0;
+		clear_message_box();
 	});
 
     function getSearchFilter()
@@ -244,7 +245,6 @@
 		var dateto_val		= $('#date_to').val();
 		var inv_val			= $('#invstatus').val();
 		var orderby_val		= $('#orderby').val();
-
 
 		var arr = 	{ 
 						fnc 	 : 'get_product_and_adjust_list', 
