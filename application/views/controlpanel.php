@@ -99,41 +99,6 @@
 
 			<?php endif; ?>
 
-			<?php if($page_permissions['customer_return']) : ?>
-			
-			<a href="<?= base_url() ?>return/list">
-				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>return.png">
-					<div class="btn-title">Customer Return</div>
-				</div>
-			</a>
-
-			<?php endif; ?>
-			
-		</div>
-	</div>
-
-	<?php endif; ?>
-	
-	<?php if($section_permissions['return']) : ?>
-
-	<div class="content-form">
-		<div class="form-header">
-			Return
-		</div>
-		<div class="form-body default">
-
-			<?php if($page_permissions['damage']) : ?>
-
-			<a href="<?= base_url() ?>damage/list">
-				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>damage.png">
-					<div class="btn-title">Damage</div>
-				</div>
-			</a>
-
-			<?php endif; ?>
-
 			<?php if($page_permissions['purchase_return']) : ?>
 
 			<a href="<?= base_url() ?>purchaseret/list">
@@ -144,6 +109,7 @@
 			</a>
 
 			<?php endif; ?>
+			
 		</div>
 	</div>
 
@@ -153,7 +119,7 @@
 
 	<div class="content-form">
 		<div class="form-header">
-			Delivery and Stock Transferring
+			Delivery
 		</div>
 		<div class="form-body default">
 			<?php if($page_permissions['stock_delivery']) : ?>
@@ -161,11 +127,18 @@
 			<a href="<?= base_url() ?>delivery/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>stockdelivery.png">
-					<div class="btn-title">Stock Delivery</div>
+					<div class="btn-title">Item Delivery</div>
 				</div>
 			</a>
 
 			<?php endif; ?>
+
+			<a href="<?= base_url() ?>delivery/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>stockdelivery.png">
+					<div class="btn-title">Stock Request to Other Branches</div>
+				</div>
+			</a>
 
 			<?php if($page_permissions['stock_receive']) : ?>
 
@@ -188,16 +161,84 @@
 			</a>
 
 			<?php endif; ?>
+
+			<?php if($page_permissions['customer_return']) : ?>
+			
+			<a href="<?= base_url() ?>return/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>return.png">
+					<div class="btn-title">Customer Return</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+
+		</div>
+	</div>
+
+	<?php endif; ?>
+	
+	<?php if($section_permissions['return']) : ?>
+
+	<div class="content-form">
+		<div class="form-header">
+			Damage
+		</div>
+		<div class="form-body default">
+
+			<?php if($page_permissions['damage']) : ?>
+
+			<a href="<?= base_url() ?>damage/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>damage.png">
+					<div class="btn-title">Damage</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+
 		</div>
 	</div>
 
 	<?php endif; ?>
 
+	<div class="content-form">
+		<div class="form-header">
+			Pickup
+		</div>
+		<div class="form-body default">
+			<a href="<?= base_url() ?>adjust/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>inventoryadjust.png">
+					<div class="btn-title">Pickup Assortment</div>
+				</div>
+			</a>
+
+			<?php if($page_permissions['release']) : ?>
+
+			<a href="<?= base_url() ?>release/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>warehouserelease.png">
+					<div class="btn-title">Warehouse Release</div>
+				</div>
+			</a>
+
+			<a href="<?= base_url() ?>release/pickup">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>warehouserelease.png">
+					<div class="btn-title">Pick-Up Summary</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+		</div>
+	</div>
+
 	<?php if($section_permissions['others']) : ?>
 
 	<div class="content-form">
 		<div class="form-header">
-			Others
+			Inventory Adjust
 		</div>
 		<div class="form-body default">
 			<?php if($page_permissions['inventory_adjust']) : ?>
@@ -222,23 +263,6 @@
 
 			<?php endif; ?>
 
-			<?php if($page_permissions['release']) : ?>
-
-			<a href="<?= base_url() ?>release/list">
-				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>warehouserelease.png">
-					<div class="btn-title">Warehouse Release</div>
-				</div>
-			</a>
-
-			<a href="<?= base_url() ?>release/pickup">
-				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>warehouserelease.png">
-					<div class="btn-title">Pick-Up Summary</div>
-				</div>
-			</a>
-
-			<?php endif; ?>
 		</div>
 	</div>
 
