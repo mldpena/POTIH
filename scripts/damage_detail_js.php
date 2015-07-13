@@ -120,7 +120,9 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", controller : 'damage' });
 
-	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, addInventoryChecker : true } );
+	tableHelper.detailContent.bindAllEvents( {  saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
+												addInventoryChecker : true,
+												saveEventsAfterCallback : goToPrintOut } );
 
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -170,6 +172,24 @@
 	}
 	else
 		$('input, textarea').attr('disabled','disabled');
+
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session' }
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(data) {
+                window.location = '<?= base_url() ?>printout/damage/Damage';
+            }
+        });
+	}
 
 	function getHeadDetailsBeforeSubmit()
 	{

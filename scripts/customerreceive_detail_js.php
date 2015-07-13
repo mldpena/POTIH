@@ -124,8 +124,9 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", controller : 'custreceive' });
 
-	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
-												updateEventsBeforeCallback : getRowDetailsBeforeSubmit} );
+	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
+											   updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+											   saveEventsAfterCallback : goToPrintOut } );
 
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -195,6 +196,24 @@
 		
 		tableHelper.contentProvider.setData(rowIndex,'receiveqty',[totalQuantity]);
 	});
+
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session_receive' }
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(data) {
+                window.location = '<?= base_url() ?>printout/customer_receive/Receive';
+            }
+        });
+	}
 
 	function getHeadDetailsBeforeSubmit()
 	{

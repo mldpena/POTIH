@@ -253,6 +253,10 @@ class StockDelivery extends CI_Controller {
 					$this->set_session_data('delivery');
 					break;
 
+				case 'set_session_receive':
+					$this->set_session_data('customer_receive');
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
@@ -268,5 +272,4 @@ class StockDelivery extends CI_Controller {
 	{
 		$this->session->set_userdata($session_name,$this->uri->segment(3));
 	}
-
 }

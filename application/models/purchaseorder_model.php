@@ -404,5 +404,59 @@ class PurchaseOrder_Model extends CI_Model {
 		return $response;
 	}
 
+	public function get_purchase_order_printout_details()
+	{
+		$response = array();
 
+		$response['error'] = '';
+
+		$purchase_id = $this->encrypt->decode($this->session->userdata('purchase_order'));
+
+		$query_head = "SELECT CONCAT('PO',H.`reference_number`) AS 'reference_number', 
+						DATE(H.`entry_date`) AS 'entry_date', H.`supplier`, H.`memo`, COALESCE(B.`name`,'') AS 'for_branch'
+					FROM purchase_head AS H
+					LEFT JOIN branch AS B ON B.`id` = H.`for_branchid` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
+					WHERE H.`id` = ?";
+
+		$result_head = $this->db->query($query_head,$purchase_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							FROM purchase_head AS H
+							LEFT JOIN purchase_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN product AS P ON P.`id` = D.`product_id`
+							WHERE H.`id` = ?";
+
+		$result_detail = $this->db->query($query_detail,$purchase_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
+
+		return $response;
+	}
 }

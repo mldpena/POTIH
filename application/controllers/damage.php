@@ -12,6 +12,7 @@ class Damage extends CI_Controller {
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 		$this->load->library('permission_checker');
+		$this->load->library('session');
 	}
 
 	/**
@@ -151,6 +152,10 @@ class Damage extends CI_Controller {
 					$response = check_current_inventory($post_data,0);
 					break;
 					
+				case 'set_session':
+					$this->set_session_data();
+					break;
+
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;
@@ -160,5 +165,10 @@ class Damage extends CI_Controller {
 		}
 
 		echo json_encode($response);
+	}
+
+	private function set_session_data()
+	{
+		$this->session->set_userdata('damage_entry',$this->uri->segment(3));
 	}
 }

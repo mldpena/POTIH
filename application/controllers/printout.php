@@ -24,67 +24,94 @@ class Printout extends CI_Controller {
 		
 		$page = $this->uri->segment(2);
 
-		switch ($page) 
+		try
 		{
-			case 'release':
-				
-				$this->load->model('release_model');
+			switch ($page) 
+			{
+				case 'release':
+					
+					$this->load->model('release_model');
 
-				$page 		= 'pdf/release_slip.php';
-				$response 	= $this->release_model->get_release_printout_detail();
-				break;
+					$page 		= 'pdf/release_slip.php';
+					$response 	= $this->release_model->get_release_printout_detail();
+					break;
 
-			case 'delivery_receive':
-				$this->load->model('delivery_model');
+				case 'delivery_receive':
+					$this->load->model('delivery_model');
 
-				$page 		= 'pdf/receive_summary.php';
-				$response 	= $this->delivery_model->get_receive_printout_detail();
+					$page 		= 'pdf/receive_summary.php';
+					$response 	= $this->delivery_model->get_receive_printout_detail();
 
-				break;
+					break;
 
-			case 'purchase_receive':
-				$this->load->model('purchasereceive_model');
+				case 'purchase_receive':
+					$this->load->model('purchasereceive_model');
 
-				$page 		= 'pdf/receive_summary.php';
-				$response 	= $this->purchasereceive_model->get_receive_printout_detail();
+					$page 		= 'pdf/receive_summary.php';
+					$response 	= $this->purchasereceive_model->get_receive_printout_detail();
 
-				break;
+					break;
 
-			case 'customer_return':
-				$this->load->model('return_model');
+				case 'customer_return':
+					$this->load->model('return_model');
 
-				$page 		= 'pdf/receive_summary.php';
-				$response 	= $this->return_model->get_receive_printout_detail();
-				break;
+					$page 		= 'pdf/receive_summary.php';
+					$response 	= $this->return_model->get_receive_printout_detail();
+					break;
 
-			case 'delivery':
-				$this->load->model('delivery_model');
+				case 'delivery':
+					$this->load->model('delivery_model');
 
-				$page 		= 'pdf/delivery_summary.php';
-				$response 	= $this->delivery_model->get_delivery_printout_details();
-				break;
+					$page 		= 'pdf/delivery_summary.php';
+					$response 	= $this->delivery_model->get_delivery_printout_details();
+					break;
 
-			case 'pickup':
-				$this->load->model('release_model');
+				case 'pickup':
+					$this->load->model('release_model');
 
-				$page 		= 'pdf/pickup_summary.php';
-				$response 	= $this->release_model->get_pickup_printout_details();
-				break;
+					$page 		= 'pdf/pickup_summary.php';
+					$response 	= $this->release_model->get_pickup_printout_details();
+					break;
 
-			case 'purchase_order':
-				$this->load->model('purchaseorder_model');
+				case 'purchase_order':
+					$this->load->model('purchaseorder_model');
 
-				$page 		= 'pdf/pickup_summary.php';
-				$response 	= $this->release_model->get_pickup_printout_details();
-				break;
+					$page 		= 'pdf/purchase_order.php';
+					$response 	= $this->purchaseorder_model->get_purchase_order_printout_details();
+					break;
 
-			default:
-				echo "Invalid Page URL!";
-				exit();
-				break;
+				case 'damage':
+					$this->load->model('damage_model');
+
+					$page 		= 'pdf/damage_entry.php';
+					$response 	= $this->damage_model->get_damage_printout_details();
+					break;
+
+				case 'purchase_return':
+					$this->load->model('purchasereturn_model');
+
+					$page 		= 'pdf/purchase_return.php';
+					$response 	= $this->purchasereturn_model->get_purchase_return_printout_details();
+					break;
+
+				case 'customer_receive':
+					$this->load->model('delivery_model');
+
+					$page 		= 'pdf/customer_receive.php';
+					$response 	= $this->delivery_model->get_customer_receive_printout_details();
+					break;
+
+				default:
+					echo "Invalid Page URL!";
+					exit();
+					break;
+			}
+
+			$this->load->view($page, $response);
+			
+		}catch(Exception $e){
+			echo $e->getMessage();
 		}
-
-		$this->load->view($page, $response);
 	}
 
 	/**

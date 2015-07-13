@@ -12,6 +12,7 @@ class PurchaseReturn extends CI_Controller {
 		$this->load->helper('authentication');
 		$this->load->helper('query');
 		$this->load->library('permission_checker');
+		$this->load->library('session');
 	}
 
 	/**
@@ -150,7 +151,11 @@ class PurchaseReturn extends CI_Controller {
 				case 'check_product_inventory':
 					$response = check_current_inventory($post_data,0);
 					break;
-					
+				
+				case 'set_session':
+					$this->set_session_data();
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
@@ -160,6 +165,11 @@ class PurchaseReturn extends CI_Controller {
 		}
 		
 		echo json_encode($response);
+	}
+
+	private function set_session_data()
+	{
+		$this->session->set_userdata('purchase_return',$this->uri->segment(3));
 	}
 
 }
