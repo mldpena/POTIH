@@ -102,41 +102,6 @@
 
 				<?php endif; ?>
 
-				<?php if($page_permissions['customer_return']) : ?>
-
-				<a href="<?= base_url() ?>return/list">
-					<div class="link">
-						<img src="<?= base_url().IMG ?>return.png">
-						<div>Customer Return</div>
-					</div>
-				</a>
-
-				<?php endif; ?>
-
-			</div>
-		</div>
-
-		<?php endif; ?>
-
-		<?php if($section_permissions['return']) : ?>
-
-		<div class="sidebar-group" id="return-group">
-			<div class="header subgroup-toggle">
-				<div>Return</div>
-				<div><i class="fa fa-plus-square"></i></div>
-			</div>
-			<div class="link-menu">
-				<?php if($page_permissions['damage']) : ?>
-
-				<a href="<?= base_url() ?>damage/list">
-					<div class="link">
-						<img src="<?= base_url().IMG ?>damage.png">
-						<div>Damage</div>
-					</div>
-				</a>
-
-				<?php endif; ?>
-
 				<?php if($page_permissions['purchase_return']) : ?>
 
 				<a href="<?= base_url() ?>purchaseret/list">
@@ -157,16 +122,39 @@
 
 		<div class="sidebar-group" id="delivery-group">
 			<div class="header subgroup-toggle">
-				<div>Delivery and Stock Transferring</div>
+				<div>Delivery</div>
 				<div><i class="fa fa-plus-square"></i></div>
 			</div>
 			<div class="link-menu">
+
+				<?php if($page_permissions['stock_request_to']) : ?>
+
+				<a href="<?= base_url() ?>delivery/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>stockdelivery.png">
+						<div>Item Request to Other Branches</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+				<?php if($page_permissions['stock_request_from']) : ?>
+
+				<a href="<?= base_url() ?>delivery/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>stockdelivery.png">
+						<div>Item Request from Other Branches</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
 				<?php if($page_permissions['stock_delivery']) : ?>
 
 				<a href="<?= base_url() ?>delivery/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>stockdelivery.png">
-						<div>Stock Delivery</div>
+						<div>Item Delivery</div>
 					</div>
 				</a>
 
@@ -177,7 +165,7 @@
 				<a href="<?= base_url() ?>delreceive/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>stockreceive.png">
-						<div>Stock Receive</div>
+						<div>Item Receive</div>
 					</div>
 				</a>
 
@@ -194,16 +182,97 @@
 
 				<?php endif; ?>
 
+				<?php if($page_permissions['customer_return']) : ?>
+
+				<a href="<?= base_url() ?>return/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>return.png">
+						<div>Customer Return</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
 			</div>
 		</div>
 
 		<?php endif; ?>
 
-		<?php if($section_permissions['others']) : ?>
+		<?php if($section_permissions['damage']) : ?>
 
-		<div class="sidebar-group" id="others-group">
+		<div class="sidebar-group" id="damage-group">
 			<div class="header subgroup-toggle">
-				<div>Others</div>
+				<div>Damage</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
+				<?php if($page_permissions['damage']) : ?>
+
+				<a href="<?= base_url() ?>damage/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>damage.png">
+						<div>Damage</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+			</div>
+		</div>
+
+		<?php endif; ?>
+
+		<?php if($section_permissions['pickup']) : ?>
+
+		<div class="sidebar-group" id="pickup-group">
+			<div class="header subgroup-toggle">
+				<div>Pick-Up</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
+				<?php if($page_permissions['assortment']) : ?>
+
+				<a href="<?= base_url() ?>damage/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>damage.png">
+						<div>Pick-Up Assortment</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+				<?php if($page_permissions['release']) : ?>
+
+				<a href="<?= base_url() ?>release/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>warehouserelease.png">
+						<div>Warehouse Release</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+				<?php if($page_permissions['pickup']) : ?>
+
+				<a href="<?= base_url() ?>release/pickup">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>warehouserelease.png">
+						<div>Pick-Up Summary</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+			</div>
+		</div>
+
+		<?php endif; ?>
+
+		<?php if($section_permissions['adjust']) : ?>
+
+		<div class="sidebar-group" id="adjust-group">
+			<div class="header subgroup-toggle">
+				<div>Inventory Adjust</div>
 				<div><i class="fa fa-plus-square"></i></div>
 			</div>
 			<div class="link-menu">
@@ -224,24 +293,6 @@
 					<div class="link">
 						<img src="<?= base_url().IMG ?>pendinginventoryadjust.png">
 						<div>Pending Inventory Adjust</div>
-					</div>
-				</a>
-
-				<?php endif; ?>
-
-				<?php if($page_permissions['release']) : ?>
-
-				<a href="<?= base_url() ?>release/list">
-					<div class="link">
-						<img src="<?= base_url().IMG ?>warehouserelease.png">
-						<div>Warehouse Release</div>
-					</div>
-				</a>
-
-				<a href="<?= base_url() ?>release/pickup">
-					<div class="link">
-						<img src="<?= base_url().IMG ?>warehouserelease.png">
-						<div>Pick-Up Summary</div>
 					</div>
 				</a>
 

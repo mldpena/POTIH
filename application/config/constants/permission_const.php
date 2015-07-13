@@ -155,4 +155,34 @@
 	{
 		const VIEW_TRANSACTION_SUMMARY = 213;
 	}
+
+	class Assortment_Code
+	{
+		const VIEW_ASSORTMENT = 223;
+		const VIEW_ASSORTMENT_DETAIL = 224;
+		const ADD_ASSORTMENT = 225;
+		const EDIT_ASSORTMENT = 226;
+		const DELETE_ASSORTMENT= 227;
+	}
+
+	class PickUp_Code
+	{
+		const GENERATE_SUMMARY = 332;
+		const PRINT_SUMMARY = 333;
+	}
+
+	class StockRequestTo_Code
+	{
+		const VIEW_STOCKREQUEST = 334;
+		const VIEW_STOCKREQUEST_DETAIL = 335;
+		const ADD_STOCKREQUEST = 336;
+		const EDIT_STOCKREQUEST = 337;
+		const DELETE_STOCKREQUEST= 338;
+	}
+
+	class StockRequestFrom_Code
+	{
+		const VIEW_STOCKREQUEST = 339;
+	}
+
 ?>

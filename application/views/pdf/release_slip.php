@@ -82,10 +82,6 @@
 
 		$pdf->SetFont($font,'B',20,'','','');
 
-		$pdf->writeHTMLCell('', '', $x, $y,'HI-TOP MERCHANDISING, INC.', 0, 1, 0, true, 'C', true);
-
-		$y+= $linegap;
-
 		$pdf->writeHTMLCell('', '', $x, $y,'WAREHOUSE RELEASE SLIP', 0, 1, 0, true, 'C', true);
 
 		$y+= $linegap * 2;
@@ -112,8 +108,8 @@
 					<tr>
 						<td style="width:$column_width[0];" class="tdleft">Qty</td>
 						<td style="width:$column_width[1];">Item Description</td>
-						<td style="width:$column_width[2];">Item Code</td>
-						<td style="width:$column_width[3];">Doc #</td>
+						<td style="width:$column_width[2];" class="tdcenter">Item Code</td>
+						<td style="width:$column_width[3];" class="tdcenter">Doc #</td>
 					</tr>
 				</table>
 EOD;
@@ -126,12 +122,13 @@ EOD;
 			if (!$print_description) 
 			{
 				$html = "
+					$style
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[0].";\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[1].";\">".$detail[$i]["product"]."</td>
-							<td style=\"width:".$column_width[2].";\">".$detail[$i]["item_code"]."</td>
-							<td style=\"width:".$column_width[3].";\">".$detail[$i]["memo"]."</td>
+							<td style=\"width:".$column_width[2].";\" class=\"tdcenter\">".$detail[$i]["item_code"]."</td>
+							<td style=\"width:".$column_width[3].";\" class=\"tdcenter\">".$detail[$i]["memo"]."</td>
 						</tr>
 					</table>";
 				$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
@@ -169,6 +166,7 @@ EOD;
 			if (!empty($detail[$i]['description']))
 			{
 				$html = "
+					$style
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[0].";\"></td>

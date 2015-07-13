@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>delreceive/list">Stock Receive List</a></li>
+			<li class="active"><a href="<?= base_url() ?>delreceive/list">Item Receive List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Stock Receive List</div>
+		<div class="form-header">Item Receive List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>

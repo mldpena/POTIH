@@ -31,27 +31,35 @@ class CI_Permission_checker
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
 											\Permission\Purchase_Code::VIEW_PURCHASE,
 											\Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE,
-											\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN);
+											\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN);
 				break;
 
-			case 'return':
+			case 'damage':
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
-											\Permission\Damage_Code::VIEW_DAMAGE,
-											\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN);
+											\Permission\Damage_Code::VIEW_DAMAGE);
 				break;
 
 			case 'delivery':
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
+											\Permission\StockRequestTo_Code::VIEW_STOCKREQUEST,
+											\Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST,
 											\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY,
 											\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE,
-											\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE);
+											\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE,
+											\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN);
 				break;
 
-			case 'others':
+			case 'pickup':
+				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
+											\Permission\Assortment_Code::VIEW_ASSORTMENT,
+											\Permission\Release_Code::VIEW_RELEASE,
+											\Permission\PickUp_Code::PRINT_SUMMARY);
+				break;
+
+			case 'adjust':
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
 											\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST,
-											\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST,
-											\Permission\Release_Code::VIEW_RELEASE);
+											\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST);
 				break;
 
 			case 'reports':
@@ -63,11 +71,6 @@ class CI_Permission_checker
 		}
 
 		return $this->_check_permission_exists($permission_needed);
-	}
-
-	public function _check_page_permission($page)
-	{
-
 	}
 
 	private function _check_permission_exists($permission_needed)
@@ -103,9 +106,10 @@ class CI_Permission_checker
 	{
 		return array('data' => $this->check_section_permission('data'),
 					'purchase' => $this->check_section_permission('purchase'),
-					'return' => $this->check_section_permission('return'),
 					'delivery' => $this->check_section_permission('delivery'),
-					'others' => $this->check_section_permission('others'),
+					'damage' => $this->check_section_permission('damage'),
+					'pickup' => $this->check_section_permission('pickup'),
+					'adjust' => $this->check_section_permission('adjust'),
 					'reports' => $this->check_section_permission('reports'));
 	}
 
@@ -121,6 +125,8 @@ class CI_Permission_checker
 						'customer_return' => $this->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN),
 						'damage' => $this->check_permission(\Permission\Damage_Code::VIEW_DAMAGE),
 						'purchase_return' => $this->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN),
+						'stock_request_to' => $this->check_permission(\Permission\StockRequestTo_Code::VIEW_STOCKREQUEST),
+						'stock_request_from' => $this->check_permission(\Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST),
 						'stock_delivery' => $this->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY),
 						'stock_receive' => $this->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE),
 						'customer_receive' => $this->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE),
@@ -129,6 +135,8 @@ class CI_Permission_checker
 						'release' => $this->check_permission(\Permission\Release_Code::VIEW_RELEASE),
 						'inventory_warning' => $this->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING),
 						'branch_inventory' => $this->check_permission(\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY),
-						'transaction_summary' => $this->check_permission(\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY));
+						'transaction_summary' => $this->check_permission(\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY),
+						'assortment' => $this->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT),
+						'pickup' => $this->check_permission(\Permission\PickUp_Code::PRINT_SUMMARY));
 	}
 }

@@ -332,7 +332,7 @@ class Return_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$return_id = $this->encrypt->decode($this->session->userdata('delivery_receive'));
+		$return_id = $this->encrypt->decode($this->session->userdata('customer_return'));
 
 		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number', 
 						DATE(`delivery_receive_date`) AS 'entry_date'

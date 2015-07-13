@@ -441,7 +441,7 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$receive_id = $this->encrypt->decode($this->session->userdata('delivery_receive'));
+		$receive_id = $this->encrypt->decode($this->session->userdata('purchase_receive'));
 
 		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', 
 						DATE(`entry_date`) AS 'entry_date'

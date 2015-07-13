@@ -71,6 +71,13 @@ class Printout extends CI_Controller {
 				$response 	= $this->release_model->get_pickup_printout_details();
 				break;
 
+			case 'purchase_order':
+				$this->load->model('purchaseorder_model');
+
+				$page 		= 'pdf/pickup_summary.php';
+				$response 	= $this->release_model->get_pickup_printout_details();
+				break;
+
 			default:
 				echo "Invalid Page URL!";
 				exit();

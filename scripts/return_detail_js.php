@@ -194,7 +194,7 @@
             dataType : 'JSON',
             data: 'data=' + JSON.stringify(arr) + token,
             success: function(data) {
-                window.location = '<?= site_url() ?>printout/customer_return/Receive';
+                window.location = '<?= base_url() ?>printout/customer_return/Receive';
             }
         });
 	}

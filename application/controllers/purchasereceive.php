@@ -163,7 +163,7 @@ class PurchaseReceive extends CI_Controller {
 
 	private function set_session_data()
 	{
-		$this->session->set_userdata('release_slip',$this->uri->segment(3));
+		$this->session->set_userdata('purchase_receive',$this->uri->segment(3));
 	}
 
 }

@@ -3,12 +3,12 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li><a href="<?= base_url() ?>delivery/list">Stock Delivery List</a></li>
-			<li class="active"><a href="<?= base_url() ?>delivery/view/<?= $this->uri->segment(3) ?>">Stock Delivery Detail</a></li>
+			<li><a href="<?= base_url() ?>delivery/list">Item Delivery List</a></li>
+			<li class="active"><a href="<?= base_url() ?>delivery/view/<?= $this->uri->segment(3) ?>">Item Delivery Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Stock Delivery Detail</div>
+		<div class="form-header">Item Delivery Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
 				<table>

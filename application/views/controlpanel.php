@@ -122,6 +122,29 @@
 			Delivery
 		</div>
 		<div class="form-body default">
+
+			<?php if($page_permissions['stock_request_to']) : ?>
+
+			<a href="<?= base_url() ?>request/listto">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>stockdelivery.png">
+					<div class="btn-title">Item Request to Other Branches</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+
+			<?php if($page_permissions['stock_request_from']) : ?>
+
+			<a href="<?= base_url() ?>request/listfrom">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>stockdelivery.png">
+					<div class="btn-title">Item Request from Other Branches</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+
 			<?php if($page_permissions['stock_delivery']) : ?>
 
 			<a href="<?= base_url() ?>delivery/list">
@@ -133,19 +156,12 @@
 
 			<?php endif; ?>
 
-			<a href="<?= base_url() ?>delivery/list">
-				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>stockdelivery.png">
-					<div class="btn-title">Stock Request to Other Branches</div>
-				</div>
-			</a>
-
 			<?php if($page_permissions['stock_receive']) : ?>
 
 			<a href="<?= base_url() ?>delreceive/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>stockreceive.png">
-					<div class="btn-title">Stock Receive</div>
+					<div class="btn-title">Item Receive</div>
 				</div>
 			</a>
 
@@ -178,7 +194,7 @@
 
 	<?php endif; ?>
 	
-	<?php if($section_permissions['return']) : ?>
+	<?php if($section_permissions['damage']) : ?>
 
 	<div class="content-form">
 		<div class="form-header">
@@ -202,17 +218,24 @@
 
 	<?php endif; ?>
 
+	<?php if($section_permissions['pickup']) : ?>
+
 	<div class="content-form">
 		<div class="form-header">
-			Pickup
+			Pick-Up
 		</div>
 		<div class="form-body default">
+
+			<?php if($page_permissions['assortment']) : ?>
+
 			<a href="<?= base_url() ?>adjust/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>inventoryadjust.png">
-					<div class="btn-title">Pickup Assortment</div>
+					<div class="btn-title">Pick-Up Assortment</div>
 				</div>
 			</a>
+
+			<?php endif; ?>
 
 			<?php if($page_permissions['release']) : ?>
 
@@ -222,6 +245,10 @@
 					<div class="btn-title">Warehouse Release</div>
 				</div>
 			</a>
+
+			<?php endif; ?>
+
+			<?php if($page_permissions['pickup']) : ?>
 
 			<a href="<?= base_url() ?>release/pickup">
 				<div class="each-btn" align="center">
@@ -234,7 +261,9 @@
 		</div>
 	</div>
 
-	<?php if($section_permissions['others']) : ?>
+	<?php endif; ?>
+
+	<?php if($section_permissions['adjust']) : ?>
 
 	<div class="content-form">
 		<div class="form-header">
