@@ -35,6 +35,12 @@ class Product extends CI_Controller {
 			exit();
 		}
 
+		if (isset($_FILES['file'])) 
+		{
+			$this->importProductCSV();
+			exit();
+		}
+
 		$permissions = array();
 
 		switch ($page) 
@@ -223,8 +229,15 @@ class Product extends CI_Controller {
 		return $response;
 	}
 
-	private function _remapData($response)
+	private function importCSVData($response)
 	{
+		$extension	= end(explode(".", $_FILES["file"]["name"]));
+
+		if ($_FILES['file']['type'] == 'application/vnd.ms-excel' && $extension == 'csv')
+			$data = $this->waybill_model->importCSVData($shipperid,$datetime,$csvFile);
+		else
+			$data['error'][] = 'Invalid file type!';
 		
+		echo json_encode($data);
 	}
 }

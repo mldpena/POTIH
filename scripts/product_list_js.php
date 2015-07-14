@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	
-	var flag = 0;
+	var flag = false;
 	var global_product_id = 0;
 	var global_row_index = 0;
 	var token = '<?= $token ?>';
@@ -225,6 +225,45 @@
 		build_message_box('messagebox_1','Product successfully deleted!','success');
 	}
 
+	$('#uploadFile').live('click',function(e){
+		e.preventDefault();
+		
+		if (flag) 
+			return;
+
+		$('#messagebox_4').html('');
+
+		var uploadedFile = $('#fileData').prop('files')[0];   
+
+		if (typeof uploadedFile === 'undefined') 
+		{
+			build_message_box('messagebox_4','Please upload a file!','danger');
+			return;
+		};
+
+		var formData = new FormData();                  
+		formData.append('file', uploadedFile);                         
+
+		flag = true;
+
+		$.ajax({
+			dataType: 'json',
+			cache: false,
+			contentType: false,
+			processData: false,
+			data: formData,                         
+			type: 'post',
+			success: function(data){
+				if (data.error.length != 0)
+					build_message_box('messagebox_4',build_error_message(data.error),'danger');
+				else
+					build_message_box('messagebox_4','Import successfully executed!','success');
+
+				flag = false;
+			}
+		 });
+	});
+
 	$('.tdinv').live('click',function(){
 		var rowIndex = $(this).parent().index();
 		var productId = tableHelper.contentProvider.getData(rowIndex,'id');
@@ -296,10 +335,10 @@
 
 	//Event for create product popup
 	$('#create_product').click(function(){
-		if (flag == 1) 
+		if (flag) 
 			return;
 
-		flag = 1;
+		flag = true;
 
 		var arr = { fnc : 'get_branch_list_for_min_max' };
 
@@ -311,19 +350,19 @@
 				clear_message_box();
 				myjstbl_min_max.clear_table();
 				myjstbl_min_max.insert_multiplerow_with_value(1,response.data);
-				flag = 0;
+				flag = false;
 			}       
 		});
 	});
 
 	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
-        global_product_id 	= 0;
-        global_row_index 	= 0;
-    });
+		global_product_id 	= 0;
+		global_row_index 	= 0;
+	});
 
 	//Event for saving and updating product
 	$('#save').click(function(){
-		if (flag == 1) 
+		if (flag) 
 			return;
 
 		var row_index 		= global_row_index;
@@ -397,7 +436,7 @@
 						min_max_values : min_max_values
 					};
 
-		flag = 1;
+		flag = true;
 		
 		$.ajax({
 			type: "POST",
@@ -435,7 +474,7 @@
 					build_message_box('messagebox_1','Product successfully saved!','success');
 				}
 
-				flag = 0;
+				flag = false;
 			}       
 		});
 
@@ -456,7 +495,7 @@
 		var is_nonstack = $('#new_nonstack').is(':checked');
 		var itemcode_val 	= $('#new_itemcode').val();
 
-		if (flag == 1 || is_nonstack || itemcode_val.length < 2)
+		if (flag || is_nonstack || itemcode_val.length < 2)
 		{
 			clearProductCodeGroup();
 			return;
@@ -467,7 +506,7 @@
 						code 	 : itemcode_val
 					};
 
-		flag = 1;
+		flag = true;
 
 		$.ajax({
 			type: "POST",
@@ -486,7 +525,7 @@
 					$('#subgroup_text').html(response.subgroup_name);
 				}
 
-				flag = 0;
+				flag = false;
 			}       
 		});
 	}

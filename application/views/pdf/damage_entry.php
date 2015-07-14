@@ -203,5 +203,5 @@ EOD;
 
 	//ob_end_clean();
 
-	$pdf->Output('purchase_order.pdf', 'I');
+	$pdf->Output('damage_entry.pdf', 'I');
 ?>

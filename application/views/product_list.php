@@ -68,6 +68,7 @@
 
 			<div class="max-row">
 				<button class="btn btn-primary" data-toggle="modal" data-target="#createModal" id="create_product">Create New Product</button>
+				<button class="btn btn-success btn-excel" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-file-excel-o"></i>&nbsp; Upload Excel / CSV</button>
 			</div>
 
 			<?php endif; ?>
@@ -149,6 +150,28 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" class="btn btn-primary" id="delete">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="modal fade" id="uploadModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Upload Product Excel</h4>
+			</div>
+			<div class="modal-body">
+				<div class="message-content">
+					Upload xlsx/csv File :
+					<input type="file" name="fileData" id="fileData" class="form-control" />
+				</div>
+				<br/><div id="messagebox_4"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button type="button" class="btn btn-primary" id="uploadFile">Upload</button>
 			</div>
 		</div>
 	</div>
