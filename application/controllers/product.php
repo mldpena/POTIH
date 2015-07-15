@@ -1,19 +1,25 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use Services\Product_Manager;
+use Services\Authentication_Manager;
+
 class Product extends CI_Controller {
-	
+		
+	private $_product_manager;
+	private $_authentication_manager;
+
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
 	 */
 	
-	private function _load_libraries()
+	public function __construct()
 	{
-		$this->load->helper('authentication');
-		$this->load->helper('query');
-		$this->load->helper('cookie');
+		parent::__construct();
 		$this->load->library('encrypt');
 		$this->load->library('permission_checker');
+		$this->_product_manager = new Product_Manager();
+		$this->_authentication_manager = new Authentication_Manager();
 	}
 
 	/**
@@ -23,12 +29,11 @@ class Product extends CI_Controller {
 	
 	public function index()
 	{	
-		$this->_load_libraries();
-
-		check_user_credentials();
+		$this->_authentication_manager->check_user_credentials();
 
 		$page = $this->uri->segment(2);
 
+		exit();
 		if (isset($_POST['data'])) 
 		{
 			$this->_ajax_request();
@@ -37,7 +42,7 @@ class Product extends CI_Controller {
 
 		if (isset($_FILES['file'])) 
 		{
-			$this->importProductCSV();
+			$this->_import_product_csv();
 			exit();
 		}
 
@@ -127,7 +132,31 @@ class Product extends CI_Controller {
 	
 	private function _ajax_request()
 	{
-		$this->load->model('product_model');
+		$post_data 	= array();
+		$fnc 		= '';
+
+		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
+		$fnc 		= $post_data['fnc'];
+
+		$response['error'] = '';
+
+		try
+		{
+			switch ($fnc) 
+			{
+				case 'get_product_list':
+					$response = $this->product_model->get_product_list($post_data);
+					break;
+			};
+		}
+		catch (Exception $e)
+		{
+			$response['error'] = $e->getMessage();
+		}
+
+		echo json_encode($response);
+
+		/*$this->load->model('product_model');
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -208,7 +237,7 @@ class Product extends CI_Controller {
 			$response['error'] = $e->getMessage();
 		}
 		
-		echo json_encode($response);
+		echo json_encode($response);*/
 	}
 
 	private function _get_branch_list()
@@ -229,12 +258,12 @@ class Product extends CI_Controller {
 		return $response;
 	}
 
-	private function importCSVData($response)
+	private function _import_product_csv()
 	{
 		$extension	= end(explode(".", $_FILES["file"]["name"]));
 
 		if ($_FILES['file']['type'] == 'application/vnd.ms-excel' && $extension == 'csv')
-			$data = $this->waybill_model->importCSVData($shipperid,$datetime,$csvFile);
+			$data = $this->product_model->importCSVData($shipperid,$datetime,$csvFile);
 		else
 			$data['error'][] = 'Invalid file type!';
 		

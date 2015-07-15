@@ -1,15 +1,20 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
+use Services\Authentication_Manager;
+
 class Login extends CI_Controller {
 	
+	private $_authentication_manager;
+
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
 	 */
-	
-	private function _load_libraries()
+
+	public function __construct()
 	{
-		$this->load->helper('authentication');
+		parent::__construct();
+		$this->_authentication_manager = new Authentication_Manager();
 	}
 
 	/**
@@ -19,16 +24,14 @@ class Login extends CI_Controller {
 	
 	public function index()
 	{	
-		$this->_load_libraries();
-
 		$page = $this->uri->segment(2);
 
 		if ($page == 'logout') 
-			logout_user();
+			$this->_authentication_manager->logout_user();
 
-		if (check_set_cookies()) 
+		if ($this->_authentication_manager->check_set_cookies()) 
 		{
-			if (check_user_exists()) 
+			if ($this->_authentication_manager->check_user_exists()) 
 			{
 				header('Location:'.base_url().'controlpanel');
 				exit();
@@ -69,8 +72,6 @@ class Login extends CI_Controller {
 	
 	private function _ajax_request()
 	{
-		$this->load->model('login_model');
-
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -84,7 +85,7 @@ class Login extends CI_Controller {
 			switch ($fnc) 
 			{
 				case 'check_user':
-					$response = $this->login_model->check_user_credential($post_data);
+					$response = $this->_authentication_manager->validate_user_input_credential($post_data);
 					break;
 
 				case 'set_branch_user_session':
@@ -95,7 +96,9 @@ class Login extends CI_Controller {
 					$response['error'] = 'Invalid arguments!';
 					break;
 			}
-		}catch (Exception $e){
+		}
+		catch (Exception $e)
+		{
 			$response['error'] = $e->getMessage();
 		}
 

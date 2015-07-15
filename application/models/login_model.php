@@ -1,24 +1,19 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
 class Login_Model extends CI_Model {
-	private $_error_message = array('INVALID_CREDENTIAL' => 'Invalid User Name / Password!',
-									'ACCOUNT_DEACTIVATED' => 'Account currently deactivated!',
-									'NO_BRANCH' => 'No branch exists for your account!',
-									'NO_PERMISSION' => 'No permission exists!');
+
 	/**
-	 * Load Encrypt Class for encryption, cookie and constants
+	 * Load constants
 	 */
 	public function __construct() {
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'login_const.php');
-		$this->load->helper('cookie');
 		parent::__construct();
+		$this->load->file(CONSTANTS.'login_const.php');
 	}
 
 	/**
 	 * Check user name and password in database for verification
-	 * @param  $param [array]
-	 * @return $response [array]
+	 * @param  array $param
+	 * @return set 
 	 */
 	
 	public function check_user_credential($param)
@@ -26,62 +21,33 @@ class Login_Model extends CI_Model {
 		extract($param);
 		$response 	= array();
 		$password 	= $this->encrypt->encode_md5($password);
-		$query_data = array($user_name,$password);
+		/*$query_data = array($user_name,$password);*/
 
 		$response['error']		= '';
 		
-		$query 	= "SELECT `id`,`is_active`, `is_first_login`, `password`
+		$this->db->select('`id`,`is_active`, `is_first_login`, `password`')
+				->where('username',$user_name)
+				->where('password',$password);
+
+		$result = $this->db->get('user');
+
+		/*$query 	= "SELECT `id`,`is_active`, `is_first_login`, `password`
 					FROM user 
 					WHERE `username` = ? AND `password` = ? AND `is_show` = ".LOGIN_CONST::ACTIVE;
 
-		$result = $this->db->query($query,$query_data);
+		$result = $this->db->query($query,$query_data);*/
 
-		if ($result->num_rows() != 1) 
-			throw new Exception($this->_error_message['INVALID_CREDENTIAL']);
-		else
-		{
-			$row = $result->row();
+		return $result;
+	}
 
-			if ($row->is_active == LOGIN_CONST::INACTIVE) 
-				throw new Exception($this->_error_message['ACCOUNT_DEACTIVATED']);
-			else
-			{
-				$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
-						FROM user_permission AS U 
-						LEFT JOIN branch AS B ON B.`id` = U.`branch_id`
-						WHERE B.`is_show` = ".LOGIN_CONST::ACTIVE." AND U.`user_id` = ?";
+	/**
+	 * [get_user_branch_list description]
+	 * @param  int $user_id 
+	 * @return 
+	 */
+	public function get_user_branch_list($user_id)
+	{
 
-				$result_branch = $this->db->query($query,$row->id);
-
-				if ($result_branch->num_rows() == 0)
-					throw new Exception($this->_error_message['NO_BRANCH']);
-				else
-				{
-					$i = 0;
-					$branches = array();
-
-					foreach($result_branch->result() as $row_branches) 
-					{
-						$branches[$i]['id'] 	= $row_branches->branch_id;
-						$branches[$i]['value'] 	= $row_branches->branch_name;
-
-						$i++;
-					}
-
-					$response['branches'] 		= $branches;
-					$response['is_first_login'] = $row->is_first_login;
-					$response['is_default_password'] = $row->password == $this->encrypt->encode_md5('123456') ? true : false;
-
-					$result_branch->free_result();
-				}
-			
-			}
-		
-		}
-
-		$result->free_result();
-
-		return $response; 
 	}
 
 	/**
@@ -147,6 +113,17 @@ class Login_Model extends CI_Model {
 		return $response;
 	}
 
+	public function check_session_user_credential_exists($query_data = array())
+	{
+		$query = "SELECT `id`, `username`, `password`, `full_name`
+					FROM `user` AS U 
+					WHERE U.`is_show` = ".LOGIN_CONST::ACTIVE." AND U.`username` = ? AND U.`full_name` = ? AND U.`id` = ?";
+
+		$result = $this->db->query($query,$query_data);
+
+		return $result;
+	}
+
 	private function _update_first_login($id)
 	{
 		$query 	=	"UPDATE `user`
@@ -155,4 +132,6 @@ class Login_Model extends CI_Model {
 
 		$result = $this->db->query($query,$id);
 	}
+
+
 }	

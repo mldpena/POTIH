@@ -241,9 +241,13 @@
 			return;
 		};
 
-		var formData = new FormData();                  
-		formData.append('file', uploadedFile);                         
+		var formData = new FormData();    
+		var tokenValue = token.substr(Number(token.indexOf('=')) + 1);    
+		var tokenName = token.substr(1,Number(token.indexOf('=')) - 1);
 
+		formData.append('file', uploadedFile);                         
+		formData.append(tokenName,tokenValue);
+		
 		flag = true;
 
 		$.ajax({
