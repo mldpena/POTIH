@@ -2,6 +2,8 @@
 
 namespace Services;
 
+use Constants\Login_Const as LOGIN_CONST;
+
 class Authentication_Manager
 {
 	private $_CI;
@@ -13,11 +15,13 @@ class Authentication_Manager
 	public function __construct()
 	{
 		$this->_CI = $CI =& get_instance();
-		$this->_CI->load->library('encrypt');
 		$this->_CI->load->model('login_model');
-		$this->load->file(CONSTANTS.'login_const.php');
 	}
 
+	/**
+	 * Check if there are existing cookies stored required for authentication ang verify the user using the stored cookies
+	 * @return bool
+	 */
 	public function check_user_credentials()
 	{
 		$isset_cookies = $this->check_if_all_cookies_set();
@@ -33,54 +37,141 @@ class Authentication_Manager
 		return true;
 	}
 
+	/**
+	 * Validate username and password entered by the user
+	 * @param  array $param [user_name, password]
+	 * @return array
+	 */
 	public function validate_user_input_credential($param)
 	{
-		$result = $this->_CI->login_model->check_user_credential($param);
+		extract($param);
 
-		if ($result->num_rows() != 1) 
+		$response['error'] = '';
+		
+		$password = $this->_CI->encrypt->encode_md5($password);
+
+		$user_verification_result = $this->_CI->login_model->check_user_credential($user_name, $password);
+
+		if ($user_verification_result->num_rows() != 1) 
 			throw new Exception($this->_error_message['INVALID_CREDENTIAL']);
 		else
 		{
-			$row = $result->row();
+			$row = $user_verification_result->row();
 
 			if ($row->is_active == LOGIN_CONST::INACTIVE) 
 				throw new Exception($this->_error_message['ACCOUNT_DEACTIVATED']);
 			else
 			{
-				$query = "SELECT DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'
-						FROM user_permission AS U 
-						LEFT JOIN branch AS B ON B.`id` = U.`branch_id`
-						WHERE B.`is_show` = ".LOGIN_CONST::ACTIVE." AND U.`user_id` = ?";
+				$branch_result_set = $this->_CI->login_model->get_user_branch_list($row->id);
 
-				$result_branch = $this->db->query($query,$row->id);
-
-				if ($result_branch->num_rows() == 0)
+				if ($branch_result_set->num_rows() == 0)
 					throw new Exception($this->_error_message['NO_BRANCH']);
 				else
 				{
 					$i = 0;
-					$branches = array();
+					$branch_list = array();
 
-					foreach($result_branch->result() as $row_branches) 
+					foreach($branch_result_set->result() as $row_branches) 
 					{
-						$branches[$i]['id'] 	= $row_branches->branch_id;
-						$branches[$i]['value'] 	= $row_branches->branch_name;
+						$branch_list[$i]['id'] 		= $row_branches->branch_id;
+						$branch_list[$i]['value'] 	= $row_branches->branch_name;
 
 						$i++;
 					}
 
-					$response['branches'] 		= $branches;
+					$response['branches'] 		= $branch_list;
 					$response['is_first_login'] = $row->is_first_login;
-					$response['is_default_password'] = $row->password == $this->encrypt->encode_md5('123456') ? true : false;
+					$response['is_default_password'] = $row->password == $this->_CI->encrypt->encode_md5('123456') ? TRUE : FALSE;
 
-					$result_branch->free_result();
+					$branch_result_set->free_result();
 				}
 			
 			}
 		
 		}
 
+		$user_verification_result->free_result();
+	}
+
+	/**
+	 * Get user credentials and set needed cookies for authentication
+	 * @param array $param
+	 * @return array
+	 */
+	public function set_user_session($param)
+	{
+		extract($param);
+
+		$permissions = array();
+
+		$response['error'] = '';
+		
+		$password = $this->_CI->encrypt->encode_md5($password);
+
+		$user_verification_result = $this->_CI->login_model->check_user_credential($user_name, $password);
+		$user_detail_row = $user_verification_result->$row();
+
+		$permission_list_result = $this->_CI->login_model->get_permission_list_by_userid($user_detail_row->id, $branch_id);
+
+		if ($permission_list_result->num_rows() == 0) 
+			throw new Exception($this->_error_message['NO_PERMISSION']);
+		else
+		{
+			foreach ($permission_list_result->result() as $row_permission) 
+				array_push($permissions,$row_permission->permission_code);
+
+			set_cookie('permissions',json_encode($permissions));
+		}
+
+		$permission_list_result->free_result();
+
+		set_cookie('username',$this->_CI->encrypt->encode($user_detail_row->username));
+		set_cookie('fullname',$this->_CI->encrypt->encode($user_detail_row->full_name));
+		set_cookie('temp',$this->_CI->encrypt->encode($user_detail_row->id));
+		set_cookie('branch',$this->_CI->encrypt->encode($branch_id));
+
+		if ($user_detail_row->is_first_login == LOGIN_CONST::FIRST_LOGIN) 
+			 $this->_CI->login_model->update_first_login_status($user_detail_row->id);
+
+		return $response;
+	}
+
+	/**
+	 * Check if all needed cookies exist
+	 * @return bool
+	 */
+	private function check_if_all_cookies_set()
+	{
+		$isset = true;
+
+		if (!isset($_COOKIE['username']) || !isset($_COOKIE['fullname']) || !isset($_COOKIE['temp']) || !isset($_COOKIE['branch']) || !isset($_COOKIE['permissions']))
+			$isset = false;
+
+		if (isset($_COOKIE['permissions']) && count(json_decode($_COOKIE['permissions'])) == 0)
+			$isset = false;
+
+		return $isset;
+	}
+
+	/**
+	 * Check if the user data set in the cookie exists in DB
+	 * @return bool
+	 */
+	private function check_if_user_exists()
+	{
+		$isset 		= true;
+		$username 	= $this->_CI->encrypt->decode(get_cookie('username'));
+		$fullname 	= $this->_CI->encrypt->decode(get_cookie('fullname'));
+		$user_id 	= $this->_CI->encrypt->decode(get_cookie('temp'));
+
+		$result = $this->_CI->login_model->check_session_user_credential_exists($username, $fullname, $user_id);
+
+		if ($result->num_rows() != 1) 
+			$isset = false;
+
 		$result->free_result();
+
+		return $isset;
 	}
 
 	public function logout()
@@ -98,38 +189,9 @@ class Authentication_Manager
 		$this->check_if_user_exists();
 	}
 
-	private function check_if_all_cookies_set()
-	{
-		$isset = true;
-
-		if (!isset($_COOKIE['username']) || !isset($_COOKIE['fullname']) || !isset($_COOKIE['temp']) || !isset($_COOKIE['branch']) || !isset($_COOKIE['permissions']))
-			$isset = false;
-
-		if (isset($_COOKIE['permissions']) && count(json_decode($_COOKIE['permissions'])) == 0)
-			$isset = false;
-
-		return $isset;
-	}
-
-	private function check_if_user_exists()
-	{
-		$isset 		= true;
-		$username 	= $this->_CI->encrypt->decode(get_cookie('username'));
-		$fullname 	= $this->_CI->encrypt->decode(get_cookie('fullname'));
-		$user_id 	= $this->_CI->encrypt->decode(get_cookie('temp'));
-
-		$query_data = array($user_id, $username, $fullname);
-
-		$result = $this->_CI->login_model->check_session_user_credential_exists($query_data);
-
-		if ($result->num_rows() != 1) 
-			$isset = false;
-
-		$result->free_result();
-
-		return $isset;
-	}
-
+	/**
+	 * Delete user session cookies
+	 */
 	private function delete_user_cookies()
 	{
 		delete_cookie('permissions');
@@ -139,6 +201,9 @@ class Authentication_Manager
 		delete_cookie('branch');
 	}
 
+	/**
+	 * Redirects to login page after deleting user cookies
+	 */
 	private function logout_user()
 	{
 		$this->delete_user_cookies();

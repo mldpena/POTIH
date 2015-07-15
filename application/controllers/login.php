@@ -89,7 +89,7 @@ class Login extends CI_Controller {
 					break;
 
 				case 'set_branch_user_session':
-					$response = $this->login_model->set_user_session($post_data);
+					$response = $this->_authentication_manager->set_user_session($post_data);
 					break;
 
 				default:

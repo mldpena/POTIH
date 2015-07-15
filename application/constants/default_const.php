@@ -1,4 +1,6 @@
 <?php
+	namespace Contants;
+	
 	abstract class Default_Const
 	{
 		const ACTIVE 		= 1;

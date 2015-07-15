@@ -1,4 +1,6 @@
 <?php
+	namespace Constants;
+	
 	/**
 	* List of constants for login model
 	*/
