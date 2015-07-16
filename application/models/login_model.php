@@ -1,7 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use Constants\Login_Const AS LOGIN_CONST;
-
 class Login_Model extends CI_Model {
 
 	/**

@@ -2,7 +2,7 @@
 
 namespace Services;
 
-use Constants\Login_Const as LOGIN_CONST;
+use Constants\Login_Const;
 
 class Authentication_Manager
 {
@@ -19,7 +19,8 @@ class Authentication_Manager
 	}
 
 	/**
-	 * Check if there are existing cookies stored required for authentication ang verify the user using the stored cookies
+	 * Check if there are existing cookies stored required for authentication ang verify the user using the 
+	 * stored cookies
 	 * @return bool
 	 */
 	public function check_user_credentials()
@@ -58,7 +59,7 @@ class Authentication_Manager
 		{
 			$row = $user_verification_result->row();
 
-			if ($row->is_active == LOGIN_CONST::INACTIVE) 
+			if ($row->is_active == 1) 
 				throw new Exception($this->_error_message['ACCOUNT_DEACTIVATED']);
 			else
 			{
@@ -130,7 +131,7 @@ class Authentication_Manager
 		set_cookie('temp',$this->_CI->encrypt->encode($user_detail_row->id));
 		set_cookie('branch',$this->_CI->encrypt->encode($branch_id));
 
-		if ($user_detail_row->is_first_login == LOGIN_CONST::FIRST_LOGIN) 
+		if ($user_detail_row->is_first_login == 1) 
 			 $this->_CI->login_model->update_first_login_status($user_detail_row->id);
 
 		return $response;
