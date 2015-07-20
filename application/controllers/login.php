@@ -1,7 +1,5 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use Services\Authentication_Manager;
-
 class Login extends CI_Controller {
 	
 	private $_authentication_manager;
@@ -14,7 +12,10 @@ class Login extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->_authentication_manager = new Authentication_Manager();
+
+		$this->load->service('authentication_manager');
+
+		$this->_authentication_manager = new Services\Authentication_Manager();
 	}
 
 	/**
@@ -27,7 +28,7 @@ class Login extends CI_Controller {
 		$page = $this->uri->segment(2);
 
 		if ($page == 'logout') 
-			$this->_authentication_manager->logout_user();
+			$this->_authentication_manager->logout();
 
 		if ($this->_authentication_manager->check_set_cookies()) 
 		{

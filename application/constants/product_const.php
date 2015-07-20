@@ -1,8 +1,6 @@
 <?php
-	/**
-	* List of constants for product model
-	*/
-
+	namespace Constants;
+	
 	require_once(CONSTANTS.'default_const.php');
 
 	class Product_Const extends Default_Const

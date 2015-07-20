@@ -1,12 +1,10 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-use Services\Product_Manager;
-use Services\Authentication_Manager;
-
 class Product extends CI_Controller {
 		
 	private $_product_manager;
 	private $_authentication_manager;
+	private $_header_info_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -16,10 +14,15 @@ class Product extends CI_Controller {
 	public function __construct()
 	{
 		parent::__construct();
-		$this->load->library('encrypt');
+
+		$this->load->service('authentication_manager');
+		$this->load->service('header_info_manager');
+		$this->load->service('product_manager');
+		//$this->load->service('product_import_manager');
 		$this->load->library('permission_checker');
-		$this->_product_manager = new Product_Manager();
-		$this->_authentication_manager = new Authentication_Manager();
+
+		$this->_authentication_manager = new Services\Authentication_Manager();
+		$this->_header_info_manager = new Services\Header_Info_Manager();
 	}
 
 	/**
@@ -33,18 +36,17 @@ class Product extends CI_Controller {
 
 		$page = $this->uri->segment(2);
 
-		exit();
 		if (isset($_POST['data'])) 
 		{
 			$this->_ajax_request();
 			exit();
 		}
 
-		if (isset($_FILES['file'])) 
+		/*if (isset($_FILES['file'])) 
 		{
-			$this->_import_product_csv();
+			$this->_product_manager->import_product_from_csv();
 			exit();
-		}
+		}*/
 
 		$permissions = array();
 
@@ -96,8 +98,8 @@ class Product extends CI_Controller {
 		if (!$allow_user) 
 			header('Location:'.base_url().'login');
 
-		$data = array(	'name' 			=> get_user_fullname(),
-						'branch' 		=> get_branch_name(),
+		$data = array(	'name' 			=> $this->_header_info_manager->get_user_full_name(),
+						'branch' 		=> $this->_header_info_manager->get_branch_name(),
 						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
@@ -132,6 +134,8 @@ class Product extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->_product_manager = new Services\Product_Manager();
+
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -145,8 +149,17 @@ class Product extends CI_Controller {
 			switch ($fnc) 
 			{
 				case 'get_product_list':
-					$response = $this->product_model->get_product_list($post_data);
+					$response = $this->_product_manager->get_product_list_info($post_data);
 					break;
+
+				case 'get_branch_list_for_min_max':
+					$response = $this->_product_manager->get_min_max_per_branch();
+					break;
+
+				case 'get_material_and_subgroup':
+					$response = $this->_product_manager->get_material_and_subgroup_by_character($post_data);
+					break;
+
 			};
 		}
 		catch (Exception $e)
@@ -240,23 +253,7 @@ class Product extends CI_Controller {
 		echo json_encode($response);*/
 	}
 
-	private function _get_branch_list()
-	{
-		$i = 0;
-		$response = array();
-		$branch_list = get_name_list_from_table(FALSE,'branch');
-	
-		foreach ($branch_list as $key => $value) {
-			$response['data'][$i][] = array(0);		
-			$response['data'][$i][] = array($i+1);		
-			$response['data'][$i][] = array($value,$key);		
-			$response['data'][$i][] = array(0);		
-			$response['data'][$i][] = array(0);	
-			$i++;		
-		}
-
-		return $response;
-	}
+	/*
 
 	private function _import_product_csv()
 	{
@@ -268,5 +265,5 @@ class Product extends CI_Controller {
 			$data['error'][] = 'Invalid file type!';
 		
 		echo json_encode($data);
-	}
+	}*/
 }

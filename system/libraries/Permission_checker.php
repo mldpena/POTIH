@@ -8,8 +8,7 @@ class CI_Permission_checker
 	public function __construct()
 	{
 		$this->_CI =& get_instance();
-		$this->_CI->load->helper('cookie');
-		$this->_CI->load->file(CONSTANTS.'permission_const.php');
+		$this->_CI->load->constant('permission_const');
 		$this->_current_permission_list = json_decode(get_cookie('permissions'));
 	}
 

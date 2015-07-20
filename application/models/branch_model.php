@@ -17,11 +17,6 @@ class Branch_Model extends CI_Model {
 	 */
 	public function __construct() 
 	{
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'branch_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
-
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
@@ -36,7 +31,7 @@ class Branch_Model extends CI_Model {
 		$response 	= array();
 		$response['error'] = '';
 
-		$this->validate_branch($param,BRANCH_CONST::INSERT_PROCESS);
+		$this->validate_branch($param,\Constants\BRANCH_CONST::INSERT_PROCESS);
 
 		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 		
@@ -78,16 +73,16 @@ class Branch_Model extends CI_Model {
 
 		switch ($orderby) 
 		{
-			case BRANCH_CONST::ORDER_BY_CODE:
+			case \Constants\BRANCH_CONST::ORDER_BY_CODE:
 				$order_field = " `code`";
 				break;
 
-			case  BRANCH_CONST::ORDER_BY_NAME:
+			case  \Constants\BRANCH_CONST::ORDER_BY_NAME:
 				$order_field = " `name`";
 				break;
 		}
 
-		$query = "SELECT `id`, `code`, `name` from branch where `is_show` = ".BRANCH_CONST::ACTIVE." $conditions ORDER BY $order_field";
+		$query = "SELECT `id`, `code`, `name` from branch where `is_show` = ".\Constants\BRANCH_CONST::ACTIVE." $conditions ORDER BY $order_field";
 					
 		$result = $this->db->query($query,$query_data);
 
@@ -121,7 +116,7 @@ class Branch_Model extends CI_Model {
 		$response 	= array();
 		$response['error'] = '';	
 
-		$this->validate_branch($param,BRANCH_CONST::UPDATE_PROCESS);
+		$this->validate_branch($param,\Constants\BRANCH_CONST::UPDATE_PROCESS);
 
 		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$branch_id);
 
@@ -155,7 +150,7 @@ class Branch_Model extends CI_Model {
 
 		$branch_id = $this->encrypt->decode($branch_id);
 
-		$query = "SELECT `code`, `name` from branch where `is_show` = ".BRANCH_CONST::ACTIVE." AND  id = ?";
+		$query = "SELECT `code`, `name` from branch where `is_show` = ".\Constants\BRANCH_CONST::ACTIVE." AND  id = ?";
 						
 		$result = $this->db->query($query,$branch_id);
 
@@ -186,7 +181,7 @@ class Branch_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$branch_id);
 		$query 	= "UPDATE `branch` 
 					SET 
-					`is_show` = ".BRANCH_CONST::DELETED.",
+					`is_show` = ".\Constants\BRANCH_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -203,11 +198,11 @@ class Branch_Model extends CI_Model {
 	{
 		extract($param);
 
-		$query = "SELECT * FROM branch WHERE `code` = ? AND `is_show` = ".BRANCH_CONST::ACTIVE;
-		$query .= $function_type == BRANCH_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM branch WHERE `code` = ? AND `is_show` = ".\Constants\BRANCH_CONST::ACTIVE;
+		$query .= $function_type == \Constants\BRANCH_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($code);
-		if ($function_type == BRANCH_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\BRANCH_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($branch_id);
 			array_push($query_data,$id);
@@ -219,12 +214,12 @@ class Branch_Model extends CI_Model {
 			
 		$result->free_result();
 
-		$query = "SELECT * FROM branch WHERE LOWER(`name`) = ? AND `is_show` = ".BRANCH_CONST::ACTIVE;
-		$query .= $function_type == BRANCH_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM branch WHERE LOWER(`name`) = ? AND `is_show` = ".\Constants\BRANCH_CONST::ACTIVE;
+		$query .= $function_type == \Constants\BRANCH_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array(strtolower($name));
 
-		if ($function_type == BRANCH_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\BRANCH_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($branch_id);
 			array_push($query_data,$id);
@@ -236,5 +231,17 @@ class Branch_Model extends CI_Model {
 			throw new Exception($this->_error_message['NAME_EXISTS']);
 			
 		$result->free_result();
+	}
+
+	public function get_branch_info_by_id($branch_id)
+	{
+		$this->db->select("CONCAT((`code`),('-'),(`name`)) AS 'name'")
+				->from("`branch`")
+				->where("`is_show`",\Constants\BRANCH_CONST::ACTIVE)
+				->where("`id`",$branch_id);
+
+		$result = $this->db->get();
+
+		return $result;
 	}
 }

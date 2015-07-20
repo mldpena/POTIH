@@ -16,7 +16,7 @@ class Login_Model extends CI_Model {
 	 */
 	public function check_user_credential($username, $password)
 	{
-		$this->db->select("`id`,`is_active`, `is_first_login`, `password`")
+		$this->db->select("`id`,`is_active`, `is_first_login`, `password`, `full_name`, `username`")
 				->from("`user`")
 				->where("`username`",$username)
 				->where("`password`",$password);
@@ -35,8 +35,8 @@ class Login_Model extends CI_Model {
 	{
 		$this->db->select("DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'")
 				->from("`user_permission` AS U")
-				->join("`branch` AS B","B.`id` = U.`branch_id`","left")
-				->where("B.`is_show`",LOGIN_CONST::ACTIVE)
+				->join("`branch` AS B","B.id = U.`branch_id`","left")
+				->where("B.`is_show`",\Constants\LOGIN_CONST::ACTIVE)
 				->where("U.`user_id`",$user_id);
 
 		$result = $this->db->get();
@@ -52,7 +52,7 @@ class Login_Model extends CI_Model {
 	
 	public function get_permission_list_by_userid($user_id, $branch_id)
 	{
-		$this->db->select("DISTINCT `permission_code`")
+		$this->db->select("DISTINCT(`permission_code`)")
 				->from("`user_permission`")
 				->where("`user_id`",$user_id)
 				->where("`branch_id`",$branch_id);
@@ -73,7 +73,7 @@ class Login_Model extends CI_Model {
 	{
 		$this->db->select("`id`, `username`, `password`, `full_name`")
 				->from("`user`")
-				->where("`is_show`",LOGIN_CONST::ACTIVE)
+				->where("`is_show`",\Constants\LOGIN_CONST::ACTIVE)
 				->where("`username`",$username)
 				->where("`full_name`",$fullname)
 				->where("`id`",$user_id);
@@ -90,7 +90,7 @@ class Login_Model extends CI_Model {
 	public function update_first_login_status($id)
 	{
 		$this->db->where('id', $id);
-		$this->db->update("`user`","`is_first_login` = ".LOGIN_CONST::ACTIVE);
+		$this->db->update("`user`","`is_first_login` = ".\Constants\LOGIN_CONST::ACTIVE);
 	}
 
 }	

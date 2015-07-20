@@ -1,5 +1,5 @@
 <?php
-	namespace Contants;
+	namespace Constants;
 	
 	abstract class Default_Const
 	{
@@ -24,5 +24,3 @@
 		const MIN_CHECKER = 0;
 		const MAX_CHECKER = 1;
 	}
-
-?>

@@ -17,19 +17,14 @@ class Material_Model extends CI_Model {
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'material_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
 
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
-	public function add_new_material($param)
+	/*public function add_new_material($param)
 	{
 		extract($param);
 
@@ -249,5 +244,17 @@ class Material_Model extends CI_Model {
 			throw new Exception($this->_error_message['NAME_EXISTS']);
 			
 		$result->free_result();
+	}*/
+
+	public function get_material_by_code($code)
+	{
+		$this->db->select("`name`, `id`")
+				->from("material_type")
+				->where("`code`", $code)
+				->where("`is_show`", \Constants\MATERIAL_CONST::ACTIVE);
+
+		$result = $this->db->get();
+
+		return $result;
 	}
 }

@@ -17,26 +17,14 @@ class Subgroup_Model extends CI_Model {
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'subgroup_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
 
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
-
-	/**
-	 * Check user name and password in database for verification
-	 * @param  $param [array]
-	 * @return $response [array]
-	 */
-
-	public function search_subgroup_list($param)
+	/*public function search_subgroup_list($param)
 	{
 		extract($param);
 		$response 	= array();
@@ -248,5 +236,17 @@ class Subgroup_Model extends CI_Model {
 			throw new Exception($this->_error_message['NAME_EXISTS']);
 			
 		$result->free_result();
+	}*/
+
+	public function get_subgroup_by_code($code)
+	{
+		$this->db->select("`name`, `id`")
+				->from("subgroup")
+				->where("`code`", $code)
+				->where("`is_show`", \Constants\SUBGROUP_CONST::ACTIVE);
+
+		$result = $this->db->get();
+
+		return $result;
 	}
 }

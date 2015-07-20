@@ -1,7 +1,6 @@
 <?php
-	/**h
-	* List of constants for branch model
-	*/
+	namespace Constants;
+	
 	require_once(CONSTANTS.'default_const.php');
 
 	class Branch_Const extends Default_Const

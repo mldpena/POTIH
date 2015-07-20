@@ -2,16 +2,24 @@
 
 class ControlPanel extends CI_Controller {
 	
+	private $_authentication_manager;
+	private $_header_info_manager;
+
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
 	 */
 	
-	private function _load_libraries()
+	public function __construct()
 	{
-		$this->load->helper('authentication');
-		$this->load->helper('query');
+		parent::__construct();
+
+		$this->load->service('authentication_manager');
+		$this->load->service('header_info_manager');
 		$this->load->library('permission_checker');
+
+		$this->_authentication_manager = new Services\Authentication_Manager();
+		$this->_header_info_manager = new Services\Header_Info_Manager();
 	}
 
 	/**
@@ -21,8 +29,7 @@ class ControlPanel extends CI_Controller {
 	
 	public function index()
 	{	
-		$this->_load_libraries();
-		check_user_credentials();
+		$this->_authentication_manager->check_user_credentials();
 
 		$page = $this->uri->segment(2);
 
@@ -32,8 +39,8 @@ class ControlPanel extends CI_Controller {
 			exit();
 		}
 
-		$data = array(	'name' 			=> get_user_fullname(),
-						'branch' 		=> get_branch_name(),
+		$data = array(	'name' 			=> $this->_header_info_manager->get_user_full_name(),
+						'branch' 		=> $this->_header_info_manager->get_branch_name(),
 						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
 						'page' 			=> 'controlpanel',
 						'script'		=> 'controlpanel_js.php',
@@ -70,16 +77,6 @@ class ControlPanel extends CI_Controller {
 
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
-
-		switch ($fnc) 
-		{
-			case '':
-				break;
-
-			default:
-				
-				break;
-		}
 
 	}
 }

@@ -2,8 +2,6 @@
 
 namespace Services;
 
-use Constants\Login_Const;
-
 class Authentication_Manager
 {
 	private $_CI;
@@ -16,6 +14,7 @@ class Authentication_Manager
 	{
 		$this->_CI = $CI =& get_instance();
 		$this->_CI->load->model('login_model');
+		$this->_CI->load->constant('login_const');
 	}
 
 	/**
@@ -54,19 +53,19 @@ class Authentication_Manager
 		$user_verification_result = $this->_CI->login_model->check_user_credential($user_name, $password);
 
 		if ($user_verification_result->num_rows() != 1) 
-			throw new Exception($this->_error_message['INVALID_CREDENTIAL']);
+			throw new \Exception($this->_error_message['INVALID_CREDENTIAL']);
 		else
 		{
 			$row = $user_verification_result->row();
 
-			if ($row->is_active == 1) 
-				throw new Exception($this->_error_message['ACCOUNT_DEACTIVATED']);
+			if ($row->is_active == \Constants\LOGIN_CONST::INACTIVE) 
+				throw new \Exception($this->_error_message['ACCOUNT_DEACTIVATED']);
 			else
 			{
 				$branch_result_set = $this->_CI->login_model->get_user_branch_list($row->id);
 
 				if ($branch_result_set->num_rows() == 0)
-					throw new Exception($this->_error_message['NO_BRANCH']);
+					throw new \Exception($this->_error_message['NO_BRANCH']);
 				else
 				{
 					$i = 0;
@@ -92,6 +91,8 @@ class Authentication_Manager
 		}
 
 		$user_verification_result->free_result();
+
+		return $response;
 	}
 
 	/**
@@ -110,12 +111,12 @@ class Authentication_Manager
 		$password = $this->_CI->encrypt->encode_md5($password);
 
 		$user_verification_result = $this->_CI->login_model->check_user_credential($user_name, $password);
-		$user_detail_row = $user_verification_result->$row();
+		$user_detail_row = $user_verification_result->row();
 
 		$permission_list_result = $this->_CI->login_model->get_permission_list_by_userid($user_detail_row->id, $branch_id);
 
 		if ($permission_list_result->num_rows() == 0) 
-			throw new Exception($this->_error_message['NO_PERMISSION']);
+			throw new \Exception($this->_error_message['NO_PERMISSION']);
 		else
 		{
 			foreach ($permission_list_result->result() as $row_permission) 
@@ -131,7 +132,7 @@ class Authentication_Manager
 		set_cookie('temp',$this->_CI->encrypt->encode($user_detail_row->id));
 		set_cookie('branch',$this->_CI->encrypt->encode($branch_id));
 
-		if ($user_detail_row->is_first_login == 1) 
+		if ($user_detail_row->is_first_login == \Constants\LOGIN_CONST::FIRST_LOGIN) 
 			 $this->_CI->login_model->update_first_login_status($user_detail_row->id);
 
 		return $response;
@@ -164,7 +165,6 @@ class Authentication_Manager
 		$username 	= $this->_CI->encrypt->decode(get_cookie('username'));
 		$fullname 	= $this->_CI->encrypt->decode(get_cookie('fullname'));
 		$user_id 	= $this->_CI->encrypt->decode(get_cookie('temp'));
-
 		$result = $this->_CI->login_model->check_session_user_credential_exists($username, $fullname, $user_id);
 
 		if ($result->num_rows() != 1) 
@@ -187,7 +187,7 @@ class Authentication_Manager
 
 	public function check_user_exists()
 	{
-		$this->check_if_user_exists();
+		return $this->check_if_user_exists();
 	}
 
 	/**

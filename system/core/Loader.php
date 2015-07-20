@@ -310,6 +310,16 @@ class CI_Loader {
 		show_error('Unable to locate the model you have specified: '.$model);
 	}
 
+	public function service($service_name)
+	{
+		$this->file(SERVICES.$service_name.'.php');
+	}
+
+	public function constant($constant_name)
+	{
+		$this->file(CONSTANTS.$constant_name.'.php');
+	}
+
 	// --------------------------------------------------------------------
 
 	/**
