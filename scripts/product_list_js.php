@@ -359,9 +359,17 @@
 		});
 	});
 
-	$('#deleteModal, #createModal').live('hidden.bs.modal', function (e) {
+	$('#deleteModal, #createModal, #uploadModal').live('hidden.bs.modal', function (e) {
 		global_product_id 	= 0;
 		global_row_index 	= 0;
+
+		$('#fileData').val('');
+		$('#messagebox_4').html('');
+	});
+
+	$('#uploadModal').live('hidden.bs.modal', function (e) {
+		$('#fileData').val('');
+		$('#messagebox_4').html('');
 	});
 
 	//Event for saving and updating product

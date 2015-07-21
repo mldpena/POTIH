@@ -244,4 +244,16 @@ class Branch_Model extends CI_Model {
 
 		return $result;
 	}
+
+	public function get_branch_list($is_show = 1)
+	{
+		$this->db->select("`id`, `name`")
+				->from("`branch`")
+				->where("`is_show`", $is_show);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
 }

@@ -246,12 +246,12 @@ class Material_Model extends CI_Model {
 		$result->free_result();
 	}*/
 
-	public function get_material_by_code($code)
+	public function get_material_by_code($code, $is_show = 1)
 	{
 		$this->db->select("`name`, `id`")
 				->from("material_type")
 				->where("`code`", $code)
-				->where("`is_show`", \Constants\MATERIAL_CONST::ACTIVE);
+				->where("`is_show`", $is_show);
 
 		$result = $this->db->get();
 

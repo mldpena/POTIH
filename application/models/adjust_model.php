@@ -14,16 +14,13 @@ class Adjust_Model extends CI_Model {
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'adjust_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
+
+		$this->load->constant('adjust_const');
 
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
 	public function get_product_adjust_list($param)
@@ -49,13 +46,13 @@ class Adjust_Model extends CI_Model {
 			array_push($query_data,'%'.$product.'%');
 		}
 
-		if ($subgroup != ADJUST_CONST::ALL_OPTION) 
+		if ($subgroup != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`subgroup_id` = ?";
 			array_push($query_data,$subgroup);
 		}
 
-		if ($material != ADJUST_CONST::ALL_OPTION) 
+		if ($material != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`material_type_id` = ?";
 			array_push($query_data,$material);
@@ -73,16 +70,16 @@ class Adjust_Model extends CI_Model {
 			array_push($query_data,$datefrom.' 23:59:59');
 		}
 
-		if ($type != ADJUST_CONST::ALL_OPTION) 
+		if ($type != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			switch ($type) 
 			{
 				case 1:
-					$type = ADJUST_CONST::STOCK;
+					$type = \Constants\ADJUST_CONST::STOCK;
 					break;
 				
 				case 2:
-					$type = ADJUST_CONST::NON_STOCK;
+					$type = \Constants\ADJUST_CONST::NON_STOCK;
 					break;
 			}
 
@@ -90,18 +87,18 @@ class Adjust_Model extends CI_Model {
 			array_push($query_data,$type);
 		}
 
-		if ($invstat != ADJUST_CONST::ALL_OPTION) 
+		if ($invstat != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			switch ($invstat) {
-				case ADJUST_CONST::POSITIVE_INV:
+				case \Constants\ADJUST_CONST::POSITIVE_INV:
 					$conditions .= " AND PBI.`inventory` > 0";
 					break;
 				
-				case ADJUST_CONST::NEGATIVE_INV:
+				case \Constants\ADJUST_CONST::NEGATIVE_INV:
 					$conditions .= " AND PBI.`inventory` < 0";
 					break;
 
-				case ADJUST_CONST::ZERO_INV:
+				case \Constants\ADJUST_CONST::ZERO_INV:
 					$conditions .= " AND PBI.`inventory` = 0";
 					break;
 			}
@@ -109,29 +106,29 @@ class Adjust_Model extends CI_Model {
 
 		switch ($orderby) 
 		{
-			case ADJUST_CONST::ORDER_BY_NAME:
+			case \Constants\ADJUST_CONST::ORDER_BY_NAME:
 				$order_field = "P.`description`";
 				break;
 			
-			case ADJUST_CONST::ORDER_BY_CODE:
+			case \Constants\ADJUST_CONST::ORDER_BY_CODE:
 				$order_field = "P.`material_code`";
 				break;
 		}
 
 		$query = "SELECT P.`id`, P.`material_code`, P.`description`,
 						CASE 
-							WHEN P.`type` = ".ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
-							WHEN P.`type` = ".ADJUST_CONST::STOCK." THEN 'Stock'
+							WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
+							WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
 						END AS 'type',
 						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
 						COALESCE(PBI.`inventory`,0) AS 'inventory', COALESCE(IA.`id`,0) AS 'adjust_id', 
 						COALESCE(IA.`new_inventory`,0) AS 'requested_new_inventory'
 						FROM product AS P
-						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".ADJUST_CONST::ACTIVE."
-						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".ADJUST_CONST::ACTIVE."
+						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
+						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
 						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
-						LEFT JOIN inventory_adjust AS IA ON IA.`product_id` = P.`id` AND IA.`branch_id` = ? AND IA.`status` = ".ADJUST_CONST::PENDING."
-						WHERE P.`is_show` = ".ADJUST_CONST::ACTIVE." $conditions
+						LEFT JOIN inventory_adjust AS IA ON IA.`product_id` = P.`id` AND IA.`branch_id` = ? AND IA.`status` = ".\Constants\ADJUST_CONST::PENDING."
+						WHERE P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE." $conditions
 						ORDER BY $order_field";
 
 		$result = $this->db->query($query,$query_data);
@@ -206,11 +203,11 @@ class Adjust_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$status 	= $this->permission_checker->check_permission(\Permission\PendingAdjust_Code::AUTO_APPROVE) == TRUE ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING; 
+		$status 	= $this->permission_checker->check_permission(\Permission\PendingAdjust_Code::AUTO_APPROVE) == TRUE ? \Constants\ADJUST_CONST::APPROVED : \Constants\ADJUST_CONST::PENDING; 
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 
 		$query_validation_data = array($product_id,$this->_current_branch_id);
-		$query_validation = "SELECT `id` FROM inventory_adjust WHERE `product_id` = ? AND `branch_id` = ? AND `status` = ".ADJUST_CONST::PENDING." AND `is_show` = ".ADJUST_CONST::ACTIVE;
+		$query_validation = "SELECT `id` FROM inventory_adjust WHERE `product_id` = ? AND `branch_id` = ? AND `status` = ".\Constants\ADJUST_CONST::PENDING." AND `is_show` = ".\Constants\ADJUST_CONST::ACTIVE;
 
 		$result_validation = $this->db->query($query_validation,$query_validation_data);
 
@@ -219,7 +216,7 @@ class Adjust_Model extends CI_Model {
 
 		$result_validation->free_result();
 
-		$query_data = array($this->_current_branch_id,$product_id,$old_inventory,$new_inventory,ADJUST_CONST::ACTIVE,$status,$memo,$this->_current_user,$this->_current_user,$this->_current_date,$this->_current_date);
+		$query_data = array($this->_current_branch_id,$product_id,$old_inventory,$new_inventory,\Constants\ADJUST_CONST::ACTIVE,$status,$memo,$this->_current_user,$this->_current_user,$this->_current_date,$this->_current_date);
 		$query = "INSERT INTO `inventory_adjust`
 					(`branch_id`,
 					`product_id`,
@@ -255,12 +252,12 @@ class Adjust_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$status 	= ADJUST_CONST::PENDING; //$config->general->main_branch_id == $this->_current_branch_id ? ADJUST_CONST::APPROVED : ADJUST_CONST::PENDING;
+		$status 	= \Constants\ADJUST_CONST::PENDING; //$config->general->main_branch_id == $this->_current_branch_id ? \Constants\ADJUST_CONST::APPROVED : \Constants\ADJUST_CONST::PENDING;
 		$product_id = is_numeric($product_id) ? $product_id : $this->encrypt->decode($product_id);
 		$adjust_id 	= $this->encrypt->decode($detail_id);
 
 		$query_validation_data = array($product_id,$this->_current_branch_id,$adjust_id);
-		$query_validation = "SELECT `id` FROM inventory_adjust WHERE `product_id` = ? AND `branch_id` = ? AND `id` <> ? AND `status` = ".ADJUST_CONST::PENDING." AND `is_show` = ".ADJUST_CONST::ACTIVE;
+		$query_validation = "SELECT `id` FROM inventory_adjust WHERE `product_id` = ? AND `branch_id` = ? AND `id` <> ? AND `status` = ".\Constants\ADJUST_CONST::PENDING." AND `is_show` = ".\Constants\ADJUST_CONST::ACTIVE;
 
 		$result_validation = $this->db->query($query_validation,$query_validation_data);
 
@@ -312,13 +309,13 @@ class Adjust_Model extends CI_Model {
 			array_push($query_data,'%'.$product.'%');
 		}
 
-		if ($subgroup != ADJUST_CONST::ALL_OPTION) 
+		if ($subgroup != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`subgroup_id` = ?";
 			array_push($query_data,$subgroup);
 		}
 
-		if ($material != ADJUST_CONST::ALL_OPTION) 
+		if ($material != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`material_type_id` = ?";
 			array_push($query_data,$material);
@@ -336,22 +333,22 @@ class Adjust_Model extends CI_Model {
 			array_push($query_data,$dateto.' 23:59:59');
 		}
 
-		if ($branch != ADJUST_CONST::ALL_OPTION) 
+		if ($branch != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND IA.`branch_id` <= ?";
 			array_push($query_data,$branch);
 		}
 
-		if ($type != ADJUST_CONST::ALL_OPTION) 
+		if ($type != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			switch ($type) 
 			{
 				case 1:
-					$type = ADJUST_CONST::STOCK;
+					$type = \Constants\ADJUST_CONST::STOCK;
 					break;
 				
 				case 2:
-					$type = ADJUST_CONST::NON_STOCK;
+					$type = \Constants\ADJUST_CONST::NON_STOCK;
 					break;
 			}
 
@@ -359,52 +356,52 @@ class Adjust_Model extends CI_Model {
 			array_push($query_data,$type);
 		}
 
-		if ($status != ADJUST_CONST::ALL_OPTION) 
+		if ($status != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
 			switch ($status) {
-				case ADJUST_CONST::PENDING:
-					$conditions .= " AND IA.`status` = ".ADJUST_CONST::PENDING;
+				case \Constants\ADJUST_CONST::PENDING:
+					$conditions .= " AND IA.`status` = ".\Constants\ADJUST_CONST::PENDING;
 					break;
 				
-				case ADJUST_CONST::APPROVED:
-					$conditions .= " AND IA.`status` = ".ADJUST_CONST::APPROVED;
+				case \Constants\ADJUST_CONST::APPROVED:
+					$conditions .= " AND IA.`status` = ".\Constants\ADJUST_CONST::APPROVED;
 					break;
 
-				case ADJUST_CONST::DECLINED:
-					$conditions .= " AND IA.`status` = ".ADJUST_CONST::DECLINED;
+				case \Constants\ADJUST_CONST::DECLINED:
+					$conditions .= " AND IA.`status` = ".\Constants\ADJUST_CONST::DECLINED;
 					break;
 			}
 		}
 
 		switch ($orderby) 
 		{
-			case ADJUST_CONST::ORDER_BY_NAME:
+			case \Constants\ADJUST_CONST::ORDER_BY_NAME:
 				$order_field = "P.`description`";
 				break;
 			
-			case ADJUST_CONST::ORDER_BY_CODE:
+			case \Constants\ADJUST_CONST::ORDER_BY_CODE:
 				$order_field = "P.`material_code`";
 				break;
 		}
 
 		$query = "SELECT IA.`id`, P.`material_code`, P.`description`,
 						CASE 
-							WHEN P.`type` = ".ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
-							WHEN P.`type` = ".ADJUST_CONST::STOCK." THEN 'Stock'
+							WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
+							WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
 						END AS 'type',
 						CASE 
-							WHEN IA.`status` = ".ADJUST_CONST::PENDING." THEN 'Pending'
-							WHEN IA.`status` = ".ADJUST_CONST::APPROVED." THEN 'Approved'
-							WHEN IA.`status` = ".ADJUST_CONST::DECLINED." THEN 'Declined'
+							WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
+							WHEN IA.`status` = ".\Constants\ADJUST_CONST::APPROVED." THEN 'Approved'
+							WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
 						END AS 'status', IA.`memo`,
 						COALESCE(PBI.`inventory`,0) AS 'current_inventory', 
 						IA.`old_inventory`, IA.`new_inventory` AS 'requested_new_inventory',
 						DATE(IA.`date_created`) AS 'date_created', COALESCE(B.`name`,'') AS 'from_branch'
 						FROM inventory_adjust AS IA
-						LEFT JOIN product AS P ON P.`id` = IA.`product_id` AND P.`is_show` = ".ADJUST_CONST::ACTIVE."
+						LEFT JOIN product AS P ON P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
 						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = IA.`branch_id`
-						LEFT JOIN branch AS B ON B.`id` = IA.`branch_id` AND B.`is_show` = ".ADJUST_CONST::ACTIVE."
-						WHERE IA.`is_show` = ".ADJUST_CONST::ACTIVE." $conditions
+						LEFT JOIN branch AS B ON B.`id` = IA.`branch_id` AND B.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
+						WHERE IA.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE." $conditions
 						ORDER BY $order_field";
 
 		$result = $this->db->query($query,$query_data);
@@ -455,11 +452,11 @@ class Adjust_Model extends CI_Model {
 		switch ($action) 
 		{
 			case 'approve':
-				$status = ADJUST_CONST::APPROVED;
+				$status = \Constants\ADJUST_CONST::APPROVED;
 				break;
 			
 			case 'decline':
-				$status = ADJUST_CONST::DECLINED;
+				$status = \Constants\ADJUST_CONST::DECLINED;
 				break;
 		}
 
@@ -513,11 +510,11 @@ class Adjust_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case ADJUST_CONST::ORDER_BY_NAME:
+			case \Constants\ADJUST_CONST::ORDER_BY_NAME:
 				$order_field = "P.`description`";
 				break;
 			
-			case ADJUST_CONST::ORDER_BY_CODE:
+			case \Constants\ADJUST_CONST::ORDER_BY_CODE:
 				$order_field = "P.`material_code`";
 				break;
 		}
@@ -526,9 +523,9 @@ class Adjust_Model extends CI_Model {
 					COALESCE(P.`id`,0) AS 'product_id', P.`material_code`,
 					IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
 					CASE 
-						WHEN IA.`status` = ".ADJUST_CONST::PENDING." THEN 'Pending'
-						WHEN IA.`status` = ".ADJUST_CONST::APPROVED." THEN 'Approved'
-						WHEN IA.`status` = ".ADJUST_CONST::DECLINED." THEN 'Declined'
+						WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
+						WHEN IA.`status` = ".\Constants\ADJUST_CONST::APPROVED." THEN 'Approved'
+						WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
 					END AS 'status'
 					FROM inventory_adjust AS IA
 					LEFT JOIN product AS P ON P.`id` = IA.`product_id` AND P.`is_show` = 1
@@ -569,13 +566,13 @@ class Adjust_Model extends CI_Model {
 
 		$detail_id = $this->encrypt->decode($detail_id);
 
-		$query_data = array(ADJUST_CONST::DELETED,$this->_current_user,$this->_current_date,$detail_id);
+		$query_data = array(\Constants\ADJUST_CONST::DELETED,$this->_current_user,$this->_current_date,$detail_id);
 
 		$query = "UPDATE `inventory_adjust`
 					SET `is_show` = ?,
 						`last_modified_by` = ?,
 						`last_modified_date` = ?
-					WHERE `id` = ? AND `status` = ".ADJUST_CONST::PENDING;
+					WHERE `id` = ? AND `status` = ".\Constants\ADJUST_CONST::PENDING;
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -585,5 +582,10 @@ class Adjust_Model extends CI_Model {
 			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
+	}
+
+	public function insert_inventory_adjust_for_import($adjust_field_data)
+	{
+		$this->db->insert_batch('inventory_adjust', $adjust_field_data);
 	}
 }

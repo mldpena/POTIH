@@ -18,7 +18,6 @@ class Product extends CI_Controller {
 		$this->load->service('authentication_manager');
 		$this->load->service('header_info_manager');
 		$this->load->service('product_manager');
-		//$this->load->service('product_import_manager');
 		$this->load->library('permission_checker');
 
 		$this->_authentication_manager = new Services\Authentication_Manager();
@@ -42,11 +41,13 @@ class Product extends CI_Controller {
 			exit();
 		}
 
-		/*if (isset($_FILES['file'])) 
+		if (isset($_FILES['file'])) 
 		{
-			$this->_product_manager->import_product_from_csv();
+			$this->_product_manager = new Services\Product_Manager();
+			$response = $this->_product_manager->import_product_from_csv();
+			echo json_encode($response);
 			exit();
-		}*/
+		}
 
 		$permissions = array();
 
@@ -160,6 +161,22 @@ class Product extends CI_Controller {
 					$response = $this->_product_manager->get_material_and_subgroup_by_character($post_data);
 					break;
 
+				case 'insert_new_product':
+					$response = $this->_product_manager->insert_new_product_details($post_data);
+					break;
+
+				case 'get_product_details':
+					$response = $this->_product_manager->get_product_details($post_data);
+					break;
+
+				case 'update_product_details':
+					$this->_product_manager->update_product_details($post_data);
+					break;
+
+				case 'delete_product':
+					$this->_product_manager->delete_product($post_data);
+					break;
+
 			};
 		}
 		catch (Exception $e)
@@ -182,33 +199,6 @@ class Product extends CI_Controller {
 		try {
 			switch ($fnc) 
 			{
-				case 'get_product_list':
-					$response = $this->product_model->get_product_list($post_data);
-					break;
-
-				case 'get_material_and_subgroup':
-					$response = $this->product_model->get_product_material_subgroup($post_data);
-					break;
-
-				case 'insert_new_product':
-					$response = $this->product_model->insert_new_product($post_data);
-					break;
-
-				case 'get_product_details':
-					$response = $this->product_model->get_product_details($post_data);
-					break;
-
-				case 'update_product_details':
-					$response = $this->product_model->update_product_details($post_data);
-					break;
-
-				case 'delete_product':
-					$response = $this->product_model->delete_product($post_data);
-					break;
-
-				case 'get_branch_list_for_min_max':
-					$response = $this->_get_branch_list();
-					break;
 
 				case 'get_inventory_warning_list':
 					$response = $this->product_model->get_product_warning_list($post_data);

@@ -2,9 +2,6 @@
 
 class Product_Model extends CI_Model {
 
-	private $_current_branch_id = 0;
-	private $_current_user = 0;
-	private $_current_date = '';
 	private $_error_message = array('CODE_EXISTS' => 'Material code already exists!',
 									'NAME_EXISTS' => 'Product Name already exists!',
 									'UNABLE_TO_INSERT' => 'Unable to insert product!',
@@ -20,263 +17,97 @@ class Product_Model extends CI_Model {
 	 */
 	public function __construct() {
 		parent::__construct();
-
-		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
-		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
-/*
-	public function get_product_details($param)
+
+	public function insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data)
 	{
-		extract($param);
+		$new_product_id = 0;
 
-		$response = array();
+		$this->db->trans_start();
 
-		$response['error'] = '';
+			$this->db->insert('product', $product_field_data);
 
-		$product_id = $this->encrypt->decode($product_id);
+			$new_product_id = $this->db->insert_id();
 
-		$query = "SELECT P.`material_code`, P.`description`, P.`type`,
-						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup',
-						P.`material_type_id`, P.`subgroup_id`
-						FROM product AS P
-						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE." 
-						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
-						WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND P.`id` = ?";
+			for ($i=0; $i < count($branch_inventory_field_data); $i++) 
+				$branch_inventory_field_data[$i]["product_id"] = $new_product_id;
 
-		$result = $this->db->query($query,$product_id);
+			$this->db->insert_batch('product_branch_inventory', $branch_inventory_field_data);
 
-		if ($result->num_rows() == 1) 
-		{
-			$row = $result->row();
+		$this->db->trans_complete();
 
-			$response['data']['type'] 			= $row->type;
-			$response['data']['material_code'] 	= $row->material_code;
-			$response['data']['product'] 		= $row->description;
-			$response['data']['material_type'] 	= $row->material_type;
-			$response['data']['material_id'] 	= $row->material_type_id;
-			$response['data']['subgroup'] 		= $row->subgroup;
-			$response['data']['subgroup_id'] 	= $row->subgroup_id;
+		$err = $this->db->_error_message();
 
-			$query_inventory = "SELECT PBI.`id`, COALESCE(CONCAT(B.`code`,' - ',B.`name`),'') AS 'branch', COALESCE(B.`id`,0) AS 'branch_id',
-									PBI.`min_inv`, PBI.`max_inv`
-									FROM product_branch_inventory AS PBI 
-									LEFT JOIN branch AS B ON B.`id` = PBI.`branch_id`
-									WHERE B.`is_show` = ".PRODUCT_CONST::ACTIVE." AND PBI.`product_id` = ?";
+		if (!empty($err)) 
+			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 
-			$result_inventory = $this->db->query($query_inventory,$product_id);
+		$new_product_id = $this->encrypt->encode($new_product_id);
 
-			if ($result_inventory->num_rows() != 0) 
+		return $new_product_id;
+	}
+
+	public function update_product_using_transaction($product_field_data, $branch_inventory_field_data, $product_id)
+	{
+
+		$this->db->trans_start();
+
+			$this->db->where("id", $product_id);
+			$this->db->update("product", $product_field_data);
+
+			for ($i=0; $i < count($branch_inventory_field_data); $i++)
 			{
-				$i = 0;
-				foreach ($result_inventory->result() as $row) 
-				{
-					$response['branch_inventory'][$i][] = array($this->encrypt->encode($row->id));
-					$response['branch_inventory'][$i][] = array($i+1);
-					$response['branch_inventory'][$i][] = array($row->branch,$row->branch_id);
-					$response['branch_inventory'][$i][] = array($row->min_inv);
-					$response['branch_inventory'][$i][] = array($row->max_inv);
-					$i++;
-				}
+				$branch_inventory_id = $branch_inventory_field_data[$i][1];
+
+				$this->db->where("id", $branch_inventory_id);
+				$this->db->update("product_branch_inventory", $branch_inventory_field_data[$i][0]);
 			}
 
-			$result_inventory->free_result();
-		}
-		else
-			throw new Exception($this->_error_message['UNABLE_TO_SELECT']);
+		$this->db->trans_complete();
 
-		$result->free_result();
+		$err = $this->db->_error_message();
 
-		return $response;
-	}
-
-	public function get_product_material_subgroup($param)
-	{
-		extract($param);
-		$response 	= array();
-		$response['error']			= '';
-		$response['material_name']	= '';
-		$response['material_id'] 	= 0;
-		$response['subgroup_name'] 	= '';
-		$response['subgroup_id'] 	= 0;
-		
-
-		$query = "SELECT `name`, `id` 
-					FROM material_type WHERE `code` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
-
-		$result = $this->db->query($query,$code[0]);
-
-		if ($result->num_rows() == 1) 
-		{
-			$row = $result->row();
-			$response['material_name']	= $row->name;
-			$response['material_id'] 	= $row->id;
-		}
-
-		$result->free_result();
-
-		$query = "SELECT `name`, `id` 
-					FROM subgroup WHERE `code` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
-
-		$result = $this->db->query($query,$code[1]);
-		if ($result->num_rows() == 1) 
-		{
-			$row = $result->row();
-			$response['subgroup_name']	= $row->name;
-			$response['subgroup_id'] 	= $row->id;
-		}
-
-		$result->free_result();
-
-		return $response;
-	}
-
-	public function insert_new_product($param)
-	{
-		extract($param);
-
-		$response 	= array();
-		$query 		= array();
-		$query_data = array();
-
-		$response['error'] = '';
-
-		$this->validate_product($param,PRODUCT_CONST::INSERT_PROCESS);
-
-		$query_product = "INSERT INTO `product`
-							(`material_code`,
-							`description`,
-							`type`,
-							`material_type_id`,
-							`subgroup_id`,
-							`date_created`,
-							`last_modified_date`,
-							`created_by`,
-							`last_modified_by`)
-							VALUES
-							(?,?,?,?,?,?,?,?,?);";
-
-		$query_product_data = array($code,$product,$is_nonstack,$material,$subgroup,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
-
-		array_push($query,$query_product);
-		array_push($query_data,$query_product_data);
-
-		$query_last_insert_id = "SET @insert_id = LAST_INSERT_ID();";
-
-		array_push($query,$query_last_insert_id);
-		array_push($query_data,array());
-
-		$query_inventory_data = array();
-
-		$query_inventory = "INSERT INTO `product_branch_inventory`
-						(`branch_id`,
-						`product_id`,
-						`inventory`,
-						`min_inv`,
-						`max_inv`)
-						VALUES";
-
-		$bind_values = "";
-
-		for ($i=0; $i < count($min_max_values); $i++) 
-		{ 
-			$bind_values .= ",(?,@insert_id,0,?,?)";	
-			array_push($query_inventory_data,$min_max_values[$i][1],$min_max_values[$i][2],$min_max_values[$i][3]);
-		}
-
-		$query_inventory .= substr($bind_values,1).";";
-
-		array_push($query,$query_inventory,"SELECT @insert_id AS 'id';");
-		array_push($query_data,$query_inventory_data,array());
-
-		$result = $this->sql->execute_transaction($query,$query_data);
-
-		if ($result['error'] != '') 
-			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
-		else
-			$response['id'] = $result['id'];
-
-		return $response;
-	}
-
-	public function update_product_details($param)
-	{
-		extract($param);
-
-		$response 	= array();
-		$query 		= array();
-		$query_data = array();
-		$response['error'] = '';
-
-		$this->validate_product($param,PRODUCT_CONST::UPDATE_PROCESS);
-
-		$product_id = $this->encrypt->decode($product_id);
-
-		$query_product = "UPDATE `product`
-						SET
-						`material_code` = ?,
-						`description` = ?,
-						`type` = ?,
-						`material_type_id` = ?,
-						`subgroup_id` = ?,
-						`last_modified_date` =?,
-						`last_modified_by` = ?
-						WHERE `id` = ?";
-
-		$query_product_data = array($code,$product,$is_nonstack,$material,$subgroup,$this->_current_date,$this->_current_user,$product_id);
-		
-		array_push($query,$query_product);
-		array_push($query_data,$query_product_data);
-
-		for ($i=0; $i < count($min_max_values); $i++) 
-		{ 
-			$inventory_id = $this->encrypt->decode($min_max_values[$i][0]);
-
-			$query_inventory_data = array();
-			$query_inventory = "UPDATE product_branch_inventory
-								SET `min_inv` = ?,
-									`max_inv` = ?
-								WHERE `id` = ?";
-
-			array_push($query,$query_inventory);		
-			array_push($query_data,array($min_max_values[$i][2],$min_max_values[$i][3],$inventory_id));
-		}
-
-		$result = $this->sql->execute_transaction($query,$query_data);
-
-		if ($result['error'] != '') 
+		if (!empty($err)) 
 			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
-		else
-			$response['id'] = $result['id'];
-
-		return $response;
-
 	}
 
-	public function delete_product($param)
+	public function get_product_details_by_id($product_id)
 	{
-		extract($param);
+		$this->db->select("P.`material_code`, P.`description`, P.`type`,
+						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup',
+						P.`material_type_id`, P.`subgroup_id`")
+				->from("product AS P")
+				->join("material_type AS M", "M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
+				->join("subgroup AS S", "S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
+				->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE)
+				->where("P.`id`", $product_id);
 
-		$product_id = $this->encrypt->decode($head_id);
+		$result = $this->db->get();
 
-		$response = array();
-		$response['error'] = '';
+		return $result;
+	}
 
-		$query_data = array($this->_current_date,$this->_current_user,$product_id);
-		$query 	= "UPDATE `product` 
-					SET 
-					`is_show` = ".PRODUCT_CONST::DELETED.",
-					`last_modified_date` = ?,
-					`last_modified_by` = ?
-					WHERE `id` = ?";
+	public function get_product_min_max_by_product_id($product_id)
+	{
+		$this->db->select("PBI.`id`, COALESCE(CONCAT(B.`code`,' - ',B.`name`),'') AS 'branch', 
+							COALESCE(B.`id`,0) AS 'branch_id', PBI.`min_inv`, PBI.`max_inv`")
+				->from("product_branch_inventory AS PBI")
+				->join("branch AS B", "B.`id` = PBI.`branch_id`")
+				->where("B.`is_show`", \Constants\PRODUCT_CONST::ACTIVE)
+				->where("PBI.`product_id`", $product_id);
 
-		$result = $this->sql->execute_query($query,$query_data);
+		$result = $this->db->get();
 
-		if ($result['error'] != '') 
-			$response['error'] = 'Unable to delete product!';
+		return $result;
+	}
 
-		return $response;
-	}*/
+	public function delete_product_by_id($product_fields, $product_id)
+	{
+		$this->db->where("`id`", $product_id);
+
+		$this->db->update("product", $product_fields);
+
+		return $this->db->affected_rows();
+	}
 
 	public function get_product_list_by_filter($param)
 	{
@@ -1220,8 +1051,8 @@ class Product_Model extends CI_Model {
 
 		$this->db->where("P.`is_show`",PRODUCT_CONST::ACTIVE)
 				->or_group_start()
-					->like("P.`description`",$term,"both")
-					->or_like("P.`material_code`",$term,"both")
+					->like("P.`description`", $term, "both")
+					->or_like("P.`material_code`", $term, "both")
 				->group_end()
 				->limit(10);
 
@@ -1234,8 +1065,25 @@ class Product_Model extends CI_Model {
 	{
 		$this->db->select("`inventory` AS 'current_inventory', `min_inv`, `max_inv`")
 				->from("`product_branch_inventory`")
-				->where("`product_id`",$product_id)
-				->where("`branch_id`",$branch_id);
+				->where("`product_id`", $product_id)
+				->where("`branch_id`", $branch_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function check_if_field_data_exists($field_data, $current_product_id = 0)
+	{
+		$this->db->select("`id`")
+				->from("product")
+				->where("`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
+
+		if ($current_product_id !== 0)
+			$this->db->where("`id` <>", $current_product_id);
+
+		foreach ($field_data as $key => $value) 
+			$this->db->where($key, $value);
 
 		$result = $this->db->get();
 

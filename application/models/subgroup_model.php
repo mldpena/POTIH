@@ -19,6 +19,7 @@ class Subgroup_Model extends CI_Model {
 	public function __construct() {
 		parent::__construct();
 
+		
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
@@ -238,12 +239,12 @@ class Subgroup_Model extends CI_Model {
 		$result->free_result();
 	}*/
 
-	public function get_subgroup_by_code($code)
+	public function get_subgroup_by_code($code, $is_show = 1)
 	{
 		$this->db->select("`name`, `id`")
 				->from("subgroup")
 				->where("`code`", $code)
-				->where("`is_show`", \Constants\SUBGROUP_CONST::ACTIVE);
+				->where("`is_show`", $is_show);
 
 		$result = $this->db->get();
 

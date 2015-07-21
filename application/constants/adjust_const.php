@@ -1,7 +1,6 @@
 <?php
-	/**
-	* List of constants for adjust model
-	*/
+	namespace Constants;
+	
 	require_once(CONSTANTS.'default_const.php');
 
 	class Adjust_Const extends Default_Const

@@ -1,7 +1,6 @@
 <?php
-	/**
-	* List of constants for subgroup model
-	*/
+	namespace Constants;
+	
 	require_once(CONSTANTS.'default_const.php');
 
 	class SubGroup_Const extends Default_Const
