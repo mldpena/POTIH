@@ -19,19 +19,21 @@ class Material_Model extends CI_Model {
 	public function __construct() {
 		parent::__construct();
 
+		$this->load->constant('material_const');
+
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
-	/*public function add_new_material($param)
+	public function add_new_material($param)
 	{
 		extract($param);
 
 		$response 	= array();
 		$response['error'] = '';
 
-		$this->validate_material_type($param,MATERIAL_CONST::INSERT_PROCESS);
+		$this->validate_material_type($param,\Constants\MATERIAL_CONST::INSERT_PROCESS);
 
 		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 
@@ -74,18 +76,18 @@ class Material_Model extends CI_Model {
 
 		switch ($orderby) 
 		{
-			case MATERIAL_CONST::ORDER_BY_CODE:
+			case \Constants\MATERIAL_CONST::ORDER_BY_CODE:
 				$order_field = " `code`";
 				break;
 
-			case  MATERIAL_CONST::ORDER_BY_NAME:
+			case  \Constants\MATERIAL_CONST::ORDER_BY_NAME:
 				$order_field = " `name`";
 				break;
 		}
 
 		$query = "SELECT `id`, `code`, `name` 
 					FROM material_type 
-					WHERE `is_show` = ".MATERIAL_CONST::ACTIVE." $conditions ORDER BY $order_field";
+					WHERE `is_show` = ".\Constants\MATERIAL_CONST::ACTIVE." $conditions ORDER BY $order_field";
 					
 		$result = $this->db->query($query,$query_data);
 
@@ -119,7 +121,7 @@ class Material_Model extends CI_Model {
 		$response 	= array();
 		$response['error'] = '';
 
-		$this->validate_material_type($param,MATERIAL_CONST::UPDATE_PROCESS);
+		$this->validate_material_type($param,\Constants\MATERIAL_CONST::UPDATE_PROCESS);
 
 		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$material_id);
 
@@ -154,7 +156,7 @@ class Material_Model extends CI_Model {
 
 		$query = "SELECT `code`, `name` 
 					FROM material_type 
-					WHERE `is_show` = ".MATERIAL_CONST::ACTIVE." AND  id = ?";
+					WHERE `is_show` = ".\Constants\MATERIAL_CONST::ACTIVE." AND  id = ?";
 						
 		$result = $this->db->query($query,$material_id);
 
@@ -182,7 +184,7 @@ class Material_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
-		$query = "SELECT * FROM product WHERE `material_type_id` = ? AND `is_show` = ".MATERIAL_CONST::ACTIVE;
+		$query = "SELECT * FROM product WHERE `material_type_id` = ? AND `is_show` = ".\Constants\MATERIAL_CONST::ACTIVE;
 
 		$result = $this->db->query($query,$material_id);
 
@@ -194,7 +196,7 @@ class Material_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$material_id);
 		$query 	= "UPDATE `material_type` 
 					SET 
-					`is_show` = ".MATERIAL_CONST::DELETED.",
+					`is_show` = ".\Constants\MATERIAL_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -211,11 +213,11 @@ class Material_Model extends CI_Model {
 	{
 		extract($param);
 
-		$query = "SELECT * FROM material_type WHERE `code` = ? AND `is_show` = ".MATERIAL_CONST::ACTIVE;
-		$query .= $function_type == MATERIAL_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM material_type WHERE `code` = ? AND `is_show` = ".\Constants\MATERIAL_CONST::ACTIVE;
+		$query .= $function_type == \Constants\MATERIAL_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($code);
-		if ($function_type == MATERIAL_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\MATERIAL_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($material_id);
 			array_push($query_data,$id);
@@ -227,12 +229,12 @@ class Material_Model extends CI_Model {
 			
 		$result->free_result();
 
-		$query = "SELECT * FROM material_type WHERE `name` = ? AND `is_show` = ".MATERIAL_CONST::ACTIVE;
-		$query .= $function_type == MATERIAL_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM material_type WHERE `name` = ? AND `is_show` = ".\Constants\MATERIAL_CONST::ACTIVE;
+		$query .= $function_type == \Constants\MATERIAL_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($name);
 
-		if ($function_type == MATERIAL_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\MATERIAL_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($material_id);
 			array_push($query_data,$id);
@@ -244,7 +246,7 @@ class Material_Model extends CI_Model {
 			throw new Exception($this->_error_message['NAME_EXISTS']);
 			
 		$result->free_result();
-	}*/
+	}
 
 	public function get_material_by_code($code, $is_show = 1)
 	{

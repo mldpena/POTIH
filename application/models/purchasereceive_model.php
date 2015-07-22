@@ -21,17 +21,14 @@ class PurchaseReceive_Model extends CI_Model {
 	 */
 	public function __construct() 
 	{
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'purchase_receive_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
+
+		$this->load->constant('purchase_receive_const');
 
 		$this->_receive_head_id 	= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
 	public function get_purchase_receive_details()
@@ -46,7 +43,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', 
 				COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `is_used`
 					FROM `purchase_receive_head`
-					WHERE `is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND `id` = ?";
+					WHERE `is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND `id` = ?";
 
 		$result_head = $this->db->query($query_head,$this->_receive_head_id);
 
@@ -82,10 +79,10 @@ class PurchaseReceive_Model extends CI_Model {
 									SELECT PRD.`purchase_detail_id`, PRD.`id`, PRH.`branch_id`
 							        FROM purchase_receive_head AS PRH
 							        LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
-							        WHERE PRH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
+							        WHERE PRH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
 							    )AS PRD ON PRD.`purchase_detail_id` = PD.`id`
 							WHERE
-							    PH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".PURCHASE_RECEIVE_CONST::USED."
+							    PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED."
 							        AND (PH.`for_branchid` = ? OR PH.`for_branchid` = PRD.`branch_id`)
 							GROUP BY PH.`id`
 							HAVING total_remaining_qty > 0 OR is_received = 1";
@@ -129,6 +126,10 @@ class PurchaseReceive_Model extends CI_Model {
 		$po_head_ids = "";
 		$condition = "";
 
+		$response['detail_error'] = '';
+
+		$query_data = array($this->_receive_head_id);
+
 		if (is_array($po_head_id)) 
 		{
 			$po_head_ids = $this->db->escape_str(implode(",",$po_head_id));
@@ -138,28 +139,27 @@ class PurchaseReceive_Model extends CI_Model {
 		{
 			$po_head_ids = $this->encrypt->decode($po_head_id);
 			$condition = "= ?";
+			array_push($query_data,$po_head_ids);
 		}
-
-		$response['detail_error'] = '';
-
-		$query_data = array($this->_receive_head_id, $po_head_ids);
 
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
 						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
 						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining',
-						COALESCE(PRD.`receive_memo`,'') AS 'receive_memo', COALESCE(PRD.`received_by`,'') AS 'received_by'
+						COALESCE(PRD.`receive_memo`,'') AS 'receive_memo', COALESCE(PRD.`received_by`,'') AS 'received_by',
+						IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`recv_quantity`) <= 0, 1, 0) AS 'is_removed'
 					FROM `purchase_head` AS PH
 					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id` 
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
 					LEFT JOIN (
 								SELECT PRD.`purchase_detail_id`, PRD.`quantity`, PRD.`id`, PRD.`receive_memo`, PRD.`received_by`
 						        FROM purchase_receive_head AS PRH
 						        LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
-						        WHERE PRH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
+						        WHERE PRH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
 					)AS PRD ON PRD.`purchase_detail_id` = PD.`id`
-					WHERE PH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".PURCHASE_RECEIVE_CONST::USED." AND PH.`id` $condition";
+					WHERE PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED." AND PH.`id` $condition
+					HAVING is_removed = 0";
 
 		$result = $this->db->query($query,$query_data);
 
@@ -242,7 +242,7 @@ class PurchaseReceive_Model extends CI_Model {
 					`entry_date` = ?,
 					`memo` = ?,
 					`branch_id`= ?,
-					`is_used` = ".PURCHASE_RECEIVE_CONST::USED.",
+					`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -280,7 +280,7 @@ class PurchaseReceive_Model extends CI_Model {
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($branch != PURCHASE_RECEIVE_CONST::ALL_OPTION) 
+		if ($branch != \Constants\PURCHASE_RECEIVE_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND PRH.`branch_id` = ?";
 			array_push($query_data,$branch);
@@ -294,15 +294,15 @@ class PurchaseReceive_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case PURCHASE_RECEIVE_CONST::ORDER_BY_REFERENCE:
+			case \Constants\PURCHASE_RECEIVE_CONST::ORDER_BY_REFERENCE:
 				$order_field = "PRH.`reference_number`";
 				break;
 			
-			case PURCHASE_RECEIVE_CONST::ORDER_BY_LOCATION:
+			case \Constants\PURCHASE_RECEIVE_CONST::ORDER_BY_LOCATION:
 				$order_field = "B.`name`";
 				break;
 
-			case PURCHASE_RECEIVE_CONST::ORDER_BY_DATE:
+			case \Constants\PURCHASE_RECEIVE_CONST::ORDER_BY_DATE:
 				$order_field = "PRH.`entry_date`";
 				break;
 		}
@@ -317,10 +317,10 @@ class PurchaseReceive_Model extends CI_Model {
 						purchase_receive_head AS PRH
 					    LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
 					    LEFT JOIN purchase_detail AS PD ON PD.`id` = PRD.`purchase_detail_id`
-					    LEFT JOIN purchase_head AS PH ON PH.`id` = PD.`headid` AND PH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".PURCHASE_RECEIVE_CONST::USED."
-					    LEFT JOIN branch AS B ON B.`id` = PRH.`branch_id` AND B.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE."
-					    LEFT JOIN branch AS B2 ON B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE."
-					WHERE PRH.`is_show` = ".PURCHASE_RECEIVE_CONST::ACTIVE." $conditions
+					    LEFT JOIN purchase_head AS PH ON PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED."
+					    LEFT JOIN branch AS B ON B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
+					    LEFT JOIN branch AS B2 ON B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
+					WHERE PRH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." $conditions
 					GROUP BY PRH.`id`
 					ORDER BY $order_field $order_type";
 
@@ -374,7 +374,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$purchase_receive_id);
 		$query 	= "UPDATE `purchase_receive_head` 
 					SET 
-					`is_show` = ".PURCHASE_RECEIVE_CONST::DELETED.",
+					`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -445,7 +445,7 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', 
 						DATE(`entry_date`) AS 'entry_date'
-					FROM stock_delivery_head
+					FROM purchase_receive_head
 					WHERE `id` = ?";
 
 		$result_head = $this->db->query($query_head,$receive_id);

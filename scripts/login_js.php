@@ -33,7 +33,6 @@
 
 		flag = 1;
 
-		var token_val		= '<?= $token ?>';
 		var username_val	= $("#username").val();
 		var password_val 	= $("#password").val();
 
@@ -91,12 +90,14 @@
 		var username_val	= $("#username").val();
 		var password_val 	= $("#password").val();
 		var branch_val		= $('#branch').val();
+		var branch_selected_text = $('#branch option:selected').text();
 
 		var arr = 	{ 
 						fnc : 'set_branch_user_session', 
 						user_name : username_val, 
 						password : password_val,
-						branch_id : branch_val 
+						branch_id : branch_val,
+						branch_name : branch_selected_text
 					};
 
 		$.ajax({

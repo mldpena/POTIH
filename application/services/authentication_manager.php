@@ -131,6 +131,7 @@ class Authentication_Manager
 		set_cookie('fullname',$this->_CI->encrypt->encode($user_detail_row->full_name));
 		set_cookie('temp',$this->_CI->encrypt->encode($user_detail_row->id));
 		set_cookie('branch',$this->_CI->encrypt->encode($branch_id));
+		set_cookie('branch_name',$branch_name);
 
 		if ($user_detail_row->is_first_login == \Constants\LOGIN_CONST::FIRST_LOGIN) 
 			 $this->_CI->login_model->update_first_login_status($user_detail_row->id);
@@ -146,7 +147,7 @@ class Authentication_Manager
 	{
 		$isset = true;
 
-		if (!isset($_COOKIE['username']) || !isset($_COOKIE['fullname']) || !isset($_COOKIE['temp']) || !isset($_COOKIE['branch']) || !isset($_COOKIE['permissions']))
+		if (!isset($_COOKIE['username']) || !isset($_COOKIE['fullname']) || !isset($_COOKIE['temp']) || !isset($_COOKIE['branch']) || !isset($_COOKIE['branch_name']) || !isset($_COOKIE['permissions']))
 			$isset = false;
 
 		if (isset($_COOKIE['permissions']) && count(json_decode($_COOKIE['permissions'])) == 0)
@@ -165,12 +166,13 @@ class Authentication_Manager
 		$username 	= $this->_CI->encrypt->decode(get_cookie('username'));
 		$fullname 	= $this->_CI->encrypt->decode(get_cookie('fullname'));
 		$user_id 	= $this->_CI->encrypt->decode(get_cookie('temp'));
-		$result = $this->_CI->login_model->check_session_user_credential_exists($username, $fullname, $user_id);
+		$result 	= $this->_CI->login_model->check_session_user_credential_exists($username, $fullname, $user_id);
 
 		if ($result->num_rows() != 1) 
 			$isset = false;
 
 		$result->free_result();
+
 
 		return $isset;
 	}
@@ -200,6 +202,7 @@ class Authentication_Manager
 		delete_cookie('fullname');
 		delete_cookie('temp');
 		delete_cookie('branch');
+		delete_cookie('branch_name');
 	}
 
 	/**

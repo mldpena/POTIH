@@ -15,7 +15,7 @@
 
 	//ob_start();
 
-	$pdf = new TCPDF('P', PDF_UNIT, 'FOLIO', true, 'UTF-8', false);
+	$pdf = new CI_TCPDF('P', PDF_UNIT, 'FOLIO', true, 'UTF-8', false);
 
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 	$pdf->setFontSubsetting(false);

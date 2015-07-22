@@ -1,7 +1,5 @@
 <?php
-	/**
-	* List of constants for delivery model
-	*/
+	namespace Constants;
 
 	require_once(CONSTANTS.'default_const.php');
 

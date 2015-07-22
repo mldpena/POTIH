@@ -1,7 +1,6 @@
 <?php
-	/**
-	* List of constants for purchase return model
-	*/
+	namespace Constants;
+	
 	require_once(CONSTANTS.'default_const.php');
 
 	class Purchase_Return_Const extends Default_Const

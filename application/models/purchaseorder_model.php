@@ -21,17 +21,14 @@ class PurchaseOrder_Model extends CI_Model {
 	 */
 	public function __construct() 
 	{
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'purchase_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
+
+		$this->load->constant('purchase_const');
 
 		$this->_purchase_head_id 	= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
 	public function get_purchaseorder_details()
@@ -45,7 +42,7 @@ class PurchaseOrder_Model extends CI_Model {
 					PH.`memo`, PH.`branch_id`, PH.`supplier`, PH.`for_branchid`, SUM(PD.`recv_quantity`) AS 'total_qty', PH.`is_imported`, PH.`is_used`
 					FROM `purchase_head` AS PH
 					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
-					WHERE PH.`is_show` = ".PURCHASE_CONST::ACTIVE." AND PH.`id` = ?
+					WHERE PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE." AND PH.`id` = ?
 					GROUP BY PH.`id`";
 
 		$result_head = $this->db->query($query_head,$this->_purchase_head_id);
@@ -69,8 +66,8 @@ class PurchaseOrder_Model extends CI_Model {
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`
 					FROM `purchase_detail` AS PD
-					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".PURCHASE_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".PURCHASE_CONST::ACTIVE."
+					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
 					WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_purchase_head_id);
@@ -192,7 +189,7 @@ class PurchaseOrder_Model extends CI_Model {
 					`supplier` = ?,
 					`for_branchid` = ?,
 					`is_imported` = ?,
-					`is_used` = ".PURCHASE_CONST::USED.",
+					`is_used` = ".\Constants\PURCHASE_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -231,13 +228,13 @@ class PurchaseOrder_Model extends CI_Model {
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($branch != PURCHASE_CONST::ALL_OPTION) 
+		if ($branch != \Constants\PURCHASE_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND PH.`branch_id` = ?";
 			array_push($query_data,$branch);
 		}
 
-		if ($for_branch != PURCHASE_CONST::ALL_OPTION) 
+		if ($for_branch != \Constants\PURCHASE_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND PH.`for_branchid` = ?";
 			array_push($query_data,$for_branch);
@@ -249,56 +246,56 @@ class PurchaseOrder_Model extends CI_Model {
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
-		if ($type != PURCHASE_CONST::ALL_OPTION) 
+		if ($type != \Constants\PURCHASE_CONST::ALL_OPTION) 
 		{
 			switch ($type) 
 			{
-				case PURCHASE_CONST::IMPORTED:
-					$conditions .= " AND PH.`is_imported` = ".PURCHASE_CONST::IMPORTED;
+				case \Constants\PURCHASE_CONST::IMPORTED:
+					$conditions .= " AND PH.`is_imported` = ".\Constants\PURCHASE_CONST::IMPORTED;
 					break;
 				
-				case PURCHASE_CONST::LOCAL:
-					$conditions .= " AND PH.`is_imported` = ".PURCHASE_CONST::LOCAL;
+				case \Constants\PURCHASE_CONST::LOCAL:
+					$conditions .= " AND PH.`is_imported` = ".\Constants\PURCHASE_CONST::LOCAL;
 					break;
 			}
 		}
 
 		switch ($order_by) 
 		{
-			case PURCHASE_CONST::ORDER_BY_REFERENCE:
+			case \Constants\PURCHASE_CONST::ORDER_BY_REFERENCE:
 				$order_field = "PH.`reference_number`";
 				break;
 			
-			case PURCHASE_CONST::ORDER_BY_LOCATION:
+			case \Constants\PURCHASE_CONST::ORDER_BY_LOCATION:
 				$order_field = "B.`name`";
 				break;
 
-			case PURCHASE_CONST::ORDER_BY_DATE:
+			case \Constants\PURCHASE_CONST::ORDER_BY_DATE:
 				$order_field = "PH.`entry_date`";
 				break;
 
-			case PURCHASE_CONST::ORDER_BY_SUPPLIER:
+			case \Constants\PURCHASE_CONST::ORDER_BY_SUPPLIER:
 				$order_field = "PH.`supplier`";
 				break;
 		}
 
-		if ($status != PURCHASE_CONST::ALL_OPTION) 
+		if ($status != \Constants\PURCHASE_CONST::ALL_OPTION) 
 		{
 			switch ($status) 
 			{
-				case PURCHASE_CONST::INCOMPLETE:
+				case \Constants\PURCHASE_CONST::INCOMPLETE:
 					$having = "HAVING remaining_qty < total_qty AND remaining_qty > 0";
 					break;
 				
-				case PURCHASE_CONST::COMPLETE:
+				case \Constants\PURCHASE_CONST::COMPLETE:
 					$having = "HAVING remaining_qty = 0";
 					break;
 
-				case PURCHASE_CONST::NO_RECEIVED:
+				case \Constants\PURCHASE_CONST::NO_RECEIVED:
 					$having = "HAVING remaining_qty = total_qty";
 					break;
 
-				case PURCHASE_CONST::EXCESS:
+				case \Constants\PURCHASE_CONST::EXCESS:
 					$having = "HAVING remaining_qty < 0";
 					break;
 			}
@@ -317,15 +314,15 @@ class PurchaseOrder_Model extends CI_Model {
 						WHEN SUM(PD.`recv_quantity`) = 0 THEN 'No Received'
 					END,'') AS 'status',
 					CASE 
-						WHEN PH.`is_imported` = ".PURCHASE_CONST::IMPORTED." THEN 'Imported'
-						WHEN PH.`is_imported` = ".PURCHASE_CONST::LOCAL." THEN 'Local'
+						WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::IMPORTED." THEN 'Imported'
+						WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::LOCAL." THEN 'Local'
 						ELSE ''
 					END AS 'type'
 					FROM purchase_head AS PH
 					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
-					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".PURCHASE_CONST::ACTIVE."
-					WHERE PH.`is_show` = ".PURCHASE_CONST::ACTIVE." $conditions
+					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
+					LEFT JOIN branch AS B2 ON B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
+					WHERE PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE." $conditions
 					GROUP BY PH.`id`
 					$having
 					ORDER BY $order_field $order_type";
@@ -373,7 +370,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$query 	= "SELECT SUM(D.`recv_quantity`) AS 'total_received', H.`branch_id` 
 						FROM purchase_head AS H
 						LEFT JOIN purchase_detail AS D ON D.`headid` = H.`id` 
-						WHERE H.`id` = ? AND H.`is_show` = ".PURCHASE_CONST::ACTIVE;
+						WHERE H.`id` = ? AND H.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE;
 
 		$result = $this->db->query($query,$purchase_head_id);
 		$row 	= $result->row();
@@ -391,7 +388,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$purchase_head_id);
 		$query 	= "UPDATE `purchase_head` 
 					SET 
-					`is_show` = ".PURCHASE_CONST::DELETED.",
+					`is_show` = ".\Constants\PURCHASE_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -415,7 +412,7 @@ class PurchaseOrder_Model extends CI_Model {
 		$query_head = "SELECT CONCAT('PO',H.`reference_number`) AS 'reference_number', 
 						DATE(H.`entry_date`) AS 'entry_date', H.`supplier`, H.`memo`, COALESCE(B.`name`,'') AS 'for_branch'
 					FROM purchase_head AS H
-					LEFT JOIN branch AS B ON B.`id` = H.`for_branchid` AND B.`is_show` = ".PURCHASE_CONST::ACTIVE."
+					LEFT JOIN branch AS B ON B.`id` = H.`for_branchid` AND B.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
 					WHERE H.`id` = ?";
 
 		$result_head = $this->db->query($query_head,$purchase_id);

@@ -19,17 +19,16 @@ class Return_Model extends CI_Model {
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'return_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
+
+		$this->load->constant('return_const');
 
 		$this->_return_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 
-		parent::__construct();
+		
 	}
 
 	public function get_return_details()
@@ -43,7 +42,7 @@ class Return_Model extends CI_Model {
 		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number',
 					COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `customer`, `received_by`, `is_used`
 					FROM `return_head`
-					WHERE `is_show` = ".RETURN_CONST::ACTIVE." AND `id` = ?";
+					WHERE `is_show` = ".\Constants\RETURN_CONST::ACTIVE." AND `id` = ?";
 
 		$result_head = $this->db->query($query_head,$this->_return_head_id);
 
@@ -65,8 +64,8 @@ class Return_Model extends CI_Model {
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
 					FROM `return_detail` AS RD
-					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".RETURN_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".RETURN_CONST::ACTIVE."
+					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
 					WHERE RD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_return_head_id);
@@ -190,7 +189,7 @@ class Return_Model extends CI_Model {
 					`memo` = ?,
 					`customer` = ?,
 					`received_by` = ?,
-					`is_used` = ".RETURN_CONST::USED.",
+					`is_used` = ".\Constants\RETURN_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -228,7 +227,7 @@ class Return_Model extends CI_Model {
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($branch != RETURN_CONST::ALL_OPTION) 
+		if ($branch != \Constants\RETURN_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND RD.`branch_id` = ?";
 			array_push($query_data,$branch);
@@ -242,15 +241,15 @@ class Return_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case RETURN_CONST::ORDER_BY_REFERENCE:
+			case \Constants\RETURN_CONST::ORDER_BY_REFERENCE:
 				$order_field = "RD.`reference_number`";
 				break;
 			
-			case RETURN_CONST::ORDER_BY_LOCATION:
+			case \Constants\RETURN_CONST::ORDER_BY_LOCATION:
 				$order_field = "B.`name`";
 				break;
 
-			case RETURN_CONST::ORDER_BY_DATE:
+			case \Constants\RETURN_CONST::ORDER_BY_DATE:
 				$order_field = "RD.`entry_date`";
 				break;
 		}
@@ -260,8 +259,8 @@ class Return_Model extends CI_Model {
 					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RD.`is_used` = 0, 'Unused', RD.`memo`) AS 'memo', 
 					RD.`customer`, RD.`received_by`
 					FROM return_head AS RD
-					LEFT JOIN branch AS B ON B.`id` = RD.`branch_id` AND B.`is_show` = ".RETURN_CONST::ACTIVE."
-					WHERE RD.`is_show` = ".RETURN_CONST::ACTIVE." $conditions
+					LEFT JOIN branch AS B ON B.`id` = RD.`branch_id` AND B.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
+					WHERE RD.`is_show` = ".\Constants\RETURN_CONST::ACTIVE." $conditions
 					ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);
@@ -313,7 +312,7 @@ class Return_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$return_id);
 		$query 	= "UPDATE `return_head` 
 					SET 
-					`is_show` = ".RETURN_CONST::DELETED.",
+					`is_show` = ".\Constants\RETURN_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -335,8 +334,8 @@ class Return_Model extends CI_Model {
 		$return_id = $this->encrypt->decode($this->session->userdata('customer_return'));
 
 		$query_head = "SELECT CONCAT('RD',`reference_number`) AS 'reference_number', 
-						DATE(`delivery_receive_date`) AS 'entry_date'
-					FROM stock_delivery_head
+						DATE(`entry_date`) AS 'entry_date'
+					FROM return_head
 					WHERE `id` = ?";
 
 		$result_head = $this->db->query($query_head,$return_id);

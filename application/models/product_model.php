@@ -207,7 +207,61 @@ class Product_Model extends CI_Model {
 
 		return $result;		
 	}
-/*
+
+
+	public function get_product_by_term($term, $with_inventory)
+	{
+		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`");
+
+		if ($with_inventory)
+			$this->db->select("COALESCE(PBI.`inventory`,0) AS 'inventory'");
+
+		$this->db->from("`product` AS P");
+
+		if ($with_inventory)
+			$this->db->join("`product_branch_inventory` AS PBI","PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->db->escape($branch_id),"left");
+
+		$this->db->group_start()
+					->like("P.`description`", $term, "both")
+					->or_like("P.`material_code`", $term, "both")
+				->group_end()
+				->limit(10);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function get_product_inventory_info($product_id, $branch_id)
+	{
+		$this->db->select("`inventory` AS 'current_inventory', `min_inv`, `max_inv`")
+				->from("`product_branch_inventory`")
+				->where("`product_id`", $product_id)
+				->where("`branch_id`", $branch_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function check_if_field_data_exists($field_data, $current_product_id = 0)
+	{
+		$this->db->select("`id`")
+				->from("product")
+				->where("`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
+
+		if ($current_product_id !== 0)
+			$this->db->where("`id` <>", $current_product_id);
+
+		foreach ($field_data as $key => $value) 
+			$this->db->where($key, $value);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+
 	public function get_product_warning_list($param)
 	{
 		extract($param);
@@ -231,13 +285,13 @@ class Product_Model extends CI_Model {
 			array_push($query_data,'%'.$product.'%');
 		}
 
-		if ($subgroup != PRODUCT_CONST::ALL_OPTION) 
+		if ($subgroup != \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`subgroup_id` = ?";
 			array_push($query_data,$subgroup);
 		}
 
-		if ($material != PRODUCT_CONST::ALL_OPTION) 
+		if ($material != \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`material_type_id` = ?";
 			array_push($query_data,$material);
@@ -255,16 +309,16 @@ class Product_Model extends CI_Model {
 			array_push($query_data,$datefrom.' 23:59:59');
 		}
 
-		if ($type != PRODUCT_CONST::ALL_OPTION) 
+		if ($type != \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			switch ($type) 
 			{
 				case 1:
-					$type = PRODUCT_CONST::STOCK;
+					$type = \Constants\PRODUCT_CONST::STOCK;
 					break;
 				
 				case 2:
-					$type = PRODUCT_CONST::NON_STOCK;
+					$type = \Constants\PRODUCT_CONST::NON_STOCK;
 					break;
 			}
 
@@ -274,11 +328,11 @@ class Product_Model extends CI_Model {
 
 		switch ($orderby) 
 		{
-			case PRODUCT_CONST::ORDER_BY_NAME:
+			case \Constants\PRODUCT_CONST::ORDER_BY_NAME:
 				$order_field = "P.`description`";
 				break;
 			
-			case PRODUCT_CONST::ORDER_BY_CODE:
+			case \Constants\PRODUCT_CONST::ORDER_BY_CODE:
 				$order_field = "P.`material_code`";
 				break;
 		}
@@ -289,16 +343,16 @@ class Product_Model extends CI_Model {
 							 WHEN  PBI.`inventory` > PBI.`max_inv` THEN 'Excess'	 
 						END AS 'status',
 						CASE 
-							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
-							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock'
+							WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
+							WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
 						END AS 'type',
 						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
 						COALESCE(PBI.`inventory`,0) AS 'inventory', PBI.`min_inv`, PBI. `max_inv`
 						FROM product AS P
-						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".PRODUCT_CONST::ACTIVE."
-						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
+						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
 						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
-						WHERE ((PBI.`inventory` > PBI.`max_inv` AND PBI.`max_inv` <> 0) OR (PBI.`inventory` < PBI.`min_inv` AND PBI.`min_inv` <> 0)) AND P.`is_show` = ".PRODUCT_CONST::ACTIVE."
+						WHERE ((PBI.`inventory` > PBI.`max_inv` AND PBI.`max_inv` <> 0) OR (PBI.`inventory` < PBI.`min_inv` AND PBI.`min_inv` <> 0)) AND P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
 						$conditions
 						ORDER BY $order_field";
 
@@ -345,7 +399,7 @@ class Product_Model extends CI_Model {
 		$branch_column 		= "";
 		$branch_list_id 	= implode(",",$branch);
 
-		$query_branch= "SELECT `id`, `name` FROM branch WHERE `is_show` = ".PRODUCT_CONST::ACTIVE;
+		$query_branch= "SELECT `id`, `name` FROM branch WHERE `is_show` = ".\Constants\PRODUCT_CONST::ACTIVE;
 		$result_branch = $this->db->query($query_branch);
 
 		if ($result_branch->num_rows() > 0) 
@@ -370,13 +424,13 @@ class Product_Model extends CI_Model {
 			array_push($query_data,'%'.$product.'%');
 		}
 
-		if ($subgroup != PRODUCT_CONST::ALL_OPTION) 
+		if ($subgroup != \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`subgroup_id` = ?";
 			array_push($query_data,$subgroup);
 		}
 
-		if ($material !=  PRODUCT_CONST::ALL_OPTION) 
+		if ($material !=  \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`material_type_id` = ?";
 			array_push($query_data,$material);
@@ -394,16 +448,16 @@ class Product_Model extends CI_Model {
 			array_push($query_data,$datefrom.' 23:59:59');
 		}
 
-		if ($type !=  PRODUCT_CONST::ALL_OPTION) 
+		if ($type !=  \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			switch ($type) 
 			{
 				case 1:
-					$type =  PRODUCT_CONST::STOCK;
+					$type =  \Constants\PRODUCT_CONST::STOCK;
 					break;
 				
 				case 2:
-					$type =  PRODUCT_CONST::NON_STOCK;
+					$type =  \Constants\PRODUCT_CONST::NON_STOCK;
 					break;
 			}
 
@@ -413,25 +467,25 @@ class Product_Model extends CI_Model {
 
 		switch ($orderby) 
 		{
-			case  PRODUCT_CONST::ORDER_BY_NAME:
+			case  \Constants\PRODUCT_CONST::ORDER_BY_NAME:
 				$order_field = "P.`description`";
 				break;
 			
-			case  PRODUCT_CONST::ORDER_BY_CODE:
+			case  \Constants\PRODUCT_CONST::ORDER_BY_CODE:
 				$order_field = "P.`material_code`";
 				break;
 		}
 
 		$query = "SELECT P.`material_code`, P.`description`,
 						CASE 
-							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
-							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock' 
+							WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
+							WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock' 
 						END AS 'type'
 						$branch_column
 						,SUM(`inventory`) AS 'total_inventory'
 						FROM product AS P
 						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id`
-						WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." 
+						WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE." 
 						$conditions
 						GROUP BY P.`id`
 						ORDER BY $order_field";
@@ -477,7 +531,7 @@ class Product_Model extends CI_Model {
 		$query_data 	= array();
       	
 
-      	if ($branch != PRODUCT_CONST::ALL_OPTION)
+      	if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
       	{
       		$branch_condition = " AND TS.`branch_id` = ?";
       		array_push($query_data,$branch);
@@ -505,7 +559,7 @@ class Product_Model extends CI_Model {
 													- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
 									FROM product AS P
 									LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
-									WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE."
+									WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
 									GROUP BY P.`id`";
 
 				$result_temp = $this->sql->execute_query($query_temp,$query_data);
@@ -533,28 +587,28 @@ class Product_Model extends CI_Model {
 			array_push($query_data,'%'.$product.'%');
 		}
 
-		if ($subgroup != PRODUCT_CONST::ALL_OPTION) 
+		if ($subgroup != \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`subgroup_id` = ?";
 			array_push($query_data,$subgroup);
 		}
 
-		if ($material !=  PRODUCT_CONST::ALL_OPTION) 
+		if ($material !=  \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND P.`material_type_id` = ?";
 			array_push($query_data,$material);
 		}
 
-		if ($type !=  PRODUCT_CONST::ALL_OPTION) 
+		if ($type !=  \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			switch ($type) 
 			{
 				case 1:
-					$type =  PRODUCT_CONST::STOCK;
+					$type =  \Constants\PRODUCT_CONST::STOCK;
 					break;
 				
 				case 2:
-					$type =  PRODUCT_CONST::NON_STOCK;
+					$type =  \Constants\PRODUCT_CONST::NON_STOCK;
 					break;
 			}
 
@@ -564,63 +618,63 @@ class Product_Model extends CI_Model {
 
 		switch ($orderby) 
 		{
-			case  PRODUCT_CONST::ORDER_BY_NAME:
+			case  \Constants\PRODUCT_CONST::ORDER_BY_NAME:
 				$order_field = "P.`description`";
 				break;
 			
-			case  PRODUCT_CONST::ORDER_BY_CODE:
+			case  \Constants\PRODUCT_CONST::ORDER_BY_CODE:
 				$order_field = "P.`material_code`";
 				break;
 		}
 
-		if ($purchase_receive == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($purchase_receive == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `purchase_receive` > 0";
-		else if ($purchase_receive == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($purchase_receive == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `purchase_receive` = 0";
 
-		if ($customer_return == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($customer_return == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `customer_return` > 0";
-		else if ($customer_return == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($customer_return == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `customer_return` = 0";
 
-		if ($stock_receive == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($stock_receive == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `stock_receive` > 0";
-		else if ($stock_receive == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($stock_receive == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `stock_receive` = 0";
 
-		if ($adjust_increase == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($adjust_increase == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `adjust_increase` > 0";
-		else if ($adjust_increase == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($adjust_increase == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `adjust_increase` = 0";
 
-		if ($damage == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($damage == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `damage` > 0";
-		else if ($damage == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($damage == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `damage` = 0";
 
-		if ($purchase_return == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($purchase_return == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `purchase_return` > 0";
-		else if ($purchase_return == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($purchase_return == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `purchase_return` = 0";
 
-		if ($stock_delivery == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($stock_delivery == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `stock_delivery` > 0";
-		else if ($stock_delivery == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($stock_delivery == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `stock_delivery` = 0";
 
-		if ($customer_delivery == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($customer_delivery == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `customer_delivery` > 0";
-		else if ($customer_delivery == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($customer_delivery == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `customer_delivery` = 0";
 
-		if ($adjust_decrease == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($adjust_decrease == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `adjust_decrease` > 0";
-		else if ($adjust_decrease == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($adjust_decrease == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `adjust_decrease` = 0";
 
-		if ($release == PRODUCT_CONST::WITH_TRANSACTION)
+		if ($release == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
 			$having .= " OR `release` > 0";
-		else if ($release == PRODUCT_CONST::WITHOUT_TRANSACTION)
+		else if ($release == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
 			$having .= " OR `release` = 0";
 
 		if (!empty($having)) 
@@ -628,8 +682,8 @@ class Product_Model extends CI_Model {
 
 		$query = "SELECT P.`material_code`, P.`description` AS 'product', 
 						CASE 
-							WHEN P.`type` = ".PRODUCT_CONST::NON_STOCK." THEN 'Non-Stock'
-							WHEN P.`type` = ".PRODUCT_CONST::STOCK." THEN 'Stock'
+							WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non-Stock'
+							WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
 						END AS 'type',
 						$temp_beginning
 						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
@@ -645,7 +699,7 @@ class Product_Model extends CI_Model {
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
-				WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." $conditions
+				WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE." $conditions
 				GROUP BY P.`id`
 				$having
 				ORDER BY $order_field";
@@ -721,7 +775,7 @@ class Product_Model extends CI_Model {
 		$query_data 	= array();
       	
 
-      	if ($branch != PRODUCT_CONST::ALL_OPTION)
+      	if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
       	{
       		$branch_condition = " AND TS.`branch_id` = ?";
       		array_push($query_data,$branch);
@@ -750,7 +804,7 @@ class Product_Model extends CI_Model {
 												- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
 								FROM product AS P
 								LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
-								WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND P.`id` = ?
+								WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE." AND P.`id` = ?
 								GROUP BY P.`id`";
 
 			$result_temp = $this->sql->execute_query($query_temp,$query_temp_data);
@@ -782,7 +836,7 @@ class Product_Model extends CI_Model {
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
-				WHERE P.`is_show` = ".PRODUCT_CONST::ACTIVE." AND P.`id` = ?
+				WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE." AND P.`id` = ?
 				GROUP BY P.`id`";
 
 		$result = $this->db->query($query,$query_data);
@@ -827,7 +881,7 @@ class Product_Model extends CI_Model {
 			$adjust_condition = ($module_access == 'adjustinc') ? '>' : '<';
 			$absolute = ($module_access == 'adjustinc') ? '' : '* -1';
 
-			if ($branch != PRODUCT_CONST::ALL_OPTION)
+			if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
 	      	{
 	      		$conditions = " AND IA.`branch_id` = ?";
 	      		array_push($query_data,$branch);
@@ -852,7 +906,7 @@ class Product_Model extends CI_Model {
 						COALESCE(U.`full_name`,'') AS 'prepared_by', IA.`memo` 
 						FROM inventory_adjust AS IA
 						LEFT JOIN user AS U ON U.`id` = IA.`created_by`
-						WHERE IA.`is_show` = ".PRODUCT_CONST::ACTIVE." AND IA.`status` = 2 $conditions
+						WHERE IA.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE." AND IA.`status` = 2 $conditions
 						AND IA.`product_id` = ? AND (IA.`new_inventory` - IA.`old_inventory`) $adjust_condition 0
 						ORDER BY IA.`date_created`";
 		}
@@ -935,7 +989,7 @@ class Product_Model extends CI_Model {
 					break;
 			}
 
-	      	if ($branch != PRODUCT_CONST::ALL_OPTION)
+	      	if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
 	      	{
 	      		$conditions = " AND $branch_column = ?";
 	      		array_push($query_data,$branch);
@@ -960,7 +1014,7 @@ class Product_Model extends CI_Model {
 							FROM $head_table AS H
 							LEFT JOIN $detail_table AS D ON D.`headid` = H.`id`
 							LEFT JOIN user AS U ON U.`id` = H.`created_by`
-							WHERE H.`is_show` = ".PRODUCT_CONST::ACTIVE." $conditions AND D.`product_id` = ?
+							WHERE H.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE." $conditions AND D.`product_id` = ?
 							$additional_condition
 							GROUP BY H.`id`
 							ORDER BY $date_column";
@@ -979,7 +1033,10 @@ class Product_Model extends CI_Model {
 				foreach ($row as $key => $value)
 				{
 					if ($key == 'reference_number') 
-						$value = "<a href ='".base_url()."$link_location/view/".$this->encrypt->encode($row->id)."'>".$value."</a>";
+					{
+						if (!in_array($module_access, $custom_query_module)) 
+							$value = "<a href ='".base_url()."$link_location/view/".$this->encrypt->encode($row->id)."'>".$value."</a>";
+					}
 					else if ($key == 'id')
 						continue;
 
@@ -1001,11 +1058,11 @@ class Product_Model extends CI_Model {
 	{
 		extract($param);
 
-		$query = "SELECT * FROM product WHERE `material_code` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
-		$query .= $function_type == PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM product WHERE `material_code` = ? AND `is_show` = ".\Constants\PRODUCT_CONST::ACTIVE;
+		$query .= $function_type == \Constants\PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($code);
-		if ($function_type == PRODUCT_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\PRODUCT_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($product_id);
 			array_push($query_data,$id);
@@ -1018,12 +1075,12 @@ class Product_Model extends CI_Model {
 			
 		$result->free_result();
 
-		$query = "SELECT * FROM product WHERE `description` = ? AND `is_show` = ".PRODUCT_CONST::ACTIVE;
-		$query .= $function_type == PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM product WHERE `description` = ? AND `is_show` = ".\Constants\PRODUCT_CONST::ACTIVE;
+		$query .= $function_type == \Constants\PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($product);
 
-		if ($function_type == PRODUCT_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\PRODUCT_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($product_id);
 			array_push($query_data,$id);
@@ -1035,58 +1092,5 @@ class Product_Model extends CI_Model {
 			throw new Exception($this->_error_message['NAME_EXISTS']);
 			
 		$result->free_result();
-	}*/
-
-	public function get_product_by_term($term, $with_inventory)
-	{
-		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`");
-
-		if ($with_inventory)
-			$this->db->select("COALESCE(PBI.`inventory`,0) AS 'inventory'");
-
-		$this->db->from("`product` AS P");
-
-		if ($with_inventory)
-			$this->db->join("`product_branch_inventory` AS PBI","PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->db->escape($branch_id),"left");
-
-		$this->db->where("P.`is_show`",PRODUCT_CONST::ACTIVE)
-				->or_group_start()
-					->like("P.`description`", $term, "both")
-					->or_like("P.`material_code`", $term, "both")
-				->group_end()
-				->limit(10);
-
-		$result = $this->db->get();
-
-		return $result;
-	}
-
-	public function get_product_inventory_info($product_id, $branch_id)
-	{
-		$this->db->select("`inventory` AS 'current_inventory', `min_inv`, `max_inv`")
-				->from("`product_branch_inventory`")
-				->where("`product_id`", $product_id)
-				->where("`branch_id`", $branch_id);
-
-		$result = $this->db->get();
-
-		return $result;
-	}
-
-	public function check_if_field_data_exists($field_data, $current_product_id = 0)
-	{
-		$this->db->select("`id`")
-				->from("product")
-				->where("`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
-
-		if ($current_product_id !== 0)
-			$this->db->where("`id` <>", $current_product_id);
-
-		foreach ($field_data as $key => $value) 
-			$this->db->where($key, $value);
-
-		$result = $this->db->get();
-
-		return $result;
 	}
 }

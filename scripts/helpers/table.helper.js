@@ -584,13 +584,13 @@ var TableHelper = function(tableOptions,options) {
 
             var arr = onBeforeSubmit();
             
-            $('#' + self._settings.loadingImgId).show();
-            $('#' + self._settings.searchTextId).val('');
-            $('input[type=text]').not(self._settings.clearExcluded).val('');
-
             if (!arr) 
                 return;
 
+            $('#' + self._settings.loadingImgId).show();
+            $('#' + self._settings.searchTextId).val('');
+            $('input[type=text]').not(self._settings.clearExcluded).val('');
+            
             self._flag = 1;
 
             $.ajax({

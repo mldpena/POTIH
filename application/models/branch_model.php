@@ -17,11 +17,13 @@ class Branch_Model extends CI_Model {
 	 */
 	public function __construct() 
 	{
+		parent::__construct();
+
+		$this->load->constant('branch_const');
+		
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
 	public function add_new_branch($param)

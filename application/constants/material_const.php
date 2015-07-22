@@ -1,7 +1,5 @@
 <?php
-	/**h
-	* List of constants for material model
-	*/
+	namespace Constants;
 
 	require_once(CONSTANTS.'default_const.php');
 

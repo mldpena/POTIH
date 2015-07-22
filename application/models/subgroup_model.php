@@ -19,13 +19,14 @@ class Subgroup_Model extends CI_Model {
 	public function __construct() {
 		parent::__construct();
 
-		
+		$this->load->constant('subgroup_const');
+
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
-	/*public function search_subgroup_list($param)
+	public function search_subgroup_list($param)
 	{
 		extract($param);
 		$response 	= array();
@@ -41,16 +42,16 @@ class Subgroup_Model extends CI_Model {
 		}
 
 		switch ($orderby) {
-			case SUBGROUP_CONST::ORDER_BY_CODE:
+			case \Constants\SUBGROUP_CONST::ORDER_BY_CODE:
 				$order_field = " `code`";
 				break;
 
-			case SUBGROUP_CONST::ORDER_BY_NAME:
+			case \Constants\SUBGROUP_CONST::ORDER_BY_NAME:
 				$order_field = " `name`";
 				break;
 		}
 
-		$query = "SELECT `id`, `code`, `name` from subgroup where `is_show` = ".SUBGROUP_CONST::ACTIVE." $conditions ORDER BY $order_field";
+		$query = "SELECT `id`, `code`, `name` from subgroup where `is_show` = ".\Constants\SUBGROUP_CONST::ACTIVE." $conditions ORDER BY $order_field";
 					
 		$result = $this->db->query($query,$query_data);
 
@@ -83,7 +84,7 @@ class Subgroup_Model extends CI_Model {
 		$response 	= array();
 		$response['error'] = '';
 
-		$this->validate_sub_group($param,SUBGROUP_CONST::INSERT_PROCESS);
+		$this->validate_sub_group($param,\Constants\SUBGROUP_CONST::INSERT_PROCESS);
 
 		$query_data = array($code,$name,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
 
@@ -117,7 +118,7 @@ class Subgroup_Model extends CI_Model {
 
 		$subgroup_id = $this->encrypt->decode($subgroup_id);
 
-		$query = "SELECT `code`, `name` from subgroup where `is_show` = ".SUBGROUP_CONST::ACTIVE." AND  id = ?";
+		$query = "SELECT `code`, `name` from subgroup where `is_show` = ".\Constants\SUBGROUP_CONST::ACTIVE." AND  id = ?";
 
 		$result = $this->db->query($query,$subgroup_id);
 
@@ -143,7 +144,7 @@ class Subgroup_Model extends CI_Model {
 		$response 	= array();
 		$response['error'] = '';
 
-		$this->validate_sub_group($param,SUBGROUP_CONST::UPDATE_PROCESS);
+		$this->validate_sub_group($param,\Constants\SUBGROUP_CONST::UPDATE_PROCESS);
 
 		$query_data = array($code,$name,$this->_current_date,$this->_current_user,$subgroup_id);
 
@@ -175,7 +176,7 @@ class Subgroup_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
-		$query = "SELECT * FROM product WHERE `subgroup_id` = ? AND `is_show` = ".SUBGROUP_CONST::ACTIVE;
+		$query = "SELECT * FROM product WHERE `subgroup_id` = ? AND `is_show` = ".\Constants\SUBGROUP_CONST::ACTIVE;
 
 		$result = $this->db->query($query,$subgroup_id);
 
@@ -187,7 +188,7 @@ class Subgroup_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$subgroup_id);
 		$query 	= "UPDATE `subgroup` 
 					SET 
-					`is_show` =".SUBGROUP_CONST::DELETED.",
+					`is_show` =".\Constants\SUBGROUP_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -204,11 +205,11 @@ class Subgroup_Model extends CI_Model {
 	{
 		extract($param);
 
-		$query = "SELECT * FROM subgroup WHERE `code` = ? AND `is_show` = ".SUBGROUP_CONST::ACTIVE;
-		$query .= $function_type == SUBGROUP_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM subgroup WHERE `code` = ? AND `is_show` = ".\Constants\SUBGROUP_CONST::ACTIVE;
+		$query .= $function_type == \Constants\SUBGROUP_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($code);
-		if ($function_type == SUBGROUP_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\SUBGROUP_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($subgroup_id);
 			array_push($query_data,$id);
@@ -220,12 +221,12 @@ class Subgroup_Model extends CI_Model {
 			
 		$result->free_result();
 
-		$query = "SELECT * FROM subgroup WHERE `name` = ? AND `is_show` = ".SUBGROUP_CONST::ACTIVE;
-		$query .= $function_type == SUBGROUP_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM subgroup WHERE `name` = ? AND `is_show` = ".\Constants\SUBGROUP_CONST::ACTIVE;
+		$query .= $function_type == \Constants\SUBGROUP_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($name);
 
-		if ($function_type == SUBGROUP_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\SUBGROUP_CONST::UPDATE_PROCESS) 
 		{
 			$id = $this->encrypt->decode($subgroup_id);
 			array_push($query_data,$id);
@@ -237,7 +238,7 @@ class Subgroup_Model extends CI_Model {
 			throw new Exception($this->_error_message['NAME_EXISTS']);
 			
 		$result->free_result();
-	}*/
+	}
 
 	public function get_subgroup_by_code($code, $is_show = 1)
 	{

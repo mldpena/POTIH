@@ -1,7 +1,6 @@
 <?php
-	/**
-	* List of constants for user model
-	*/
+	namespace Constants;
+	
 	require_once(CONSTANTS.'default_const.php');
 
 	class User_Const extends Default_Const

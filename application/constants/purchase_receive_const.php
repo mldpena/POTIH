@@ -1,7 +1,5 @@
 <?php
-	/**
-	* List of constants for purchase receive model
-	*/
+	namespace Constants;
 
 	require_once(CONSTANTS.'default_const.php');
 

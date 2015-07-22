@@ -76,7 +76,7 @@
     var txtreceivedby = document.createElement('input');
     txtreceivedby.setAttribute('class','form-control');
 	colarray['receivedby'] = { 
-        header_title: "Recvd By",
+        header_title: "Received By",
         edit: [txtreceivedby],
         disp: [spnreceivedby],
         td_class: "tablerow column_click column_hover tdrecvdby"
@@ -183,6 +183,14 @@
 
 	$('#print').click(function(){
 		goToPrintOut();
+	});
+
+	$('.imgdel').live('click',function(){
+		var rowIndex = $(this).parent().parent().index(); 
+		var rowUniqueId = tableHelper.contentProvider.getData(rowIndex,'id');
+
+		if (rowUniqueId == 0)
+			tableHelper.contentProvider.setData(rowIndex,'receivedby',['']);
 	});
 
 	function goToPrintOut()

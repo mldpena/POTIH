@@ -21,8 +21,6 @@ class Product_Manager
 	public function __construct()
 	{
 		$this->_CI = $CI =& get_instance();
-		$this->_CI->load->model('product_model');
-		$this->_CI->load->constant('product_const');
 
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
@@ -282,8 +280,8 @@ class Product_Manager
 	}
 
 	/**
-	 * Import products from csv file. Validates material code and product name per row. Beginning inventory will be set
-	 * as an adjustment. 
+	 * Validate file type and import products from csv file. Validates material code and product name per row. 
+	 * Beginning inventory will be set as an adjustment. 
 	 */
 	public function import_product_from_csv()
 	{

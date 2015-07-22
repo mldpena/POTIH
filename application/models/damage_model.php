@@ -18,17 +18,14 @@ class Damage_Model extends CI_Model {
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'damage_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
+
+		$this->load->constant('damage_const');
 
 		$this->_damage_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
 	public function get_damage_details()
@@ -41,7 +38,7 @@ class Damage_Model extends CI_Model {
 
 		$query_head = "SELECT CONCAT('DD',`reference_number`) AS 'reference_number', COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `is_used`
 					FROM `damage_head`
-					WHERE `is_show` = ".DAMAGE_CONST::ACTIVE." AND `id` = ?";
+					WHERE `is_show` = ".\Constants\DAMAGE_CONST::ACTIVE." AND `id` = ?";
 
 		$result_head = $this->db->query($query_head,$this->_damage_head_id);
 
@@ -61,8 +58,8 @@ class Damage_Model extends CI_Model {
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
 					FROM `damage_detail` AS DD
-					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".DAMAGE_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".DAMAGE_CONST::ACTIVE."
+					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
 					WHERE DD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_damage_head_id);
@@ -181,7 +178,7 @@ class Damage_Model extends CI_Model {
 					SET
 					`entry_date` = ?,
 					`memo` = ?,
-					`is_used` = ".DAMAGE_CONST::USED.",
+					`is_used` = ".\Constants\DAMAGE_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -219,7 +216,7 @@ class Damage_Model extends CI_Model {
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($branch != DAMAGE_CONST::ALL_OPTION) 
+		if ($branch != \Constants\DAMAGE_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND D.`branch_id` = ?";
 			array_push($query_data,$branch);
@@ -233,15 +230,15 @@ class Damage_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case DAMAGE_CONST::ORDER_BY_REFERENCE:
+			case \Constants\DAMAGE_CONST::ORDER_BY_REFERENCE:
 				$order_field = "D.`reference_number`";
 				break;
 			
-			case DAMAGE_CONST::ORDER_BY_LOCATION:
+			case \Constants\DAMAGE_CONST::ORDER_BY_LOCATION:
 				$order_field = "B.`name`";
 				break;
 
-			case DAMAGE_CONST::ORDER_BY_DATE:
+			case \Constants\DAMAGE_CONST::ORDER_BY_DATE:
 				$order_field = "D.`entry_date`";
 				break;
 		}
@@ -250,8 +247,8 @@ class Damage_Model extends CI_Model {
 		$query = "SELECT D.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('DD',D.`reference_number`) AS 'reference_number',
 					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(D.`is_used` = 0, 'Unused', D.`memo`) AS 'memo'
 					FROM damage_head AS D
-					LEFT JOIN branch AS B ON B.`id` = D.`branch_id` AND B.`is_show` = ".DAMAGE_CONST::ACTIVE."
-					WHERE D.`is_show` = ".DAMAGE_CONST::ACTIVE." $conditions
+					LEFT JOIN branch AS B ON B.`id` = D.`branch_id` AND B.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
+					WHERE D.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE." $conditions
 					ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);
@@ -299,7 +296,7 @@ class Damage_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$damage_head_id);
 		$query 	= "UPDATE `damage_head` 
 					SET 
-					`is_show` = ".DAMAGE_CONST::DELETED.",
+					`is_show` = ".\Constants\DAMAGE_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";

@@ -22,11 +22,11 @@ class CI_Sql{
 				$CI->db->query($query,$dataArray);
 
 			$data['id'] = $CI->encrypt->encode($CI->db->insert_id());
-			if ($CI->db->_error_number() == 0)
+			if ($CI->db->error()['code'] == 0)
 				break;
 		}
 
-		$err = $CI->db->_error_message();
+		$err = $CI->db->error()['message'];
 		if (!empty($err)) {
 			$data['error'] = true;
 			$data['id'] = 0;
@@ -63,7 +63,7 @@ class CI_Sql{
 					}	
 				}
 				
-				if ($CI->db->_error_number() == 0){
+				if ($CI->db->error()['code'] == 0){
 					break;
 				}
 			}
@@ -71,7 +71,7 @@ class CI_Sql{
 
 		$CI->db->trans_complete();
 
-		$err = $CI->db->_error_message();
+		$err = $CI->db->error()['message'];
 
 		if (!empty($err)) {
 			$data['error'] = true;

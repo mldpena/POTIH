@@ -21,17 +21,14 @@ class Delivery_Model extends CI_Model {
 	 */
 	public function __construct() 
 	{
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'delivery_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
+
+		$this->load->constant('delivery_const');
 
 		$this->_delivery_head_id 	= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
 	public function get_stock_delivery_details()
@@ -46,7 +43,7 @@ class Delivery_Model extends CI_Model {
 					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SUM(SD.`recv_quantity`) AS 'total_qty', SH.`delivery_type`, SH.`is_used`
 					FROM `stock_delivery_head` AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
-					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
+					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
 					GROUP BY SH.`id`";
 
 		$result_head = $this->db->query($query_head,$this->_delivery_head_id);
@@ -72,8 +69,8 @@ class Delivery_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
 						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`
 					FROM `stock_delivery_detail` AS SD
-					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
+					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 					WHERE SD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
@@ -202,7 +199,7 @@ class Delivery_Model extends CI_Model {
 					`memo` = ?,
 					`to_branchid` = ?,
 					`delivery_type` = ?,
-					`is_used` = ".DELIVERY_CONST::USED.",
+					`is_used` = ".\Constants\DELIVERY_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -210,9 +207,9 @@ class Delivery_Model extends CI_Model {
 		array_push($query,$query_delivery_head);
 		array_push($query_data,$query_delivery_head_data);
 
-		if ($type != DELIVERY_CONST::BOTH) 
+		if ($type != \Constants\DELIVERY_CONST::BOTH) 
 		{
-			$type = $type == DELIVERY_CONST::SALES ? 0 : 1;
+			$type = $type == \Constants\DELIVERY_CONST::SALES ? 0 : 1;
 
 			$query_delivery_detail_data = array($type,$this->_delivery_head_id);
 			$query_delivery_detail = "UPDATE `stock_delivery_detail`
@@ -257,13 +254,13 @@ class Delivery_Model extends CI_Model {
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($from_branch != DELIVERY_CONST::ALL_OPTION) 
+		if ($from_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND SH.`branch_id` = ?";
 			array_push($query_data,$from_branch);
 		}
 
-		if ($to_branch != DELIVERY_CONST::ALL_OPTION) 
+		if ($to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND SH.`to_branchid` = ?";
 			array_push($query_data,$to_branch);
@@ -275,52 +272,52 @@ class Delivery_Model extends CI_Model {
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
-		if ($type != DELIVERY_CONST::ALL_OPTION) 
+		if ($type != \Constants\DELIVERY_CONST::ALL_OPTION) 
 		{
 			switch ($type) 
 			{
-				case DELIVERY_CONST::BOTH:
-					$conditions .= " AND SH.`delivery_type` = ".DELIVERY_CONST::BOTH;
+				case \Constants\DELIVERY_CONST::BOTH:
+					$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::BOTH;
 					break;
 				
-				case DELIVERY_CONST::SALES:
-					$conditions .= " AND SH.`delivery_type` = ".DELIVERY_CONST::SALES;
+				case \Constants\DELIVERY_CONST::SALES:
+					$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::SALES;
 					break;
 
-				case DELIVERY_CONST::TRANSFER:
-					$conditions .= " AND SH.`delivery_type` = ".DELIVERY_CONST::TRANSFER;
+				case \Constants\DELIVERY_CONST::TRANSFER:
+					$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER;
 					break;
 			}
 		}
 
 		switch ($order_by) 
 		{
-			case DELIVERY_CONST::ORDER_BY_REFERENCE:
+			case \Constants\DELIVERY_CONST::ORDER_BY_REFERENCE:
 				$order_field = "SH.`reference_number`";
 				break;
 
-			case DELIVERY_CONST::ORDER_BY_DATE:
+			case \Constants\DELIVERY_CONST::ORDER_BY_DATE:
 				$order_field = "SH.`entry_date`";
 				break;
 		}
 
-		if ($status != DELIVERY_CONST::ALL_OPTION) 
+		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION) 
 		{
 			switch ($status) 
 			{
-				case DELIVERY_CONST::INCOMPLETE:
+				case \Constants\DELIVERY_CONST::INCOMPLETE:
 					$having = "HAVING remaining_qty < total_qty AND remaining_qty > 0";
 					break;
 				
-				case DELIVERY_CONST::COMPLETE:
+				case \Constants\DELIVERY_CONST::COMPLETE:
 					$having = "HAVING remaining_qty = 0";
 					break;
 
-				case DELIVERY_CONST::NO_RECEIVED:
+				case \Constants\DELIVERY_CONST::NO_RECEIVED:
 					$having = "HAVING remaining_qty = total_qty";
 					break;
 
-				case DELIVERY_CONST::EXCESS:
+				case \Constants\DELIVERY_CONST::EXCESS:
 					$having = "HAVING remaining_qty < 0";
 					break;
 			}
@@ -331,9 +328,9 @@ class Delivery_Model extends CI_Model {
 					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
 					COALESCE(SUM(SD.`quantity`),'') AS 'total_qty', SUM(SD.`quantity` - SD.`recv_quantity`) AS 'remaining_qty',
 					CASE 
-						WHEN `delivery_type` = ".DELIVERY_CONST::BOTH." THEN 'Both'
-						WHEN `delivery_type` = ".DELIVERY_CONST::SALES." THEN 'Sales'
-						WHEN `delivery_type` = ".DELIVERY_CONST::TRANSFER." THEN 'Transfer'
+						WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::BOTH." THEN 'Both'
+						WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::SALES." THEN 'Sales'
+						WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER." THEN 'Transfer'
 						ELSE 'Unused'
 					END AS 'delivery_type',
 					COALESCE(CASE
@@ -344,9 +341,9 @@ class Delivery_Model extends CI_Model {
 					END,'') AS 'status'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
-					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." $conditions
+					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." $conditions
 					GROUP BY SH.`id`
 					$having
 					ORDER BY $order_field $order_type";
@@ -392,7 +389,7 @@ class Delivery_Model extends CI_Model {
 		$query 	= "SELECT SUM(D.`recv_quantity`) AS 'total_received', H.`branch_id` 
 						FROM stock_delivery_head AS H
 						LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id` 
-						WHERE H.`id` = ? AND H.`is_show` = ".DELIVERY_CONST::ACTIVE;
+						WHERE H.`id` = ? AND H.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE;
 
 		$result = $this->db->query($query,$delivery_head_id);
 		$row 	= $result->row();
@@ -410,7 +407,7 @@ class Delivery_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$delivery_head_id);
 		$query 	= "UPDATE `stock_delivery_head` 
 					SET 
-					`is_show` = ".DELIVERY_CONST::DELETED.",
+					`is_show` = ".\Constants\DELIVERY_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -435,7 +432,7 @@ class Delivery_Model extends CI_Model {
 		$query_data = array();
 
 		$response['rowcnt'] = 0;
-		$date_type = $search_type == DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
+		$date_type = $search_type == \Constants\DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
 		
 		if (!empty($date_from))
 		{
@@ -449,7 +446,7 @@ class Delivery_Model extends CI_Model {
 			array_push($query_data,$date_to.' 23:59:59');
 		}
 
-		if ($from_branch != DELIVERY_CONST::ALL_OPTION) 
+		if ($from_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
 		{
 			$conditions .= " AND SH.`branch_id` = ?";
 			array_push($query_data,$from_branch);
@@ -464,27 +461,27 @@ class Delivery_Model extends CI_Model {
 		$fixed_condition = "";
 
 		switch ($search_type) {
-			case DELIVERY_CONST::FOR_TRANSFER:
-				$fixed_condition = "AND SH.`delivery_type` IN(".DELIVERY_CONST::TRANSFER.",".DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 1";
-				if (($to_branch) && $to_branch != DELIVERY_CONST::ALL_OPTION) 
+			case \Constants\DELIVERY_CONST::FOR_TRANSFER:
+				$fixed_condition = "AND SH.`delivery_type` IN(".\Constants\DELIVERY_CONST::TRANSFER.",".\Constants\DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 1";
+				if (($to_branch) && $to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
 				{
 					$conditions .= " AND SH.`to_branchid` = ?";
 					array_push($query_data,$to_branch);
 				}
 				break;
 			
-			case DELIVERY_CONST::FOR_CUSTOMER:
-				$fixed_condition = "AND SH.`delivery_type` IN(".DELIVERY_CONST::SALES.",".DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 0";
+			case \Constants\DELIVERY_CONST::FOR_CUSTOMER:
+				$fixed_condition = "AND SH.`delivery_type` IN(".\Constants\DELIVERY_CONST::SALES.",".\Constants\DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 0";
 				break;
 		}
 
 		switch ($order_by) 
 		{
-			case DELIVERY_CONST::ORDER_BY_REFERENCE:
+			case \Constants\DELIVERY_CONST::ORDER_BY_REFERENCE:
 				$order_field = "SH.`reference_number`";
 				break;
 
-			case DELIVERY_CONST::ORDER_BY_DATE:
+			case \Constants\DELIVERY_CONST::ORDER_BY_DATE:
 				$order_field = "SH.`entry_date`";
 				break;
 		}
@@ -495,9 +492,9 @@ class Delivery_Model extends CI_Model {
 					SUM(SD.`quantity`) AS 'total_qty'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
-					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`is_used` = ".DELIVERY_CONST::USED." 
+					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SH.`is_used` = ".\Constants\DELIVERY_CONST::USED." 
 						$fixed_condition $conditions
 					GROUP BY SH.`id`
 					ORDER BY $order_field $order_type";
@@ -516,7 +513,7 @@ class Delivery_Model extends CI_Model {
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->from_branch);
 
-				if ($search_type == DELIVERY_CONST::FOR_TRANSFER)
+				if ($search_type == \Constants\DELIVERY_CONST::FOR_TRANSFER)
 					$response['data'][$i][] = array($row->to_branch);
 				
 				$response['data'][$i][] = array($row->entry_date);
@@ -542,7 +539,7 @@ class Delivery_Model extends CI_Model {
 		$receive_date_column 	= "";
 		$is_transfer 			= "";
 
-		if ($receive_type == DELIVERY_CONST::FOR_TRANSFER) 
+		if ($receive_type == \Constants\DELIVERY_CONST::FOR_TRANSFER) 
 		{
 			$receive_date_column = "SH.`delivery_receive_date`";
 			$is_transfer = 1;
@@ -556,7 +553,7 @@ class Delivery_Model extends CI_Model {
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
 					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SH.`delivery_type`, DATE($receive_date_column) AS 'receive_date'
 					FROM `stock_delivery_head` AS SH
-					WHERE SH.`is_show` = ".DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
+					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
 					GROUP BY SH.`id`";
 
 		$result_head = $this->db->query($query_head,$this->_delivery_head_id);
@@ -571,7 +568,7 @@ class Delivery_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 
-			if ($receive_type == DELIVERY_CONST::FOR_TRANSFER)
+			if ($receive_type == \Constants\DELIVERY_CONST::FOR_TRANSFER)
 			{
 				$response['to_branchid'] 	= $row->to_branchid;
 				$response['is_editable'] 	= $row->to_branchid == $this->_current_branch_id ? TRUE : FALSE;
@@ -587,8 +584,8 @@ class Delivery_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
 						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`
 					FROM `stock_delivery_detail` AS SD
-					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".DELIVERY_CONST::ACTIVE."
+					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 					WHERE SD.`headid` = ? AND SD.`is_for_branch` = $is_transfer";
 
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
@@ -608,7 +605,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 
-				if ($receive_type == DELIVERY_CONST::FOR_TRANSFER)
+				if ($receive_type == \Constants\DELIVERY_CONST::FOR_TRANSFER)
 				{
 					$response['detail'][$i][] = array($row->received_by);
 					$response['detail'][$i][] = array($row->receive_memo);
@@ -682,7 +679,7 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 		$response['error'] = '';
 
-		$receive_date_column = $receive_type == DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
+		$receive_date_column = $receive_type == \Constants\DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
 
 		$query_data = array($receive_date,$this->_delivery_head_id);
 		$query 	= "UPDATE `stock_delivery_head` 
@@ -787,7 +784,7 @@ class Delivery_Model extends CI_Model {
 							WHERE H.`id` = ?";
 
 		$result_detail = $this->db->query($query_detail,$delivery_id);
-
+		
 		if ($result_detail->num_rows() > 0) 
 		{
 			$i = 0;

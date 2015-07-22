@@ -2,7 +2,7 @@
 
 namespace Services;
 
-class Product_Autocomplete_Manager
+class Product_Checker_Manager
 {
 	private $_CI;
 

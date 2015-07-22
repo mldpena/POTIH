@@ -2,17 +2,21 @@
 
 class InventoryAdjust extends CI_Controller {
 	
-	private $_config;
+	private $_authentication_manager;
+
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
 	 */
 	
-	private function _load_libraries()
+	public function __construct()
 	{
-		$this->load->helper('authentication');
-		$this->load->helper('query');
+		parent::__construct();
+
+		$this->load->service('authentication_manager');
 		$this->load->library('permission_checker');
+
+		$this->_authentication_manager = new Services\Authentication_Manager();
 	}
 
 	/**
@@ -22,9 +26,7 @@ class InventoryAdjust extends CI_Controller {
 	
 	public function index()
 	{	
-		$this->_load_libraries();
-
-		check_user_credentials();
+		$this->_authentication_manager->check_user_credentials();
 
 		$page 		= $this->uri->segment(2);
 		$controller = $this->uri->segment(1);
@@ -82,8 +84,8 @@ class InventoryAdjust extends CI_Controller {
 		if (!$allow_user) 
 			header('Location:'.base_url().'login');
 
-		$data = array(	'name' 			=> get_user_fullname(),
-						'branch' 		=> get_branch_name(),
+		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
+						'branch' 		=> get_cookie('branch_name'),
 						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',

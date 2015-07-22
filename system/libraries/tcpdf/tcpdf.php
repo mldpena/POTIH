@@ -154,7 +154,7 @@ require_once(dirname(__FILE__).'/config/tcpdf_config.php');
  * @version 5.9.199
  * @author Nicola Asuni - info@tecnick.com
  */
-class TCPDF {
+class CI_TCPDF {
 
 	// private properties
 

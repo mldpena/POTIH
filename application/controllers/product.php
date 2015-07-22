@@ -4,7 +4,6 @@ class Product extends CI_Controller {
 		
 	private $_product_manager;
 	private $_authentication_manager;
-	private $_header_info_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -16,12 +15,10 @@ class Product extends CI_Controller {
 		parent::__construct();
 
 		$this->load->service('authentication_manager');
-		$this->load->service('header_info_manager');
 		$this->load->service('product_manager');
 		$this->load->library('permission_checker');
 
 		$this->_authentication_manager = new Services\Authentication_Manager();
-		$this->_header_info_manager = new Services\Header_Info_Manager();
 	}
 
 	/**
@@ -99,8 +96,8 @@ class Product extends CI_Controller {
 		if (!$allow_user) 
 			header('Location:'.base_url().'login');
 
-		$data = array(	'name' 			=> $this->_header_info_manager->get_user_full_name(),
-						'branch' 		=> $this->_header_info_manager->get_branch_name(),
+		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
+						'branch' 		=> get_cookie('branch_name'),
 						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
@@ -135,6 +132,12 @@ class Product extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		//Temporary
+
+		$this->load->constant('product_const');
+		$this->load->model('product_model');
+		
+		//End of temporary
 		$this->_product_manager = new Services\Product_Manager();
 
 		$post_data 	= array();
@@ -177,29 +180,6 @@ class Product extends CI_Controller {
 					$this->_product_manager->delete_product($post_data);
 					break;
 
-			};
-		}
-		catch (Exception $e)
-		{
-			$response['error'] = $e->getMessage();
-		}
-
-		echo json_encode($response);
-
-		/*$this->load->model('product_model');
-
-		$post_data 	= array();
-		$fnc 		= '';
-
-		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
-		$fnc 		= $post_data['fnc'];
-
-		$response['error'] = '';
-
-		try {
-			switch ($fnc) 
-			{
-
 				case 'get_inventory_warning_list':
 					$response = $this->product_model->get_product_warning_list($post_data);
 					break;
@@ -235,25 +215,13 @@ class Product extends CI_Controller {
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;
-			}
-		}catch (Exception $e) {
+			};
+		}
+		catch (Exception $e)
+		{
 			$response['error'] = $e->getMessage();
 		}
-		
-		echo json_encode($response);*/
+
+		echo json_encode($response);
 	}
-
-	/*
-
-	private function _import_product_csv()
-	{
-		$extension	= end(explode(".", $_FILES["file"]["name"]));
-
-		if ($_FILES['file']['type'] == 'application/vnd.ms-excel' && $extension == 'csv')
-			$data = $this->product_model->importCSVData($shipperid,$datetime,$csvFile);
-		else
-			$data['error'][] = 'Invalid file type!';
-		
-		echo json_encode($data);
-	}*/
 }

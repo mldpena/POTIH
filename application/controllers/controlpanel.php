@@ -3,7 +3,6 @@
 class ControlPanel extends CI_Controller {
 	
 	private $_authentication_manager;
-	private $_header_info_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -15,11 +14,9 @@ class ControlPanel extends CI_Controller {
 		parent::__construct();
 
 		$this->load->service('authentication_manager');
-		$this->load->service('header_info_manager');
 		$this->load->library('permission_checker');
 
 		$this->_authentication_manager = new Services\Authentication_Manager();
-		$this->_header_info_manager = new Services\Header_Info_Manager();
 	}
 
 	/**
@@ -30,7 +27,7 @@ class ControlPanel extends CI_Controller {
 	public function index()
 	{	
 		$this->_authentication_manager->check_user_credentials();
-
+		
 		$page = $this->uri->segment(2);
 
 		if (isset($_POST['data'])) 
@@ -39,8 +36,8 @@ class ControlPanel extends CI_Controller {
 			exit();
 		}
 
-		$data = array(	'name' 			=> $this->_header_info_manager->get_user_full_name(),
-						'branch' 		=> $this->_header_info_manager->get_branch_name(),
+		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
+						'branch' 		=> get_cookie('branch_name'),
 						'token' 		=> '&'.$this->security->get_csrf_token_name().'='.$this->security->get_csrf_hash(),
 						'page' 			=> 'controlpanel',
 						'script'		=> 'controlpanel_js.php',

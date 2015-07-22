@@ -23,17 +23,14 @@ class User_Model extends CI_Model {
 	 * Load Encrypt Class for encryption, cookie and constants
 	 */
 	public function __construct() {
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'user_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		parent::__construct();
+
+		$this->load->constant('user_const');
 
 		$this->_user_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		parent::__construct();
 	}
 
 	/**
@@ -46,7 +43,7 @@ class User_Model extends CI_Model {
 	{
 		extract($param);
 
-		$this->validate_user($param,USER_CONST::INSERT_PROCESS);
+		$this->validate_user($param,\Constants\USER_CONST::INSERT_PROCESS);
 
 		$password 	= $this->encrypt->encode_md5($password);
 
@@ -123,7 +120,7 @@ class User_Model extends CI_Model {
 
 		$query 	= "UPDATE `user` 
 					SET 
-					`is_show` = ".USER_CONST::DELETED.",
+					`is_show` = ".\Constants\USER_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -140,7 +137,7 @@ class User_Model extends CI_Model {
 	{
 		extract($param);
 
-		$this->validate_user($param,USER_CONST::UPDATE_PROCESS);
+		$this->validate_user($param,\Constants\USER_CONST::UPDATE_PROCESS);
 
 		$response 	= array();
 		$query = array();
@@ -151,7 +148,7 @@ class User_Model extends CI_Model {
 
 		$query_user_data = array($user_code,$full_name,$user_name,$contact,$status,$this->_current_date,$this->_current_user,$this->_user_head_id);
 		
-		if ($password != USER_CONST::DUMMY_PASSWORD) 
+		if ($password != \Constants\USER_CONST::DUMMY_PASSWORD) 
 		{
 			$password 	= $this->encrypt->encode_md5($password);
 			array_unshift($query_user_data,$password);
@@ -228,16 +225,16 @@ class User_Model extends CI_Model {
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
-		if ($status != USER_CONST::ALL_OPTION) 
+		if ($status != \Constants\USER_CONST::ALL_OPTION) 
 		{
 			switch ($status) 
 			{
 				case 1:
-					$status = USER_CONST::ACTIVE;
+					$status = \Constants\USER_CONST::ACTIVE;
 					break;
 				
 				case 2:
-					$status = USER_CONST::INACTIVE;
+					$status = \Constants\USER_CONST::INACTIVE;
 					break;
 			}
 
@@ -247,22 +244,22 @@ class User_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case USER_CONST::ORDER_BY_NAME:
+			case \Constants\USER_CONST::ORDER_BY_NAME:
 				$order_field = "`full_name`";
 				break;
 			
-			case USER_CONST::ORDER_BY_CODE:
+			case \Constants\USER_CONST::ORDER_BY_CODE:
 				$order_field = "`code`";
 				break;
 		}
 
 		$query = "SELECT `id`, `code`, `full_name`, `username`, `contact_number`,
 						CASE
-							WHEN `is_active` = ".USER_CONST::ACTIVE." THEN 'Active'
-							WHEN `is_active` = ".USER_CONST::INACTIVE." THEN 'Inactive'
+							WHEN `is_active` = ".\Constants\USER_CONST::ACTIVE." THEN 'Active'
+							WHEN `is_active` = ".\Constants\USER_CONST::INACTIVE." THEN 'Inactive'
 						END AS 'status'
 						FROM user
-						WHERE `is_show` = ".USER_CONST::ACTIVE." AND `id` <> ? $conditions
+						WHERE `is_show` = ".\Constants\USER_CONST::ACTIVE." AND `id` <> ? $conditions
 						ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);
@@ -300,7 +297,7 @@ class User_Model extends CI_Model {
 
 		$query = "SELECT `code`, `full_name`, `is_active`, `username`, `password`, `contact_number`, `id`
 					FROM `user` 
-					WHERE `is_show` = ".USER_CONST::ACTIVE." AND `id` = ?";
+					WHERE `is_show` = ".\Constants\USER_CONST::ACTIVE." AND `id` = ?";
 
 		$result = $this->db->query($query,$this->_user_head_id);
 
@@ -315,12 +312,12 @@ class User_Model extends CI_Model {
 			$response['full_name'] 	= $row->full_name;
 			$response['is_active'] 	= $row->is_active;
 			$response['contact'] 	= $row->contact_number;
-			$response['is_own_profile'] = $this->encrypt->decode(get_cookie('temp')) == $row->id ? USER_CONST::OWN_PROFILE : USER_CONST::OTHER_PROFILE;
+			$response['is_own_profile'] = $this->encrypt->decode(get_cookie('temp')) == $row->id ? \Constants\USER_CONST::OWN_PROFILE : \Constants\USER_CONST::OTHER_PROFILE;
 
 			$query_branches = "SELECT DISTINCT(UP.`branch_id`) AS 'branch_id'
 								FROM user_permission AS UP
 								LEFT JOIN branch AS B ON B.`id` = UP.`branch_id`
-								WHERE B.`is_show` = ".USER_CONST::ACTIVE." AND `user_id` = ?";
+								WHERE B.`is_show` = ".\Constants\USER_CONST::ACTIVE." AND `user_id` = ?";
 			
 			$result_branches = $this->db->query($query_branches,$this->_user_head_id);
 			
@@ -360,11 +357,11 @@ class User_Model extends CI_Model {
 	{
 		extract($param);
 
-		$query = "SELECT * FROM user WHERE `code` = ? AND `is_show` = ".USER_CONST::ACTIVE;
-		$query .= $function_type == USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM user WHERE `code` = ? AND `is_show` = ".\Constants\USER_CONST::ACTIVE;
+		$query .= $function_type == \Constants\USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($user_code);
-		if ($function_type == USER_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\USER_CONST::UPDATE_PROCESS) 
 			array_push($query_data,$this->_user_head_id);
 
 		$result = $this->db->query($query,$query_data);
@@ -373,12 +370,12 @@ class User_Model extends CI_Model {
 			
 		$result->free_result();
 
-		$query = "SELECT * FROM user WHERE LOWER(`full_name`) = ? AND `is_show` = ".USER_CONST::ACTIVE;
-		$query .= $function_type == USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM user WHERE LOWER(`full_name`) = ? AND `is_show` = ".\Constants\USER_CONST::ACTIVE;
+		$query .= $function_type == \Constants\USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array(strtolower($full_name));
 
-		if ($function_type == USER_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\USER_CONST::UPDATE_PROCESS) 
 			array_push($query_data,$this->_user_head_id);
 
 		$result = $this->db->query($query,$query_data);
@@ -388,12 +385,12 @@ class User_Model extends CI_Model {
 			
 		$result->free_result();
 
-		$query = "SELECT * FROM user WHERE LOWER(`username`) = ? AND `is_show` = ".USER_CONST::ACTIVE;
-		$query .= $function_type == USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
+		$query = "SELECT * FROM user WHERE LOWER(`username`) = ? AND `is_show` = ".\Constants\USER_CONST::ACTIVE;
+		$query .= $function_type == \Constants\USER_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
 
 		$query_data = array($user_name);
 
-		if ($function_type == USER_CONST::UPDATE_PROCESS) 
+		if ($function_type == \Constants\USER_CONST::UPDATE_PROCESS) 
 			array_push($query_data,$this->_user_head_id);
 
 		$result = $this->db->query($query,$query_data);
