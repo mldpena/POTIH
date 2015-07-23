@@ -154,7 +154,7 @@ class ProductReturn extends CI_Controller {
 					break;
 				
 				case 'set_session':
-					$this->set_session_data();
+					$response = $this->set_session_data();
 					break;
 
 				default:
@@ -170,6 +170,17 @@ class ProductReturn extends CI_Controller {
 
 	private function set_session_data()
 	{
-		$this->session->set_userdata('customer_return',$this->uri->segment(3));
+		$response['error'] = '';
+
+		$result = $this->return_model->check_if_transaction_has_product();
+
+		if ($result->num_rows() == 0)
+			throw new Exception("Please encode at least one product!");
+		else
+			$this->session->set_userdata('customer_return',$this->uri->segment(3));
+
+		$result->free_result();
+		
+		return $response;
 	}
 }

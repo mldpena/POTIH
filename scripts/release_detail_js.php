@@ -245,7 +245,7 @@
             dataType : 'JSON',
             data: 'data=' + JSON.stringify(arr) + token,
             success: function(data) {
-                window.location = '<?= base_url() ?>printout/release/Release';
+                window.open('<?= base_url() ?>printout/release/Release');
             }
         });
 	}

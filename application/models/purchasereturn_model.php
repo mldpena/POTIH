@@ -381,4 +381,17 @@ class PurchaseReturn_Model extends CI_Model {
 
 		return $response;
 	}
+
+	public function check_if_transaction_has_product()
+	{
+		$this->db->select("D.*")
+				->from("purchase_return_detail AS D")
+				->join("purchase_return_head AS H", "H.`id` = D.`headid`", "left")
+				->where("H.`is_show`", \Constants\PURCHASE_RETURN_CONST::ACTIVE)
+				->where("H.`id`", $this->_purchase_return_head_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

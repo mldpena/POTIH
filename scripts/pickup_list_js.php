@@ -137,7 +137,7 @@
             dataType : 'JSON',
             data: 'data=' + JSON.stringify(arr) + token,
             success: function(data) {
-                window.location = '<?= base_url() ?>printout/pickup/Pickup';
+                window.open('<?= base_url() ?>printout/pickup/Pickup');
             }
         });
 

@@ -155,14 +155,16 @@ class PurchaseOrder extends CI_Controller {
 					break;
 
 				case 'set_session':
-					$this->set_session_data();
+					$response = $this->set_session_data();
 					break;
 
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
 			}
-		}catch (Exception $e) {
+		}
+		catch (Exception $e) 
+		{
 			$response['error'] = $e->getMessage();
 		}
 		
@@ -171,6 +173,17 @@ class PurchaseOrder extends CI_Controller {
 
 	private function set_session_data()
 	{
-		$this->session->set_userdata('purchase_order',$this->uri->segment(3));
+		$response['error'] = '';
+
+		$result = $this->purchaseorder_model->check_if_transaction_has_product();
+
+		if ($result->num_rows() == 0)
+			throw new Exception("Please encode at least one product!");
+		else
+			$this->session->set_userdata('purchase_order',$this->uri->segment(3));
+
+		$result->free_result();
+		
+		return $response;
 	}
 }

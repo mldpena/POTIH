@@ -6,96 +6,96 @@
 	tab.id = "tableid";
 	tab.setAttribute("style","border-collapse:collapse;");
 	tab.setAttribute("class","border-collapse:collapse;");
-    
-    var colarray = [];
+	
+	var colarray = [];
 	
 	var spnid = document.createElement('span');
 	colarray['id'] = { 
-        header_title: "",
-        edit: [spnid],
-        disp: [spnid],
-        td_class: "tablerow tdid",
+		header_title: "",
+		edit: [spnid],
+		disp: [spnid],
+		td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
-    };
+	};
 
-    var spnnumber = document.createElement('span');
+	var spnnumber = document.createElement('span');
 	colarray['number'] = { 
-        header_title: "",
-        edit: [spnnumber],
-        disp: [spnnumber],
-        td_class: "tablerow tdnumber"
-    };
+		header_title: "",
+		edit: [spnnumber],
+		disp: [spnnumber],
+		td_class: "tablerow tdnumber"
+	};
 
-    var spnproduct = document.createElement('span');
-    var spnproductid = document.createElement('span');
-    spnproductid.setAttribute('style','display:none;');
+	var spnproduct = document.createElement('span');
+	var spnproductid = document.createElement('span');
+	spnproductid.setAttribute('style','display:none;');
 
-    var disabledDescription = document.createElement('textarea');
-    disabledDescription.setAttribute('class','nonStackDescription form-control');
-    disabledDescription.setAttribute('style','display:none;');
-    disabledDescription.setAttribute('disabled','disabled');
+	var disabledDescription = document.createElement('textarea');
+	disabledDescription.setAttribute('class','nonStackDescription form-control');
+	disabledDescription.setAttribute('style','display:none;');
+	disabledDescription.setAttribute('disabled','disabled');
 
-    var productType = document.createElement('span');
-    productType.setAttribute('style','display:none;');
+	var productType = document.createElement('span');
+	productType.setAttribute('style','display:none;');
 
-    var newline = document.createElement('span');
+	var newline = document.createElement('span');
 
 	colarray['product'] = { 
-        header_title: "Product",
-        edit: [spnproduct,spnproductid,productType,newline,disabledDescription],
-        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
-        td_class: "tablerow column_click column_hover tdproduct"
-    };
+		header_title: "Product",
+		edit: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		td_class: "tablerow column_click column_hover tdproduct"
+	};
 
 	var spnmaterialcode = document.createElement('span');
 	colarray['code'] = { 
-        header_title: "Material Code",
-        edit: [spnmaterialcode],
-        disp: [spnmaterialcode],
-        td_class: "tablerow column_click column_hover tdcode"
-    };
-   	
-   	var spnqty = document.createElement('span');
+		header_title: "Material Code",
+		edit: [spnmaterialcode],
+		disp: [spnmaterialcode],
+		td_class: "tablerow column_click column_hover tdcode"
+	};
+	
+	var spnqty = document.createElement('span');
 	colarray['qty'] = { 
-        header_title: "Qty",
-        edit: [spnqty],
-        disp: [spnqty],
-        td_class: "tablerow column_click column_hover tdqty"
-    };
+		header_title: "Qty",
+		edit: [spnqty],
+		disp: [spnqty],
+		td_class: "tablerow column_click column_hover tdqty"
+	};
 
-    var spnmemo = document.createElement('span');
+	var spnmemo = document.createElement('span');
 	colarray['memo'] = { 
-        header_title: "Remarks",
-        edit: [spnmemo],
-        disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tdmemo"
-    };
+		header_title: "Remarks",
+		edit: [spnmemo],
+		disp: [spnmemo],
+		td_class: "tablerow column_click column_hover tdmemo"
+	};
 
-    var spnreceivedby = document.createElement('span');
-    var txtreceivedby = document.createElement('input');
-    txtreceivedby.setAttribute('class','form-control');
+	var spnreceivedby = document.createElement('span');
+	var txtreceivedby = document.createElement('input');
+	txtreceivedby.setAttribute('class','form-control');
 	colarray['receivedby'] = { 
-        header_title: "Recvd By",
-        edit: [txtreceivedby],
-        disp: [spnreceivedby],
-        td_class: "tablerow column_click column_hover tdrecvdby"
-    };
+		header_title: "Recvd By",
+		edit: [txtreceivedby],
+		disp: [spnreceivedby],
+		td_class: "tablerow column_click column_hover tdrecvdby"
+	};
 
-    var spnnote = document.createElement('span');
-    var txtnote = document.createElement('input');
-    txtnote.setAttribute('class','form-control');
+	var spnnote = document.createElement('span');
+	var txtnote = document.createElement('input');
+	txtnote.setAttribute('class','form-control');
 	colarray['note'] = { 
-        header_title: "Note",
-        edit: [txtnote],
-        disp: [spnnote],
-        td_class: "tablerow column_click column_hover tdnote"
-    };
+		header_title: "Note",
+		edit: [txtnote],
+		disp: [spnnote],
+		td_class: "tablerow column_click column_hover tdnote"
+	};
 
-    var chkreceiveall = document.createElement('input');
-    chkreceiveall.className = "chkreceiveall";
+	var chkreceiveall = document.createElement('input');
+	chkreceiveall.className = "chkreceiveall";
 	chkreceiveall.type = "checkbox";
 
-    var chkreceiveallDis = document.createElement('input');
+	var chkreceiveallDis = document.createElement('input');
 	chkreceiveallDis.setAttribute('type','checkbox');
 	chkreceiveallDis.setAttribute('disabled','disabled');
 
@@ -106,17 +106,17 @@
 		td_class: "tablerow tdreceiveall",
 	};
 
-    var spnreceiveqty = document.createElement('span');
-    var txtreceiveqty = document.createElement('input');
-    txtreceiveqty.setAttribute('class','form-control receiveqty');
+	var spnreceiveqty = document.createElement('span');
+	var txtreceiveqty = document.createElement('input');
+	txtreceiveqty.setAttribute('class','form-control receiveqty');
 	colarray['receiveqty'] = { 
-        header_title: "Received Qty",
-        edit: [txtreceiveqty],
-        disp: [spnreceiveqty],
-        td_class: "tablerow column_click column_hover tdreceiveqty"
-    };
+		header_title: "Received Qty",
+		edit: [txtreceiveqty],
+		disp: [spnreceiveqty],
+		td_class: "tablerow column_click column_hover tdreceiveqty"
+	};
 
-    var imgUpdate = document.createElement('i');
+	var imgUpdate = document.createElement('i');
 	imgUpdate.setAttribute("class","imgupdate fa fa-check");
 	var imgEdit = document.createElement('i');
 	imgEdit.setAttribute("class","imgedit fa fa-pencil");
@@ -153,8 +153,8 @@
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date, #receive_date').datepicker();
-    	$('#date, #receive_date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date, #receive_date').datepicker("setDate", new Date());
+		$('#date, #receive_date').datepicker("option","dateFormat", "yy-mm-dd" );
+		$('#date, #receive_date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
 						fnc : 'get_stock_receive_details'
@@ -231,13 +231,16 @@
 		var arr = { fnc : 'set_session' }
 
 		$.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(data) {
-                window.location = '<?= base_url() ?>printout/delivery_receive/Receive';
-            }
-        });
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				if(response.error != '') 
+					alert(response.error);
+				else
+					window.open('<?= base_url() ?>printout/delivery_receive/Receive');
+			}
+		});
 	}
 
 	function getHeadDetailsBeforeSubmit()
@@ -261,25 +264,25 @@
 		var note 			= tableHelper.contentProvider.getData(rowIndex,'note');
 
 		var errorList = $.dataValidation([{
-                                            value : receivedQty,
-                                            fieldName : 'Received Quantity',
-                                            required : true,
-                                            rules : 'numeric',
-                                            isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
-                                        }]);
+											value : receivedQty,
+											fieldName : 'Received Quantity',
+											required : true,
+											rules : 'numeric',
+											isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+										}]);
 
 		if (errorList.length > 0) {
-            clear_message_box();
-            build_message_box('messagebox_1',build_error_message(errorList),'danger');
-            return false;
-        };
+			clear_message_box();
+			build_message_box('messagebox_1',build_error_message(errorList),'danger');
+			return false;
+		};
 
 		var arr = 	{ 
 						fnc 	 	: 'update_stock_receive_detail', 
-			     		detail_id 	: rowId,
-			     		receiveqty 	: receivedQty,
-			     		receivedby 	: receivedBy,
-			     		note 		: note
+						detail_id 	: rowId,
+						receiveqty 	: receivedQty,
+						receivedby 	: receivedBy,
+						note 		: note
 					};
 
 		return arr;

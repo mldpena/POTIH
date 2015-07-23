@@ -456,4 +456,17 @@ class PurchaseOrder_Model extends CI_Model {
 
 		return $response;
 	}
+
+	public function check_if_transaction_has_product()
+	{
+		$this->db->select("D.*")
+				->from("purchase_detail AS D")
+				->join("purchase_head AS H", "H.`id` = D.`headid`", "left")
+				->where("H.`is_show`", \Constants\PURCHASE_CONST::ACTIVE)
+				->where("H.`id`", $this->_purchase_head_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

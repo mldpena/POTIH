@@ -6,83 +6,83 @@
 	tab.id = "tableid";
 	tab.setAttribute("style","border-collapse:collapse;");
 	tab.setAttribute("class","border-collapse:collapse;");
-    
-    var colarray = [];
+	
+	var colarray = [];
 	
 	var spnid = document.createElement('span');
 	colarray['id'] = { 
-        header_title: "",
-        edit: [spnid],
-        disp: [spnid],
-        td_class: "tablerow tdid",
+		header_title: "",
+		edit: [spnid],
+		disp: [spnid],
+		td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
-    };
+	};
 
-    var spnnumber = document.createElement('span');
+	var spnnumber = document.createElement('span');
 	colarray['number'] = { 
-        header_title: "",
-        edit: [spnnumber],
-        disp: [spnnumber],
-        td_class: "tablerow tdnumber"
-    };
+		header_title: "",
+		edit: [spnnumber],
+		disp: [spnnumber],
+		td_class: "tablerow tdnumber"
+	};
 
-    var spnproduct = document.createElement('span');
-    var spnproductid = document.createElement('span');
-    var txtproduct = document.createElement('input');
-    txtproduct.setAttribute('class','form-control txtproduct');
-    spnproductid.setAttribute('style','display:none;');
+	var spnproduct = document.createElement('span');
+	var spnproductid = document.createElement('span');
+	var txtproduct = document.createElement('input');
+	txtproduct.setAttribute('class','form-control txtproduct');
+	spnproductid.setAttribute('style','display:none;');
 
-    var description = document.createElement('textarea');
-    description.setAttribute('class','nonStackDescription form-control desc-margin');
-    description.setAttribute('placeholder', 'Description');
-    description.setAttribute('style','display:none;');
+	var description = document.createElement('textarea');
+	description.setAttribute('class','nonStackDescription form-control desc-margin');
+	description.setAttribute('placeholder', 'Description');
+	description.setAttribute('style','display:none;');
 
-    var disabledDescription = document.createElement('textarea');
-    disabledDescription.setAttribute('class','nonStackDescription form-control');
-    disabledDescription.setAttribute('style','display:none;');
-    disabledDescription.setAttribute('disabled','disabled');
+	var disabledDescription = document.createElement('textarea');
+	disabledDescription.setAttribute('class','nonStackDescription form-control');
+	disabledDescription.setAttribute('style','display:none;');
+	disabledDescription.setAttribute('disabled','disabled');
 
-    var productType = document.createElement('span');
-    productType.setAttribute('style','display:none;');
+	var productType = document.createElement('span');
+	productType.setAttribute('style','display:none;');
 
-    var newline = document.createElement('span');
+	var newline = document.createElement('span');
 
 	colarray['product'] = { 
-        header_title: "Product",
-        edit: [txtproduct,spnproductid,productType,newline,description],
-        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
-        td_class: "tablerow column_click column_hover tdproduct"
-    };
+		header_title: "Product",
+		edit: [txtproduct,spnproductid,productType,newline,description],
+		disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		td_class: "tablerow column_click column_hover tdproduct"
+	};
 
 	var spnmaterialcode = document.createElement('span');
 	colarray['code'] = { 
-        header_title: "Material Code",
-        edit: [spnmaterialcode],
-        disp: [spnmaterialcode],
-        td_class: "tablerow column_click column_hover tdcode"
-    };
-   	
-   	var spnqty = document.createElement('span');
-   	var txtqty = document.createElement('input');
-    txtqty.setAttribute('class','form-control txtqty');
+		header_title: "Material Code",
+		edit: [spnmaterialcode],
+		disp: [spnmaterialcode],
+		td_class: "tablerow column_click column_hover tdcode"
+	};
+	
+	var spnqty = document.createElement('span');
+	var txtqty = document.createElement('input');
+	txtqty.setAttribute('class','form-control txtqty');
 	colarray['qty'] = { 
-        header_title: "Qty",
-        edit: [txtqty],
-        disp: [spnqty],
-        td_class: "tablerow column_click column_hover tdqty"
-    };
+		header_title: "Qty",
+		edit: [txtqty],
+		disp: [spnqty],
+		td_class: "tablerow column_click column_hover tdqty"
+	};
 
-    var spnmemo = document.createElement('span');
-    var txtmemo = document.createElement('input');
-    txtmemo.setAttribute('class','form-control txtmemo');
+	var spnmemo = document.createElement('span');
+	var txtmemo = document.createElement('input');
+	txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
-        header_title: "Remarks",
-        edit: [txtmemo],
-        disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tdmemo"
-    };
+		header_title: "Remarks",
+		edit: [txtmemo],
+		disp: [spnmemo],
+		td_class: "tablerow column_click column_hover tdmemo"
+	};
 
-    var imgUpdate = document.createElement('i');
+	var imgUpdate = document.createElement('i');
 	imgUpdate.setAttribute("class","imgupdate fa fa-check");
 	var imgEdit = document.createElement('i');
 	imgEdit.setAttribute("class","imgedit fa fa-pencil");
@@ -94,7 +94,7 @@
 		headertd_class : "tdupdate"
 	};
 
-    var imgDelete = document.createElement('i');
+	var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
 	colarray['coldelete'] = { 
 		header_title: "",
@@ -127,8 +127,8 @@
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date').datepicker("setDate", new Date());
+		$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
+		$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ fnc : 'get_purchasereturn_details' };
 
@@ -179,13 +179,16 @@
 		var arr = { fnc : 'set_session' }
 
 		$.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(data) {
-                window.location = '<?= base_url() ?>printout/purchase_return/Return';
-            }
-        });
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				if(response.error != '') 
+					alert(response.error);
+				else
+					window.open('<?= base_url() ?>printout/purchase_return/Return');
+			}
+		});
 	}
 
 	function getHeadDetailsBeforeSubmit()

@@ -273,7 +273,7 @@
 		var productId = tableHelper.contentProvider.getData(rowIndex,'id');
 		var branchId = $('#branch').val();
 
-		window.location = "<?= base_url() ?>product/record/" + productId + "/" + branchId;
+		window.open("<?= base_url() ?>product/record/" + productId + "/" + branchId);
 	});
 
 	//Event for edit product

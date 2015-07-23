@@ -201,8 +201,11 @@
             type: "POST",
             dataType : 'JSON',
             data: 'data=' + JSON.stringify(arr) + token,
-            success: function(data) {
-                window.location = '<?= base_url() ?>printout/customer_return/Receive';
+            success: function(response) {
+            	if(response.error != '') 
+					alert(response.error);
+				else
+                	window.open('<?= base_url() ?>printout/customer_return/Receive');
             }
         });
 	}

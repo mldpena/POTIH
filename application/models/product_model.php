@@ -36,7 +36,7 @@ class Product_Model extends CI_Model {
 
 		$this->db->trans_complete();
 
-		$err = $this->db->_error_message();
+		$err = $this->db->error()['message'];
 
 		if (!empty($err)) 
 			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);

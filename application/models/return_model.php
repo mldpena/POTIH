@@ -379,4 +379,17 @@ class Return_Model extends CI_Model {
 
 		return $response;
 	}
+
+	public function check_if_transaction_has_product()
+	{
+		$this->db->select("D.*")
+				->from("return_detail AS D")
+				->join("return_head AS H", "H.`id` = D.`headid`", "left")
+				->where("H.`is_show`", \Constants\RETURN_CONST::ACTIVE)
+				->where("H.`id`", $this->_return_head_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

@@ -60,7 +60,7 @@
 		</style>
 	";
 
-	$column_width = array("55px","430px","95px","120px");
+	$column_width = array("55px","330px","95px","220px");
 
 	while ($is_finished == FALSE) 
 	{
@@ -126,7 +126,7 @@ EOD;
 							<td style=\"width:".$column_width[0].";\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[1].";\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter\">".$detail[$i]["item_code"]."</td>
-							<td style=\"width:".$column_width[3].";\" class=\"tdcenter\">".$detail[$i]["memo"]."</td>
+							<td style=\"width:".$column_width[3].";\" class=\"tdleft\">".$detail[$i]["memo"]."</td>
 						</tr>
 					</table>";
 				$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);

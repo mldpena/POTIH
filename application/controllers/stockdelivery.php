@@ -246,15 +246,15 @@ class StockDelivery extends CI_Controller {
 					break;
 
 				case 'set_session':
-					$this->set_session_data('delivery_receive');
+					$response = $this->set_session_data('delivery_receive');
 					break;
 
 				case 'set_session_delivery':
-					$this->set_session_data('delivery');
+					$response = $this->set_session_data('delivery');
 					break;
 
 				case 'set_session_receive':
-					$this->set_session_data('customer_receive');
+					$response = $this->set_session_data('customer_receive');
 					break;
 
 				default:
@@ -270,6 +270,17 @@ class StockDelivery extends CI_Controller {
 
 	private function set_session_data($session_name)
 	{
-		$this->session->set_userdata($session_name,$this->uri->segment(3));
+		$response['error'] = '';
+
+		$result = $this->delivery_model->check_if_transaction_has_product($session_name);
+
+		if ($result->num_rows() == 0)
+			throw new Exception("Please encode at least one product!");
+		else
+			$this->session->set_userdata($session_name,$this->uri->segment(3));
+
+		$result->free_result();
+		
+		return $response;
 	}
 }

@@ -859,4 +859,26 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
+	public function check_if_transaction_has_product($session_name)
+	{
+		$this->db->select("D.*")
+				->from("stock_delivery_detail AS D")
+				->join("stock_delivery_head AS H", "H.`id` = D.`headid`", "left")
+				->where("H.`is_show`", \Constants\DELIVERY_CONST::ACTIVE)
+				->where("H.`id`", $this->_delivery_head_id);
+
+		switch ($session_name) {
+			case 'delivery_receive':
+				$this->db->where("D.`is_for_branch`", 1);
+				break;
+			
+			case 'customer_receive':
+				$this->db->where("D.`is_for_branch`", 0);
+				break;
+		}
+
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

@@ -289,8 +289,12 @@ class Product_Manager
 		$this->_CI->load->model('material_model');
 		$this->_CI->load->model('subgroup_model');
 		$this->_CI->load->model('adjust_model');
+		$this->_CI->load->model('product_model');
+		$this->_CI->load->constant('product_const');
 
-		$extension = end(explode(".", $_FILES["file"]["name"]));
+		$exploded_name 	= explode(".", $_FILES["file"]["name"]);
+		$extension 		= end($exploded_name);
+
 		$response = array();
 		$i = 0;
 

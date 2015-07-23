@@ -363,4 +363,17 @@ class Damage_Model extends CI_Model {
 
 		return $response;
 	}
+
+	public function check_if_transaction_has_product()
+	{
+		$this->db->select("D.*")
+				->from("damage_detail AS D")
+				->join("damage_head AS H", "H.`id` = D.`headid`", "left")
+				->where("H.`is_show`", \Constants\DAMAGE_CONST::ACTIVE)
+				->where("H.`id`", $this->_damage_head_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
 }
