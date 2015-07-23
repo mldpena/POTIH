@@ -296,6 +296,9 @@ class Product_Manager
 		$extension 		= end($exploded_name);
 
 		$response = array();
+
+		$response['error'] = '';
+
 		$i = 0;
 
 		if ($_FILES['file']['type'] == 'application/vnd.ms-excel' && $extension == 'csv')
@@ -329,7 +332,7 @@ class Product_Manager
 				
 					if ($result->num_rows() > 0) 
 					{
-						$response['error'][] = 'Row #'.$i." : Material Code already exists!";
+						$response['logs'][] = 'Row #'.$i." : Material Code [".$material_code."] already exists!";
 						$with_error = TRUE;
 					}
 
@@ -339,7 +342,7 @@ class Product_Manager
 
 					if ($result->num_rows() > 0) 
 					{
-						$response['error'][] = 'Row #'.$i." : Product Name already exists!";
+						$response['logs'][] = 'Row #'.$i." : Product Name [".$product_name."] already exists!";
 						$with_error = TRUE;
 					}
 						
@@ -352,7 +355,7 @@ class Product_Manager
 
 						if($product_material_result->num_rows() == 0)
 						{
-							$response['error'][] = 'Row #'.$i." : Product should have a valid material type!";
+							$response['logs'][] = 'Row #'.$i." : Product should have a valid material type!";
 							$with_error = TRUE;
 						}
 						else
@@ -363,7 +366,7 @@ class Product_Manager
 
 						if($product_subgroup_result->num_rows() == 0)
 						{
-							$response['error'][] = 'Row #'.$i." : Product should have a valid subgroup!";
+							$response['logs'][] = 'Row #'.$i." : Product should have a valid subgroup!";
 							$with_error = TRUE;
 						}
 						else
@@ -410,15 +413,16 @@ class Product_Manager
 
 						$product_id = $this->_CI->encrypt->decode($this->_CI->product_model->insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data));
 						
-						for ($i=3; $i < count($product_csv_data); $i++) 
+						for ($x=3; $x < count($product_csv_data); $x++) 
 						{ 
-							$adjustment_field_counter = $i - 3;
+							$adjustment_field_counter = $x - 3;
 
-							$adjustment_field_data[$adjustment_field_counter]['new_inventory'] 	= $product_csv_data[$i];
+							$adjustment_field_data[$adjustment_field_counter]['new_inventory'] 	= $product_csv_data[$x];
 							$adjustment_field_data[$adjustment_field_counter]['product_id'] 	= $product_id;
 						}
 						
 						$this->_CI->adjust_model->insert_inventory_adjust_for_import($adjustment_field_data);
+						$response['logs'][] = 'Row #'.$i." : Successfully imported!";
 					}
 				}
 				else
@@ -429,9 +433,19 @@ class Product_Manager
 			}
 		}
 		else
-			$response['error'][] = 'Invalid file type!';
+			$response['error'] = 'Invalid file type!';
 		
 		return $response;
+	}
+
+	public function write_logs_to_file($logs_list)
+	{
+		$string_logs = "";
+
+   		for ($i=0; $i < count($logs_list); $i++)
+   			$string_logs .= $logs_list[$i].PHP_EOL;
+   		
+   		file_put_contents("import_logs.txt", $string_logs);
 	}
 
 	/**

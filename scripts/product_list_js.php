@@ -257,12 +257,12 @@
 			processData: false,
 			data: formData,                         
 			type: 'post',
-			success: function(data){
-				if (data.error.length != 0)
-					build_message_box('messagebox_4',build_error_message(data.error),'danger');
+			success: function(response){
+				if (response.error != '')
+					build_message_box('messagebox_4',response.error,'danger');
 				else
-					build_message_box('messagebox_4','Import successfully executed!','success');
-
+					window.location = "<?= base_url() ?>product/logs";
+				
 				flag = false;
 			}
 		 });

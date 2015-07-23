@@ -170,7 +170,7 @@ class PurchaseReceive_Model extends CI_Model {
 			$i = 0;
 			foreach ($result->result() as $row) 
 			{
-				$break_line = empty($row->description) ? '' : '<br/>';
+				$break_line = $row->type == \Constants\PURCHASE_RECEIVE_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = $row->receive_detail_id == 0 ? array(0) : array($this->encrypt->encode($row->receive_detail_id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->po_detail_id));
 				$response['detail'][$i][] = array($i+1);

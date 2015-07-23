@@ -1,8 +1,8 @@
 CREATE DATABASE  IF NOT EXISTS `dbs_hitop` /*!40100 DEFAULT CHARACTER SET latin1 */;
 USE `dbs_hitop`;
--- MySQL dump 10.13  Distrib 5.6.17, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.6.23, for Win64 (x86_64)
 --
--- Host: 127.0.0.1    Database: dbs_hitop
+-- Host: localhost    Database: dbs_hitop
 -- ------------------------------------------------------
 -- Server version	5.5.27
 
@@ -34,7 +34,7 @@ CREATE TABLE `branch` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,7 +43,7 @@ CREATE TABLE `branch` (
 
 LOCK TABLES `branch` WRITE;
 /*!40000 ALTER TABLE `branch` DISABLE KEYS */;
-INSERT INTO `branch` VALUES (1,'01','Manila',1,'2015-05-19 00:00:00','2015-06-30 04:21:45',1,1),(2,'02','Makati',1,'2015-05-24 02:26:23','2015-06-30 04:20:08',1,1),(3,'03','Pasay',1,'2015-05-26 04:26:38','2015-05-26 04:26:38',1,1),(4,'04','Valenzuela',1,'2015-05-26 03:45:00','2015-05-26 03:45:00',1,1),(6,'05','Bambang',1,'2015-05-27 07:16:11','2015-05-27 07:16:11',1,1);
+INSERT INTO `branch` VALUES (1,'01','Manila',1,'2015-05-19 00:00:00','2015-06-30 04:21:45',1,1),(2,'02','Makati',1,'2015-05-24 02:26:23','2015-06-30 04:20:08',1,1),(3,'03','Pasay',1,'2015-05-26 04:26:38','2015-05-26 04:26:38',1,1),(4,'04','Valenzuela',1,'2015-05-26 03:45:00','2015-05-26 03:45:00',1,1),(6,'05','Bambang',1,'2015-05-27 07:16:11','2015-05-27 07:16:11',1,1),(7,'06','Malabon',1,'2015-07-08 09:53:12','2015-07-08 09:53:12',5,5),(8,'07','SAMPLE',0,'2015-07-22 12:16:29','2015-07-22 12:16:34',1,1);
 /*!40000 ALTER TABLE `branch` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -89,7 +89,7 @@ CREATE TABLE `daily_transaction_summary` (
   `adjust_decrease` int(11) DEFAULT '0',
   `warehouse_release` int(11) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=83 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -98,6 +98,7 @@ CREATE TABLE `daily_transaction_summary` (
 
 LOCK TABLES `daily_transaction_summary` WRITE;
 /*!40000 ALTER TABLE `daily_transaction_summary` DISABLE KEYS */;
+INSERT INTO `daily_transaction_summary` VALUES (1,23,1,'2015-07-08',10,10,0,0,10,10,15,0,0,0),(2,1,1,'2015-07-08',20,10,0,1,0,0,0,0,0,0),(3,13,1,'2015-07-08',10,0,0,0,0,0,0,0,0,0),(4,3,1,'2015-07-08',0,0,0,0,0,5,0,0,0,0),(5,5,1,'2015-07-08',0,0,0,0,20,0,0,0,0,0),(6,7,1,'2015-07-08',0,0,0,0,0,0,10,0,0,0),(7,7,2,'2015-07-08',0,0,10,2,0,0,0,0,0,0),(8,23,2,'2015-07-08',0,0,15,0,0,0,0,0,5,0),(9,4,1,'2015-07-08',0,0,0,0,0,0,0,10,0,20),(10,2,1,'2015-07-08',0,0,0,0,0,0,0,7,0,0),(11,1,1,'2015-07-13',0,0,0,0,0,0,3,0,0,20),(12,22,1,'2015-07-13',0,0,0,0,0,0,20,0,0,0),(13,5,1,'2015-07-13',0,0,0,0,0,0,300,0,0,0),(14,8,1,'2015-07-13',0,0,0,0,0,0,5,0,0,0),(15,10,1,'2015-07-13',0,0,0,0,0,0,30,0,0,3),(16,12,1,'2015-07-13',0,0,0,0,0,0,20,0,0,0),(17,1,2,'2015-07-13',0,0,3,0,0,0,0,0,0,0),(18,22,2,'2015-07-13',0,0,20,0,0,0,0,0,0,0),(19,5,2,'2015-07-13',0,0,300,0,0,0,0,0,0,0),(20,8,2,'2015-07-13',0,0,5,0,0,0,0,0,0,0),(21,10,2,'2015-07-13',0,0,30,0,0,0,0,0,0,0),(22,12,2,'2015-07-13',0,0,20,0,0,0,0,0,0,0),(23,11,1,'2015-07-13',0,0,0,0,0,0,0,0,0,300),(24,13,1,'2015-07-13',0,0,0,0,0,0,0,0,0,10),(25,1,1,'2015-07-14',0,0,0,0,0,20,0,10,0,0),(26,13,1,'2015-07-14',0,0,0,0,100,100,0,20,0,0),(27,7,1,'2015-07-14',0,0,0,0,30,30,0,0,0,0),(28,5,1,'2015-07-14',0,0,0,0,20,0,0,0,0,0),(29,11,1,'2015-07-14',0,0,0,0,100,0,0,0,0,0),(30,9,1,'2015-07-14',0,0,0,0,0,0,0,100,0,0),(31,4,1,'2015-07-14',0,0,0,0,0,0,0,20,0,0),(32,8,1,'2015-07-14',0,0,0,0,0,0,0,15,0,0),(33,31,1,'2015-07-21',0,0,0,10,0,0,0,0,0,0),(34,31,3,'2015-07-21',0,0,0,10,0,0,0,0,0,0),(35,31,2,'2015-07-21',0,0,0,10,0,0,0,0,0,0),(36,31,4,'2015-07-21',0,0,0,10,0,0,0,0,0,0),(37,31,6,'2015-07-21',0,0,0,10,0,0,0,0,0,0),(38,31,7,'2015-07-21',0,0,0,10,0,0,0,0,0,0),(39,8,1,'2015-07-22',5,0,0,0,0,0,0,0,0,0),(40,3,1,'2015-07-22',10,0,0,0,0,0,0,0,0,0),(41,9,1,'2015-07-22',0,2,0,0,0,0,0,0,0,0),(42,8,1,'2015-07-23',0,0,0,0,5,0,0,0,0,0),(43,1,1,'2015-07-23',0,0,0,0,5,0,0,0,0,0),(44,3,1,'2015-07-23',10,0,0,0,0,0,0,0,0,0),(45,2,1,'2015-07-23',10,0,0,0,0,5,0,0,0,0),(46,33,1,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(47,33,3,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(48,33,2,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(49,33,4,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(50,33,6,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(51,33,7,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(52,34,1,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(53,34,3,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(54,34,2,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(55,34,4,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(56,34,6,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(57,34,7,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(58,35,1,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(59,35,3,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(60,35,2,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(61,35,4,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(62,35,6,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(63,35,7,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(64,36,1,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(65,36,3,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(66,36,2,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(67,36,4,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(68,36,6,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(69,36,7,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(70,37,1,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(71,37,3,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(72,37,2,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(73,37,4,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(74,37,6,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(75,37,7,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(76,38,1,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(77,38,3,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(78,38,2,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(79,38,4,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(80,38,6,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(81,38,7,'2015-07-23',0,0,0,10,0,0,0,0,0,0),(82,12,1,'2015-07-23',7,0,0,0,0,0,0,0,0,0);
 /*!40000 ALTER TABLE `daily_transaction_summary` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -116,7 +117,7 @@ CREATE TABLE `damage_detail` (
   `description` varchar(200) DEFAULT '',
   `memo` varchar(150) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -125,6 +126,7 @@ CREATE TABLE `damage_detail` (
 
 LOCK TABLES `damage_detail` WRITE;
 /*!40000 ALTER TABLE `damage_detail` DISABLE KEYS */;
+INSERT INTO `damage_detail` VALUES (1,1,10,23,'',''),(2,1,20,5,'',''),(3,3,20,5,'','PO#5565'),(4,3,100,11,'SAMPLE CUTTINGS','PO#51566'),(5,3,30,7,'','PO#51235'),(6,3,100,13,'SAMPLE LABOR MATS','PO#12556'),(7,5,5,8,'',''),(8,5,5,1,'','');
 /*!40000 ALTER TABLE `damage_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -211,7 +213,7 @@ CREATE TABLE `damage_head` (
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -220,6 +222,7 @@ CREATE TABLE `damage_head` (
 
 LOCK TABLES `damage_head` WRITE;
 /*!40000 ALTER TABLE `damage_head` DISABLE KEYS */;
+INSERT INTO `damage_head` VALUES (1,100001,1,'2015-07-08 10:54:47','',1,1,5,5,'2015-07-08 10:54:17','2015-07-08 10:54:47'),(2,100002,1,'2015-07-13 07:55:46','',1,0,1,1,'2015-07-13 19:55:46','0000-00-00 00:00:00'),(3,100003,1,'2015-07-14 12:40:15','UNUSABLE ITEMS',1,1,1,1,'2015-07-14 12:39:18','2015-07-14 12:40:15'),(4,100004,1,'2015-07-22 12:40:19','',1,0,1,1,'2015-07-22 12:40:19','0000-00-00 00:00:00'),(5,100005,1,'2015-07-23 03:25:58','',1,0,1,1,'2015-07-23 15:25:58','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `damage_head` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -291,7 +294,7 @@ CREATE TABLE `inventory_adjust` (
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -300,6 +303,7 @@ CREATE TABLE `inventory_adjust` (
 
 LOCK TABLES `inventory_adjust` WRITE;
 /*!40000 ALTER TABLE `inventory_adjust` DISABLE KEYS */;
+INSERT INTO `inventory_adjust` VALUES (1,1,1,30,31,'',1,2,5,5,'2015-07-08 11:35:59','2015-07-08 11:35:59'),(2,2,7,10,12,'',1,2,7,5,'2015-07-08 11:37:05','2015-07-08 11:41:30'),(3,2,23,15,10,'',1,2,7,5,'2015-07-08 11:40:07','2015-07-08 11:41:30'),(10,1,31,0,10,'Beginning Inventory',1,2,1,0,'2015-07-21 07:48:16','0000-00-00 00:00:00'),(11,3,31,0,10,'Beginning Inventory',1,2,1,0,'2015-07-21 07:48:16','0000-00-00 00:00:00'),(12,2,31,0,10,'Beginning Inventory',1,2,1,0,'2015-07-21 07:48:16','0000-00-00 00:00:00'),(13,4,31,0,10,'Beginning Inventory',1,2,1,0,'2015-07-21 07:48:16','0000-00-00 00:00:00'),(14,6,31,0,10,'Beginning Inventory',1,2,1,0,'2015-07-21 07:48:16','0000-00-00 00:00:00'),(15,7,31,0,10,'Beginning Inventory',1,2,1,0,'2015-07-21 07:48:16','0000-00-00 00:00:00'),(16,1,33,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:18:18','0000-00-00 00:00:00'),(17,3,33,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:18:18','0000-00-00 00:00:00'),(18,2,33,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:18:18','0000-00-00 00:00:00'),(19,4,33,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:18:18','0000-00-00 00:00:00'),(20,6,33,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:18:18','0000-00-00 00:00:00'),(21,7,33,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:18:18','0000-00-00 00:00:00'),(22,1,34,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:39:10','0000-00-00 00:00:00'),(23,3,34,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:39:10','0000-00-00 00:00:00'),(24,2,34,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:39:10','0000-00-00 00:00:00'),(25,4,34,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:39:10','0000-00-00 00:00:00'),(26,6,34,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:39:10','0000-00-00 00:00:00'),(27,7,34,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:39:10','0000-00-00 00:00:00'),(28,1,35,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:58:11','0000-00-00 00:00:00'),(29,3,35,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:58:11','0000-00-00 00:00:00'),(30,2,35,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:58:11','0000-00-00 00:00:00'),(31,4,35,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:58:11','0000-00-00 00:00:00'),(32,6,35,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:58:11','0000-00-00 00:00:00'),(33,7,35,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:58:11','0000-00-00 00:00:00'),(34,1,36,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:59:55','0000-00-00 00:00:00'),(35,3,36,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:59:55','0000-00-00 00:00:00'),(36,2,36,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:59:55','0000-00-00 00:00:00'),(37,4,36,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:59:55','0000-00-00 00:00:00'),(38,6,36,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:59:55','0000-00-00 00:00:00'),(39,7,36,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 04:59:55','0000-00-00 00:00:00'),(40,1,37,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 05:00:50','0000-00-00 00:00:00'),(41,3,37,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 05:00:50','0000-00-00 00:00:00'),(42,2,37,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 05:00:50','0000-00-00 00:00:00'),(43,4,37,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 05:00:50','0000-00-00 00:00:00'),(44,6,37,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 05:00:50','0000-00-00 00:00:00'),(45,7,37,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 05:00:50','0000-00-00 00:00:00'),(46,1,38,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 06:00:53','0000-00-00 00:00:00'),(47,3,38,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 06:00:53','0000-00-00 00:00:00'),(48,2,38,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 06:00:53','0000-00-00 00:00:00'),(49,4,38,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 06:00:53','0000-00-00 00:00:00'),(50,6,38,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 06:00:53','0000-00-00 00:00:00'),(51,7,38,0,10,'Beginning Inventory',1,2,1,0,'2015-07-23 06:00:53','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `inventory_adjust` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -406,7 +410,7 @@ CREATE TABLE `product` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -415,7 +419,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'BJ014L20','BI Tube 1/4\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:29:49','2015-05-26 12:29:49',1,1),(2,'BJ056L20','BI Tube 5/16\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:30:14','2015-05-26 12:30:14',1,1),(3,'BJ038A20','BI Tube 3/8\" (1.0mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:41','2015-05-26 12:34:41',1,1),(4,'BJ012C20','BI Tube 1/2\" (1.6mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:52','2015-05-26 12:34:52',1,1),(5,'BJ058B19','BI Tube 5/8\" (1.2mm) x 19 Ft.',1,6,6,1,'2015-05-26 12:35:11','2015-05-26 12:35:11',1,1),(6,'BJ058B20','BI Tube 5/8\" (1.2mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:35:21','2015-05-26 12:35:21',1,1),(7,'BC06004F','Hot Rolled COIL 6.0mm x 4 Ft.',1,6,2,1,'2015-05-26 12:38:46','2015-06-30 12:44:43',1,1),(8,'BC05004S','Hot Rolled COIL 5.0mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:38:58','2015-06-30 12:54:40',1,1),(9,'SE112233','Hot Rolled COIL 4.5mm x 4 Ft. ',1,2,3,1,'2015-05-26 12:39:18','2015-06-30 01:29:35',1,1),(10,'SS304CUT','SS-304  CUTTINGS',0,0,0,1,'2015-05-26 12:47:26','2015-05-26 12:47:26',1,1),(11,'SS316CUT','SS-316  CUTTINGS',0,0,0,1,'2015-05-26 12:47:36','2015-05-26 12:47:36',1,1),(12,'ALUMNCUT','ALUMINUM  CUTTING',0,0,0,1,'2015-05-26 12:50:35','2015-05-26 12:50:35',1,1),(13,'MATLABOR','LABOR ONLY, MAT.  FROM CUSTOMER',0,0,0,1,'2015-05-26 12:52:17','2015-05-26 12:52:17',1,1),(14,'COPPRCUT','COPPER  CUTTINGS',0,0,0,1,'2015-05-26 12:52:27','2015-05-26 12:52:27',1,1),(22,'AE123456','ALU EMBRO',1,5,3,1,'2015-06-30 02:26:00','2015-07-06 06:01:10',1,1);
+INSERT INTO `product` VALUES (1,'BJ014L20','BI Tube 1/4\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:29:49','2015-05-26 12:29:49',1,1),(2,'BJ056L20','BI Tube 5/16\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:30:14','2015-05-26 12:30:14',1,1),(3,'BJ038A20','BI Tube 3/8\" (1.0mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:41','2015-05-26 12:34:41',1,1),(4,'BJ012C20','BI Tube 1/2\" (1.6mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:52','2015-05-26 12:34:52',1,1),(5,'BJ058B19','BI Tube 5/8\" (1.2mm) x 19 Ft.',1,6,6,1,'2015-05-26 12:35:11','2015-05-26 12:35:11',1,1),(6,'BJ058B20','BI Tube 5/8\" (1.2mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:35:21','2015-05-26 12:35:21',1,1),(7,'BC06004F','Hot Rolled COIL 6.0mm x 4 Ft.',1,6,2,1,'2015-05-26 12:38:46','2015-06-30 12:44:43',1,1),(8,'BC05004S','Hot Rolled COIL 5.0mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:38:58','2015-06-30 12:54:40',1,1),(9,'SE112233','Hot Rolled COIL 4.5mm x 4 Ft. ',1,2,3,1,'2015-05-26 12:39:18','2015-06-30 01:29:35',1,1),(10,'SS304CUT','SS-304  CUTTINGS',0,0,0,1,'2015-05-26 12:47:26','2015-05-26 12:47:26',1,1),(11,'SS316CUT','SS-316  CUTTINGS',0,0,0,1,'2015-07-21 04:15:21','2015-05-26 12:47:36',1,1),(12,'ALUMNCUT','ALUMINUM  CUTTING',0,0,0,1,'2015-05-26 12:50:35','2015-05-26 12:50:35',1,1),(13,'MATLABOR','LABOR ONLY, MAT.  FROM CUSTOMER',0,0,0,1,'2015-05-26 12:52:17','2015-05-26 12:52:17',1,1),(14,'COPPRCUT','COPPER  CUTTINGS',0,0,0,1,'2015-05-26 12:52:27','2015-05-26 12:52:27',1,1),(22,'AE123456','ALU EMBRO',1,5,3,1,'2015-06-30 02:26:00','2015-07-06 06:01:10',1,1),(23,'AL123123','SAMPLE',1,5,8,0,'2015-07-08 10:01:41','2015-07-21 04:16:01',5,1),(28,'SS231223','SAMPLE FOR NEW STRUCTURE',1,2,14,1,'2015-07-21 02:11:32','0000-00-00 00:00:00',1,0),(31,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-21 07:48:16','2015-07-23 04:13:49',1,1),(32,'AC123131','SAMPLE FOR TESTING',1,5,2,1,'2015-07-23 04:07:38','0000-00-00 00:00:00',1,0),(33,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:18:18','2015-07-23 04:38:59',1,1),(34,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:39:10','2015-07-23 04:57:53',1,1),(35,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:58:11','2015-07-23 04:59:36',1,1),(36,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:59:55','2015-07-23 05:00:23',1,1),(37,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 05:00:50','2015-07-23 06:00:48',1,1),(38,'SS223344','SAMPLE FOR IMPORT',1,2,14,1,'2015-07-23 06:00:53','0000-00-00 00:00:00',1,0);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -436,7 +440,7 @@ CREATE TABLE `product_branch_inventory` (
   PRIMARY KEY (`id`),
   KEY `idx_productid` (`product_id`),
   KEY `idx_productid_branchid` (`product_id`,`branch_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=81 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=210 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -445,7 +449,7 @@ CREATE TABLE `product_branch_inventory` (
 
 LOCK TABLES `product_branch_inventory` WRITE;
 /*!40000 ALTER TABLE `product_branch_inventory` DISABLE KEYS */;
-INSERT INTO `product_branch_inventory` VALUES (1,1,1,0,0,0),(2,2,1,0,0,0),(3,3,1,0,0,0),(4,1,2,0,0,0),(5,2,2,0,0,0),(6,3,2,0,0,0),(7,1,3,0,0,0),(8,2,3,0,0,0),(9,3,3,0,0,0),(10,1,4,0,0,0),(11,2,4,0,0,0),(12,3,4,0,0,0),(13,1,5,0,0,0),(14,2,5,0,0,0),(15,3,5,0,0,0),(16,1,6,0,0,0),(17,2,6,0,0,0),(18,3,6,0,0,0),(19,1,7,0,0,0),(20,2,7,0,0,0),(21,3,7,0,0,0),(22,1,8,0,0,0),(23,2,8,0,0,0),(24,3,8,0,0,0),(25,1,9,0,0,0),(26,2,9,0,0,0),(27,3,9,0,0,0),(28,1,10,0,0,0),(29,2,10,0,0,0),(30,3,10,0,0,0),(31,1,11,0,0,0),(32,2,11,0,0,0),(33,3,11,0,0,0),(34,1,12,0,0,0),(35,2,12,0,0,0),(36,3,12,0,0,0),(37,1,13,0,0,0),(38,2,13,0,0,0),(39,3,13,0,0,0),(40,1,14,0,0,0),(41,2,14,0,0,0),(42,3,14,0,0,0),(43,4,1,0,0,0),(44,4,2,0,0,0),(45,4,3,0,0,0),(46,4,4,0,0,0),(47,4,5,0,0,0),(48,4,6,0,0,0),(49,4,7,0,0,0),(50,4,8,0,0,0),(51,4,9,0,0,0),(52,4,10,0,0,0),(53,4,11,0,0,0),(54,4,12,0,0,0),(55,4,13,0,0,0),(56,4,14,0,0,0),(61,6,1,0,0,0),(62,6,2,0,0,0),(63,6,3,0,0,0),(64,6,4,0,0,0),(65,6,5,0,0,0),(66,6,6,0,0,0),(67,6,7,0,0,0),(68,6,8,0,0,0),(69,6,9,0,0,0),(70,6,10,0,0,0),(71,6,11,0,0,0),(72,6,12,0,0,0),(73,6,13,0,0,0),(74,6,14,0,0,0),(76,1,22,0,0,0),(77,2,22,0,0,0),(78,3,22,0,0,0),(79,4,22,0,0,0),(80,6,22,0,0,0);
+INSERT INTO `product_branch_inventory` VALUES (1,1,1,-27,0,0),(2,2,1,3,0,0),(3,3,1,0,0,0),(4,1,2,-2,0,0),(5,2,2,0,0,0),(6,3,2,0,0,0),(7,1,3,15,0,0),(8,2,3,0,0,0),(9,3,3,0,0,0),(10,1,4,-50,0,0),(11,2,4,0,0,0),(12,3,4,0,0,0),(13,1,5,-340,0,0),(14,2,5,300,0,0),(15,3,5,0,0,0),(16,1,6,0,0,0),(17,2,6,0,0,0),(18,3,6,0,0,0),(19,1,7,-70,0,0),(20,2,7,12,0,0),(21,3,7,0,0,0),(22,1,8,-20,0,0),(23,2,8,5,0,0),(24,3,8,0,0,0),(25,1,9,-98,0,0),(26,2,9,0,0,0),(27,3,9,0,0,0),(28,1,10,-33,0,0),(29,2,10,30,0,0),(30,3,10,0,0,0),(31,1,11,-400,5,10),(32,2,11,0,6,0),(33,3,11,0,7,0),(34,1,12,-13,0,0),(35,2,12,20,0,0),(36,3,12,0,0,0),(37,1,13,-220,0,0),(38,2,13,0,0,0),(39,3,13,0,0,0),(40,1,14,0,0,0),(41,2,14,0,0,0),(42,3,14,0,0,0),(43,4,1,0,0,0),(44,4,2,0,0,0),(45,4,3,0,0,0),(46,4,4,0,0,0),(47,4,5,0,0,0),(48,4,6,0,0,0),(49,4,7,0,0,0),(50,4,8,0,0,0),(51,4,9,0,0,0),(52,4,10,0,0,0),(53,4,11,0,8,0),(54,4,12,0,0,0),(55,4,13,0,0,0),(56,4,14,0,0,0),(61,6,1,0,0,0),(62,6,2,0,0,0),(63,6,3,0,0,0),(64,6,4,0,0,0),(65,6,5,0,0,0),(66,6,6,0,0,0),(67,6,7,0,0,0),(68,6,8,0,0,0),(69,6,9,0,0,0),(70,6,10,0,0,0),(71,6,11,0,9,0),(72,6,12,0,0,0),(73,6,13,0,0,0),(74,6,14,0,0,0),(76,1,22,-20,0,0),(77,2,22,20,0,0),(78,3,22,0,0,0),(79,4,22,0,0,0),(80,6,22,0,0,0),(81,7,1,0,0,0),(82,7,2,0,0,0),(83,7,3,0,0,0),(84,7,4,0,0,0),(85,7,5,0,0,0),(86,7,6,0,0,0),(87,7,7,0,0,0),(88,7,8,0,0,0),(89,7,9,0,0,0),(90,7,10,0,0,0),(91,7,11,0,10,0),(92,7,12,0,0,0),(93,7,13,0,0,0),(94,7,14,0,0,0),(95,7,22,0,0,0),(96,1,23,-15,5,10),(97,2,23,10,0,0),(98,3,23,0,0,0),(99,4,23,0,0,0),(100,6,23,0,0,0),(101,7,23,0,0,0),(126,1,28,0,0,0),(127,2,28,0,0,0),(128,3,28,0,0,0),(129,4,28,0,0,0),(130,6,28,0,0,0),(131,7,28,0,0,0),(144,1,31,10,0,0),(145,3,31,10,0,0),(146,2,31,10,0,0),(147,4,31,10,0,0),(148,6,31,10,0,0),(149,7,31,10,0,0),(150,8,1,0,0,0),(151,8,2,0,0,0),(152,8,3,0,0,0),(153,8,4,0,0,0),(154,8,5,0,0,0),(155,8,6,0,0,0),(156,8,7,0,0,0),(157,8,8,0,0,0),(158,8,9,0,0,0),(159,8,10,0,0,0),(160,8,11,0,0,0),(161,8,12,0,0,0),(162,8,13,0,0,0),(163,8,14,0,0,0),(164,8,22,0,0,0),(165,8,23,0,0,0),(166,8,28,0,0,0),(167,8,31,0,0,0),(168,1,32,0,0,0),(169,2,32,0,0,0),(170,3,32,0,0,0),(171,4,32,0,0,0),(172,6,32,0,0,0),(173,7,32,0,0,0),(174,1,33,10,0,0),(175,3,33,10,0,0),(176,2,33,10,0,0),(177,4,33,10,0,0),(178,6,33,10,0,0),(179,7,33,10,0,0),(180,1,34,10,0,0),(181,3,34,10,0,0),(182,2,34,10,0,0),(183,4,34,10,0,0),(184,6,34,10,0,0),(185,7,34,10,0,0),(186,1,35,10,0,0),(187,3,35,10,0,0),(188,2,35,10,0,0),(189,4,35,10,0,0),(190,6,35,10,0,0),(191,7,35,10,0,0),(192,1,36,10,0,0),(193,3,36,10,0,0),(194,2,36,10,0,0),(195,4,36,10,0,0),(196,6,36,10,0,0),(197,7,36,10,0,0),(198,1,37,10,0,0),(199,3,37,10,0,0),(200,2,37,10,0,0),(201,4,37,10,0,0),(202,6,37,10,0,0),(203,7,37,10,0,0),(204,1,38,10,0,0),(205,3,38,10,0,0),(206,2,38,10,0,0),(207,4,38,10,0,0),(208,6,38,10,0,0),(209,7,38,10,0,0);
 /*!40000 ALTER TABLE `product_branch_inventory` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -467,7 +471,7 @@ CREATE TABLE `purchase_detail` (
   PRIMARY KEY (`id`),
   KEY `idx_headid` (`headid`),
   KEY `idx_id_headid` (`id`,`headid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -476,6 +480,7 @@ CREATE TABLE `purchase_detail` (
 
 LOCK TABLES `purchase_detail` WRITE;
 /*!40000 ALTER TABLE `purchase_detail` DISABLE KEYS */;
+INSERT INTO `purchase_detail` VALUES (1,1,10,23,'','',10),(2,1,20,1,'','deliver asap',20),(3,1,10,13,'Will be used for material processing','',10),(4,2,20,8,'','',0),(5,2,10,3,'','',0),(6,3,2,3,'','',0),(7,5,20,4,'','INV#2131',0),(8,5,5,6,'','INV#12355',0),(9,5,20,11,'SAMPLE CUTTINGS','INV#12315',0),(10,5,300,14,'SAMPLE COPPER','INV#09664',0),(11,6,5,8,'','',5),(12,6,20,3,'','',20),(13,7,5,2,'','',10),(14,7,5,12,'SAMPLE','',7);
 /*!40000 ALTER TABLE `purchase_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -504,7 +509,7 @@ CREATE TABLE `purchase_head` (
   PRIMARY KEY (`id`),
   KEY `idx_isshow_isused_forbranchid` (`is_show`,`is_used`,`for_branchid`),
   KEY `idx_id_isshow_isused_forbranchid` (`id`,`is_show`,`is_used`,`for_branchid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -513,8 +518,48 @@ CREATE TABLE `purchase_head` (
 
 LOCK TABLES `purchase_head` WRITE;
 /*!40000 ALTER TABLE `purchase_head` DISABLE KEYS */;
+INSERT INTO `purchase_head` VALUES (1,100001,1,1,'2015-07-08 10:16:56','BENJO','DELIVER ASAP',1,1,2,5,5,'2015-07-08 10:09:05','2015-07-08 10:16:56'),(2,100002,1,7,'2015-07-08 10:25:09','BENJO','SAMPLE',1,1,2,5,5,'2015-07-08 10:24:48','2015-07-08 10:25:09'),(3,100003,2,2,'2015-07-13 08:32:45','','',1,1,2,5,5,'2015-07-13 20:32:24','2015-07-13 08:32:45'),(4,100004,1,0,'2015-07-13 08:41:57','','',1,0,0,1,1,'2015-07-13 20:41:57','0000-00-00 00:00:00'),(5,100005,1,1,'2015-07-14 12:37:59','LAWRENCE PENA','Give to Benjolynne Sia',1,1,2,1,1,'2015-07-14 12:36:40','2015-07-14 12:37:59'),(6,100006,1,1,'2015-07-22 05:46:10','LAWRENCE','',1,1,2,1,1,'2015-07-22 13:33:53','2015-07-22 05:46:10'),(7,100007,1,1,'2015-07-23 04:37:44','','',1,1,2,1,1,'2015-07-23 15:43:26','2015-07-23 04:37:44'),(8,100008,1,0,'2015-07-23 07:24:02','','',1,0,0,1,1,'2015-07-23 19:24:02','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `purchase_head` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`purchase_head_BEFORE_INSERT` BEFORE INSERT ON `purchase_head` FOR EACH ROW
+BEGIN
+	CALL process_insert_new_name(NEW.`supplier`,2);
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`purchase_head_BEFORE_UPDATE` BEFORE UPDATE ON `purchase_head` FOR EACH ROW
+BEGIN
+	IF(LOWER(OLD.`supplier`) <> LOWER(NEW.`supplier`)) THEN
+		DELETE FROM `recent_supplier` WHERE LOWER(`name`) = LOWER(OLD.`supplier`);
+        CALL process_insert_new_name(NEW.`supplier`,2);
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `purchase_receive_detail`
@@ -535,7 +580,7 @@ CREATE TABLE `purchase_receive_detail` (
   PRIMARY KEY (`id`),
   KEY `idx_headid` (`headid`),
   KEY `idx_purchasedetailid` (`purchase_detail_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -544,6 +589,7 @@ CREATE TABLE `purchase_receive_detail` (
 
 LOCK TABLES `purchase_receive_detail` WRITE;
 /*!40000 ALTER TABLE `purchase_receive_detail` DISABLE KEYS */;
+INSERT INTO `purchase_receive_detail` VALUES (1,1,10,23,'','','Lawrence',1),(2,2,10,1,'','','',2),(3,1,10,1,'','','',2),(4,1,10,13,'','','',3),(5,7,5,8,'','','',11),(6,7,10,3,'','','',12),(7,9,10,3,'','','',12),(8,10,10,2,'','','',13),(9,10,7,12,'','','',14);
 /*!40000 ALTER TABLE `purchase_receive_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -636,7 +682,7 @@ CREATE TABLE `purchase_receive_head` (
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
   KEY `idx_id_isshow` (`is_show`,`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -645,6 +691,7 @@ CREATE TABLE `purchase_receive_head` (
 
 LOCK TABLES `purchase_receive_head` WRITE;
 /*!40000 ALTER TABLE `purchase_receive_head` DISABLE KEYS */;
+INSERT INTO `purchase_receive_head` VALUES (1,100001,1,'2015-07-08 10:45:59','',1,1,5,5,'2015-07-08 10:20:19','2015-07-08 10:45:59'),(2,100002,1,'2015-07-08 10:43:22','',1,0,5,5,'2015-07-08 10:43:22','0000-00-00 00:00:00'),(3,100003,1,'2015-07-08 10:44:06','',1,0,5,5,'2015-07-08 10:44:06','0000-00-00 00:00:00'),(4,100004,2,'2015-07-13 08:32:21','',1,0,5,5,'2015-07-13 20:32:21','0000-00-00 00:00:00'),(5,100005,2,'2015-07-13 08:32:35','',1,0,5,5,'2015-07-13 20:32:35','0000-00-00 00:00:00'),(6,100006,1,'2015-07-14 12:54:38','',1,0,1,1,'2015-07-14 12:54:38','0000-00-00 00:00:00'),(7,100007,1,'2015-07-22 07:26:47','',1,1,1,1,'2015-07-22 17:54:07','2015-07-22 07:26:47'),(8,100008,1,'2015-07-22 07:26:54','',1,0,1,1,'2015-07-22 19:26:54','0000-00-00 00:00:00'),(9,100009,1,'2015-07-23 03:47:12','',1,0,1,1,'2015-07-23 15:47:12','0000-00-00 00:00:00'),(10,100010,1,'2015-07-23 06:39:22','',1,1,1,1,'2015-07-23 18:39:06','2015-07-23 06:39:22');
 /*!40000 ALTER TABLE `purchase_receive_head` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -711,7 +758,7 @@ CREATE TABLE `purchase_return_detail` (
   PRIMARY KEY (`id`),
   KEY `idx_headid` (`headid`),
   KEY `idx_id_headid` (`id`,`headid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -720,6 +767,7 @@ CREATE TABLE `purchase_return_detail` (
 
 LOCK TABLES `purchase_return_detail` WRITE;
 /*!40000 ALTER TABLE `purchase_return_detail` DISABLE KEYS */;
+INSERT INTO `purchase_return_detail` VALUES (1,1,5,3,'',''),(2,1,10,23,'',''),(3,2,20,1,'','INV#1235'),(4,2,100,13,'SAMPLE LABOR MATS','PO#12357'),(5,2,30,7,'','PO#15675'),(6,3,5,2,'','');
 /*!40000 ALTER TABLE `purchase_return_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -807,7 +855,7 @@ CREATE TABLE `purchase_return_head` (
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -816,8 +864,27 @@ CREATE TABLE `purchase_return_head` (
 
 LOCK TABLES `purchase_return_head` WRITE;
 /*!40000 ALTER TABLE `purchase_return_head` DISABLE KEYS */;
+INSERT INTO `purchase_return_head` VALUES (1,100001,1,'2015-07-08 10:52:50','Lawrence','SAMPLE',1,1,5,5,'2015-07-08 10:51:53','2015-07-08 10:52:50'),(2,100002,1,'2015-07-14 12:39:04','KRYPTON YU','DAMAGE GOODS',1,1,1,1,'2015-07-14 12:38:17','2015-07-14 12:39:04'),(3,100003,1,'2015-07-23 03:49:52','','',1,0,1,1,'2015-07-23 15:49:52','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `purchase_return_head` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`purchase_return_head_BEFORE_INSERT` BEFORE INSERT ON `purchase_return_head` FOR EACH ROW
+BEGIN
+	CALL process_insert_new_name(NEW.`supplier`,2);
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -836,6 +903,11 @@ BEGIN
     
     IF(DATE(OLD.`entry_date`) <> DATE(NEW.`entry_date`)) THEN
 		CALL process_recompute_transaction_summary('PURCHASE RETURN HEAD',OLD.`id`,1);
+    END IF;
+    
+    IF(LOWER(OLD.`supplier`) <> LOWER(NEW.`supplier`)) THEN
+		DELETE FROM `recent_supplier` WHERE LOWER(`name`) = LOWER(OLD.`supplier`);
+        CALL process_insert_new_name(NEW.`supplier`,2);
     END IF;
 END */;;
 DELIMITER ;
@@ -866,6 +938,52 @@ DELIMITER ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
+-- Table structure for table `recent_customer`
+--
+
+DROP TABLE IF EXISTS `recent_customer`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `recent_customer` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `recent_customer`
+--
+
+LOCK TABLES `recent_customer` WRITE;
+/*!40000 ALTER TABLE `recent_customer` DISABLE KEYS */;
+/*!40000 ALTER TABLE `recent_customer` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `recent_supplier`
+--
+
+DROP TABLE IF EXISTS `recent_supplier`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `recent_supplier` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) DEFAULT '',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `recent_supplier`
+--
+
+LOCK TABLES `recent_supplier` WRITE;
+/*!40000 ALTER TABLE `recent_supplier` DISABLE KEYS */;
+/*!40000 ALTER TABLE `recent_supplier` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `release_detail`
 --
 
@@ -881,7 +999,7 @@ CREATE TABLE `release_detail` (
   `memo` varchar(150) DEFAULT '',
   `qty_released` varchar(10) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -890,6 +1008,7 @@ CREATE TABLE `release_detail` (
 
 LOCK TABLES `release_detail` WRITE;
 /*!40000 ALTER TABLE `release_detail` DISABLE KEYS */;
+INSERT INTO `release_detail` VALUES (1,1,20,4,'','','20'),(2,1,10,23,'','','0'),(3,4,3,10,'This item roll up and wrap in plastic','INV#123456','3'),(4,4,20,1,'','INV#64789','20'),(5,4,300,11,'This item is from MAPUA','DR#0456','300'),(6,4,10,13,'Plywood 3/4 \" x 4\' x 8\' waterjet cutting into','INV#22222','10');
 /*!40000 ALTER TABLE `release_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -936,7 +1055,7 @@ CREATE TABLE `release_head` (
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -945,6 +1064,7 @@ CREATE TABLE `release_head` (
 
 LOCK TABLES `release_head` WRITE;
 /*!40000 ALTER TABLE `release_head` DISABLE KEYS */;
+INSERT INTO `release_head` VALUES (1,100001,1,'2015-07-08 11:51:52','LAWRENCE','SAMPLE',1,1,5,5,'2015-07-08 11:44:42','2015-07-08 11:51:52'),(2,100002,1,'2015-07-08 11:46:04','','',1,0,5,5,'2015-07-08 11:46:04','0000-00-00 00:00:00'),(3,100003,1,'2015-07-08 12:23:24','','',1,0,5,5,'2015-07-08 12:23:24','0000-00-00 00:00:00'),(4,100004,1,'2015-07-13 07:59:41','','',1,1,1,1,'2015-07-13 19:56:35','2015-07-13 07:59:41');
 /*!40000 ALTER TABLE `release_head` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -964,7 +1084,7 @@ CREATE TABLE `return_detail` (
   `memo` varchar(150) DEFAULT '',
   `received_by` varchar(50) DEFAULT '',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -973,6 +1093,7 @@ CREATE TABLE `return_detail` (
 
 LOCK TABLES `return_detail` WRITE;
 /*!40000 ALTER TABLE `return_detail` DISABLE KEYS */;
+INSERT INTO `return_detail` VALUES (1,1,10,23,'','','Lawrence'),(2,1,10,1,'','','Lawrence'),(3,2,2,9,'','','SAMPLE');
 /*!40000 ALTER TABLE `return_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1061,7 +1182,7 @@ CREATE TABLE `return_head` (
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1070,8 +1191,27 @@ CREATE TABLE `return_head` (
 
 LOCK TABLES `return_head` WRITE;
 /*!40000 ALTER TABLE `return_head` DISABLE KEYS */;
+INSERT INTO `return_head` VALUES (1,100001,1,'2015-07-08 11:27:33','Benjo','','#SD100001',1,1,5,5,'2015-07-08 11:23:18','2015-07-08 11:27:33'),(2,100002,1,'2015-07-22 07:41:03','','','',1,1,1,1,'2015-07-22 17:22:29','2015-07-22 07:41:03'),(3,100003,1,'2015-07-23 03:39:36','','','',1,0,1,1,'2015-07-23 15:39:36','0000-00-00 00:00:00');
 /*!40000 ALTER TABLE `return_head` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`return_head_BEFORE_INSERT` BEFORE INSERT ON `return_head` FOR EACH ROW
+BEGIN
+	CALL process_insert_new_name(NEW.`customer`,1);
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -1092,6 +1232,10 @@ BEGIN
 		CALL process_recompute_transaction_summary('CUSTOMER RETURN HEAD',OLD.`id`,1);
     END IF;
     
+    IF(LOWER(OLD.`customer`) <> LOWER(NEW.`customer`)) THEN
+		DELETE FROM `recent_customer` WHERE LOWER(`name`) = LOWER(OLD.`customer`);
+        CALL process_insert_new_name(NEW.`customer`,1);
+    END IF;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1142,7 +1286,7 @@ CREATE TABLE `stock_delivery_detail` (
   PRIMARY KEY (`id`),
   KEY `idx_headid` (`headid`),
   KEY `idx_id_headid` (`id`,`headid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1151,6 +1295,7 @@ CREATE TABLE `stock_delivery_detail` (
 
 LOCK TABLES `stock_delivery_detail` WRITE;
 /*!40000 ALTER TABLE `stock_delivery_detail` DISABLE KEYS */;
+INSERT INTO `stock_delivery_detail` VALUES (1,1,10,7,'','stock','INV#112233','Lawrence',1,10,0),(2,1,10,4,'','Lawrence Pena','','',0,10,0),(3,1,15,23,'','','INV#223344','Lawrence',1,15,0),(4,1,7,2,'','Benjolynne Sia','','',0,7,0),(5,2,3,1,'','Jacob #2231','from XYZ Ent for checkered T - pattern','Ronnie',1,3,0),(6,2,20,22,'','ABC #55136','from ABE Hardware for cutting','Emikiler',1,20,0),(7,2,300,5,'','Mako #223354','from Junior Tinsmith for rolling and welding','Adrian',1,300,0),(8,2,5,8,'','del to Marilao for expanded metal',' Stock In','Jason',1,5,0),(9,2,30,10,'SS Shafting 4\" x 4-3/4\"','Mabuhay Hardware Inv#5465','Stock In','Jason',1,30,0),(10,2,20,12,'Aluminum Plate T-6 25mm x 250mm x 300mm','Mabuhay Hardware DR# 2154','Stock In','Jason',1,20,0),(11,3,20,13,'SAMPLE LABOR MATS','INV#155132','','',0,20,0),(12,3,100,9,'','INV#151515','','',0,100,0),(13,3,10,1,'','INV#6477','','',0,10,0),(14,3,20,4,'','INV#51535','','',0,20,0),(15,3,15,8,'','INV#1515','','',0,15,0),(16,4,2,9,'','','','',0,0,0),(17,4,5,2,'','','','',0,0,0),(18,6,5,9,'','SAMPLE REMARKS ONLY','','',0,0,0);
 /*!40000 ALTER TABLE `stock_delivery_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
@@ -1268,7 +1413,7 @@ CREATE TABLE `stock_delivery_head` (
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1277,8 +1422,27 @@ CREATE TABLE `stock_delivery_head` (
 
 LOCK TABLES `stock_delivery_head` WRITE;
 /*!40000 ALTER TABLE `stock_delivery_head` DISABLE KEYS */;
+INSERT INTO `stock_delivery_head` VALUES (1,100001,1,2,'2015-07-08 11:14:29','2015-07-08 00:00:00','2015-07-08 00:00:00','','DELIVER ASAP',1,1,1,5,5,'2015-07-08 10:56:48','2015-07-08 11:14:29'),(2,100002,1,2,'2015-07-13 07:37:45','2015-07-13 00:00:00','2015-07-13 07:31:48','','',1,1,3,1,1,'2015-07-13 19:31:48','2015-07-13 07:37:45'),(3,100003,1,0,'2015-07-14 12:42:13','2015-07-14 12:41:03','2015-07-14 00:00:00','','DELIVER TO ROBI NAVARRO',1,1,2,1,1,'2015-07-14 12:41:03','2015-07-14 12:42:13'),(4,100004,1,0,'2015-07-22 07:51:32','2015-07-22 07:51:12','2015-07-22 07:51:12','','',1,1,2,1,1,'2015-07-22 19:51:12','2015-07-22 07:51:32'),(5,100005,1,0,'2015-07-22 07:52:31','2015-07-22 07:52:31','2015-07-22 07:52:31','','',1,0,0,1,1,'2015-07-22 19:52:31','0000-00-00 00:00:00'),(6,100006,1,0,'2015-07-23 03:58:34','2015-07-23 03:56:24','2015-07-23 03:56:24','','',1,1,2,1,1,'2015-07-23 15:56:24','2015-07-23 03:58:34');
 /*!40000 ALTER TABLE `stock_delivery_head` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_head_BEFORE_INSERT` BEFORE INSERT ON `stock_delivery_head` FOR EACH ROW
+BEGIN
+	CALL process_insert_new_name(NEW.`supplier`,2);
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
 /*!50003 SET @saved_col_connection = @@collation_connection */ ;
@@ -1305,6 +1469,11 @@ BEGIN
     
     IF(DATE(OLD.`customer_receive_date`) <> DATE(NEW.`customer_receive_date`)) THEN
 		CALL process_recompute_transaction_summary('CUSTOMER RECEIVE HEAD',OLD.`id`,1);
+    END IF;
+    
+    IF(LOWER(OLD.`supplier`) <> LOWER(NEW.`supplier`)) THEN
+		DELETE FROM `recent_supplier` WHERE LOWER(`name`) = LOWER(OLD.`supplier`);
+        CALL process_insert_new_name(NEW.`supplier`,2);
     END IF;
 END */;;
 DELIMITER ;
@@ -1368,7 +1537,7 @@ CREATE TABLE `subgroup` (
 
 LOCK TABLES `subgroup` WRITE;
 /*!40000 ALTER TABLE `subgroup` DISABLE KEYS */;
-INSERT INTO `subgroup` VALUES (1,'A','ANGEL BEAR',1,'2015-05-20 00:00:00','2015-06-30 02:47:44',1,1),(2,'C','COIL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'E','EMBROSSED / CHECKERED PLATE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'F','FLAT BAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(5,'H','HEXAGON BAR',1,'2015-05-26 12:18:49','2015-05-26 12:18:49',1,1),(6,'J','ROUND TUBE',1,'2015-05-26 12:19:00','2015-05-26 12:19:00',1,1),(7,'K','SQUARE TUBE',1,'2015-05-26 12:19:12','2015-05-26 12:19:12',1,1),(8,'L','RECTANGULAR TUBE',1,'2015-05-26 12:19:26','2015-05-26 12:19:26',1,1),(9,'M','MESH - IMPORTED',1,'2015-05-26 12:19:38','2015-05-26 12:19:38',1,1),(10,'N','PIPE',1,'2015-05-26 12:19:48','2015-05-26 12:19:48',1,1),(11,'P','PERFORATED SHEET',1,'2015-05-26 12:20:07','2015-05-26 12:20:07',1,1),(12,'Q','SQUARE BAR',1,'2015-05-26 12:20:26','2015-05-26 12:20:26',1,1),(13,'R','ROUND BAR',1,'2015-05-26 12:20:41','2015-05-26 12:20:41',1,1),(14,'S','SHEETS AND PLATES - PLAIN',1,'2015-05-26 12:20:54','2015-05-26 12:20:54',1,1),(15,'U','WIRE',1,'2015-05-26 12:21:04','2015-05-26 12:21:04',1,1),(16,'V','WIELDING ROD / ELECTRODE',1,'2015-05-26 12:21:27','2015-05-26 12:21:27',1,1),(17,'W','WEDLED WIRE SCREEN - IMPORTED',1,'2015-05-26 12:21:47','2015-05-26 12:21:47',1,1),(18,'X','EXPANDED METAL',1,'2015-05-26 12:22:21','2015-05-26 12:22:21',1,1),(19,'Z','ZINGA',0,'2015-06-30 02:54:54','2015-06-30 02:56:08',1,1),(20,'Z','ZINGA',1,'2015-06-30 02:56:17','2015-06-30 02:56:17',1,1);
+INSERT INTO `subgroup` VALUES (1,'A','ANGEL BEAR',1,'2015-05-20 00:00:00','2015-06-30 02:47:44',1,1),(2,'C','COIL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'E','EMBROSSED / CHECKERED PLATE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'F','FLAT BAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(5,'H','HEXAGON BAR',1,'2015-05-26 12:18:49','2015-05-26 12:18:49',1,1),(6,'J','ROUND TUBE',1,'2015-05-26 12:19:00','2015-05-26 12:19:00',1,1),(7,'K','SQUARE TUBE',1,'2015-05-26 12:19:12','2015-05-26 12:19:12',1,1),(8,'L','RECTANGULAR TUBE',1,'2015-05-26 12:19:26','2015-05-26 12:19:26',1,1),(9,'M','MESH - IMPORTED',1,'2015-05-26 12:19:38','2015-05-26 12:19:38',1,1),(10,'N','PIPE',1,'2015-05-26 12:19:48','2015-05-26 12:19:48',1,1),(11,'P','PERFORATED SHEET',1,'2015-05-26 12:20:07','2015-05-26 12:20:07',1,1),(12,'Q','SQUARE BAR',1,'2015-05-26 12:20:26','2015-05-26 12:20:26',1,1),(13,'R','ROUND BAR',1,'2015-05-26 12:20:41','2015-05-26 12:20:41',1,1),(14,'S','SHEETS AND PLATES - PLAIN',1,'2015-05-26 12:20:54','2015-05-26 12:20:54',1,1),(15,'U','WIRE',1,'2015-05-26 12:21:04','2015-05-26 12:21:04',1,1),(16,'V','WIELDING ROD / ELECTRODE',1,'2015-05-26 12:21:27','2015-05-26 12:21:27',1,1),(17,'W','WEDLED WIRE SCREEN - IMPORTED',1,'2015-05-26 12:21:47','2015-05-26 12:21:47',1,1),(18,'X','EXPANDED METAL',1,'2015-05-26 12:22:21','2015-05-26 12:22:21',1,1),(19,'Z','ZINGA',0,'2015-06-30 02:54:54','2015-06-30 02:56:08',1,1),(20,'Z','ZINGA',0,'2015-06-30 02:56:17','2015-07-22 11:57:02',1,1);
 /*!40000 ALTER TABLE `subgroup` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1392,6 +1561,7 @@ CREATE TABLE `temp_beginning_transaction` (
 
 LOCK TABLES `temp_beginning_transaction` WRITE;
 /*!40000 ALTER TABLE `temp_beginning_transaction` DISABLE KEYS */;
+INSERT INTO `temp_beginning_transaction` VALUES (23,-15);
 /*!40000 ALTER TABLE `temp_beginning_transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1418,7 +1588,7 @@ CREATE TABLE `user` (
   `last_modified_by` bigint(20) DEFAULT '1',
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1427,8 +1597,32 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
-INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','83703b5229462cb6bfaf425152e46a8c','09263188835',1,1,1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(3,'02','Gian Egamino','gegamino','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,1,0,'2015-05-22 04:56:20','2015-07-06 05:42:10',1,1),(5,'04','Kryzza Garra','kryzza','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,1,1,'2015-05-23 06:31:47','2015-07-08 02:23:29',1,1),(6,'05','Enerick Pangilinan','enerick','f3e97dcba0a308db57b1aeaee5a43d4c','12345678',1,1,1,'2015-06-30 03:52:24','2015-07-06 12:00:15',1,1);
+INSERT INTO `user` VALUES (1,'01','Lawrence Pena','superadmin','83703b5229462cb6bfaf425152e46a8c','09263188835',1,1,1,'2015-05-19 00:00:00','2015-05-19 00:00:00',1,1),(3,'02','Gian Egamino','gegamino','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,1,0,'2015-05-22 04:56:20','2015-07-06 05:42:10',1,1),(5,'04','Kryzza Garra','kryzza','f3e97dcba0a308db57b1aeaee5a43d4c','09263188835',1,1,1,'2015-05-23 06:31:47','2015-07-08 09:44:05',1,1),(6,'05','Enerick Pangilinan','enerick','f3e97dcba0a308db57b1aeaee5a43d4c','12345678',1,1,1,'2015-06-30 03:52:24','2015-07-06 12:00:15',1,1),(7,'09','Benjolynne Sia','benjo','f3e97dcba0a308db57b1aeaee5a43d4c','',0,1,1,'2015-07-08 09:50:13','2015-07-22 12:00:19',5,1);
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `user_branch`
+--
+
+DROP TABLE IF EXISTS `user_branch`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `user_branch` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) DEFAULT '0',
+  `user_branch` bigint(20) DEFAULT '0',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `user_branch`
+--
+
+LOCK TABLES `user_branch` WRITE;
+/*!40000 ALTER TABLE `user_branch` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_branch` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1444,7 +1638,7 @@ CREATE TABLE `user_permission` (
   `user_id` bigint(20) DEFAULT '0',
   `permission_code` int(5) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5543 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=6914 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1453,7 +1647,7 @@ CREATE TABLE `user_permission` (
 
 LOCK TABLES `user_permission` WRITE;
 /*!40000 ALTER TABLE `user_permission` DISABLE KEYS */;
-INSERT INTO `user_permission` VALUES (1,1,1,100),(2301,1,6,0),(2302,2,6,0),(2303,3,6,0),(2304,4,6,0),(2305,6,6,0),(5408,1,3,100),(5409,2,3,100),(5477,2,5,101),(5478,2,5,102),(5479,2,5,103),(5480,2,5,104),(5481,2,5,105),(5482,2,5,106),(5483,2,5,107),(5484,2,5,108),(5485,2,5,109),(5486,2,5,110),(5487,2,5,111),(5488,2,5,112),(5489,2,5,113),(5490,2,5,114),(5491,2,5,115),(5492,2,5,116),(5493,2,5,117),(5494,2,5,118),(5495,2,5,119),(5496,2,5,120),(5497,2,5,121),(5498,2,5,131),(5499,2,5,132),(5500,2,5,133),(5501,2,5,136),(5502,2,5,137),(5503,2,5,138),(5504,2,5,139),(5505,2,5,140),(5506,2,5,141),(5507,2,5,142),(5508,2,5,143),(5509,2,5,144),(5510,2,5,145),(5511,2,5,156),(5512,2,5,157),(5513,2,5,158),(5514,2,5,159),(5515,2,5,160),(5516,2,5,161),(5517,2,5,162),(5518,2,5,164),(5519,2,5,165),(5520,2,5,171),(5521,2,5,172),(5522,2,5,173),(5523,2,5,176),(5524,2,5,177),(5525,2,5,178),(5526,2,5,179),(5527,2,5,180),(5528,2,5,181),(5529,2,5,191),(5530,2,5,192),(5531,2,5,193),(5532,2,5,194),(5533,2,5,195),(5534,2,5,196),(5535,2,5,199),(5536,2,5,200),(5537,2,5,201),(5538,2,5,202),(5539,2,5,203),(5540,2,5,211),(5541,2,5,212),(5542,2,5,213);
+INSERT INTO `user_permission` VALUES (1,1,1,100),(2301,1,6,0),(2302,2,6,0),(2303,3,6,0),(2304,4,6,0),(2305,6,6,0),(5408,1,3,100),(5409,2,3,100),(5543,1,5,100),(5544,2,5,100),(5545,3,5,100),(6488,1,7,101),(6489,1,7,102),(6490,1,7,103),(6491,1,7,104),(6492,1,7,105),(6493,1,7,106),(6494,1,7,107),(6495,1,7,108),(6496,1,7,109),(6497,1,7,110),(6498,1,7,111),(6499,1,7,112),(6500,1,7,113),(6501,1,7,114),(6502,1,7,115),(6503,1,7,116),(6504,1,7,117),(6505,1,7,118),(6506,1,7,119),(6507,1,7,120),(6508,1,7,121),(6509,1,7,131),(6510,1,7,132),(6511,1,7,133),(6512,1,7,134),(6513,1,7,135),(6514,1,7,136),(6515,1,7,137),(6516,1,7,138),(6517,1,7,139),(6518,1,7,140),(6519,1,7,141),(6520,1,7,142),(6521,1,7,143),(6522,1,7,144),(6523,1,7,145),(6524,1,7,156),(6525,1,7,157),(6526,1,7,158),(6527,1,7,159),(6528,1,7,160),(6529,1,7,161),(6530,1,7,162),(6531,1,7,163),(6532,1,7,164),(6533,1,7,165),(6534,1,7,171),(6535,1,7,172),(6536,1,7,173),(6537,1,7,174),(6538,1,7,175),(6539,1,7,176),(6540,1,7,177),(6541,1,7,178),(6542,1,7,179),(6543,1,7,180),(6544,1,7,181),(6545,1,7,191),(6546,1,7,192),(6547,1,7,193),(6548,1,7,194),(6549,1,7,195),(6550,1,7,196),(6551,1,7,199),(6552,1,7,200),(6553,1,7,201),(6554,1,7,202),(6555,1,7,203),(6556,1,7,211),(6557,1,7,212),(6558,1,7,213),(6559,2,7,101),(6560,2,7,102),(6561,2,7,103),(6562,2,7,104),(6563,2,7,105),(6564,2,7,106),(6565,2,7,107),(6566,2,7,108),(6567,2,7,109),(6568,2,7,110),(6569,2,7,111),(6570,2,7,112),(6571,2,7,113),(6572,2,7,114),(6573,2,7,115),(6574,2,7,116),(6575,2,7,117),(6576,2,7,118),(6577,2,7,119),(6578,2,7,120),(6579,2,7,121),(6580,2,7,131),(6581,2,7,132),(6582,2,7,133),(6583,2,7,134),(6584,2,7,135),(6585,2,7,136),(6586,2,7,137),(6587,2,7,138),(6588,2,7,139),(6589,2,7,140),(6590,2,7,141),(6591,2,7,142),(6592,2,7,143),(6593,2,7,144),(6594,2,7,145),(6595,2,7,156),(6596,2,7,157),(6597,2,7,158),(6598,2,7,159),(6599,2,7,160),(6600,2,7,161),(6601,2,7,162),(6602,2,7,163),(6603,2,7,164),(6604,2,7,165),(6605,2,7,171),(6606,2,7,172),(6607,2,7,173),(6608,2,7,174),(6609,2,7,175),(6610,2,7,176),(6611,2,7,177),(6612,2,7,178),(6613,2,7,179),(6614,2,7,180),(6615,2,7,181),(6616,2,7,191),(6617,2,7,192),(6618,2,7,193),(6619,2,7,194),(6620,2,7,195),(6621,2,7,196),(6622,2,7,199),(6623,2,7,200),(6624,2,7,201),(6625,2,7,202),(6626,2,7,203),(6627,2,7,211),(6628,2,7,212),(6629,2,7,213),(6630,3,7,101),(6631,3,7,102),(6632,3,7,103),(6633,3,7,104),(6634,3,7,105),(6635,3,7,106),(6636,3,7,107),(6637,3,7,108),(6638,3,7,109),(6639,3,7,110),(6640,3,7,111),(6641,3,7,112),(6642,3,7,113),(6643,3,7,114),(6644,3,7,115),(6645,3,7,116),(6646,3,7,117),(6647,3,7,118),(6648,3,7,119),(6649,3,7,120),(6650,3,7,121),(6651,3,7,131),(6652,3,7,132),(6653,3,7,133),(6654,3,7,134),(6655,3,7,135),(6656,3,7,136),(6657,3,7,137),(6658,3,7,138),(6659,3,7,139),(6660,3,7,140),(6661,3,7,141),(6662,3,7,142),(6663,3,7,143),(6664,3,7,144),(6665,3,7,145),(6666,3,7,156),(6667,3,7,157),(6668,3,7,158),(6669,3,7,159),(6670,3,7,160),(6671,3,7,161),(6672,3,7,162),(6673,3,7,163),(6674,3,7,164),(6675,3,7,165),(6676,3,7,171),(6677,3,7,172),(6678,3,7,173),(6679,3,7,174),(6680,3,7,175),(6681,3,7,176),(6682,3,7,177),(6683,3,7,178),(6684,3,7,179),(6685,3,7,180),(6686,3,7,181),(6687,3,7,191),(6688,3,7,192),(6689,3,7,193),(6690,3,7,194),(6691,3,7,195),(6692,3,7,196),(6693,3,7,199),(6694,3,7,200),(6695,3,7,201),(6696,3,7,202),(6697,3,7,203),(6698,3,7,211),(6699,3,7,212),(6700,3,7,213),(6701,4,7,101),(6702,4,7,102),(6703,4,7,103),(6704,4,7,104),(6705,4,7,105),(6706,4,7,106),(6707,4,7,107),(6708,4,7,108),(6709,4,7,109),(6710,4,7,110),(6711,4,7,111),(6712,4,7,112),(6713,4,7,113),(6714,4,7,114),(6715,4,7,115),(6716,4,7,116),(6717,4,7,117),(6718,4,7,118),(6719,4,7,119),(6720,4,7,120),(6721,4,7,121),(6722,4,7,131),(6723,4,7,132),(6724,4,7,133),(6725,4,7,134),(6726,4,7,135),(6727,4,7,136),(6728,4,7,137),(6729,4,7,138),(6730,4,7,139),(6731,4,7,140),(6732,4,7,141),(6733,4,7,142),(6734,4,7,143),(6735,4,7,144),(6736,4,7,145),(6737,4,7,156),(6738,4,7,157),(6739,4,7,158),(6740,4,7,159),(6741,4,7,160),(6742,4,7,161),(6743,4,7,162),(6744,4,7,163),(6745,4,7,164),(6746,4,7,165),(6747,4,7,171),(6748,4,7,172),(6749,4,7,173),(6750,4,7,174),(6751,4,7,175),(6752,4,7,176),(6753,4,7,177),(6754,4,7,178),(6755,4,7,179),(6756,4,7,180),(6757,4,7,181),(6758,4,7,191),(6759,4,7,192),(6760,4,7,193),(6761,4,7,194),(6762,4,7,195),(6763,4,7,196),(6764,4,7,199),(6765,4,7,200),(6766,4,7,201),(6767,4,7,202),(6768,4,7,203),(6769,4,7,211),(6770,4,7,212),(6771,4,7,213),(6772,6,7,101),(6773,6,7,102),(6774,6,7,103),(6775,6,7,104),(6776,6,7,105),(6777,6,7,106),(6778,6,7,107),(6779,6,7,108),(6780,6,7,109),(6781,6,7,110),(6782,6,7,111),(6783,6,7,112),(6784,6,7,113),(6785,6,7,114),(6786,6,7,115),(6787,6,7,116),(6788,6,7,117),(6789,6,7,118),(6790,6,7,119),(6791,6,7,120),(6792,6,7,121),(6793,6,7,131),(6794,6,7,132),(6795,6,7,133),(6796,6,7,134),(6797,6,7,135),(6798,6,7,136),(6799,6,7,137),(6800,6,7,138),(6801,6,7,139),(6802,6,7,140),(6803,6,7,141),(6804,6,7,142),(6805,6,7,143),(6806,6,7,144),(6807,6,7,145),(6808,6,7,156),(6809,6,7,157),(6810,6,7,158),(6811,6,7,159),(6812,6,7,160),(6813,6,7,161),(6814,6,7,162),(6815,6,7,163),(6816,6,7,164),(6817,6,7,165),(6818,6,7,171),(6819,6,7,172),(6820,6,7,173),(6821,6,7,174),(6822,6,7,175),(6823,6,7,176),(6824,6,7,177),(6825,6,7,178),(6826,6,7,179),(6827,6,7,180),(6828,6,7,181),(6829,6,7,191),(6830,6,7,192),(6831,6,7,193),(6832,6,7,194),(6833,6,7,195),(6834,6,7,196),(6835,6,7,199),(6836,6,7,200),(6837,6,7,201),(6838,6,7,202),(6839,6,7,203),(6840,6,7,211),(6841,6,7,212),(6842,6,7,213),(6843,7,7,101),(6844,7,7,102),(6845,7,7,103),(6846,7,7,104),(6847,7,7,105),(6848,7,7,106),(6849,7,7,107),(6850,7,7,108),(6851,7,7,109),(6852,7,7,110),(6853,7,7,111),(6854,7,7,112),(6855,7,7,113),(6856,7,7,114),(6857,7,7,115),(6858,7,7,116),(6859,7,7,117),(6860,7,7,118),(6861,7,7,119),(6862,7,7,120),(6863,7,7,121),(6864,7,7,131),(6865,7,7,132),(6866,7,7,133),(6867,7,7,134),(6868,7,7,135),(6869,7,7,136),(6870,7,7,137),(6871,7,7,138),(6872,7,7,139),(6873,7,7,140),(6874,7,7,141),(6875,7,7,142),(6876,7,7,143),(6877,7,7,144),(6878,7,7,145),(6879,7,7,156),(6880,7,7,157),(6881,7,7,158),(6882,7,7,159),(6883,7,7,160),(6884,7,7,161),(6885,7,7,162),(6886,7,7,163),(6887,7,7,164),(6888,7,7,165),(6889,7,7,171),(6890,7,7,172),(6891,7,7,173),(6892,7,7,174),(6893,7,7,175),(6894,7,7,176),(6895,7,7,177),(6896,7,7,178),(6897,7,7,179),(6898,7,7,180),(6899,7,7,181),(6900,7,7,191),(6901,7,7,192),(6902,7,7,193),(6903,7,7,194),(6904,7,7,195),(6905,7,7,196),(6906,7,7,199),(6907,7,7,200),(6908,7,7,201),(6909,7,7,202),(6910,7,7,203),(6911,7,7,211),(6912,7,7,212),(6913,7,7,213);
 /*!40000 ALTER TABLE `user_permission` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1785,6 +1979,44 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP PROCEDURE IF EXISTS `process_insert_new_name` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `process_insert_new_name`(
+	IN `name_d` VARCHAR(100),
+    IN `type_d` INT(1)
+)
+BEGIN
+	SET @count = 0;
+    
+    CASE type_d
+		WHEN 1 THEN
+			SELECT COUNT(*) INTO @count FROM `recent_customer` WHERE LOWER(`name`) = LOWER(name_d);
+    
+			IF(@count = 0) THEN
+				INSERT INTO `recent_customer`(`name`) VALUES(name_d);
+			END IF;
+            
+		WHEN 2 THEN
+			SELECT COUNT(*) INTO @count FROM `recent_supplier` WHERE LOWER(`name`) = LOWER(name_d);
+    
+			IF(@count = 0) THEN
+				INSERT INTO `recent_supplier`(`name`) VALUES(name_d);
+			END IF;
+	END CASE;
+END ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!50003 DROP PROCEDURE IF EXISTS `process_recompute_transaction_summary` */;
 /*!50003 SET @saved_cs_client      = @@character_set_client */ ;
 /*!50003 SET @saved_cs_results     = @@character_set_results */ ;
@@ -1937,4 +2169,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-08  3:19:05
+-- Dump completed on 2015-07-23 20:45:45

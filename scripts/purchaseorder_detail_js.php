@@ -1,4 +1,14 @@
 <script type="text/javascript">
+	var PurchaseType = {
+		Imported : 1,
+		Local : 2
+	}
+
+	var TransactionState = {
+		Saved : 1,
+		Unsaved : 0
+	}
+
 	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
@@ -70,6 +80,15 @@
         edit: [txtqty],
         disp: [spnqty],
         td_class: "tablerow column_click column_hover tdqty"
+    };
+
+    var spnreceive = document.createElement('span');
+	colarray['receive'] = { 
+        header_title: "Received Qty",
+        edit: [spnreceive],
+        disp: [spnreceive],
+        td_class: "tablerow column_click column_hover tdreceive",
+        headertd_class : "tdreceive"
     };
 
     var spnmemo = document.createElement('span');
@@ -148,11 +167,14 @@
 					$('#supplier').val(response.supplier_name);
 					$('#orderfor').val(response.orderfor);
 					
-					if (response.is_imported == 1) 
+					if (response.is_imported == PurchaseType.Imported) 
 						$('#is_imported').attr('checked','checked');
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
+
+					if (response.is_saved == TransactionState.Unsaved)
+						hideQuantityReceivedColumn();
 				}
 				
 				if (response.detail_error == '') 
@@ -204,6 +226,12 @@
 		var orderfor_val 	= $('#orderfor').val();
 		var is_imported_val = $('#is_imported').is(':checked') ? 1 : 2;
 
+		if (supplier_name_val == '') 
+		{
+			alert('Supplier Name should no be empty!');
+			return false;
+		};
+		
 		var arr = 	{ 
 						fnc 	 	: 'save_purchaseorder_head', 
 						entry_date 	: date_val,
@@ -216,4 +244,9 @@
 		return arr;
 	}
 
+	function hideQuantityReceivedColumn()
+	{
+		$('#dynamic-css').html('');
+		$('#dynamic-css').html("<style> .tdreceive{ display:none; } </style>");
+	}
 </script>

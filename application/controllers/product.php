@@ -42,7 +42,12 @@ class Product extends CI_Controller {
 		{
 			$this->_product_manager = new Services\Product_Manager();
 			$response = $this->_product_manager->import_product_from_csv();
+
+			if ($response['error'] == '')
+				$this->_product_manager->write_logs_to_file($response['logs']);
+
 			echo json_encode($response);
+
 			exit();
 		}
 
@@ -85,6 +90,11 @@ class Product extends CI_Controller {
 				$page = 'transaction_record';
 				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
 				$allow_user = TRUE;
+				break;
+
+			case 'logs':
+				$this->load->helper("download");
+				force_download('import_logs.txt',file_get_contents(base_url().'import_logs.txt'));
 				break;
 
 			default:

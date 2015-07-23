@@ -1,3 +1,4 @@
+<div id="dynamic-css"></div>
 <div class="main-content pull-right">
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">

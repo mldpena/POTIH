@@ -64,7 +64,7 @@ class PurchaseOrder_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`recv_quantity`
 					FROM `purchase_detail` AS PD
 					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
@@ -79,12 +79,13 @@ class PurchaseOrder_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = empty($row->description) ? '' : '<br/>';
+				$break_line = $row->type == \Constants\PURCHASE_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
+				$response['detail'][$i][] = array($row->recv_quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -306,12 +307,12 @@ class PurchaseOrder_Model extends CI_Model {
 		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', 
 					CONCAT('PO',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
 					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-					COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', COALESCE(SUM(PD.`quantity` - PD.`recv_quantity`),0) AS 'remaining_qty', PH.`is_used`,
+					COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
 					COALESCE(CASE 
-						WHEN SUM(PD.`recv_quantity`) = SUM(PD.`quantity`) THEN 'Complete'
-						WHEN SUM(PD.`recv_quantity` ) > SUM(PD.`quantity`) THEN 'Excess'
-						WHEN SUM(PD.`recv_quantity`) > 0 THEN 'Incomplete'
+						WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN 'Incomplete'
 						WHEN SUM(PD.`recv_quantity`) = 0 THEN 'No Received'
+						WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN 'Complete'
+						ELSE 'Excess'
 					END,'') AS 'status',
 					CASE 
 						WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::IMPORTED." THEN 'Imported'
@@ -346,7 +347,6 @@ class PurchaseOrder_Model extends CI_Model {
 				$response['data'][$i][] = array($row->supplier);
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
-				$response['data'][$i][] = array($row->remaining_qty);
 				$response['data'][$i][] = array($row->status);
 				$response['data'][$i][] = array('');
 				$i++;

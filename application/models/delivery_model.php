@@ -82,7 +82,7 @@ class Delivery_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = empty($row->description) ? '' : '<br/>';
+				$break_line = $row->type == \Constants\DELIVERY_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($row->is_for_branch);
 				$response['detail'][$i][] = array($i+1);
@@ -334,10 +334,10 @@ class Delivery_Model extends CI_Model {
 						ELSE 'Unused'
 					END AS 'delivery_type',
 					COALESCE(CASE
-						WHEN SUM(SD.`recv_quantity`) = SUM(SD.`quantity`) THEN 'Complete'
-						WHEN SUM(SD.`recv_quantity` ) > SUM(SD.`quantity`) THEN 'Excess'
-						WHEN SUM(SD.`recv_quantity`) > 0 THEN 'Incomplete'
+						WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN 'Incomplete'
 						WHEN SUM(SD.`recv_quantity`) = 0 THEN 'No Received'
+						WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN 'Complete'
+						ELSE 'Excess'
 					END,'') AS 'status'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
@@ -597,7 +597,7 @@ class Delivery_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = empty($row->description) ? '' : '<br/>';
+				$break_line = $row->type == \Constants\DELIVERY_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line,$row->description);

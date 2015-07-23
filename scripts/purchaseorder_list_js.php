@@ -90,14 +90,6 @@
         td_class: "tablerow column_click column_hover tdtotalqty"
     };
 
-   	var spnqtyremain = document.createElement('span');
-	colarray['qty_remaining'] = { 
-        header_title: "Qty Remaining",
-        edit: [spnqtyremain],
-        disp: [spnqtyremain],
-        td_class: "tablerow column_click column_hover tdqtyremain"
-    };
-
     var spnstatus = document.createElement('span');
 	colarray['status'] = { 
         header_title: "Status",
