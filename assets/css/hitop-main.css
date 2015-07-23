@@ -27,13 +27,127 @@ body{
 .main-wrapper{
 	/*width: 1366px;*/
 }
+/*Notifications*/
+.user-creds .notifications-icon{
+    color: #fff;
+    float: right;
+    position: relative;
+    background: #E74C3C;
+    padding: 9px;
+    font-size: 20px;
+    cursor: pointer;
+}
+.user-creds .notifications-icon.active{
+	background: #f1c40f;
+}
+.user-creds .notifications-icon:hover{
+    background: #BF1E18;
+}
+.user-creds .notifications-icon i{
+    float: right;
+}
+.user-creds .notif-circle{
+    border-radius: 10px;
+    font-size: 11px;
+    color: #565656;
+    position: absolute;
+    top: 3px;
+    right: -11px;
+    min-width: 20px;
+    background: #fff;
+    z-index: 1031;
+    text-align: center;
+    font-family: R-Bold;
+    padding: 2px;
+}
+.user-creds .user-button{
+    float: right;
+}
+.user-creds .productmenu-button{
+    display: none;
+}
+.dropdown-menu-m{
+    position: absolute;
+    top: 37px;
+    left: 0;
+    z-index: 1000;
+    display: none;
+    float: left;
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 14px;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    -webkit-background-clip: padding-box;
+          background-clip: padding-box;
+    border: 1px solid #ccc;
+    border: 1px solid rgba(0, 0, 0, .15);
+    border-radius: 4px;
+    -webkit-box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+          box-shadow: 0 6px 12px rgba(0, 0, 0, .175);
+}
+.user-creds .notifications-dropdown{
+    right: 14px;
+    width: 430px;
+    min-width: 400px;
+    padding: 0;
+    left: initial;
+}
+.user-creds .notifications-header{
+    background: #F7F8FA;
+    border-bottom: 1px #ccc solid; 
+    text-align: center;
+    padding: 15px;
+    color: #3AD1A5;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    font-family: R-Bold;
+}
+.user-creds .notifications-single{
+    padding: 10px;
+    float: left;
+    width: 100%;
+    position: relative;
+    border-bottom: 1px #ccc solid;
+    cursor: pointer;
+}
+.user-creds .notifications-single:hover{
+    background: #f3f3f3;
+}
+.user-creds .notifications-single:last-child{
+    border: none;
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+.user-creds .notifications-single .detail-container{
+	float: left;
+	width: 287px;
+}
+.user-creds .notifications-single .subject{
+    float: left;
+    width: 287px;
+    line-height: 1.2;
+    color: #565656;
+}
+.user-creds .notifications-single .time{
+    float: left;
+    width: 287px;
+    color: #CCCDCF;
+    font-size: 12px;
+}
+.user-creds .notifications-single .icon{
+    width: 40px;
+    height: 40px;
+    float: right;
+}
 
 /*Navigation Bar*/
 .header-nav{
 	width: 100%;
 	float: left;
 	background: #e74c3c;
-	border-bottom: 2px rgba(214, 68, 55, 0.4) solid;
 }
 .header-nav > .version{
 	font-family: R-Regular;
@@ -141,7 +255,7 @@ body{
 	padding-top: 1px;
 	margin-left: 5px;
 	font-family: R-Regular;
-	font-size: 15px;
+	font-size: 13px;
 }
 .sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link{
 	padding: 8px 10px;

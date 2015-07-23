@@ -127,7 +127,7 @@
 
 			<a href="<?= base_url() ?>request/listto">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>stockdelivery.png">
+					<img src="<?= base_url().IMG ?>itemrequeststootherbranches.png">
 					<div class="btn-title">Item Request to Other Branches</div>
 				</div>
 			</a>
@@ -138,7 +138,7 @@
 
 			<a href="<?= base_url() ?>request/listfrom">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>stockdelivery.png">
+					<img src="<?= base_url().IMG ?>itemrequestsfromotherbranches.png">
 					<div class="btn-title">Item Request from Other Branches</div>
 				</div>
 			</a>
@@ -230,7 +230,7 @@
 
 			<a href="<?= base_url() ?>adjust/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>inventoryadjust.png">
+					<img src="<?= base_url().IMG ?>pickupassortment.png">
 					<div class="btn-title">Pick-Up Assortment</div>
 				</div>
 			</a>
@@ -252,7 +252,7 @@
 
 			<a href="<?= base_url() ?>release/pickup">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>warehouserelease.png">
+					<img src="<?= base_url().IMG ?>pickupsummary.png">
 					<div class="btn-title">Pick-Up Summary</div>
 				</div>
 			</a>

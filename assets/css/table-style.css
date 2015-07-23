@@ -128,5 +128,8 @@
 	word-break: break-all;
 }
 .tddate{
-	width: 88px;
+	width: 119px;
+}
+.tdreference{
+	width: 103px;
 }

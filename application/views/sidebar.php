@@ -131,7 +131,7 @@
 
 				<a href="<?= base_url() ?>delivery/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>stockdelivery.png">
+						<img src="<?= base_url().IMG ?>itemrequeststootherbranches.png">
 						<div>Item Request to Other Branches</div>
 					</div>
 				</a>
@@ -142,7 +142,7 @@
 
 				<a href="<?= base_url() ?>delivery/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>stockdelivery.png">
+						<img src="<?= base_url().IMG ?>itemrequestsfromotherbranches.png">
 						<div>Item Request from Other Branches</div>
 					</div>
 				</a>
@@ -234,7 +234,7 @@
 
 				<a href="<?= base_url() ?>damage/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>damage.png">
+						<img src="<?= base_url().IMG ?>pickupassortment.png">
 						<div>Pick-Up Assortment</div>
 					</div>
 				</a>
@@ -256,7 +256,7 @@
 
 				<a href="<?= base_url() ?>release/pickup">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>warehouserelease.png">
+						<img src="<?= base_url().IMG ?>pickupsummary.png">
 						<div>Pick-Up Summary</div>
 					</div>
 				</a>

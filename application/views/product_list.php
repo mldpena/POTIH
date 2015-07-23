@@ -165,7 +165,7 @@
 			<div class="modal-body">
 				<div class="message-content">
 					Upload xlsx/csv File :
-					<input type="file" name="fileData" id="fileData" class="form-control" />
+					<input type="file" name="fileData" id="fileData" />
 				</div>
 				<br/><div id="messagebox_4"></div>
 			</div>
