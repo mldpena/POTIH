@@ -75,7 +75,7 @@
 	var txtreceivedby = document.createElement('input');
 	txtreceivedby.setAttribute('class','form-control');
 	colarray['receivedby'] = { 
-		header_title: "Recvd By",
+		header_title: "Received By",
 		edit: [txtreceivedby],
 		disp: [spnreceivedby],
 		td_class: "tablerow column_click column_hover tdrecvdby"

@@ -13,8 +13,8 @@ class Delivery_Model extends CI_Model {
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get delivery details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete delivery detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete delivery head!',
-									'HAS_RECEIVED' => 'Stock Delivery can only be deleted if delivery status is no received!',
-									'NOT_OWN_BRANCH' => 'Cannot delete stock delivery entry of other branches!');
+									'HAS_RECEIVED' => 'Item Delivery can only be deleted if delivery status is no received!',
+									'NOT_OWN_BRANCH' => 'Cannot delete item delivery entry of other branches!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -76,7 +76,7 @@ class Delivery_Model extends CI_Model {
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
 
 		if ($result_detail->num_rows() == 0) 
-			$response['detail_error'] = 'No stock delivery details found!';
+			$response['detail_error'] = 'No item delivery details found!';
 		else
 		{
 			$i = 0;

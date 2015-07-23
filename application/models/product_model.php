@@ -21,6 +21,8 @@ class Product_Model extends CI_Model {
 
 	public function insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data)
 	{
+		$response = array();
+
 		$new_product_id = 0;
 
 		$this->db->trans_start();
@@ -36,19 +38,14 @@ class Product_Model extends CI_Model {
 
 		$this->db->trans_complete();
 
-		$err = $this->db->error()['message'];
+		$response['error'] 	= $this->db->error()['message'];
+		$response['id'] 	= $this->encrypt->encode($new_product_id);
 
-		if (!empty($err)) 
-			throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
-
-		$new_product_id = $this->encrypt->encode($new_product_id);
-
-		return $new_product_id;
+		return $response;
 	}
 
 	public function update_product_using_transaction($product_field_data, $branch_inventory_field_data, $product_id)
 	{
-
 		$this->db->trans_start();
 
 			$this->db->where("id", $product_id);
@@ -64,10 +61,7 @@ class Product_Model extends CI_Model {
 
 		$this->db->trans_complete();
 
-		$err = $this->db->_error_message();
-
-		if (!empty($err)) 
-			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
+		return $this->db->error()['message'];
 	}
 
 	public function get_product_details_by_id($product_id)
@@ -208,8 +202,7 @@ class Product_Model extends CI_Model {
 		return $result;		
 	}
 
-
-	public function get_product_by_term($term, $with_inventory)
+	public function get_product_by_term($term, $branch_id, $with_inventory)
 	{
 		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`");
 
@@ -219,7 +212,7 @@ class Product_Model extends CI_Model {
 		$this->db->from("`product` AS P");
 
 		if ($with_inventory)
-			$this->db->join("`product_branch_inventory` AS PBI","PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->db->escape($branch_id),"left");
+			$this->db->join("`product_branch_inventory` AS PBI","PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->db->escape($branch_id),"left");
 
 		$this->db->group_start()
 					->like("P.`description`", $term, "both")

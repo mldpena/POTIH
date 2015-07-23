@@ -15,7 +15,6 @@ class Product extends CI_Controller {
 		parent::__construct();
 
 		$this->load->service('authentication_manager');
-		$this->load->service('product_manager');
 		$this->load->library('permission_checker');
 
 		$this->_authentication_manager = new Services\Authentication_Manager();
@@ -143,7 +142,7 @@ class Product extends CI_Controller {
 	private function _ajax_request()
 	{
 		//Temporary
-
+		$this->load->service('product_manager');
 		$this->load->constant('product_const');
 		$this->load->model('product_model');
 		

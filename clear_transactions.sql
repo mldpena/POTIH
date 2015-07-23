@@ -15,4 +15,5 @@ TRUNCATE purchase_return_head;
 TRUNCATE purchase_return_detail;
 TRUNCATE daily_transaction_summary;
 TRUNCATE temp_beginning_transaction;
+TRUNCATE recent_name;
 UPDATE product_branch_inventory SET inventory = 0, min_inv = 0, max_inv = 0;

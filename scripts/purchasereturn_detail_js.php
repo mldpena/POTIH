@@ -118,7 +118,8 @@
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'purchaseret' });
+										  controller : 'purchaseret',
+										  recentNameElementId : 'supplier' });
 
 	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
 											   addInventoryChecker : true,
@@ -196,6 +197,12 @@
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var supplier_name_val = $('#supplier').val();
+
+		if (supplier_name_val == '') 
+		{
+			alert('Supplier Name should not be empty!');
+			return false;
+		};
 
 		var arr = 	{ 
 						fnc 	 	: 'save_purchasereturn_head', 

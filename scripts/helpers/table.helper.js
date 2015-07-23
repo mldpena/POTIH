@@ -59,6 +59,7 @@ var TableHelper = function(tableOptions,options) {
         clearExcluded : '#date_from, #date_to, #tableid_txtpagenumber, #tableid_txtfilternumber',
         columnClass : 'column_click',
         notFoundMessage : 'No entry found!',
+        recentNameElementId : 'dummy',
         isAddRow : true
     };
 
@@ -286,6 +287,22 @@ var TableHelper = function(tableOptions,options) {
             });
         },
 
+        bindRecentNameAutoComplete : function ()
+        {
+            my_autocomplete_add(token,"#" + self._settings.recentNameElementId,self._settings.controller, {
+                enable_add : false,
+                fnc_callback : function(x, label, value, ret_datas, error){
+
+                    if (error.length == 0)
+                        $(x).val(value);                             
+                },
+                fnc_render : function(ul, item){
+                    return my_autocomplete_render_fnc(ul, item, "code_name", [0], 
+                        { width : ["200px"] });
+                }
+            },'recent_name_autocomplete');
+        },
+
         bindSaveTransactionEvent : function(onBeforeSubmit, onAfterSubmit)
         {
             $('#' + self._settings.saveButtonId).click(function(){
@@ -343,6 +360,7 @@ var TableHelper = function(tableOptions,options) {
             self.detailContent.bindDeleteEvents(callbackOptions.deleteEventsAfterCallback);
             self.detailContent.bindAutoComplete();
             self.detailContent.bindSaveTransactionEvent(callbackOptions.saveEventsBeforeCallback,callbackOptions.saveEventsAfterCallback);
+            self.detailContent.bindRecentNameAutoComplete();
         }
     },
 

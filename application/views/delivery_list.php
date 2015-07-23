@@ -68,7 +68,7 @@
 			<?php if($permission_list['allow_to_add']) : ?>
 
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_new">Create New Stock Delivery</button>
+				<button class="btn btn-primary" id="create_new">Create New Item Delivery</button>
 			</div>
 
 			<?php endif; ?>

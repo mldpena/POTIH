@@ -11,19 +11,23 @@ class Autocomplete_Manager
 		$this->_CI = $CI =& get_instance();
 	}
 
-	public function get_recent_names_from_table($param, $table_name)
+	public function get_recent_names($param, $type)
 	{
+		$this->_CI->load->model('recent_name_model');
+
+		$response = array();
+		
 		extract($param);
 
-		$result 	= $this->_CI->recent_name_model->get_product_by_term($term,$with_inventory);
+		$result = $this->_CI->recent_name_model->get_recent_names_by_term($term, $type);
 
 		$i = 0;
 		
 		foreach ($result->result() as $row) 
 		{
-			$response[$i]['label'] = $row->description;
-			$response[$i]['value'] = $row->id;
-			$response[$i]['ret_datas'] = ($with_inventory) ? array($row->id,$row->description,$row->material_code,$row->inventory) : array($row->id,$row->description,$row->material_code, $row->type);
+			$response[$i]['label'] = $row->name;
+			$response[$i]['value'] = $row->name;
+			$response[$i]['ret_datas'] = array($row->name);
 			$i++;			
 		}
 

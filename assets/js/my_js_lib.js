@@ -91,9 +91,14 @@ function my_autocomplete(sel, url, func)
 	
 }
 var request;
-function my_autocomplete_add(token_val,sel, url_ac, options ){
+function my_autocomplete_add(token_val,sel, url_ac, options, customFunctionName ){
 	//fnc_callback(this,label, value, ret_datas, error)
 	//error = "not selected" or customized error
+	var fnc_val = 'autocomplete_product';
+
+	if (customFunctionName) 
+		fnc_val = customFunctionName;
+
 	var enable_add = typeof options.enable_add !== 'undefined' ? options.enable_add : false;
 	var adding_style = typeof options.adding_style !== 'undefined' ? options.adding_style : "immediate";
 	var adding_popup_id = typeof options.adding_popup_id !== 'undefined' ? options.adding_popup_id : "";
@@ -108,7 +113,8 @@ function my_autocomplete_add(token_val,sel, url_ac, options ){
             delay: 0,
 			source: function(req, add){
 
-				var arr = 	{ fnc : 'autocomplete_product', term : req.term }
+				var arr = 	{ fnc : fnc_val, term : req.term }
+				
 				if (request) { request.abort(); };
 				request = $.ajax({
 		            type: "POST",

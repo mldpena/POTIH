@@ -136,7 +136,9 @@
 	root.appendChild(myjstbl.tab);
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
-										{ baseURL : "<?= base_url() ?>", controller : 'purchase' } );
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'purchase',
+										  recentNameElementId : 'supplier' } );
 
 	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 											   addInventoryChecker : true,
@@ -228,7 +230,7 @@
 
 		if (supplier_name_val == '') 
 		{
-			alert('Supplier Name should no be empty!');
+			alert('Supplier Name should not be empty!');
 			return false;
 		};
 		

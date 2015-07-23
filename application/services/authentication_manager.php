@@ -14,7 +14,6 @@ class Authentication_Manager
 	{
 		$this->_CI = $CI =& get_instance();
 		$this->_CI->load->model('login_model');
-		$this->_CI->load->constant('login_const');
 	}
 
 	/**
@@ -133,9 +132,9 @@ class Authentication_Manager
 		set_cookie('branch',$this->_CI->encrypt->encode($branch_id));
 		set_cookie('branch_name',$branch_name);
 
-		if ($user_detail_row->is_first_login == \Constants\LOGIN_CONST::FIRST_LOGIN) 
-			 $this->_CI->login_model->update_first_login_status($user_detail_row->id);
-
+		if ($user_detail_row->is_first_login == \Constants\LOGIN_CONST::FIRST_LOGIN)
+			$this->_CI->login_model->update_first_login_status($user_detail_row->id);
+			
 		return $response;
 	}
 

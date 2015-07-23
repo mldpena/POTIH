@@ -87,7 +87,7 @@ if (!function_exists('get_product_list_autocomplete'))
 		$CI->load->constant('product_const');
 
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
-		$result 	= $CI->product_model->get_product_by_term($term,$with_inventory);
+		$result 	= $CI->product_model->get_product_by_term($term, $branch_id, $with_inventory);
 
 		$i = 0;
 		

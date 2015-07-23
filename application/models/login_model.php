@@ -7,6 +7,8 @@ class Login_Model extends CI_Model {
 	 */
 	public function __construct() {
 		parent::__construct();
+
+		$this->load->constant('login_const');
 	}
 
 	/**
@@ -89,8 +91,10 @@ class Login_Model extends CI_Model {
 	 */
 	public function update_first_login_status($id)
 	{
+		$update_fields = array("is_first_login" => \Constants\LOGIN_CONST::ACTIVE);
+
 		$this->db->where('id', $id);
-		$this->db->update("`user`","`is_first_login` = ".\Constants\LOGIN_CONST::ACTIVE);
+		$this->db->update("`user`", $update_fields);
 	}
 
 }	

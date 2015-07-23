@@ -3,6 +3,7 @@
 class PurchaseOrder extends CI_Controller {
 	
 	private $_authentication_manager;
+	private $_autocomplete_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -101,7 +102,10 @@ class PurchaseOrder extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->service('autocomplete_manager');
 		$this->load->model('purchaseorder_model');
+
+		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -156,6 +160,10 @@ class PurchaseOrder extends CI_Controller {
 
 				case 'set_session':
 					$response = $this->set_session_data();
+					break;
+
+				case 'recent_name_autocomplete':
+					$response = $this->_autocomplete_manager->get_recent_names($post_data, 2);
 					break;
 
 				default:

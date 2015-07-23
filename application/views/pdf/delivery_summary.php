@@ -125,7 +125,7 @@ EOD;
 							<td style=\"width:".$column_width[0].";\" class=\"tdleft\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[1].";\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter\">".$detail[$i]["item_code"]."</td>
-							<td style=\"width:".$column_width[3].";\" class=\"tdcenter\">".$detail[$i]["memo"]."</td>
+							<td style=\"width:".$column_width[3].";\" class=\"tdleft\">".$detail[$i]["memo"]."</td>
 						</tr>
 					</table>";
 

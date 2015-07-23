@@ -24,7 +24,7 @@ class Product_Checker_Manager
 		extract($param);
 
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
-		$result 	= $this->_CI->product_model->get_product_by_term($term,$with_inventory);
+		$result 	= $this->_CI->product_model->get_product_by_term($term, $branch_id, $with_inventory);
 
 		$i = 0;
 		

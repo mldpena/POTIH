@@ -310,7 +310,7 @@ class PurchaseOrder_Model extends CI_Model {
 					COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
 					COALESCE(CASE 
 						WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN 'Incomplete'
-						WHEN SUM(PD.`recv_quantity`) = 0 THEN 'No Received'
+						WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN 'No Received'
 						WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN 'Complete'
 						ELSE 'Excess'
 					END,'') AS 'status',

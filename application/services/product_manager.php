@@ -143,9 +143,6 @@ class Product_Manager
 	{
 		extract($param);
 
-		$response 	= array();
-		$response['error']			= '';
-
 		$this->_validate_product_details($code, $product);
 
 		$product_field_data = array('material_code' => $code,
@@ -167,8 +164,11 @@ class Product_Manager
 															'max_inv' => $min_max_values[$i][3]));
 		}
 
-		$response['id'] = $this->_CI->product_model->insert_new_product_using_transaction($product_field_data,$branch_inventory_field_data);
+		$response = $this->_CI->product_model->insert_new_product_using_transaction($product_field_data,$branch_inventory_field_data);
 
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_INSERT']);
+			
 		return $response;
 	}
 
@@ -256,7 +256,11 @@ class Product_Manager
 																$this->_CI->encrypt->decode($min_max_values[$i][0])));
 		}
 
-		$this->_CI->product_model->update_product_using_transaction($product_field_data,$branch_inventory_field_data, $product_id);
+		$error_message = $this->_CI->product_model->update_product_using_transaction($product_field_data,$branch_inventory_field_data, $product_id);
+
+		if (!empty($error_message))
+			throw new \Exception($this->_error_message['UNABLE_TO_UPDATE']);
+			
 	}
 
 	/**

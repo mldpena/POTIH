@@ -128,7 +128,8 @@
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'return' });
+										  controller : 'return',
+										  recentNameElementId : 'customer_name' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
@@ -216,6 +217,12 @@
 		var memo_val 	= $('#memo').val();
 		var customer_name_val = $('#customer_name').val();
 		var received_by_val = $('#received_by').val();
+
+		if (customer_name_val == '') 
+		{
+			alert('Customer Name should no be empty!');
+			return false;
+		};
 
 		var arr = 	{ 
 						fnc 	 	: 'save_return_head', 
