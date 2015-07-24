@@ -272,22 +272,19 @@ class Delivery_Model extends CI_Model {
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
-		if ($type != \Constants\DELIVERY_CONST::ALL_OPTION) 
+		switch ($type) 
 		{
-			switch ($type) 
-			{
-				case \Constants\DELIVERY_CONST::BOTH:
-					$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::BOTH;
-					break;
-				
-				case \Constants\DELIVERY_CONST::SALES:
-					$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::SALES;
-					break;
+			case \Constants\DELIVERY_CONST::BOTH:
+				$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::BOTH;
+				break;
+			
+			case \Constants\DELIVERY_CONST::SALES:
+				$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::SALES;
+				break;
 
-				case \Constants\DELIVERY_CONST::TRANSFER:
-					$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER;
-					break;
-			}
+			case \Constants\DELIVERY_CONST::TRANSFER:
+				$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER;
+				break;
 		}
 
 		switch ($order_by) 
@@ -333,12 +330,14 @@ class Delivery_Model extends CI_Model {
 						WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER." THEN 'Transfer'
 						ELSE 'Unused'
 					END AS 'delivery_type',
-					COALESCE(CASE
-						WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN 'Incomplete'
-						WHEN SUM(SD.`recv_quantity`) = 0 THEN 'No Received'
-						WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN 'Complete'
-						ELSE 'Excess'
-					END,'') AS 'status'
+					IF(SH.`is_used` = ".\Constants\DELIVERY_CONST::ACTIVE.",
+						COALESCE(CASE 
+							WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN 'No Received'
+							WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN 'Incomplete'
+							WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN 'Complete'
+							ELSE 'Excess'
+						END,'') 
+					, '') AS 'status'
 					FROM stock_delivery_head AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
 					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -349,7 +348,7 @@ class Delivery_Model extends CI_Model {
 					ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);
-
+		
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;

@@ -326,8 +326,8 @@ class Product_Manager
 				if ($i != 1) 
 				{
 					$with_error 	= FALSE;
-					$material_code 	= $product_csv_data[0];
-					$product_name 	= $product_csv_data[1];
+					$material_code 	= trim($product_csv_data[0]);
+					$product_name 	= trim($product_csv_data[1]);
 					$is_nonstack 	= strtolower($product_csv_data[2]) == 'yes' ? \Constants\PRODUCT_CONST::NON_STOCK : \Constants\PRODUCT_CONST::STOCK;
 					$material_type_id = 0;
 					$subgroup_id 	= 0;

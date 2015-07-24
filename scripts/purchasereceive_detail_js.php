@@ -256,7 +256,8 @@
 
 	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit);
 	tableHelper.detailContent.bindEditEvents();
-	
+	tableHelper.detailContent.bindDeleteEvents();
+
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date').datepicker();
@@ -353,12 +354,12 @@
 		}
 		else
 		{
-			var po_number = poListTableHelper.contentProvider.getData(rowIndex,'ponumber');
+			var importPONumber = poListTableHelper.contentProvider.getData(rowIndex,'ponumber');
 
 			for(var i = myjstbl.get_row_count() - 1; i > 0; i--)
 			{
-				var row_po_number = tableHelper.contentProvider.getData(i,'ponumber');
-				if (po_number == row_po_number) 
+				var tableDetailRowPONumber = tableHelper.contentProvider.getData(i,'ponumber');
+				if (importPONumber == tableDetailRowPONumber) 
 					myjstbl.delete_row(i);
 			};
 
@@ -382,9 +383,33 @@
 
 	$('.tddelete').live('click',function(){
 		var rowIndex = $(this).parent().index();
-		
-		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[0]);
+		var rowUniqueId = tableHelper.contentProvider.getData(rowIndex,'id');
+
+		if (Number(rowUniqueId) === 0) 
+			myjstbl.delete_row(rowIndex);
+
+		$(".chkdetails:checked").each(function(index, element){
+			var detailExist = false;
+			var poRowIndex = $(element).parent().parent().index();
+
+			var importPONumber = poListTableHelper.contentProvider.getData(poRowIndex, 'ponumber');
+
+			for (var i = 1; i < myjstbl.get_row_count(); i++) 
+			{
+				var tableDetailRowPONumber = tableHelper.contentProvider.getData(i,'ponumber');
+				if (tableDetailRowPONumber == importPONumber)
+				{
+					detailExist = true;
+					break;
+				}
+			};
+
+			if (!detailExist) 
+				$(element).removeAttr('checked');
+		});
 	});
+
+	
 
 	$('#save').click(function(){
         if (flag == 1)

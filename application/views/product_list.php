@@ -68,7 +68,7 @@
 
 			<div class="max-row">
 				<button class="btn btn-primary" data-toggle="modal" data-target="#createModal" id="create_product">Create New Product</button>
-				<button class="btn btn-success btn-excel" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-file-excel-o"></i>&nbsp; Upload Excel / CSV</button>
+				<button class="btn btn-success btn-excel" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-file-excel-o"></i>&nbsp; Upload CSV</button>
 			</div>
 
 			<?php endif; ?>

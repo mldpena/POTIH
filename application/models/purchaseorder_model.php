@@ -308,12 +308,14 @@ class PurchaseOrder_Model extends CI_Model {
 					CONCAT('PO',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
 					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
 					COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
-					COALESCE(CASE 
-						WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN 'Incomplete'
-						WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN 'No Received'
-						WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN 'Complete'
-						ELSE 'Excess'
-					END,'') AS 'status',
+					IF(PH.`is_used` = ".\Constants\PURCHASE_CONST::ACTIVE.",
+						COALESCE(CASE 
+							WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN 'No Received'
+							WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN 'Incomplete'
+							WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN 'Complete'
+							ELSE 'Excess'
+						END,'') 
+					, '') AS 'status',
 					CASE 
 						WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::IMPORTED." THEN 'Imported'
 						WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::LOCAL." THEN 'Local'

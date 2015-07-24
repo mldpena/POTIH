@@ -306,10 +306,15 @@ var TableHelper = function(tableOptions,options) {
         bindSaveTransactionEvent : function(onBeforeSubmit, onAfterSubmit)
         {
             $('#' + self._settings.saveButtonId).click(function(){
+
                 if (self._flag == 1)
                     return;
 
                 var arr = onBeforeSubmit();
+
+                if (!arr)
+                    return;
+
                 var addRowExist = self.contentProvider.getData(self._jsTable.get_row_count() - 1, 'id');
                 var rowsToSubtract = addRowExist == 0 ? 2 : 1;
 
