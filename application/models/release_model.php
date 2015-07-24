@@ -18,10 +18,7 @@ class Release_Model extends CI_Model {
 
 	public function __construct() 
 	{
-		$this->load->library('encrypt');
-		$this->load->file(CONSTANTS.'release_const.php');
-		$this->load->library('sql');
-		$this->load->helper('cookie');
+		$this->load->constant('release_const');
 
 		$this->_release_head_id 	= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
@@ -68,23 +65,23 @@ class Release_Model extends CI_Model {
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
-		if ($status != RELEASE_CONST::ALL_OPTION) 
+		if ($status != \Constants\RELEASE_CONST::ALL_OPTION) 
 		{
 			switch ($status) 
 			{
-				case RELEASE_CONST::INCOMPLETE:
+				case \Constants\RELEASE_CONST::INCOMPLETE:
 					$having = "HAVING remaining_qty < total_qty AND remaining_qty > 0";
 					break;
 				
-				case RELEASE_CONST::COMPLETE:
+				case \Constants\RELEASE_CONST::COMPLETE:
 					$having = "HAVING remaining_qty = 0";
 					break;
 
-				case RELEASE_CONST::NO_RECEIVED:
+				case \Constants\RELEASE_CONST::NO_RECEIVED:
 					$having = "HAVING remaining_qty = total_qty";
 					break;
 
-				case RELEASE_CONST::EXCESS:
+				case \Constants\RELEASE_CONST::EXCESS:
 					$having = "HAVING remaining_qty < 0";
 					break;
 			}
@@ -92,15 +89,15 @@ class Release_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case RELEASE_CONST::ORDER_BY_REFERENCE:
+			case \Constants\RELEASE_CONST::ORDER_BY_REFERENCE:
 				$order_field = "RH.`reference_number`";
 				break;
 			
-			case RELEASE_CONST::ORDER_BY_LOCATION:
+			case \Constants\RELEASE_CONST::ORDER_BY_LOCATION:
 				$order_field = "B.`name`";
 				break;
 
-			case RELEASE_CONST::ORDER_BY_CUSTOMER:
+			case \Constants\RELEASE_CONST::ORDER_BY_CUSTOMER:
 				$order_field = "RH.`customer`";
 				break;
 		}
@@ -117,8 +114,8 @@ class Release_Model extends CI_Model {
 					END,'') AS 'status'
 					FROM release_head AS RH
 					LEFT JOIN release_detail AS RD ON RD.`headid` = RH.`id`
-					LEFT JOIN branch AS B ON B.`id` = RH.`branch_id` AND B.`is_show` = ".RELEASE_CONST::ACTIVE."
-					WHERE RH.`is_show` = ".RELEASE_CONST::ACTIVE." $conditions
+					LEFT JOIN branch AS B ON B.`id` = RH.`branch_id` AND B.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE."
+					WHERE RH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." $conditions
 					GROUP BY RH.`id`
 					$having
 					ORDER BY $order_field $order_type";
@@ -180,7 +177,7 @@ class Release_Model extends CI_Model {
 		$query_data = array($this->_current_date,$this->_current_user,$release_head_id);
 		$query 	= "UPDATE `release_head` 
 					SET 
-					`is_show` = ".RELEASE_CONST::DELETED.",
+					`is_show` = ".\Constants\RELEASE_CONST::DELETED.",
 					`last_modified_date` = ?,
 					`last_modified_by` = ?
 					WHERE `id` = ?";
@@ -203,7 +200,7 @@ class Release_Model extends CI_Model {
 					COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `customer`, `is_used`,
 					`branch_id`
 					FROM `release_head`
-					WHERE `is_show` = ".RELEASE_CONST::ACTIVE." AND `id` = ?";
+					WHERE `is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND `id` = ?";
 
 		$result_head = $this->db->query($query_head,$this->_release_head_id);
 
@@ -224,8 +221,8 @@ class Release_Model extends CI_Model {
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`qty_released`, RD.`description`, P.`type`
 					FROM `release_detail` AS RD
-					LEFT JOIN `release_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".RELEASE_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".RELEASE_CONST::ACTIVE."
+					LEFT JOIN `release_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE."
 					WHERE RD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_release_head_id);
@@ -346,7 +343,7 @@ class Release_Model extends CI_Model {
 					`entry_date` = ?,
 					`memo` = ?,
 					`customer` = ?,
-					`is_used` = ".RELEASE_CONST::USED.",
+					`is_used` = ".\Constants\RELEASE_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
@@ -475,15 +472,15 @@ class Release_Model extends CI_Model {
 
 		switch ($order_by) 
 		{
-			case RELEASE_CONST::ORDER_BY_REFERENCE:
+			case \Constants\RELEASE_CONST::ORDER_BY_REFERENCE:
 				$order_field = "RH.`reference_number`";
 				break;
 			
-			case RELEASE_CONST::ORDER_BY_LOCATION:
+			case \Constants\RELEASE_CONST::ORDER_BY_LOCATION:
 				$order_field = "B.`name`";
 				break;
 
-			case RELEASE_CONST::ORDER_BY_CUSTOMER:
+			case \Constants\RELEASE_CONST::ORDER_BY_CUSTOMER:
 				$order_field = "RH.`customer`";
 				break;
 		}
@@ -500,8 +497,8 @@ class Release_Model extends CI_Model {
 					END,'') AS 'status'
 					FROM release_head AS RH
 					LEFT JOIN release_detail AS RD ON RD.`headid` = RH.`id`
-					LEFT JOIN branch AS B ON B.`id` = RH.`branch_id` AND B.`is_show` = ".RELEASE_CONST::ACTIVE."
-					WHERE RH.`is_show` = ".RELEASE_CONST::ACTIVE." AND RD.`qty_released` > 0 $conditions
+					LEFT JOIN branch AS B ON B.`id` = RH.`branch_id` AND B.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE."
+					WHERE RH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND RD.`qty_released` > 0 $conditions
 					GROUP BY RH.`id`
 					ORDER BY $order_field $order_type";
 					

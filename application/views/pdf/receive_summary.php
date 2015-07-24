@@ -29,7 +29,7 @@
 
 	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 	
-	$font = 'arial';
+	$font = 'arialbd';
 	$font_size = 12;
 
 	$margin_left = 10;
@@ -38,6 +38,7 @@
 
 	$linegap = 6;
 
+	$page_number = 0;
 	$is_finished = FALSE;
 	$product_count = 0;
 	$print_description = FALSE;
@@ -46,12 +47,27 @@
 
 	$style = "
 		<style type='text/css'>
-			.tdleft{
-				text-align: left;
+			.tdleft {
+				text-align : left;
 			}
 
-			.tdcenter{
-				text-align: center;
+			.tdcenter {
+				text-align : center;
+			}
+
+			table {
+				border-bottom-style : solid;
+			}
+
+			.header-border {
+				border-top-style : solid;
+				border-left-style : solid;
+				border-right-style : solid;
+			} 
+
+			.table-data {
+				border-left-style : solid;
+				border-right-style : solid;
 			}
 		</style>
 	";
@@ -60,12 +76,13 @@
 
 	while ($is_finished == FALSE) 
 	{
+		$page_number++;
 		$x = $margin_left;
 		$y = $margin_top;
 
 		$pdf->AddPage();
 
-		$pdf->SetFont($font,'B',20,'','','');
+		$pdf->SetFont($font,'B',16,'','','');
 
 		$pdf->writeHTMLCell('', '', $x, $y,'RECEIVING SUMMARY', 0, 1, 0, true, 'C', true);
 
@@ -75,6 +92,7 @@
 
 		$pdf->SetFont($font,'B',$font_size,'','','');
 
+		$pdf->writeHTMLCell('', '', $x, $y - 6,'Page : '.$page_number, 0, 1, 0, true, 'R', true);
 		$pdf->writeHTMLCell('', '', $x, $y,'Date : '.date("M d, Y",strtotime($entry_date)), 0, 1, 0, true, 'R', true);
 
 		$y+= $linegap * 2;
@@ -83,17 +101,17 @@
 				$style
 				<table>
 					<tr>
-						<td style="width:$column_width[0];" class="tdleft">Qty</td>
-						<td style="width:$column_width[1];">Item Description</td>
-						<td style="width:$column_width[2];" class="tdcenter">Item Code</td>
-						<td style="width:$column_width[3];" class="tdcenter">Received By</td>
-						<td style="width:$column_width[4];" class="tdcenter">Note</td>
+						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
+						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
+						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
+						<td style="width:$column_width[3];" class="tdcenter header-border">Received By</td>
+						<td style="width:$column_width[4];" class="tdcenter header-border">Note</td>
 					</tr>
 				</table>
 EOD;
 		$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'C', true);
 
-		$y+= $linegap;
+		$y+= 5;
 
 		for ($i = $product_count; $i < count($detail); $i++) 
 		{ 
@@ -103,11 +121,11 @@ EOD;
 					$style
 					<table>
 						<tr>
-							<td style=\"width:".$column_width[0].";\" class=\"tdleft\">".$detail[$i]["quantity"]."</td>
-							<td style=\"width:".$column_width[1].";\">".$detail[$i]["product"]."</td>
-							<td style=\"width:".$column_width[2].";\" class=\"tdcenter\">".$detail[$i]["item_code"]."</td>
-							<td style=\"width:".$column_width[3].";\" class=\"tdcenter\">".$detail[$i]["received_by"]."</td>
-							<td style=\"width:".$column_width[4].";\" class=\"tdcenter\">".$detail[$i]["receive_memo"]."</td>
+							<td style=\"width:".$column_width[0].";\" class=\"tdleft table-data\">".$detail[$i]["quantity"]."</td>
+							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
+							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
+							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["received_by"]."</td>
+							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["receive_memo"]."</td>
 						</tr>
 					</table>";
 
@@ -136,8 +154,8 @@ EOD;
 					$style
 					<table>
 						<tr>
-							<td style=\"width:".$column_width[0].";\"></td>
-							<td colspan = \"4\" style=\"width:1035px;\">".$detail[$i]["description"]."</td>
+							<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
+							<td colspan = \"4\" style=\"width:1035px;\" class=\"table-data\">".$detail[$i]["description"]."</td>
 						</tr>
 					</table>";
 					
