@@ -38,7 +38,7 @@ body{
     cursor: pointer;
 }
 .user-creds .notifications-icon.active{
-	background: #f1c40f;
+	color: yellow;
 }
 .user-creds .notifications-icon:hover{
     background: #BF1E18;
@@ -190,7 +190,7 @@ body{
 
 /*Sidebar*/
 .sidebar{
-	width: 20%;
+	width: 22%;
 	height: 100%;
 	margin-left: 15px;
 	margin-top: 10px;
@@ -255,7 +255,7 @@ body{
 	padding-top: 1px;
 	margin-left: 5px;
 	font-family: R-Regular;
-	font-size: 13px;
+	font-size: 15px;
 }
 .sidebar > .sidebar-links-panel .sidebar-group .link-menu a .link{
 	padding: 8px 10px;
@@ -346,7 +346,7 @@ body{
 }
 /*Main Content*/
 .main-content{
-	width: 76.7%;
+	width: 74.7%;
 	margin-right: 15px;
 	margin-top: 15px;
 	min-height: 534px;

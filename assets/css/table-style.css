@@ -133,3 +133,10 @@
 .tdreference{
 	width: 103px;
 }
+.tdrecvdby{
+	width: 200px;
+}
+.tdmemo,
+.tdnote{
+	width: 230px;
+}
