@@ -228,7 +228,7 @@
 
 			<?php if($page_permissions['assortment']) : ?>
 
-			<a href="<?= base_url() ?>adjust/list">
+			<a href="<?= base_url() ?>assort/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>pickupassortment.png">
 					<div class="btn-title">Pick-Up Assortment</div>

@@ -232,7 +232,7 @@
 			<div class="link-menu">
 				<?php if($page_permissions['assortment']) : ?>
 
-				<a href="<?= base_url() ?>damage/list">
+				<a href="<?= base_url() ?>assort/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>pickupassortment.png">
 						<div>Pick-Up Assortment</div>

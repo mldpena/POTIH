@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>assort/list"> List</a></li>
+			<li class="active"><a href="<?= base_url() ?>assort/list">Pick-Up Assortment List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Purchase Order List</div>
+		<div class="form-header">Pick-Up Assortment List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>
@@ -20,22 +20,6 @@
 						<td>Location:</td>
 						<td colspan="3">
 							<select class="form-control" id="branch_list"><?= $branch_list ?></select>
-						</td>
-					</tr>
-					<tr>
-						<td>For Branch:</td>
-						<td colspan="3">
-							<select class="form-control" id="for_branch"><?= $branch_list ?></select>
-						</td>
-					</tr>
-					<tr>
-						<td>Type:</td>
-						<td colspan="3">
-							<select class="form-control" id="type">
-								<option value="0">ALL</option>
-								<option value="1">Imported</option>
-								<option value="2">Local</option>
-							</select>
 						</td>
 					</tr>
 					<tr>
@@ -60,7 +44,7 @@
 					<option value="1">Reference #</option>
 					<option value="2">Location</option>
 					<option value="3">Date</option>
-					<option value="4">Supplier</option>
+					<option value="4">Customer</option>
 				</select>
 				<input type="button" class="btn btn-primary" value="ASC" id="order_type">
 				<input type="button" class="btn btn-success" value="Search" id="search">
@@ -69,7 +53,7 @@
 			<?php if($permission_list['allow_to_add']) : ?>
 
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_new">Create New Purchase Order</button>
+				<button class="btn btn-primary" id="create_new">Create New Pick-Up Assortment</button>
 			</div>
 
 			<?php endif; ?>
@@ -94,11 +78,11 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Purchase Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Pick-Up Assortment Entry</h4>
 			</div>
 			<div class="modal-body">
 				<div class="message-content">
-					Are you sure you want to delete this purchase entry?
+					Are you sure you want to delete this pick-up assortment entry?
 				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>
