@@ -56,12 +56,14 @@
 					</tr>
 				</table>
 			</div>
-			<div class="max-row" align="right">
-				<input type="button" class="btn btn-primary" value="Print" id="print">
-				<input type="button" class="btn btn-success" value="Save" id="save">
-			</div>
-			<div class="max-row" align="left">
-				<button class="btn btn-info" id="transfer">Transfer Incomplete Details to New PO</button>		
+			<div class="max-row">
+				<div class="pull-left">
+					<button class="btn btn-info" id="transfer">Transfer Incomplete Details to New PO</button>	
+				</div>
+				<div class="pull-right">
+					<input type="button" class="btn btn-primary" value="Print" id="print">
+					<input type="button" class="btn btn-success" value="Save" id="save">
+				</div>
 			</div>
 		</div>
 	</div>
