@@ -1044,16 +1044,7 @@ UNLOCK TABLES;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
-DELIMITER ;;
-/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_detail_AFTER_UPDATE` AFTER UPDATE ON `release_detail` 
-FOR EACH ROW
-BEGIN
-	IF (OLD.`qty_released` <> NEW.`qty_released`) THEN
-		SET @qty := -1 * (NEW.`qty_released` - OLD.`qty_released`);
-		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'RELEASE DETAIL');
-    END IF;
-END */;;
-DELIMITER ;
+
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
