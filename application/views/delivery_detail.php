@@ -60,6 +60,7 @@
 				</table>
 			</div>
 			<div class="max-row" align="right">
+				<input type="button" class="btn btn-primary" value="Print Type" data-toggle="modal" data-target="#printModal">
 				<input type="button" class="btn btn-primary" value="Print" id="print">
 				<input type="button" class="btn btn-success" value="Save" id="save">
 			</div>
@@ -82,6 +83,37 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				<button type="button" class="btn btn-primary" id="delete">Delete</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="modal fade" id="printModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="myModalLabel">Print Type</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-12" align="center">
+						<div class="btn btn-print color-default">
+							<img src="<?= base_url().IMG ?>printcustomer.png" class="">
+							<div>Print for Customer Only</div>
+						</div>
+						<div class="btn btn-print color-default">
+							<img src="<?= base_url().IMG ?>printtransfer.png" class="">
+							<div>Print for Transfer Only</div>
+						</div>
+						<div class="btn btn-print color-default">
+							<img src="<?= base_url().IMG ?>printboth.png" class="">
+							<div>Print Both</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="">Print</button>
 			</div>
 		</div>
 	</div>
