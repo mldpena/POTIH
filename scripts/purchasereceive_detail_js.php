@@ -94,10 +94,12 @@
 	};
 
 	var spnqtyremaining = document.createElement('span');
+	var spnqtyremainingHidden = document.createElement('span');
+	spnqtyremainingHidden.setAttribute('style', 'display:none');
 	colarray['qtyremaining'] = { 
 		header_title: "Qty Remaining",
-		edit: [spnqtyremaining],
-		disp: [spnqtyremaining],
+		edit: [spnqtyremaining, spnqtyremainingHidden],
+		disp: [spnqtyremaining, spnqtyremainingHidden],
 		td_class: "tablerow column_click column_hover tdqtyremaining"
 	};
 
@@ -372,9 +374,9 @@
 	$('.chkreceiveall').live('click',function(){
 		var rowIndex = $(this).parent().parent().index();
 		var totalQuantity = 0;
-		var remainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyremaining'));
-		var receivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyrecv',1));
-		var receivedQuantityElement = tableHelper.contentProvider.getElement(rowIndex,'qtyrecv');
+		var remainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyremaining', 1));
+		var receivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv',1));
+		var receivedQuantityElement = tableHelper.contentProvider.getElement(rowIndex, 'qtyrecv');
 
 		if ($(this).is(':checked'))
 		{
@@ -539,13 +541,13 @@
 
 		var rowIndex = $(element).parent().parent().index();
 		
-		var currentReceivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv', 0));
 		var quantityOrdered = Number(tableHelper.contentProvider.getData(rowIndex, 'qty'));
-		var currentQuantityRemaining = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyremaining'));
+		var hiddenRemainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyremaining', 1));
+		var currentReceivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv'));
 
-		var newQuantityRemaining = currentQuantityRemaining - currentReceivedQuantity;
+		var newQuantityRemaining = quantityOrdered - currentReceivedQuantity;
 
-		tableHelper.contentProvider.setData(rowIndex,'qtyremaining',[newQuantityRemaining]);
+		tableHelper.contentProvider.setData(rowIndex,'qtyremaining',[newQuantityRemaining, hiddenRemainingQuantity]);
 	}
 
 	function goToPrintOut()

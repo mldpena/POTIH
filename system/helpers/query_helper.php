@@ -122,7 +122,7 @@ if (!function_exists('check_current_inventory'))
 		$inserted_quantity = 0;
 
 		//Temporary
-		if ($row_id != 0) 
+		if ($row_id != 0 && !empty($table_name)) 
 		{
 			$query = "SELECT `quantity` FROM $table_name WHERE `id` = ?";
 			$result = $CI->db->query($query, $row_id);

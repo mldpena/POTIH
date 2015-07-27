@@ -167,7 +167,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="message-content">
-					Upload csv File :
+					Upload CSV File :
 					<input type="file" name="fileData" id="fileData" />
 				</div>
 				<br/>

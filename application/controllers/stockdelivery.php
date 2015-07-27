@@ -230,7 +230,7 @@ class StockDelivery extends CI_Controller {
 					break;
 					
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data,0);
+					$response = check_current_inventory($post_data, 0, 'stock_delivery_detail');
 					break;
 
 				case 'update_delivery_receive_head':
