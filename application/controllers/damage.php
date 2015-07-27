@@ -151,7 +151,7 @@ class Damage extends CI_Controller {
 					break;
 
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data,0);
+					$response = check_current_inventory($post_data, 0, 'damage_detail');
 					break;
 					
 				case 'set_session':

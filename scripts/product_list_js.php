@@ -133,7 +133,7 @@
 	var txtmininv = document.createElement('input');
 	txtmininv.setAttribute('class','form-control minvalue');
 	colarray_min_max['min_inv'] = { 
-		header_title: "Min. Inv.",
+		header_title: "Min. Inventory",
 		edit: [txtmininv],
 		disp: [txtmininv],
 		td_class: "tablerow column_hover tdmin"
@@ -142,7 +142,7 @@
 	var txtmaxinv = document.createElement('input');
 	txtmaxinv.setAttribute('class','form-control maxvalue');
 	colarray_min_max['max_inv'] = { 
-		header_title: "Max. Inv.",
+		header_title: "Max. Inventory",
 		edit: [txtmaxinv],
 		disp: [txtmaxinv],
 		td_class: "tablerow column_hover tdmax"
@@ -170,7 +170,7 @@
 
 	root_min_max.appendChild(myjstbl_min_max.tab);
 
-	$('#tbl').hide();
+	$('#tbl, #loadingimg_upload').hide();
 	$('.minvalue, .maxvalue').binder('setRule','numeric');
 	$('#new_itemcode').binder('setRule','alphaNumeric');
 
@@ -212,6 +212,8 @@
 		
 		flag = true;
 
+		$('#loadingimg_upload').show();
+
 		$.ajax({
 			dataType: 'json',
 			cache: false,
@@ -226,6 +228,8 @@
 					window.location = "<?= base_url() ?>product/logs";
 				
 				flag = false;
+
+				$('#loadingimg_upload').hide();
 			}
 		 });
 	});

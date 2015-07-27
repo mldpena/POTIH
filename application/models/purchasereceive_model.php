@@ -565,7 +565,8 @@ class PurchaseReceive_Model extends CI_Model {
 				->join("purchase_head AS PH", "PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED, "left")
 				->join("branch AS B", "B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE, "left")
 				->join("branch AS B2", "B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE, "left")
-				->where("PRH.`is_show`",\Constants\PURCHASE_RECEIVE_CONST::ACTIVE);
+				->where("PRH.`is_show`",\Constants\PURCHASE_RECEIVE_CONST::ACTIVE)
+				->where("PRH.`is_used`",\Constants\PURCHASE_RECEIVE_CONST::USED);
 
 		if (!empty($date_from))
 			$this->db->where("PRH.`entry_date` >=", $date_from.' 00:00:00');

@@ -406,7 +406,8 @@ class PurchaseReturn_Model extends CI_Model {
 				->from("purchase_return_head AS PH")
 				->join("purchase_return_detail AS PD", "PD.`headid` = PH.`id`", "left")
 				->join("branch AS B", "B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE, "left")
-				->where("PH.`is_show`", \Constants\PURCHASE_RETURN_CONST::ACTIVE);
+				->where("PH.`is_show`", \Constants\PURCHASE_RETURN_CONST::ACTIVE)
+				->where("PH.`is_used`", \Constants\PURCHASE_RETURN_CONST::USED);
 
 		if (!empty($date_from))
 			$this->db->where("PH.`entry_date` >=", $date_from.' 00:00:00');

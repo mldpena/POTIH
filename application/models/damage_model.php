@@ -385,7 +385,8 @@ class Damage_Model extends CI_Model {
 							COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(H.`is_used` = 0, 'Unused', H.`memo`) AS 'memo'")
 				->from("damage_head AS H")
 				->join("branch AS B", "B.`id` = H.`branch_id` AND B.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE, "left")
-				->where("H.`is_show`", \Constants\DAMAGE_CONST::ACTIVE);
+				->where("H.`is_show`", \Constants\DAMAGE_CONST::ACTIVE)
+				->where("H.`is_used`", \Constants\DAMAGE_CONST::USED);
 
 		if (!empty($date_from))
 			$this->db->where("H.`entry_date` >=", $date_from.' 00:00:00');

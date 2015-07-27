@@ -539,9 +539,11 @@
 
 		var rowIndex = $(element).parent().parent().index();
 		
-		var currentReceivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyrecv',0));
-		var quantityOrdered = Number(tableHelper.contentProvider.getData(rowIndex,'qty'));
-		var newQuantityRemaining = quantityOrdered - currentReceivedQuantity;
+		var currentReceivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv', 0));
+		var quantityOrdered = Number(tableHelper.contentProvider.getData(rowIndex, 'qty'));
+		var currentQuantityRemaining = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyremaining'));
+
+		var newQuantityRemaining = currentQuantityRemaining - currentReceivedQuantity;
 
 		tableHelper.contentProvider.setData(rowIndex,'qtyremaining',[newQuantityRemaining]);
 	}

@@ -402,7 +402,8 @@ class Return_Model extends CI_Model {
 							RH.`customer`, RH.`received_by`")
 				->from("return_head AS RH")
 				->join("branch AS B", "B.`id` = RH.`branch_id` AND B.`is_show` = ".\Constants\RETURN_CONST::ACTIVE, "left")
-				->where("RH.`is_show`", \Constants\RETURN_CONST::ACTIVE);
+				->where("RH.`is_show`", \Constants\RETURN_CONST::ACTIVE)
+				->where("RH.`is_used`", \Constants\RETURN_CONST::USED);
 
 		if (!empty($date_from))
 			$this->db->where("RH.`entry_date` >=", $date_from.' 00:00:00');

@@ -167,7 +167,6 @@ var TableHelper = function(tableOptions,options) {
         bindDeleteEvents : function(onAfterDelete)
         {
             $('.' + self._settings.deleteIconClass).live('click',function(){
-                alert('aw');
                 self.globalRowIndex    = $(this).parent().parent().index();
                 self.globalId          = self.contentProvider.getData(self.globalRowIndex,'id');
                 
@@ -689,6 +688,7 @@ var TableHelper = function(tableOptions,options) {
 
             var continueTransaction = true;
             var rowIndex    = $(element).parent().parent().index();
+            var rowUniqueId = tableHelper.contentProvider.getData(rowIndex,'id');
             var productId   = tableHelper.contentProvider.getData(rowIndex,'product',1);
             var enteredQty  = tableHelper.contentProvider.getData(rowIndex,'qty');
 
@@ -716,7 +716,8 @@ var TableHelper = function(tableOptions,options) {
             var arr =   {
                             fnc : 'check_product_inventory',
                             product_id : productId,
-                            qty : enteredQty
+                            qty : enteredQty,
+                            row_id : rowUniqueId
                         }
 
             self._flag = 1;

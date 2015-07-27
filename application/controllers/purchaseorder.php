@@ -4,6 +4,7 @@ class PurchaseOrder extends CI_Controller {
 	
 	private $_authentication_manager;
 	private $_autocomplete_manager;
+	private $_purchase_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -55,7 +56,8 @@ class PurchaseOrder extends CI_Controller {
 				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Purchase_Code::EDIT_PURCHASE),
-									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE));
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE),
+									'allow_to_edit_transfer' => $this->permission_checker->check_permission(\Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO));
 				
 				break;
 
@@ -102,10 +104,12 @@ class PurchaseOrder extends CI_Controller {
 	
 	private function _ajax_request()
 	{
-		$this->load->service('autocomplete_manager');
 		$this->load->model('purchaseorder_model');
+		$this->load->service('autocomplete_manager');
+		$this->load->service('purchase_manager');
 
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
+		$this->_purchase_manager = new Services\Purchase_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -164,6 +168,10 @@ class PurchaseOrder extends CI_Controller {
 
 				case 'recent_name_autocomplete':
 					$response = $this->_autocomplete_manager->get_recent_names($post_data, 2);
+					break;
+
+				case 'transfer_remaining':
+					$response = $this->_purchase_manager->transfer_remaining_po_to_new($post_data);
 					break;
 
 				default:

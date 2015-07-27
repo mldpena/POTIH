@@ -107,7 +107,7 @@ if (!function_exists('get_product_list_autocomplete'))
 
 if (!function_exists('check_current_inventory')) 
 {
-	function check_current_inventory($param, $checker_type)
+	function check_current_inventory($param, $checker_type, $table_name = '')
 	{
 		extract($param);
 
@@ -118,7 +118,23 @@ if (!function_exists('check_current_inventory'))
 
 		$data 		= array();
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
+		$row_id 	= strlen($row_id) > 1 ? $CI->encrypt->decode($row_id) : 0;
+		$inserted_quantity = 0;
 
+		//Temporary
+		if ($row_id != 0) 
+		{
+			$query = "SELECT `quantity` FROM $table_name WHERE `id` = ?";
+			$result = $CI->db->query($query, $row_id);
+			if ($result->num_rows() == 1)
+			{
+				$row = $result->row();
+				$inserted_quantity = $row->quantity;
+			}
+
+			$result->free_result();
+		}
+		
 		$response = array();
 		$response['is_insufficient'] = 0;
 		$response['is_excess'] = 0;
@@ -129,14 +145,14 @@ if (!function_exists('check_current_inventory'))
 
 		if ($checker_type == \Constants\PRODUCT_CONST::MIN_CHECKER) 
 		{
-			if (($row->current_inventory - $qty) < 0 && $row->min_inv != 0) 
+			if ((($row->current_inventory + $inserted_quantity) - $qty) < 0 && $row->min_inv != 0) 
 				$response['is_insufficient'] = \Constants\PRODUCT_CONST::NEGATIVE_INV;
-			elseif (($row->current_inventory - $qty) >= 0 && ($row->current_inventory - $qty) <= $row->min_inv && $row->min_inv != 0)
+			elseif ((($row->current_inventory + $inserted_quantity) - $qty) >= 0 && (($row->current_inventory + $inserted_quantity) - $qty) <= $row->min_inv && $row->min_inv != 0)
 				$response['is_insufficient'] = \Constants\PRODUCT_CONST::MINIMUM;
 		}
 		else
 		{
-			if (($row->current_inventory + $qty) >= $row->max_inv && $row->max_inv != 0) 
+			if ((($row->current_inventory + $inserted_quantity) + $qty) >= $row->max_inv && $row->max_inv != 0) 
 				$response['is_excess'] = TRUE;
 		}
 		

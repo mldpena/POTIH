@@ -27,6 +27,7 @@ class CI_Sql{
 		}
 
 		$err = $CI->db->error()['message'];
+		
 		if (!empty($err)) {
 			$data['error'] = true;
 			$data['id'] = 0;

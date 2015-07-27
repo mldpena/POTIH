@@ -514,4 +514,13 @@ class CI_Encrypt {
 		return hash($this->_hash_type, $str);
 	}
 
+	public function decode_array($string_encrypted_array = array())
+	{
+		$string_result = array();
+
+		for ($i=0; $i < count($string_encrypted_array); $i++) 
+			array_push($string_result, $this->decode($string_encrypted_array[$i]));
+
+		return $string_result;
+	}
 }

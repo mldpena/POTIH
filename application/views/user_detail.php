@@ -151,7 +151,7 @@
 						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::ADD_PURCHASE ?>"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::EDIT_PURCHASE ?>"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::DELETE_PURCHASE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO ?>"> Transfer Incomplete PO</td>
+						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO ?>"> Edit and Transfer Incomplete PO</td>
 					</tr>
 					<tr>
 						<td>Purchase Receive</td>
@@ -313,7 +313,7 @@
 						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\PickUp_Code::GENERATE_SUMMARY ?>"></td>
 						<td></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\PickUp_Code::PRINT_SUMMARY ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\PickUp_Code::PRINT_SUMMARY ?>"> Print Summary</td>
 					</tr>
 				</table>
 			</div>

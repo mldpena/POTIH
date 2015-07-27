@@ -39,7 +39,9 @@ class PurchaseOrder_Model extends CI_Model {
 		$response['detail_error'] = '';
 
 		$query_head = "SELECT CONCAT('PO',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
-					PH.`memo`, PH.`branch_id`, PH.`supplier`, PH.`for_branchid`, SUM(PD.`recv_quantity`) AS 'total_qty', PH.`is_imported`, PH.`is_used`
+					PH.`memo`, PH.`branch_id`, PH.`supplier`, PH.`for_branchid`, SUM(PD.`recv_quantity`) AS 'total_qty', 
+					PH.`is_imported`, PH.`is_used`, SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) AS 'remaining_qty', 
+					SUM(PD.`recv_quantity`) AS 'recv_quantity'
 					FROM `purchase_head` AS PH
 					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
 					WHERE PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE." AND PH.`id` = ?
@@ -61,6 +63,7 @@ class PurchaseOrder_Model extends CI_Model {
 			$response['is_imported'] 		= $row->is_imported;
 			$response['is_editable'] 		= $row->total_qty == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
+			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->recv_quantity > 0 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
@@ -81,6 +84,7 @@ class PurchaseOrder_Model extends CI_Model {
 			{
 				$break_line = $row->type == \Constants\PURCHASE_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
+				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
@@ -495,7 +499,8 @@ class PurchaseOrder_Model extends CI_Model {
 				->join("purchase_detail AS PD", "PD.`headid` = PH.`id`", "left")
 				->join("branch AS B", "B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE, "left")
 				->join("branch AS B2", "B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE, "left")
-				->where("PH.`is_show`", \Constants\PURCHASE_CONST::ACTIVE);
+				->where("PH.`is_show`", \Constants\PURCHASE_CONST::ACTIVE)
+				->where("PH.`is_used`", \Constants\PURCHASE_CONST::USED);
 
 
 		if (!empty($date_from))
@@ -545,5 +550,36 @@ class PurchaseOrder_Model extends CI_Model {
 		$result = $this->db->get();
 
 		return $result;
+	}
+
+	public function get_purchase_order_details_with_remaining($selected_purchase_detail_id)
+	{
+		$this->db->select("`id`, `quantity`, `product_id`, `description`, `memo`, `recv_quantity`")
+				->from("purchase_detail")
+				->where("`recv_quantity` < `quantity`")
+				->where_in("`id`", $selected_purchase_detail_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function transfer_remaining_details_to_new_po($old_purchase_detail, $new_purchase_detail)
+	{
+		$purchase_detail_ids = array();
+
+		for ($i=0; $i < count($old_purchase_detail); $i++) 
+		{
+			$this->db->where("`id`", $old_purchase_detail[$i]['id']);
+			$this->db->update("purchase_detail", $old_purchase_detail[$i]['detail']);
+
+			array_push($purchase_detail_ids, $old_purchase_detail[$i]['id']);
+		}
+
+		$this->db->where_in("`id`", $purchase_detail_ids)
+					->where("`recv_quantity`", 0);
+		$this->db->delete("purchase_detail");
+
+		$this->db->insert_batch("purchase_detail", $new_purchase_detail);
 	}
 }

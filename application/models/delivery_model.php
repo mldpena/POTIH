@@ -930,7 +930,8 @@ class Delivery_Model extends CI_Model {
 				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
 				->join("branch AS B", "B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE, "left")
 				->join("branch AS B2", "B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE, "left")
-				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE);
+				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE)
+				->where("SH.`is_used`", \Constants\DELIVERY_CONST::USED);
 
 		if (!empty($date_from))
 			$this->db->where("SH.`entry_date` >=", $date_from.' 00:00:00');

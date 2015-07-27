@@ -38,7 +38,7 @@
 			<?php if($permission_list['allow_to_add']) : ?>
 
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_new">Create New Damage Entry</button>
+				<button class="btn btn-primary" id="create_new">Create New Damage</button>
 			</div>
 
 			<?php endif; ?>

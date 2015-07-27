@@ -28,6 +28,17 @@
 		headertd_class : "tdheader_id"
     };
 
+    var chkchecktransfer = document.createElement('input');
+    chkchecktransfer.setAttribute('type','checkbox');
+    chkchecktransfer.setAttribute('class','chktransfer');
+	colarray['istransfer'] = { 
+        header_title: "",
+        edit: [chkchecktransfer],
+        disp: [chkchecktransfer],
+        td_class: "tablerow tdistransfer",
+		headertd_class : "tdistransfer"
+    };
+
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -185,10 +196,22 @@
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
-					$('.tdupdate, .tddelete, #save').hide();
+					$('.tdupdate, .tddelete, #save, #transfer').hide();
+
+					if (response.is_saved && response.is_incomplete && (Boolean(<?= $permission_list['allow_to_edit_transfer']?>) == true))
+					{
+						$('input, textarea, select').not('#print').removeAttr('disabled');
+						$('.tdupdate, .tddelete, #save, #transfer').show();
+					}
 				}	
 				else
 					tableHelper.contentProvider.addRow();
+
+				if (!response.is_saved || !response.is_incomplete)
+				{
+					hideTransferColumn();
+					$(' #transfer').hide();
+				}
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
@@ -201,6 +224,41 @@
 
 	$('#print').click(function(){
 		goToPrintOut();
+	});
+
+	$('#transfer').click(function(){
+
+		var selectedDetailId = [];
+
+		$('.chktransfer:checked').each(function(index, element){
+			var rowIndex = $(element).parent().parent().index();
+			var currentId = tableHelper.contentProvider.getData(rowIndex, 'id');
+			selectedDetailId.push(currentId);
+		});
+
+		if (selectedDetailId.length == 0 )
+		{
+			alert('Please select at least one product!');
+			return;
+		}
+
+		var arr = { fnc : 'transfer_remaining',
+					selected_detail_id : selectedDetailId }
+
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(response) {
+            	if(response.error != '') 
+					alert(response.error);
+				else
+				{
+					window.open('<?= base_url() ?>purchase/view/' + response.id);
+					window.location = '<?= base_url() ?>purchase/view/<?= $this->uri->segment(3) ?>';
+				}
+            }
+        });
 	});
 
 	function goToPrintOut()
@@ -250,5 +308,11 @@
 	{
 		$('#dynamic-css').html('');
 		$('#dynamic-css').html("<style> .tdreceive{ display:none; } </style>");
+	}
+
+	function hideTransferColumn()
+	{
+		var currentInnerHTML = $('#dynamic-css').html();
+		$('#dynamic-css').html(currentInnerHTML + "<style> .tdistransfer{ display:none; } </style>");
 	}
 </script>

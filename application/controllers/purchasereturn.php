@@ -155,7 +155,7 @@ class PurchaseReturn extends CI_Controller {
 					break;
 
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data,0);
+					$response = check_current_inventory($post_data, 0, 'purchase_return_detail');
 					break;
 				
 				case 'set_session':

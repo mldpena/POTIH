@@ -167,10 +167,14 @@
 			</div>
 			<div class="modal-body">
 				<div class="message-content">
-					Upload xlsx/csv File :
+					Upload csv File :
 					<input type="file" name="fileData" id="fileData" />
 				</div>
-				<br/><div id="messagebox_4"></div>
+				<br/>
+				<center>
+					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo loadingimg" id="loadingimg_upload">
+					<div id="messagebox_4"></div>
+				</center>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

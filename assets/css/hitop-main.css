@@ -466,7 +466,7 @@ body{
 	font-size: 15px;
 }
 /*Special Classes*/
-#loadingimg{
+#loadingimg, .loadingimg{
 	width: 50px;
 }
 .max-row{

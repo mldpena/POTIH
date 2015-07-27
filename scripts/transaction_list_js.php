@@ -13,7 +13,7 @@
     					{ headerName : 'Material Code', className : 'material' },
     					{ headerName : 'Product', className : 'name' },
     					{ headerName : 'Type', className : 'type' },
-    					{ headerName : 'Beg Inv.', className : 'beginv' },
+    					{ headerName : 'Beginning Inventory', className : 'beginv' },
     					{ headerName : 'Purchase Receive', className : 'purchasereceive' },
     					{ headerName : 'Customer Return', className : 'customereturn' },
     					{ headerName : 'Item Receive', className : 'stockreceive' },
