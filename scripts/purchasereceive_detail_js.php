@@ -544,8 +544,14 @@
 		var quantityOrdered = Number(tableHelper.contentProvider.getData(rowIndex, 'qty'));
 		var hiddenRemainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyremaining', 1));
 		var currentReceivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv'));
+		var hiddenCurrentReceivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv', 1));
 
-		var newQuantityRemaining = quantityOrdered - currentReceivedQuantity;
+		var baseQuantity = quantityOrdered;
+
+		if (hiddenCurrentReceivedQuantity == 0) 
+			baseQuantity = hiddenRemainingQuantity;
+
+		var newQuantityRemaining = baseQuantity - currentReceivedQuantity;
 
 		tableHelper.contentProvider.setData(rowIndex,'qtyremaining',[newQuantityRemaining, hiddenRemainingQuantity]);
 	}
