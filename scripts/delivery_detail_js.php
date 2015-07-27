@@ -252,13 +252,21 @@
 		}
 	});
 
-	$('#print').click(function(){
-		goToPrintOut();
+	$('.print').click(function(){
+		goToPrintOut($(this));
 	});
 
-	function goToPrintOut()
+	function goToPrintOut(element)
 	{
-		var arr = { fnc : 'set_session_delivery' }
+		var printType = "both";
+
+		if (element) 
+			printType = $(element).attr('id');
+
+		var arr = 	{ 
+						fnc : 'set_session_delivery',
+						print_type : printType 
+					}
 
 		$.ajax({
             type: "POST",

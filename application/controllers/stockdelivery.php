@@ -246,30 +246,34 @@ class StockDelivery extends CI_Controller {
 					break;
 
 				case 'set_session':
-					$response = $this->set_session_data('delivery_receive');
+					$response = $this->set_session_data('delivery_receive', $post_data);
 					break;
 
 				case 'set_session_delivery':
-					$response = $this->set_session_data('delivery');
+					$response = $this->set_session_data('delivery', $post_data);
 					break;
 
 				case 'set_session_receive':
-					$response = $this->set_session_data('customer_receive');
+					$response = $this->set_session_data('customer_receive', $post_data);
 					break;
 
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
 			}
-		}catch (Exception $e) {
+		}
+		catch (Exception $e) 
+		{
 			$response['error'] = $e->getMessage();
 		}
 		
 		echo json_encode($response);
 	}
 
-	private function set_session_data($session_name)
+	private function set_session_data($session_name, $param)
 	{
+		extract($param);
+
 		$response['error'] = '';
 
 		$result = $this->delivery_model->check_if_transaction_has_product($session_name);
@@ -277,7 +281,10 @@ class StockDelivery extends CI_Controller {
 		if ($result->num_rows() == 0)
 			throw new Exception("Please encode at least one product!");
 		else
+		{
 			$this->session->set_userdata($session_name,$this->uri->segment(3));
+			$this->session->set_userdata('print_type',$print_type);
+		}
 
 		$result->free_result();
 		

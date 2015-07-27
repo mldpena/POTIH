@@ -769,10 +769,26 @@ class Delivery_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$delivery_id = $this->encrypt->decode($this->session->userdata('delivery'));
+		$delivery_id 	= $this->encrypt->decode($this->session->userdata('delivery'));
+		$print_type 	= $this->session->userdata('print_type');
+
+		$conditions = "";
+
+		if ($print_type != 'both') 
+		{
+			switch ($print_type) {
+				case 'customer':
+					$conditions = " AND D.`is_for_branch` = 0";
+					break;
+				
+				case 'transfer':
+					$conditions = " AND D.`is_for_branch` = 1";
+					break;
+			}
+		}
 
 		$query_head = "SELECT CONCAT('SD',`reference_number`) AS 'reference_number', 
-						DATE(`delivery_receive_date`) AS 'entry_date'
+						DATE(`entry_date`) AS 'entry_date'
 					FROM stock_delivery_head
 					WHERE `id` = ?";
 
@@ -795,10 +811,10 @@ class Delivery_Model extends CI_Model {
 							FROM stock_delivery_head AS H
 							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
-							WHERE H.`id` = ?";
+							WHERE H.`id` = ? $conditions";
 
 		$result_detail = $this->db->query($query_detail,$delivery_id);
-		
+
 		if ($result_detail->num_rows() > 0) 
 		{
 			$i = 0;

@@ -157,7 +157,7 @@ if (!function_exists('check_current_inventory'))
 		}
 		
 		$response['checker'] = $checker_type;
-		$response['current_inventory'] = $row->current_inventory;
+		$response['current_inventory'] = $row->current_inventory + $inserted_quantity;
 
 		$result->free_result();
 

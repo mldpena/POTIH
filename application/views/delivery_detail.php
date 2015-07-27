@@ -60,8 +60,7 @@
 				</table>
 			</div>
 			<div class="max-row" align="right">
-				<input type="button" class="btn btn-primary" value="Print Type" data-toggle="modal" data-target="#printModal">
-				<input type="button" class="btn btn-primary" value="Print" id="print">
+				<input type="button" class="btn btn-primary" value="Print" data-toggle="modal" data-target="#printModal">
 				<input type="button" class="btn btn-success" value="Save" id="save">
 			</div>
 		</div>
@@ -97,23 +96,20 @@
 			<div class="modal-body">
 				<div class="row">
 					<div class="col-md-12" align="center">
-						<div class="btn btn-print color-default">
+						<div class="btn btn-print color-default print" id="customer">
 							<img src="<?= base_url().IMG ?>printcustomer.png" class="">
 							<div>Print for Customer Only</div>
 						</div>
-						<div class="btn btn-print color-default">
+						<div class="btn btn-print color-default print" id="transfer">
 							<img src="<?= base_url().IMG ?>printtransfer.png" class="">
 							<div>Print for Transfer Only</div>
 						</div>
-						<div class="btn btn-print color-default">
+						<div class="btn btn-print color-default print" id="both">
 							<img src="<?= base_url().IMG ?>printboth.png" class="">
 							<div>Print Both</div>
 						</div>
 					</div>
 				</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="">Print</button>
 			</div>
 		</div>
 	</div>

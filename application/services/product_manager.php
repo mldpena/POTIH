@@ -528,7 +528,12 @@ class Product_Manager
 																	'date_created' => $this->_current_date));
 						}
 
-						$product_id = $this->_CI->encrypt->decode($this->_CI->product_model->insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data));
+						$result_product_inserted_transaction = $this->_CI->product_model->insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data);
+
+						if (!empty($result_product_inserted_transaction['error'])) 
+							throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
+							
+						$product_id = $this->_CI->encrypt->decode($result_product_inserted_transaction['id']);
 						
 						for ($x=3; $x < count($product_csv_data); $x++) 
 						{ 
