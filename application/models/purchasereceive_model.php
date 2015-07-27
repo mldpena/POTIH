@@ -102,8 +102,8 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['po_lists'][$i][] = array($row->po_date);
 				$response['po_lists'][$i][] = array($row->total_qty);
 				
-				if ($row->is_received == 1 && !in_array($row->id,$po_head_ids)) 
-					array_push($po_head_ids,$row->id);
+				/*if ($row->is_received == 1 && !in_array($row->id,$po_head_ids)) 
+					array_push($po_head_ids,$row->id);*/
 
 				$i++;
 			}
@@ -111,11 +111,56 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$result_po_list->free_result();
 
-		if (count($po_head_ids) > 0) {
+		/*if (count($po_head_ids) > 0) {
 			$param['po_head_id'] = $po_head_ids;
 			$response = $this->get_po_details($param,$response);
-		}
+		}*/
 		
+		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`purchase_detail_id`,
+						COALESCE(CONCAT('PO',PH.`reference_number`),'') AS 'po_number',
+						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', P.`type`,
+						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
+						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
+						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`recv_quantity`,0)) AS 'qty_remaining',
+						PRD.`received_by`, PRD.`receive_memo`, PRD.`quantity` AS 'qty_receive'
+					FROM `purchase_receive_detail` AS PRD
+					LEFT JOIN `purchase_receive_head` AS PRH ON PRH.`id` = PRD.`headid` 
+					LEFT JOIN `purchase_detail` AS PD ON PD.`id` = PRD.`purchase_detail_id`
+					LEFT JOIN `purchase_head` AS PH ON PH.`id` = PD.`headid`
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
+					WHERE PRD.`headid` = ? AND PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE;
+
+		$result_detail = $this->db->query($query_detail,$this->_receive_head_id);
+
+		if ($result_detail->num_rows() == 0) 
+			$response['detail_error'] = $this->_error_message['UNABLE_TO_SELECT_DETAILS'];
+		else
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				$break_line = $row->type == \Constants\PURCHASE_RECEIVE_CONST::STOCK ? '' : '<br/>';
+				$response['detail'][$i][] = array($this->encrypt->encode($row->receive_detail_id));
+				$response['detail'][$i][] = array($this->encrypt->encode($row->purchase_detail_id));
+				$response['detail'][$i][] = array($i+1);
+				$response['detail'][$i][] = array($row->po_number);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->quantity);
+				$response['detail'][$i][] = array($row->memo);
+				$response['detail'][$i][] = array($row->qty_remaining);
+				$response['detail'][$i][] = array($row->received_by);
+				$response['detail'][$i][] = array($row->receive_memo);
+				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array($row->qty_receive,$row->qty_receive);
+				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array('');
+				$i++;
+			}
+		}
+
+		$result_detail->free_result();
+
 		return $response;
 	}
 
@@ -499,6 +544,59 @@ class PurchaseReceive_Model extends CI_Model {
 				->join("purchase_receive_head AS H", "H.`id` = D.`headid`", "left")
 				->where("H.`is_show`", \Constants\PURCHASE_RECEIVE_CONST::ACTIVE)
 				->where("H.`id`", $this->_receive_head_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function get_purchase_receive_by_transaction($param)
+	{
+		extract($param);
+
+		$this->db->select("PRH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'for_branch',
+						CONCAT('PR',PRH.`reference_number`) AS 'reference_number', 
+						COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PO',PH.`reference_number`)),'') AS 'po_numbers',
+					    COALESCE(DATE(PRH.`entry_date`),'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
+					    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'")
+				->from("purchase_receive_head AS PRH")
+				->join("purchase_receive_detail AS PRD", "PRD.`headid` = PRH.`id`", "left")
+				->join("purchase_detail AS PD", "PD.`id` = PRD.`purchase_detail_id`", "left")
+				->join("purchase_head AS PH", "PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED, "left")
+				->join("branch AS B", "B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE, "left")
+				->join("branch AS B2", "B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE, "left")
+				->where("PRH.`is_show`",\Constants\PURCHASE_RECEIVE_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("PRH.`entry_date` >=", $date_from.' 00:00:00');
+
+		if (!empty($date_to))
+			$this->db->where("PRH.`entry_date` <=", $date_to.' 23:59:59');
+
+		if ($branch != \Constants\PURCHASE_RECEIVE_CONST::ALL_OPTION) 
+			$this->db->where("PRH.`branch_id`", $branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`)", $search_string, "both");
+
+		$this->db->group_by("PRH.`id`");
+
+		switch ($order_by) 
+		{
+			case \Constants\PURCHASE_RECEIVE_CONST::ORDER_BY_REFERENCE:
+				$order_field = "PRH.`reference_number`";
+				break;
+			
+			case \Constants\PURCHASE_RECEIVE_CONST::ORDER_BY_LOCATION:
+				$order_field = "B.`name`";
+				break;
+
+			case \Constants\PURCHASE_RECEIVE_CONST::ORDER_BY_DATE:
+				$order_field = "PRH.`entry_date`";
+				break;
+		}
+
+		$this->db->order_by($order_field, $order_type);
 
 		$result = $this->db->get();
 

@@ -38,7 +38,7 @@
 			<?php if($permission_list['allow_to_add']) : ?>
 
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_new">Create New Customer Return Entry</button>
+				<button class="btn btn-primary" id="create_new">Create New Customer Return</button>
 			</div>
 
 			<?php endif; ?>
@@ -51,6 +51,9 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div class="tbl max" id="tbl"></div>
 				</center>
+			</div>
+			<div class="max-row" align="right">
+				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
 			</div>
 		</div>
 	</div>

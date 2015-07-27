@@ -70,7 +70,7 @@
 
                 var spntotalinv = document.createElement('span');
                 colarray['totalinv'] = { 
-                    header_title: "Total Inv.",
+                    header_title: "Total Inventory",
                     edit: [spntotalinv],
                     disp: [spntotalinv],
                     td_class: "tablerow column_click column_hover tdtotalinv"
@@ -98,6 +98,19 @@
     $('#tbl').hide();    
     $('#loadingimg').hide();    
     $("#branch").chosen();
+
+    $('#export').click(function () {
+        var arr = getSearchFilter();
+
+        if (!arr) 
+            return;
+
+        arr.fnc = "branch_inventory";
+
+        var queryString = $.objectToQueryString(arr);
+
+        window.open("<?= base_url() ?>export?" + queryString);
+    });
 
     function getSearchFilter()
     {

@@ -55,6 +55,7 @@
 		const ADD_PURCHASE = 133;
 		const EDIT_PURCHASE = 134;
 		const DELETE_PURCHASE= 135;
+		const TRANSFER_INCOMPLETE_PO = 241;
 	}
 
 	class PurchaseReceive_Code
@@ -167,22 +168,23 @@
 
 	class PickUp_Code
 	{
-		const GENERATE_SUMMARY = 332;
-		const PRINT_SUMMARY = 333;
+		const GENERATE_SUMMARY = 232;
+		const PRINT_SUMMARY = 233;
 	}
 
 	class StockRequestTo_Code
 	{
-		const VIEW_STOCKREQUEST = 334;
-		const VIEW_STOCKREQUEST_DETAIL = 335;
-		const ADD_STOCKREQUEST = 336;
-		const EDIT_STOCKREQUEST = 337;
-		const DELETE_STOCKREQUEST= 338;
+		const VIEW_STOCKREQUEST = 234;
+		const VIEW_STOCKREQUEST_DETAIL = 235;
+		const ADD_STOCKREQUEST = 236;
+		const EDIT_STOCKREQUEST = 237;
+		const DELETE_STOCKREQUEST= 238;
 	}
 
 	class StockRequestFrom_Code
 	{
-		const VIEW_STOCKREQUEST = 339;
+		const VIEW_STOCKREQUEST = 239;
+		const VIEW_STOCKREQUEST_DETAIL = 240;
 	}
 
 ?>

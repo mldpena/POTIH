@@ -86,7 +86,7 @@
 
     var spnoldinv = document.createElement('span');
 	colarray['oldinv'] = { 
-        header_title: "Old Inv",
+        header_title: "Old Inventory",
         edit: [spnoldinv],
         disp: [spnoldinv],
         td_class: "tablerow column_click column_hover tdoldinv"
@@ -94,7 +94,7 @@
 
     var spninv = document.createElement('span');
 	colarray['inv'] = { 
-        header_title: "Inv",
+        header_title: "Current Inventory",
         edit: [spninv],
         disp: [spninv],
         td_class: "tablerow column_click column_hover tdinv"
@@ -102,7 +102,7 @@
 
     var spnnewinv = document.createElement('span');
 	colarray['newinv'] = { 
-        header_title: "Requested Inv",
+        header_title: "Adjusted Inventory",
         edit: [spnnewinv],
         disp: [spnnewinv],
         td_class: "tablerow column_click column_hover tdnewinv"
@@ -204,6 +204,16 @@
 			}       
 		});
     });
+	
+	$('#export').click(function () {
+		var arr = getSearchFilter();
+
+		arr.fnc = "inventory_adjustment";
+
+		var queryString = $.objectToQueryString(arr);
+
+		window.open("<?= base_url() ?>export?" + queryString);
+	});
 
 	function getSearchFilter()
 	{

@@ -190,7 +190,7 @@ class Product extends CI_Controller {
 					break;
 
 				case 'get_inventory_warning_list':
-					$response = $this->product_model->get_product_warning_list($post_data);
+					$response = $this->_product_manager->get_product_warning_list_info($post_data);
 					break;
 
 				case 'get_branch_list':
@@ -198,11 +198,11 @@ class Product extends CI_Controller {
 					break;
 
 				case 'get_branch_inventory_list':
-					$response = $this->product_model->get_product_branch_inventory_list($post_data);
+					$response = $this->_product_manager->get_branch_inventory_list_info($post_data);
 					break;
 
 				case 'get_transaction_list':
-					$response = $this->product_model->get_transaction_summary($post_data);
+					$response = $this->_product_manager->get_product_transaction_list_info($post_data);
 					break;
 
 				case 'get_product_name':

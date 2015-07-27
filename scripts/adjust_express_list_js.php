@@ -57,7 +57,7 @@
 
     var spninventory = document.createElement('span');
 	colarray['oldinventory'] = { 
-        header_title: "Old Inv",
+        header_title: "Old Inventory",
         edit: [spninventory],
         disp: [spninventory],
         td_class: "tablerow column_click column_hover tdinv"
@@ -67,7 +67,7 @@
    	var txtqty = document.createElement('input');
     txtqty.setAttribute('class','form-control txtqty');
 	colarray['newinventory'] = { 
-        header_title: "New Inv",
+        header_title: "New Inventory",
         edit: [txtqty],
         disp: [spnqty],
         td_class: "tablerow column_click column_hover tdqty"

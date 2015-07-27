@@ -71,15 +71,19 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
-				
-				<?php if($permission_list['allow_to_approve']) : ?>
-
 				<div id="action-button">
-					<input type="button" class="btn btn-danger" value="Approve" id="approve">
-					<input type="button" class="btn btn-warning" value="Decline" id="decline">
-				</div>
+					<?php if($permission_list['allow_to_approve']) : ?>
 
-				<?php endif; ?>
+					<div class="max-row" align="left">
+						<input type="button" class="btn btn-danger" value="Approve" id="approve">
+						<input type="button" class="btn btn-warning" value="Decline" id="decline">
+					</div>
+
+					<?php endif; ?>
+					<div class="max-row" align="right">
+						<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>

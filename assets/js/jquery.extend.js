@@ -55,6 +55,16 @@
         return equivalentValue;
     };
 
+    $.objectToQueryString = function(object){
+        var queryString = "";
+
+        $.each(object, function(index, value){
+            queryString += "&" + index + "=" + value;
+        });
+
+        return queryString.substring(1);
+    };
+
     $.dataValidation = function(data){
         var numericReg = /[^0-9-]/;
         var alphaNumericCharReg = /[^A-Za-z0-9 '".\/]/;

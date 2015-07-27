@@ -283,6 +283,119 @@ class Product_Manager
 			throw new \Exception($this->_error_message['UNABLE_TO_DELETE']);
 	}
 
+	public function get_product_warning_list_info($param)
+	{
+		$response = array();
+
+		$response['rowcnt'] = 0;
+
+		$result = $this->_CI->product_model->get_product_warning_list_by_filter($param);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
+				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row->material_code);
+				$response['data'][$i][] = array($row->description);
+				$response['data'][$i][] = array($row->type);
+				$response['data'][$i][] = array($row->material_type);
+				$response['data'][$i][] = array($row->subgroup);
+				$response['data'][$i][] = array($row->min_inv);
+				$response['data'][$i][] = array($row->max_inv);
+				$response['data'][$i][] = array(number_format($row->inventory,0));
+				$response['data'][$i][] = array($row->status);
+				$i++;
+			}
+		}
+
+		$result->free_result();
+		
+		return $response;
+	}
+
+	public function get_product_transaction_list_info($param)
+	{
+		$response = array();
+
+		$response['rowcnt'] = 0;
+
+		$result = $this->_CI->product_model->get_transaction_summary_by_filter($param);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($i+1);
+				
+				foreach ($row as $key => $value)
+      				$response['data'][$i][] = array($value);
+
+      			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
+      											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
+      											- $row->adjust_decrease - $row->release);
+
+				$i++;
+			}
+		}
+
+		$result->free_result();
+		
+		return $response;
+	}
+
+	public function get_branch_inventory_list_info($param)
+	{
+		$this->_CI->load->model('branch_model');
+
+		$branch_column_list = "";
+
+		$result_branch = $this->_CI->branch_model->get_branch_list();
+
+		if ($result_branch->num_rows() > 0) 
+		{
+			foreach ($result_branch->result() as $row) 
+			{
+				$branch_column_list .= ",SUM(IF(PBI.`branch_id` = ".$row->id.", PBI.`inventory`, 0)) AS '".$row->name."'";	
+			}
+		}
+		
+		$result_branch->free_result();
+
+		$response = array();
+
+		$response['rowcnt'] = 0;
+
+		$result = $this->_CI->product_model->get_product_branch_inventory_list_by_filter($param, $branch_column_list);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($i+1);
+
+				foreach ($row as $key => $value)
+      				$response['data'][$i][] = array($value);
+
+				$i++;
+			}
+		}
+
+		$result->free_result();
+		
+		return $response;
+	}
+
 	/**
 	 * Validate file type and import products from csv file. Validates material code and product name per row. 
 	 * Beginning inventory will be set as an adjustment. 

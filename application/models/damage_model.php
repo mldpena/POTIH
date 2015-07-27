@@ -376,4 +376,48 @@ class Damage_Model extends CI_Model {
 
 		return $result;
 	}
+
+	public function get_damage_by_transaction($param)
+	{
+		extract($param);
+		
+		$this->db->select("H.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('DD',H.`reference_number`) AS 'reference_number',
+							COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(H.`is_used` = 0, 'Unused', H.`memo`) AS 'memo'")
+				->from("damage_head AS H")
+				->join("branch AS B", "B.`id` = H.`branch_id` AND B.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE, "left")
+				->where("H.`is_show`", \Constants\DAMAGE_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("H.`entry_date` >=", $date_from.' 00:00:00');
+
+		if (!empty($date_to))
+			$this->db->where("H.`entry_date` <=", $date_to.' 23:59:59');
+
+		if ($branch != \Constants\DAMAGE_CONST::ALL_OPTION) 
+			$this->db->where("H.`branch_id`", $branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('DD',H.`reference_number`,' ',H.`memo`)", $search_string, "both");
+
+		switch ($order_by) 
+		{
+			case \Constants\DAMAGE_CONST::ORDER_BY_REFERENCE:
+				$order_field = "H.`reference_number`";
+				break;
+			
+			case \Constants\DAMAGE_CONST::ORDER_BY_LOCATION:
+				$order_field = "B.`name`";
+				break;
+
+			case \Constants\DAMAGE_CONST::ORDER_BY_DATE:
+				$order_field = "H.`entry_date`";
+				break;
+		}
+
+		$this->db->order_by($order_field, $order_type);
+		
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

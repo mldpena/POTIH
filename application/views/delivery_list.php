@@ -32,6 +32,7 @@
 						<td>Delivery Type:</td>
 						<td colspan="3">
 							<select class="form-control" id="delivery_type">
+								<option value="0">ALL</option>
 								<option value="1">Both</option>
 								<option value="2">Sales</option>
 								<option value="3">Stock Transferring</option>
@@ -80,6 +81,9 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
+			</div>
+			<div class="max-row" align="right">
+				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
 			</div>
 		</div>
 	</div>

@@ -73,7 +73,7 @@
 
 	var spninv = document.createElement('span');
 	colarray['inv'] = { 
-		header_title: "Inv",
+		header_title: "Inventory",
 		edit: [spninv],
 		disp: [spninv],
 		td_class: "tablerow column_hover tdinv clickable"
@@ -187,44 +187,6 @@
 	tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-
-	function getSearchFilter()
-	{
-		var itemcode_val 	= $('#itemcode').val();
-		var product_val 	= $('#product').val();
-		var subgroup_val 	= $('#subgroup').val();
-		var type_val 		= $('#type').val();
-		var material_val	= $('#material').val();
-		var datefrom_val	= $('#date_from').val();
-		var dateto_val		= $('#date_to').val();
-		var branch_val		= $('#branch').val();
-		var inv_val			= $('#invstatus').val();
-		var orderby_val		= $('#orderby').val();
-
-
-		var arr = 	{ 
-						fnc 	 : 'get_product_list', 
-						code 	 : itemcode_val,
-						product  : product_val,
-						subgroup : subgroup_val,
-						type 	 : type_val,
-						material : material_val,
-						datefrom : datefrom_val,
-						dateto 	 : dateto_val,
-						branch 	 : branch_val,
-						invstat  : inv_val,
-						orderby  : orderby_val
-					};
-
-		return arr;
-	}
-
-	function actionAfterDelete()
-	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Product successfully deleted!','success');
-	}
-
 	$('#uploadFile').live('click',function(e){
 		e.preventDefault();
 		
@@ -335,6 +297,16 @@
 			clearProductCodeGroup();
 		else
 			checkProductCodeGroup();
+	});
+
+	$('#export').click(function () {
+		var arr = getSearchFilter();
+
+		arr.fnc = "product_list";
+
+		var queryString = $.objectToQueryString(arr);
+
+		window.open("<?= base_url() ?>export?" + queryString);
 	});
 
 	//Event for create product popup
@@ -540,5 +512,42 @@
 				flag = false;
 			}       
 		});
+	}
+
+	function getSearchFilter()
+	{
+		var itemcode_val 	= $('#itemcode').val();
+		var product_val 	= $('#product').val();
+		var subgroup_val 	= $('#subgroup').val();
+		var type_val 		= $('#type').val();
+		var material_val	= $('#material').val();
+		var datefrom_val	= $('#date_from').val();
+		var dateto_val		= $('#date_to').val();
+		var branch_val		= $('#branch').val();
+		var inv_val			= $('#invstatus').val();
+		var orderby_val		= $('#orderby').val();
+
+
+		var arr = 	{ 
+						fnc 	 : 'get_product_list', 
+						code 	 : itemcode_val,
+						product  : product_val,
+						subgroup : subgroup_val,
+						type 	 : type_val,
+						material : material_val,
+						datefrom : datefrom_val,
+						dateto 	 : dateto_val,
+						branch 	 : branch_val,
+						invstat  : inv_val,
+						orderby  : orderby_val
+					};
+
+		return arr;
+	}
+
+	function actionAfterDelete()
+	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		build_message_box('messagebox_1','Product successfully deleted!','success');
 	}
 </script>

@@ -392,4 +392,49 @@ class Return_Model extends CI_Model {
 
 		return $result;
 	}
+
+	public function get_customer_return_by_transaction($param)
+	{
+		extract($param);
+		
+		$this->db->select("RH.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('RD',RH.`reference_number`) AS 'reference_number',
+							COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RH.`is_used` = 0, 'Unused', RH.`memo`) AS 'memo', 
+							RH.`customer`, RH.`received_by`")
+				->from("return_head AS RH")
+				->join("branch AS B", "B.`id` = RH.`branch_id` AND B.`is_show` = ".\Constants\RETURN_CONST::ACTIVE, "left")
+				->where("RH.`is_show`", \Constants\RETURN_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("RH.`entry_date` >=", $date_from.' 00:00:00');
+
+		if (!empty($date_to))
+			$this->db->where("RH.`entry_date` <=", $date_to.' 23:59:59');
+
+		if ($branch != \Constants\RETURN_CONST::ALL_OPTION) 
+			$this->db->where("RH.`branch_id`", $branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('RD',RH.`reference_number`,' ',RH.`memo`,' ',RH.`customer`,' ',RH.`received_by`)", $search_string, "both");
+
+		switch ($order_by) 
+		{
+			case \Constants\RETURN_CONST::ORDER_BY_REFERENCE:
+				$order_field = "RH.`reference_number`";
+				break;
+			
+			case \Constants\RETURN_CONST::ORDER_BY_LOCATION:
+				$order_field = "B.`name`";
+				break;
+
+			case \Constants\RETURN_CONST::ORDER_BY_DATE:
+				$order_field = "RH.`entry_date`";
+				break;
+		}
+
+		$this->db->order_by($order_field, $order_type);
+		
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

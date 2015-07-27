@@ -114,7 +114,6 @@ var TableHelper = function(tableOptions,options) {
         recomputeTotalQuantity : function()
         {
             var totalQty = 0;
-
             for (var i = 1; i < self._jsTable.get_row_count(); i++) {
                 var currentQty = self.contentProvider.getData(i,'qty');
                 totalQty += Number(currentQty);
@@ -168,6 +167,7 @@ var TableHelper = function(tableOptions,options) {
         bindDeleteEvents : function(onAfterDelete)
         {
             $('.' + self._settings.deleteIconClass).live('click',function(){
+                alert('aw');
                 self.globalRowIndex    = $(this).parent().parent().index();
                 self.globalId          = self.contentProvider.getData(self.globalRowIndex,'id');
                 
@@ -250,9 +250,10 @@ var TableHelper = function(tableOptions,options) {
                 enable_add : false,
                 fnc_callback : function(x, label, value, ret_datas, error){
                     var rowIndex = $(x).parent().parent().index();
-                    if (onAfterSubmit) {
+                    if (onAfterSubmit)
                         onAfterSubmit(rowIndex, error, ret_datas);
-                    }else{
+                    else
+                    {
 
                         var descriptionElement = $(x).parent().find('.' + self._settings.nonStackClass);
 
@@ -261,6 +262,10 @@ var TableHelper = function(tableOptions,options) {
                             self.contentProvider.setData(rowIndex,'code',['']);
                             self.contentProvider.setData(rowIndex,'qty',['']);
                             self.contentProvider.setData(rowIndex,'memo',['']);
+                            
+                            if (self._jsTableArray.hasOwnProperty("receivedby")) 
+                                self.contentProvider.setData(rowIndex,'receivedby',['']);
+                            
                             $(descriptionElement).hide();
                         }
                         else
@@ -611,8 +616,8 @@ var TableHelper = function(tableOptions,options) {
                 return;
 
             $('#' + self._settings.loadingImgId).show();
-            $('#' + self._settings.searchTextId).val('');
-            $('input[type=text]').not(self._settings.clearExcluded).val('');
+            //$('#' + self._settings.searchTextId).val('');
+            //$('input[type=text]').not(self._settings.clearExcluded).val('');
             
             self._flag = 1;
 

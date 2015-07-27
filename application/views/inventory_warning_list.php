@@ -13,11 +13,11 @@
 					<tr>
 						<td>Material Code:</td>
 						<td><input type="text" class="form-control" id="itemcode" maxlength="8"></td>
-						<td>Type:</td>
-						<td>
+						<td style="display:none;">Type:</td>
+						<td style="display:none;">
 							<select class="form-control" id="type">
 								<option value="0">ALL</option>
-								<option value="1">Stock</option>
+								<option value="1" selected>Stock</option>
 								<option value="2">Non - Stock</option>
 							</select>
 						</td>
@@ -55,7 +55,6 @@
 				</select>
 				<input type="button" class="btn btn-success" value="Search" id="search">
 			</div>
-		
 			<div class="max-row">
 				<div id="messagebox_1"></div>
 			</div>
@@ -64,6 +63,9 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
+			</div>
+			<div class="max-row" align="right">
+				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
 			</div>
 		</div>
 	</div>

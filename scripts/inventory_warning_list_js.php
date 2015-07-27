@@ -67,21 +67,21 @@
     };
     var spnmininv = document.createElement('span');
     colarray['min_inv'] = { 
-        header_title: "Min Inv",
+        header_title: "Min Inventory",
         edit: [spnmininv],
         disp: [spnmininv],
         td_class: "tablerow column_click column_hover tdmininv"
     };
     var spnmaxinv = document.createElement('span');
     colarray['max_inv'] = { 
-        header_title: "Max Inv",
+        header_title: "Max Inventory",
         edit: [spnmaxinv],
         disp: [spnmaxinv],
         td_class: "tablerow column_click column_hover tdmaxinv"
     };
     var spninv = document.createElement('span');
     colarray['inv'] = { 
-        header_title: "Inv",
+        header_title: "Inventory",
         edit: [spninv],
         disp: [spninv],
         td_class: "tablerow column_click column_hover tdinv"
@@ -93,7 +93,6 @@
         disp: [spnstatus],
         td_class: "tablerow column_click column_hover tdstatus"
     };
-
 
     var myjstbl;
 
@@ -116,6 +115,16 @@
     var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray });
     tableHelper.headContent.bindSearchEvent(getSearchFilter);
     tableHelper.contentHelper.refreshTable(getSearchFilter);
+
+    $('#export').click(function () {
+        var arr = getSearchFilter();
+
+        arr.fnc = "inventory_warning";
+
+        var queryString = $.objectToQueryString(arr);
+
+        window.open("<?= base_url() ?>export?" + queryString);
+    });
 
     function getSearchFilter()
     {

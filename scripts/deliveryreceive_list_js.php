@@ -74,6 +74,14 @@
         td_class: "tablerow column_click column_hover tdtotalqty"
     };
 
+    var spnstatus = document.createElement('span');
+	colarray['status'] = { 
+        header_title: "Status",
+        edit: [spnstatus],
+        disp: [spnstatus],
+        td_class: "tablerow column_click column_hover tdstatus"
+    };
+
 	var myjstbl;
 
 	var root = document.getElementById("tbl");
@@ -105,6 +113,16 @@
 
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
+	$('#export').click(function () {
+		var arr = getSearchFilter();
+
+		arr.fnc = "delivery_receive_transaction";
+
+		var queryString = $.objectToQueryString(arr);
+
+		window.open("<?= base_url() ?>export?" + queryString);
+	});
+	
 	function getSearchFilter()
 	{
 		var search_val 		= $('#search_string').val();
@@ -114,6 +132,7 @@
 		var date_to_val 	= $('#date_to').val();
 		var from_branch_val = $('#from_branch').val();
 		var to_branch_val 	= $('#to_branch').val();
+		var status_val 		= $('#status').val();
 
 		var arr = 	{ 
 						fnc 	 		: 'search_stock_receive_list', 
@@ -123,7 +142,8 @@
 						date_from		: date_from_val,
 						date_to 		: date_to_val,
 						from_branch 	: from_branch_val,
-						to_branch 		: to_branch_val
+						to_branch 		: to_branch_val,
+						status 			: status_val
 					};
 
 		return arr;

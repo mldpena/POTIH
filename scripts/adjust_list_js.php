@@ -73,7 +73,7 @@
 
     var spninv = document.createElement('span');
 	colarray['inv'] = { 
-        header_title: "Inv",
+        header_title: "Inventory",
         edit: [spninv],
         disp: [spninv],
         td_class: "tablerow column_click column_hover tdinv"
@@ -83,7 +83,7 @@
     var spnrequesthidden = document.createElement('span');
     spnrequesthidden.setAttribute('style','display:none');
 	colarray['request'] = { 
-        header_title: "Requested Inv",
+        header_title: "Adjusted Inventory",
         edit: [spnrequest,spnrequesthidden],
         disp: [spnrequest,spnrequesthidden],
         td_class: "tablerow column_click column_hover tdrequest"

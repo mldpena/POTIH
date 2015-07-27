@@ -1,7 +1,7 @@
 <script type="text/javascript">
 	var flag = 0;
-	var global_detail_id = 0;
-	var global_row_index = 0;
+	var globalDetailId = 0;
+	var globalRowIndex = 0;
 	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
@@ -9,120 +9,120 @@
 	tab.id = "tableid";
 	tab.setAttribute("style","border-collapse:collapse;");
 	tab.setAttribute("class","border-collapse:collapse;");
-    
-    var colarray = [];
+	
+	var colarray = [];
 	
 	var spnid = document.createElement('span');
 	colarray['id'] = { 
-        header_title: "",
-        edit: [spnid],
-        disp: [spnid],
-        td_class: "tablerow tdid",
+		header_title: "",
+		edit: [spnid],
+		disp: [spnid],
+		td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
-    };
+	};
 
-    var spnpodetailid = document.createElement('span');
+	var spnpodetailid = document.createElement('span');
 	colarray['podetailid'] = { 
-        header_title: "",
-        edit: [spnpodetailid],
-        disp: [spnpodetailid],
-        td_class: "tablerow tdid tdpodetailid",
+		header_title: "",
+		edit: [spnpodetailid],
+		disp: [spnpodetailid],
+		td_class: "tablerow tdid tdpodetailid",
 		headertd_class : "tdheader_id"
-    };
+	};
 
-    var spnnumber = document.createElement('span');
+	var spnnumber = document.createElement('span');
 	colarray['number'] = { 
-        header_title: "",
-        edit: [spnnumber],
-        disp: [spnnumber],
-        td_class: "tablerow tdnumber"
-    };
+		header_title: "",
+		edit: [spnnumber],
+		disp: [spnnumber],
+		td_class: "tablerow tdnumber"
+	};
 
-    var spnponumber = document.createElement('span');
+	var spnponumber = document.createElement('span');
 	colarray['ponumber'] = { 
-        header_title: "PO Number",
-        edit: [spnponumber],
-        disp: [spnponumber],
-        td_class: "tablerow tdponumber"
-    };
+		header_title: "PO Number",
+		edit: [spnponumber],
+		disp: [spnponumber],
+		td_class: "tablerow tdponumber"
+	};
 
-    var spnproduct = document.createElement('span');
-    var spnproductid = document.createElement('span');
-    var txtproduct = document.createElement('input');
-    txtproduct.setAttribute('class','form-control txtproduct');
-    spnproductid.setAttribute('style','display:none;');
+	var spnproduct = document.createElement('span');
+	var spnproductid = document.createElement('span');
+	var txtproduct = document.createElement('input');
+	txtproduct.setAttribute('class','form-control txtproduct');
+	spnproductid.setAttribute('style','display:none;');
 
-    var disabledDescription = document.createElement('textarea');
-    disabledDescription.setAttribute('class','nonStackDescription form-control');
-    disabledDescription.setAttribute('style','display:none;');
-    disabledDescription.setAttribute('disabled','disabled');
+	var disabledDescription = document.createElement('textarea');
+	disabledDescription.setAttribute('class','nonStackDescription form-control');
+	disabledDescription.setAttribute('style','display:none;');
+	disabledDescription.setAttribute('disabled','disabled');
 
-    var productType = document.createElement('span');
-    productType.setAttribute('style','display:none;');
+	var productType = document.createElement('span');
+	productType.setAttribute('style','display:none;');
 
-    var newline = document.createElement('span');
+	var newline = document.createElement('span');
 
 	colarray['product'] = { 
-        header_title: "Product",
-        edit: [spnproduct,spnproductid,productType,newline,disabledDescription],
-        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
-        td_class: "tablerow column_click column_hover tdproduct"
-    };
+		header_title: "Product",
+		edit: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		td_class: "tablerow column_click column_hover tdproduct"
+	};
 
 	var spnmaterialcode = document.createElement('span');
 	colarray['code'] = { 
-        header_title: "Material Code",
-        edit: [spnmaterialcode],
-        disp: [spnmaterialcode],
-        td_class: "tablerow column_click column_hover tdcode"
-    };
-   	
-   	var spnqty = document.createElement('span');
+		header_title: "Material Code",
+		edit: [spnmaterialcode],
+		disp: [spnmaterialcode],
+		td_class: "tablerow column_click column_hover tdcode"
+	};
+	
+	var spnqty = document.createElement('span');
 	colarray['qty'] = { 
-        header_title: "Qty Ordered",
-        edit: [spnqty],
-        disp: [spnqty],
-        td_class: "tablerow column_click column_hover tdqty"
-    };
+		header_title: "Qty Ordered",
+		edit: [spnqty],
+		disp: [spnqty],
+		td_class: "tablerow column_click column_hover tdqty"
+	};
 
-    var spnmemo = document.createElement('span');
+	var spnmemo = document.createElement('span');
 	colarray['memo'] = { 
-        header_title: "Remarks",
-        edit: [spnmemo],
-        disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tdmemo"
-    };
+		header_title: "Remarks",
+		edit: [spnmemo],
+		disp: [spnmemo],
+		td_class: "tablerow column_click column_hover tdmemo"
+	};
 
-    var spnqtyremaining = document.createElement('span');
+	var spnqtyremaining = document.createElement('span');
 	colarray['qtyremaining'] = { 
-        header_title: "Qty Remaining",
-        edit: [spnqtyremaining],
-        disp: [spnqtyremaining],
-        td_class: "tablerow column_click column_hover tdqtyremaining"
-    };
+		header_title: "Qty Remaining",
+		edit: [spnqtyremaining],
+		disp: [spnqtyremaining],
+		td_class: "tablerow column_click column_hover tdqtyremaining"
+	};
 
-    var spnreceivedby = document.createElement('span');
-    var txtreceivedby = document.createElement('input');
-    txtreceivedby.setAttribute('class','form-control');
+	var spnreceivedby = document.createElement('span');
+	var txtreceivedby = document.createElement('input');
+	txtreceivedby.setAttribute('class','form-control');
 	colarray['receivedby'] = { 
-        header_title: "Received By",
-        edit: [txtreceivedby],
-        disp: [spnreceivedby],
-        td_class: "tablerow column_click column_hover tdrecvdby"
-    };
+		header_title: "Received By",
+		edit: [txtreceivedby],
+		disp: [spnreceivedby],
+		td_class: "tablerow column_click column_hover tdrecvdby"
+	};
 
-    var spnnote = document.createElement('span');
-    var txtnote = document.createElement('input');
-    txtnote.setAttribute('class','form-control');
+	var spnnote = document.createElement('span');
+	var txtnote = document.createElement('input');
+	txtnote.setAttribute('class','form-control');
 	colarray['note'] = { 
-        header_title: "Note",
-        edit: [txtnote],
-        disp: [spnnote],
-        td_class: "tablerow column_click column_hover tdnote"
-    };
+		header_title: "Note",
+		edit: [txtnote],
+		disp: [spnnote],
+		td_class: "tablerow column_click column_hover tdnote"
+	};
 
-    var chkreceiveall = document.createElement('input');
-    var spnreceive = document.createElement('span');
+	var chkreceiveall = document.createElement('input');
+	var spnreceive = document.createElement('span');
 	chkreceiveall.className = "chkreceiveall";
 	chkreceiveall.type = "checkbox";
 
@@ -136,20 +136,20 @@
 		td_class: "tablerow tdreceiveall",
 	};
 
-    var spnqtyrecv = document.createElement('span');
-    var spnqtyrecvHidden = document.createElement('span');
-   	spnqtyrecvHidden.setAttribute('style','display:none;');
+	var spnqtyrecv = document.createElement('span');
+	var spnqtyrecvHidden = document.createElement('span');
+	spnqtyrecvHidden.setAttribute('style','display:none;');
 
-    var txtqtyrecv = document.createElement('input');
-    txtqtyrecv.setAttribute('class','form-control txtqtyrecv');
+	var txtqtyrecv = document.createElement('input');
+	txtqtyrecv.setAttribute('class','form-control txtqtyrecv');
 	colarray['qtyrecv'] = { 
-        header_title: "Qty Received",
-        edit: [txtqtyrecv,spnqtyrecvHidden],
-        disp: [spnqtyrecv,spnqtyrecvHidden],
-        td_class: "tablerow column_click column_hover tdqtyrecv"
-    };
+		header_title: "Qty Received",
+		edit: [txtqtyrecv,spnqtyrecvHidden],
+		disp: [spnqtyrecv,spnqtyrecvHidden],
+		td_class: "tablerow column_click column_hover tdqtyrecv"
+	};
 
-    var imgUpdate = document.createElement('i');
+	var imgUpdate = document.createElement('i');
 	imgUpdate.setAttribute("class","imgupdate fa fa-check");
 	var imgEdit = document.createElement('i');
 	imgEdit.setAttribute("class","imgedit fa fa-pencil");
@@ -161,7 +161,7 @@
 		headertd_class : "tdupdate"
 	};
 
-    var imgDelete = document.createElement('i');
+	var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
 	colarray['coldelete'] = { 
 		header_title: "",
@@ -180,51 +180,51 @@
 	tab_po_list.id = "table_polist_id";
 	tab_po_list.setAttribute("style","border-collapse:collapse;");
 	tab_po_list.setAttribute("class","border-collapse:collapse;");
-    
-    var colarray_po_list = [];
+	
+	var colarray_po_list = [];
 
 	var spnpoid = document.createElement('span');
 	colarray_po_list['id'] = { 
-        header_title: "",
-        edit: [spnpoid],
-        disp: [spnpoid],
-        td_class: "tablerow tdid",
+		header_title: "",
+		edit: [spnpoid],
+		disp: [spnpoid],
+		td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
-    };
+	};
 
-    var chkdetails = document.createElement('input');
-    chkdetails.setAttribute('type','checkbox');
-    chkdetails.setAttribute('class','chkdetails');
+	var chkdetails = document.createElement('input');
+	chkdetails.setAttribute('type','checkbox');
+	chkdetails.setAttribute('class','chkdetails');
 	colarray_po_list['check'] = { 
-        header_title: "",
-        edit: [chkdetails],
-        disp: [chkdetails],
-        td_class: "tablerow tddetails"
-    };
+		header_title: "",
+		edit: [chkdetails],
+		disp: [chkdetails],
+		td_class: "tablerow tddetails"
+	};
 
-    var spnponumber = document.createElement('span');
+	var spnponumber = document.createElement('span');
 	colarray_po_list['ponumber'] = { 
-        header_title: "PO Number",
-        edit: [spnponumber],
-        disp: [spnponumber],
-        td_class: "tablerow tdponumber"
-    };
+		header_title: "PO Number",
+		edit: [spnponumber],
+		disp: [spnponumber],
+		td_class: "tablerow tdponumber"
+	};
 
-    var spndate = document.createElement('span');
+	var spndate = document.createElement('span');
 	colarray_po_list['date'] = { 
-        header_title: "PO Date",
-        edit: [spndate],
-        disp: [spndate],
-        td_class: "tablerow tddate"
-    };
+		header_title: "PO Date",
+		edit: [spndate],
+		disp: [spndate],
+		td_class: "tablerow tddate"
+	};
 
-    var spntotalqty = document.createElement('span');
+	var spntotalqty = document.createElement('span');
 	colarray_po_list['totalqty'] = { 
-        header_title: "Total Qty",
-        edit: [spntotalqty],
-        disp: [spntotalqty],
-        td_class: "tablerow tdtotalqty"
-    };
+		header_title: "Total Qty",
+		edit: [spntotalqty],
+		disp: [spntotalqty],
+		td_class: "tablerow tdtotalqty"
+	};
 
 	var myjstbl;
 	var myjstbl_po_list;
@@ -256,14 +256,13 @@
 
 	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit);
 	tableHelper.detailContent.bindEditEvents();
-	tableHelper.detailContent.bindDeleteEvents();
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date').datepicker("setDate", new Date());
+		$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
+		$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
+		$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
 						fnc : 'get_purchase_receive_details'
@@ -290,6 +289,7 @@
 				{
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 					checkReceivedDetails();
+					recomputeReceivedQuantity();
 				};
 
 				if (response.po_list_error == '') 
@@ -374,20 +374,144 @@
 		var totalQuantity = 0;
 		var remainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyremaining'));
 		var receivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyrecv',1));
+		var receivedQuantityElement = tableHelper.contentProvider.getElement(rowIndex,'qtyrecv');
 
 		if ($(this).is(':checked'))
+		{
+			$(receivedQuantityElement).attr('disabled','disabled');
 			totalQuantity = receivedQuantity + remainingQuantity;
-		
+		}
+		else
+		{
+			$(receivedQuantityElement).removeAttr('disabled','disabled');
+			totalQuantity = receivedQuantity;
+		}
+
 		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[totalQuantity,receivedQuantity]);
+
+		recomputeRemainingQuantity($(this));
 	});
 
-	$('.tddelete').live('click',function(){
-		var rowIndex = $(this).parent().index();
+	$('.imgdel').live('click',function(){
+		var rowIndex = $(this).parent().parent().index();
 		var rowUniqueId = tableHelper.contentProvider.getData(rowIndex,'id');
 
-		if (Number(rowUniqueId) === 0) 
+		if (Number(rowUniqueId) === 0)
+		{
 			myjstbl.delete_row(rowIndex);
+			checkRemainingPODetails();
+		}
+		else
+		{
+			clear_message_box();
+			$('#deletePurchaseReceiveModal').find('.message-content').show();
+			$('#deletePurchaseReceiveModal').find('.btn-default').html('Cancel');
+			$('#delete').show();
+			$('#deletePurchaseReceiveModal').modal('show');
+			globalRowIndex = rowIndex;
+			globalDetailId = rowUniqueId;
+		}
+	});
 
+	$('#delete').live('click',function(){
+		if (flag == 1) 
+			return;
+
+		flag = 1;
+
+		var rowIndex     = globalRowIndex;
+		var rowUniqueId  = globalDetailId;
+		
+		var arr =   { 
+						fnc         : 'delete_receive_detail', 
+						detail_id   : rowUniqueId
+					};
+	   
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '')
+				{ 
+					$('#deletePurchaseReceiveModal').find('.message-content').hide();
+					$('#deletePurchaseReceiveModal').find('.btn-default').html('OK');
+					$('#delete').hide();
+					build_message_box('messagebox_1',response.error,'danger');
+				}
+				else
+				{
+					myjstbl.delete_row(rowIndex);
+					checkRemainingPODetails();
+					tableHelper.contentProvider.recomputeRowNumber();
+					$('#deletePurchaseReceiveModal').modal('hide');
+				}
+
+				flag = 0;
+			}       
+		});
+	});
+
+	$('.txtqtyrecv').live('change',function(){
+		recomputeRemainingQuantity($(this));
+	});
+
+	$('#save').click(function(){
+		if (flag == 1)
+			return;
+
+		if (myjstbl.get_row_count() - 1 == 0) 
+		{
+			alert('Please receive at least one product!');
+			return;
+		}
+
+		for (var i = 1; i <= myjstbl.get_row_count() - 1; i++) 
+		{
+			var updateImage = tableHelper.contentProvider.getElement(i,'colupdate');
+			if ($(updateImage).hasClass('imgupdate')) 
+			{
+				alert('Please finalize all rows!');
+				return;
+			}
+		};
+
+		var date_val	= $('#date').val();
+		var memo_val 	= $('#memo').val();
+
+		var arr = 	{ 
+						fnc 	 	: 'save_purchase_receive_head', 
+						entry_date 	: date_val,
+						memo 		: memo_val
+					};
+
+		flag = 1;
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '') 
+					build_message_box('messagebox_1',response.error,'danger');
+				else
+					goToPrintOut();
+
+				flag = 0;
+			}       
+		});
+	});
+	
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function checkRemainingPODetails()
+	{
 		$(".chkdetails:checked").each(function(index, element){
 			var detailExist = false;
 			var poRowIndex = $(element).parent().parent().index();
@@ -407,77 +531,36 @@
 			if (!detailExist) 
 				$(element).removeAttr('checked');
 		});
-	});
+	}
 
-	
+	function recomputeRemainingQuantity(element)
+	{
+		recomputeReceivedQuantity();
 
-	$('#save').click(function(){
-        if (flag == 1)
-            return;
+		var rowIndex = $(element).parent().parent().index();
+		
+		var currentReceivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qtyrecv',0));
+		var quantityOrdered = Number(tableHelper.contentProvider.getData(rowIndex,'qty'));
+		var newQuantityRemaining = quantityOrdered - currentReceivedQuantity;
 
-        if (myjstbl.get_row_count() - 1 == 0) 
-        {
-            alert('Please receive at least one product!');
-            return;
-        }
-
-        for (var i = 1; i <= myjstbl.get_row_count() - 1; i++) 
-        {
-            var updateImage = tableHelper.contentProvider.getElement(i,'colupdate');
-            if ($(updateImage).hasClass('imgupdate')) 
-            {
-                alert('Please finalize all rows!');
-                return;
-            }
-        };
-
-        var date_val	= $('#date').val();
-		var memo_val 	= $('#memo').val();
-
-		var arr = 	{ 
-						fnc 	 	: 'save_purchase_receive_head', 
-						entry_date 	: date_val,
-						memo 		: memo_val
-					};
-
-        flag = 1;
-
-        $.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(response) {
-                clear_message_box();
-
-                if (response.error != '') 
-                    build_message_box('messagebox_1',response.error,'danger');
-                else
-                    goToPrintOut();
-
-                flag = 0;
-            }       
-        });
-    });
-	
-	$('#print').click(function(){
-		goToPrintOut();
-	});
+		tableHelper.contentProvider.setData(rowIndex,'qtyremaining',[newQuantityRemaining]);
+	}
 
 	function goToPrintOut()
 	{
 		var arr = { fnc : 'set_session' }
 
 		$.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(response) {
-            	if(response.error != '') 
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				if(response.error != '') 
 					alert(response.error);
 				else
-                	window.open('<?= base_url() ?>printout/purchase_receive/Receive');
-            }
-        });
+					window.open('<?= base_url() ?>printout/purchase_receive/Receive');
+			}
+		});
 	}
 
 	function getRowDetailsBeforeSubmit(element)
@@ -493,18 +576,18 @@
 		var actionFunction 		= receiveDetailId == 0 ? 'insert_receive_detail' : 'update_receive_detail';
 
 		var errorList = $.dataValidation(	[{
-	                                            value : receivedQty,
-	                                            fieldName : 'Quantity',
-	                                            required : true,
-	                                            rules : 'numeric',
-	                                            isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
-                                        	}]);
+												value : receivedQty,
+												fieldName : 'Quantity',
+												required : true,
+												rules : 'numeric',
+												isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+											}]);
 
 		if (errorList.length > 0) {
-            clear_message_box();
-            build_message_box('messagebox_1',build_error_message(errorList),'danger');
-            return false;
-        };
+			clear_message_box();
+			build_message_box('messagebox_1',build_error_message(errorList),'danger');
+			return false;
+		};
 
 		var arr = 	{ 
 						fnc : actionFunction,
@@ -513,7 +596,7 @@
 						quantity : receivedQty,
 						product_id : productId,
 						receivedby 	: receivedBy,
-			     		note 		: note
+						note 		: note
 					};
 
 		return arr;
@@ -531,5 +614,18 @@
 				tableHelper.contentHelper.descriptionAccessibilty(i);
 			}
 		};
+	}
+
+	function recomputeReceivedQuantity()
+	{
+		var totalQty = 0;
+
+        for (var i = 1; i < myjstbl.get_row_count(); i++) 
+        {
+            var currentQty = tableHelper.contentProvider.getData(i,'qtyrecv',0);
+            totalQty += Number(currentQty);
+        };
+
+        $('#totalQuantityReceived').html(totalQty);
 	}
 </script>

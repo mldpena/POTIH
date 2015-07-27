@@ -387,6 +387,65 @@ INSERT INTO `material_type` VALUES (1,'T','TIGER BRONZE',1,'2015-05-20 00:00:00'
 UNLOCK TABLES;
 
 --
+-- Table structure for table `pickup_summary_detail`
+--
+
+DROP TABLE IF EXISTS `pickup_summary_detail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pickup_summary_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `headid` bigint(20) DEFAULT '0',
+  `release_head_id` bigint(20) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_headid` (`headid`),
+  KEY `idx_id_headid` (`id`,`headid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pickup_summary_detail`
+--
+
+LOCK TABLES `pickup_summary_detail` WRITE;
+/*!40000 ALTER TABLE `pickup_summary_detail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pickup_summary_detail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `pickup_summary_head`
+--
+
+DROP TABLE IF EXISTS `pickup_summary_head`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `pickup_summary_head` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `reference_number` int(11) DEFAULT '0',
+  `branch_id` bigint(20) DEFAULT '0',
+  `entry_date` datetime DEFAULT NULL,
+  `is_show` int(1) DEFAULT '1',
+  `is_used` int(1) DEFAULT '0',
+  `created_by` bigint(20) DEFAULT '0',
+  `last_modified_by` bigint(20) DEFAULT '0',
+  `date_created` datetime DEFAULT '0000-00-00 00:00:00',
+  `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `idx_isshow_isused_forbranchid` (`is_show`,`is_used`),
+  KEY `idx_id_isshow_isused_forbranchid` (`id`,`is_show`,`is_used`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `pickup_summary_head`
+--
+
+LOCK TABLES `pickup_summary_head` WRITE;
+/*!40000 ALTER TABLE `pickup_summary_head` DISABLE KEYS */;
+/*!40000 ALTER TABLE `pickup_summary_head` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `product`
 --
 
@@ -415,7 +474,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'BJ014L20','BI Tube 1/4\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:29:49','2015-05-26 12:29:49',1,1),(2,'BJ056L20','BI Tube 5/16\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:30:14','2015-05-26 12:30:14',1,1),(3,'BJ038A20','BI Tube 3/8\" (1.0mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:41','2015-05-26 12:34:41',1,1),(4,'BJ012C20','BI Tube 1/2\" (1.6mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:52','2015-05-26 12:34:52',1,1),(5,'BJ058B19','BI Tube 5/8\" (1.2mm) x 19 Ft.',1,6,6,1,'2015-05-26 12:35:11','2015-05-26 12:35:11',1,1),(6,'BJ058B20','BI Tube 5/8\" (1.2mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:35:21','2015-05-26 12:35:21',1,1),(7,'BC06004F','Hot Rolled COIL 6.0mm x 4 Ft.',1,6,2,1,'2015-05-26 12:38:46','2015-06-30 12:44:43',1,1),(8,'BC05004S','Hot Rolled COIL 5.0mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:38:58','2015-06-30 12:54:40',1,1),(9,'SE112233','Hot Rolled COIL 4.5mm x 4 Ft. ',1,2,3,1,'2015-05-26 12:39:18','2015-06-30 01:29:35',1,1),(10,'SS304CUT','SS-304  CUTTINGS',0,0,0,1,'2015-05-26 12:47:26','2015-05-26 12:47:26',1,1),(11,'SS316CUT','SS-316  CUTTINGSS',0,0,0,1,'2015-07-24 12:01:51','2015-05-26 12:47:36',1,1),(12,'ALUMNCUT','ALUMINUM  CUTTING',0,0,0,1,'2015-05-26 12:50:35','2015-05-26 12:50:35',1,1),(13,'MATLABOR','LABOR ONLY, MAT.  FROM CUSTOMER',0,0,0,1,'2015-05-26 12:52:17','2015-05-26 12:52:17',1,1),(14,'COPPRCUT','COPPER  CUTTINGS',0,0,0,1,'2015-05-26 12:52:27','2015-05-26 12:52:27',1,1),(22,'AE123456','ALU EMBRO',1,5,3,1,'2015-06-30 02:26:00','2015-07-06 06:01:10',1,1),(23,'AL123123','SAMPLE',1,5,8,0,'2015-07-08 10:01:41','2015-07-21 04:16:01',5,1),(28,'SS231223','SAMPLE FOR NEW STRUCTURE',1,2,14,1,'2015-07-21 02:11:32','0000-00-00 00:00:00',1,0),(31,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-21 07:48:16','2015-07-23 04:13:49',1,1),(32,'AC123131','SAMPLE FOR TESTING',1,5,2,1,'2015-07-23 04:07:38','0000-00-00 00:00:00',1,0),(33,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:18:18','2015-07-23 04:38:59',1,1),(34,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:39:10','2015-07-23 04:57:53',1,1),(35,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:58:11','2015-07-23 04:59:36',1,1),(36,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:59:55','2015-07-23 05:00:23',1,1),(37,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 05:00:50','2015-07-23 06:00:48',1,1),(38,'SS223344','SAMPLE FOR IMPORT',1,2,14,1,'2015-07-23 06:00:53','0000-00-00 00:00:00',1,0),(39,'SS554433','SAMPLE FOR ME',1,2,14,1,'2015-07-24 12:02:15','0000-00-00 00:00:00',1,0);
+INSERT INTO `product` VALUES (1,'BJ014L20','BI Tube 1/4\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:29:49','2015-05-26 12:29:49',1,1),(2,'BJ056L20','BI Tube 5/16\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:30:14','2015-05-26 12:30:14',1,1),(3,'BJ038A20','BI Tube 3/8\" (1.0mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:41','2015-05-26 12:34:41',1,1),(4,'BJ012C20','BI Tube 1/2\" (1.6mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:52','2015-05-26 12:34:52',1,1),(5,'BJ058B19','BI Tube 5/8\" (1.2mm) x 19 Ft.',1,6,6,1,'2015-07-26 10:27:57','2015-05-26 12:35:11',1,1),(6,'BJ058B20','BI Tube 5/8\" (1.2mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:35:21','2015-05-26 12:35:21',1,1),(7,'BC06004F','Hot Rolled COIL 6.0mm x 4 Ft.',1,6,2,1,'2015-05-26 12:38:46','2015-06-30 12:44:43',1,1),(8,'BC05004S','Hot Rolled COIL 5.0mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:38:58','2015-06-30 12:54:40',1,1),(9,'SE112233','Hot Rolled COIL 4.5mm x 4 Ft. ',1,2,3,1,'2015-05-26 12:39:18','2015-06-30 01:29:35',1,1),(10,'SS304CUT','SS-304  CUTTINGS',0,0,0,1,'2015-05-26 12:47:26','2015-05-26 12:47:26',1,1),(11,'SS316CUT','SS-316  CUTTINGSS',0,0,0,1,'2015-07-24 12:01:51','2015-05-26 12:47:36',1,1),(12,'ALUMNCUT','ALUMINUM  CUTTING',0,0,0,1,'2015-05-26 12:50:35','2015-05-26 12:50:35',1,1),(13,'MATLABOR','LABOR ONLY, MAT.  FROM CUSTOMER',0,0,0,1,'2015-05-26 12:52:17','2015-05-26 12:52:17',1,1),(14,'COPPRCUT','COPPER  CUTTINGS',0,0,0,1,'2015-05-26 12:52:27','2015-05-26 12:52:27',1,1),(22,'AE123456','ALU EMBRO',1,5,3,1,'2015-06-30 02:26:00','2015-07-06 06:01:10',1,1),(23,'AL123123','SAMPLE',1,5,8,0,'2015-07-08 10:01:41','2015-07-21 04:16:01',5,1),(28,'SS231223','SAMPLE FOR NEW STRUCTURE',1,2,14,1,'2015-07-21 02:11:32','0000-00-00 00:00:00',1,0),(31,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-21 07:48:16','2015-07-23 04:13:49',1,1),(32,'AC123131','SAMPLE FOR TESTING',1,5,2,1,'2015-07-23 04:07:38','0000-00-00 00:00:00',1,0),(33,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:18:18','2015-07-23 04:38:59',1,1),(34,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:39:10','2015-07-23 04:57:53',1,1),(35,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:58:11','2015-07-23 04:59:36',1,1),(36,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 04:59:55','2015-07-23 05:00:23',1,1),(37,'SS223344','SAMPLE FOR IMPORT',1,2,14,0,'2015-07-23 05:00:50','2015-07-23 06:00:48',1,1),(38,'SS223344','SAMPLE FOR IMPORT',1,2,14,1,'2015-07-23 06:00:53','0000-00-00 00:00:00',1,0),(39,'SS554433','SAMPLE FOR ME',1,2,14,1,'2015-07-24 12:02:15','0000-00-00 00:00:00',1,0);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -647,6 +706,7 @@ DELIMITER ;;
 FOR EACH ROW
 BEGIN
 	CALL process_compute_inventory_for_detail(OLD.`product_id`,(-1 * OLD.`quantity`),OLD.`headid`,'RECEIVE DETAIL');
+    CALL process_update_receive(OLD.`purchase_detail_id`,(-1) * OLD.`quantity`,'RECEIVE DETAIL');
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -963,9 +1023,7 @@ CREATE TABLE `release_detail` (
   `headid` bigint(20) DEFAULT '0',
   `quantity` int(9) DEFAULT '0',
   `product_id` bigint(20) DEFAULT '0',
-  `description` varchar(45) DEFAULT '',
-  `memo` varchar(150) DEFAULT '',
-  `qty_released` varchar(10) DEFAULT '0',
+  `release_order_detail_id` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -1013,7 +1071,6 @@ CREATE TABLE `release_head` (
   `reference_number` int(11) DEFAULT '0',
   `branch_id` bigint(20) DEFAULT '0',
   `entry_date` datetime DEFAULT NULL,
-  `customer` varchar(100) DEFAULT '',
   `memo` varchar(150) DEFAULT '',
   `is_show` int(1) DEFAULT '1',
   `is_used` int(1) DEFAULT '0',
@@ -1032,6 +1089,71 @@ CREATE TABLE `release_head` (
 LOCK TABLES `release_head` WRITE;
 /*!40000 ALTER TABLE `release_head` DISABLE KEYS */;
 /*!40000 ALTER TABLE `release_head` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `release_order_detail`
+--
+
+DROP TABLE IF EXISTS `release_order_detail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `release_order_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `headid` bigint(20) DEFAULT '0',
+  `quantity` int(9) DEFAULT '0',
+  `product_id` bigint(20) DEFAULT '0',
+  `description` varchar(200) DEFAULT '',
+  `memo` varchar(150) DEFAULT '',
+  `qty_released` int(9) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_headid` (`headid`),
+  KEY `idx_id_headid` (`id`,`headid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `release_order_detail`
+--
+
+LOCK TABLES `release_order_detail` WRITE;
+/*!40000 ALTER TABLE `release_order_detail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `release_order_detail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `release_order_head`
+--
+
+DROP TABLE IF EXISTS `release_order_head`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `release_order_head` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `reference_number` int(11) DEFAULT '0',
+  `branch_id` bigint(20) DEFAULT '0',
+  `entry_date` datetime DEFAULT NULL,
+  `customer` varchar(100) DEFAULT '',
+  `memo` varchar(150) DEFAULT '',
+  `is_show` int(1) DEFAULT '1',
+  `is_used` int(1) DEFAULT '0',
+  `created_by` bigint(20) DEFAULT '0',
+  `last_modified_by` bigint(20) DEFAULT '0',
+  `date_created` datetime DEFAULT '0000-00-00 00:00:00',
+  `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `idx_isshow_isused_forbranchid` (`is_show`,`is_used`),
+  KEY `idx_id_isshow_isused_forbranchid` (`id`,`is_show`,`is_used`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `release_order_head`
+--
+
+LOCK TABLES `release_order_head` WRITE;
+/*!40000 ALTER TABLE `release_order_head` DISABLE KEYS */;
+/*!40000 ALTER TABLE `release_order_head` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1449,6 +1571,69 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Table structure for table `stock_request_detail`
+--
+
+DROP TABLE IF EXISTS `stock_request_detail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stock_request_detail` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `headid` bigint(20) DEFAULT '0',
+  `quantity` int(9) DEFAULT '0',
+  `product_id` bigint(20) DEFAULT '0',
+  `description` varchar(200) DEFAULT '',
+  `memo` varchar(150) DEFAULT '',
+  `qty_delivered` int(9) DEFAULT '0',
+  PRIMARY KEY (`id`),
+  KEY `idx_headid` (`headid`),
+  KEY `idx_id_headid` (`id`,`headid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stock_request_detail`
+--
+
+LOCK TABLES `stock_request_detail` WRITE;
+/*!40000 ALTER TABLE `stock_request_detail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `stock_request_detail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `stock_request_head`
+--
+
+DROP TABLE IF EXISTS `stock_request_head`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `stock_request_head` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `reference_number` int(11) DEFAULT '0',
+  `branch_id` bigint(20) DEFAULT '0',
+  `request_to_branchid` bigint(20) DEFAULT '0',
+  `entry_date` datetime DEFAULT NULL,
+  `memo` varchar(150) DEFAULT '',
+  `is_show` int(1) DEFAULT '1',
+  `is_used` int(1) DEFAULT '0',
+  `created_by` bigint(20) DEFAULT '0',
+  `last_modified_by` bigint(20) DEFAULT '0',
+  `date_created` datetime DEFAULT '0000-00-00 00:00:00',
+  `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `stock_request_head`
+--
+
+LOCK TABLES `stock_request_head` WRITE;
+/*!40000 ALTER TABLE `stock_request_head` DISABLE KEYS */;
+/*!40000 ALTER TABLE `stock_request_head` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `subgroup`
@@ -2097,4 +2282,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-24  2:32:45
+-- Dump completed on 2015-07-27  9:39:39

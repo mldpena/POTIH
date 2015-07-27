@@ -282,26 +282,8 @@ class PurchaseOrder_Model extends CI_Model {
 
 		if ($status != \Constants\PURCHASE_CONST::ALL_OPTION) 
 		{
-			switch ($status) 
-			{
-				case \Constants\PURCHASE_CONST::INCOMPLETE:
-					$having = "HAVING remaining_qty < total_qty AND remaining_qty > 0";
-					break;
-				
-				case \Constants\PURCHASE_CONST::COMPLETE:
-					$having = "HAVING remaining_qty = 0";
-					break;
-
-				case \Constants\PURCHASE_CONST::NO_RECEIVED:
-					$having = "HAVING remaining_qty = total_qty";
-					break;
-
-				case \Constants\PURCHASE_CONST::EXCESS:
-					$having = "HAVING remaining_qty < 0";
-					break;
-			}
-
-			$having .= " AND is_used = 1";
+			$having = "HAVING status_code = ?";
+			array_push($query_data,$status);
 		}
 
 		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', 
@@ -316,6 +298,14 @@ class PurchaseOrder_Model extends CI_Model {
 							ELSE 'Excess'
 						END,'') 
 					, '') AS 'status',
+					IF(PH.`is_used` = ".\Constants\PURCHASE_CONST::ACTIVE.",
+						COALESCE(CASE 
+							WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN ".\Constants\PURCHASE_CONST::NO_RECEIVED."
+							WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN ".\Constants\PURCHASE_CONST::INCOMPLETE."
+							WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN ".\Constants\PURCHASE_CONST::COMPLETE."
+							ELSE ".\Constants\PURCHASE_CONST::EXCESS."
+						END,'') 
+					, 0) AS 'status_code',
 					CASE 
 						WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::IMPORTED." THEN 'Imported'
 						WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::LOCAL." THEN 'Local'
@@ -467,6 +457,91 @@ class PurchaseOrder_Model extends CI_Model {
 				->where("H.`is_show`", \Constants\PURCHASE_CONST::ACTIVE)
 				->where("H.`id`", $this->_purchase_head_id);
 
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function get_purchase_by_transaction($param)
+	{
+		extract($param);
+
+		$this->db->select("PH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', 
+							CONCAT('PO',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
+							COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
+							COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
+							IF(PH.`is_used` = ".\Constants\PURCHASE_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN 'No Received'
+									WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN 'Incomplete'
+									WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN 'Complete'
+									ELSE 'Excess'
+								END,'') 
+							, '') AS 'status',
+							IF(PH.`is_used` = ".\Constants\PURCHASE_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN ".\Constants\PURCHASE_CONST::NO_RECEIVED."
+									WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN ".\Constants\PURCHASE_CONST::INCOMPLETE."
+									WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN ".\Constants\PURCHASE_CONST::COMPLETE."
+									ELSE ".\Constants\PURCHASE_CONST::EXCESS."
+								END,'') 
+							, 0) AS 'status_code',
+							CASE 
+								WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::IMPORTED." THEN 'Imported'
+								WHEN PH.`is_imported` = ".\Constants\PURCHASE_CONST::LOCAL." THEN 'Local'
+								ELSE ''
+							END AS 'type'")
+				->from("purchase_head AS PH")
+				->join("purchase_detail AS PD", "PD.`headid` = PH.`id`", "left")
+				->join("branch AS B", "B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE, "left")
+				->join("branch AS B2", "B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE, "left")
+				->where("PH.`is_show`", \Constants\PURCHASE_CONST::ACTIVE);
+
+
+		if (!empty($date_from))
+			$this->db->where("PH.`entry_date` >=", $date_from.' 00:00:00');
+
+		if (!empty($date_to))
+			$this->db->where("PH.`entry_date` <=", $date_to.' 23:59:59');
+
+		if ($branch != \Constants\PURCHASE_CONST::ALL_OPTION) 
+			$this->db->where("PH.`branch_id`", $branch);
+
+		if ($for_branch != \Constants\PURCHASE_CONST::ALL_OPTION) 
+			$this->db->where("PH.`for_branchid`", $for_branch);
+	
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('PO',PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`)", $search_string, "both");
+
+		if ($type != \Constants\PURCHASE_CONST::ALL_OPTION) 
+			$this->db->where("PH.`is_imported`", \Constants\PURCHASE_CONST::IMPORTED);
+
+		$this->db->group_by("PH.`id`");
+
+		if ($status != \Constants\PURCHASE_CONST::ALL_OPTION) 
+			$this->db->having("status_code", $status);
+
+		switch ($order_by) 
+		{
+			case \Constants\PURCHASE_CONST::ORDER_BY_REFERENCE:
+				$order_field = "PH.`reference_number`";
+				break;
+			
+			case \Constants\PURCHASE_CONST::ORDER_BY_LOCATION:
+				$order_field = "B.`name`";
+				break;
+
+			case \Constants\PURCHASE_CONST::ORDER_BY_DATE:
+				$order_field = "PH.`entry_date`";
+				break;
+
+			case \Constants\PURCHASE_CONST::ORDER_BY_SUPPLIER:
+				$order_field = "PH.`supplier`";
+				break;
+		}
+
+		$this->db->order_by($order_field, $order_type);
+		
 		$result = $this->db->get();
 
 		return $result;

@@ -68,7 +68,6 @@
 
 			<div class="max-row">
 				<button class="btn btn-primary" data-toggle="modal" data-target="#createModal" id="create_product">Create New Product</button>
-				<button class="btn btn-success btn-excel" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-file-excel-o"></i>&nbsp; Upload CSV</button>
 			</div>
 
 			<?php endif; ?>
@@ -81,6 +80,10 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
+			</div>
+			<div class="max-row" align="right">
+				<button class="btn btn-success btn-excel" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-file-excel-o"></i>&nbsp; Upload CSV</button>
+				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
 			</div>
 		</div>
 	</div>

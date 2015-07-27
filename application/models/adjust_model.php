@@ -588,4 +588,85 @@ class Adjust_Model extends CI_Model {
 	{
 		$this->db->insert_batch('inventory_adjust', $adjust_field_data);
 	}
+
+	public function get_inventory_adjustment_list($param)
+	{
+		extract($param);
+
+		$this->db->select("IA.`id`, P.`material_code`, P.`description`,
+							CASE 
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+							END AS 'type',
+							CASE 
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::APPROVED." THEN 'Approved'
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
+							END AS 'status', IA.`memo`,
+							COALESCE(PBI.`inventory`,0) AS 'current_inventory', 
+							IA.`old_inventory`, IA.`new_inventory` AS 'requested_new_inventory',
+							DATE(IA.`date_created`) AS 'date_created', COALESCE(B.`name`,'') AS 'from_branch'")
+				->from("inventory_adjust AS IA")
+				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = IA.`branch_id`", "left")
+				->join("branch AS B", "B.`id` = IA.`branch_id` AND B.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
+
+		if (!empty($code)) 
+			$this->db->like("P.`material_code`", $code, "both");
+
+		if (!empty($product)) 
+			$this->db->like("P.`description`", $product, "both");
+
+		if ($subgroup != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("P.`subgroup_id`", $subgroup);
+
+		if ($material != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("P.`material_type_id`", $material);
+
+		if (!empty($date_from))
+			$this->db->where("IA.`date_created` >=", $date_from.' 00:00:00');
+
+		if (!empty($date_to))
+			$this->db->where("IA.`date_created` <=", $date_to.' 23:59:59');
+
+		if ($branch != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("IA.`branch_id`", $branch);
+
+		if ($type != \Constants\ADJUST_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type = \Constants\ADJUST_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type = \Constants\ADJUST_CONST::NON_STOCK;
+					break;
+			}
+
+			$this->db->where("P.`type`", $type);
+		}
+
+		if ($status != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("IA.`status`", $status);
+
+		switch ($orderby) 
+		{
+			case \Constants\ADJUST_CONST::ORDER_BY_NAME:
+				$order_field = "P.`description`";
+				break;
+			
+			case \Constants\ADJUST_CONST::ORDER_BY_CODE:
+				$order_field = "P.`material_code`";
+				break;
+		}
+
+		$this->db->order_by($order_field, $orderby);
+		
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

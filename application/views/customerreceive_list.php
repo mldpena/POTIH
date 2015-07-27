@@ -22,6 +22,18 @@
 							<select class="form-control" id="from_branch"><?= $branch_list ?></select>
 						</td>
 					</tr>
+					<tr>
+						<td>Status:</td>
+						<td colspan="3">
+							<select class="form-control" id="status">
+								<option value="0">ALL</option>
+								<option value="1">Incomplete</option>
+								<option value="2">Complete</option>
+								<option value="3">No Received</option>
+								<option value="4">Excess</option>
+							</select>
+						</td>
+					</tr>
 				</table>
 			</div>
 			<div class="sub-panel">
@@ -43,6 +55,9 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
+			</div>
+			<div class="max-row" align="right">
+				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
 			</div>
 		</div>
 	</div>

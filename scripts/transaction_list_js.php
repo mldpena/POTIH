@@ -24,7 +24,7 @@
     					{ headerName : 'Customer Delivery', className : 'customerdelivery' },
     					{ headerName : 'Adjust Decrease', className : 'adjustdec' },
     					{ headerName : 'Warehouse Release', className : 'release' },
-    					{ headerName : 'Total Inv', className : 'totalinv' }];
+    					{ headerName : 'Total Inventory', className : 'totalinv' }];
 
     for (var i = 0; i < tableColumns.length; i++) 
     {
@@ -87,6 +87,16 @@
     var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray, notFoundMessage : 'No product found!' });
     tableHelper.headContent.bindSearchEvent(getSearchFilter);
     tableHelper.contentHelper.refreshTable(getSearchFilter);
+
+    $('#export').click(function () {
+        var arr = getSearchFilter();
+
+        arr.fnc = "product_transaction";
+
+        var queryString = $.objectToQueryString(arr);
+
+        window.open("<?= base_url() ?>export?" + queryString);
+    });
 
     function getSearchFilter()
     {

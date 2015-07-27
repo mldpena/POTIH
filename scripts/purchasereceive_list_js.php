@@ -133,6 +133,16 @@
 
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
 	
+	$('#export').click(function () {
+		var arr = getSearchFilter();
+
+		arr.fnc = "purchase_receive_transaction";
+
+		var queryString = $.objectToQueryString(arr);
+
+		window.open("<?= base_url() ?>export?" + queryString);
+	});
+
 	function getSearchFilter()
 	{
 		var search_val 		= $('#search_string').val();

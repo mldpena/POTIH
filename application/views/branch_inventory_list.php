@@ -13,11 +13,15 @@
 					<tr>
 						<td>Material Code:</td>
 						<td><input type="text" class="form-control" id="itemcode" maxlength="8"></td>
+						<td>Material Type:</td>
+						<td><select class="form-control" id="material"><?= $material_list ?></select></td>
+					</tr>
+					<tr style="display:none;">
 						<td>Type:</td>
 						<td>
 							<select class="form-control" id="type">
 								<option value="0">ALL</option>
-								<option value="1">Stock</option>
+								<option value="1" selected>Stock</option>
 								<option value="2">Non - Stock</option>
 							</select>
 						</td>
@@ -25,10 +29,8 @@
 					<tr>
 						<td>Material Name:</td>
 						<td><input type="text" class="form-control" id="product"></td>
-						<td>Material Type:</td>
-						<td>
-							<select class="form-control" id="material"><?= $material_list ?></select>
-						</td>
+						<td>Subgroup:</td>
+						<td><select class="form-control" id="subgroup"><?= $subgroup_list ?></select></td>
 					</tr>
 					<tr>
 						<td style="display:none;">Date To:</td>
@@ -36,12 +38,7 @@
 						<td style="display:none;">Date From:</td>
 						<td style="display:none;"><input type="text" class="form-control" id="date_to"></td>
 					</tr>
-					<tr>
-						<td>Subgroup:</td>
-						<td colspan="3">
-							<select class="form-control" id="subgroup"><?= $subgroup_list ?></select>
-						</td>
-					</tr>
+					
 					<tr>
 						<td>Branch:</td>
 						<td colspan="3" style="width:552px;">
@@ -66,6 +63,9 @@
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
 					<div id="tbl" class="tbl max"></div>
 				</center>
+			</div>
+			<div class="max-row" align="right">
+				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
 			</div>
 		</div>
 	</div>

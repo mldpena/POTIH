@@ -247,11 +247,11 @@ class Branch_Model extends CI_Model {
 		return $result;
 	}
 
-	public function get_branch_list($is_show = 1)
+	public function get_branch_list()
 	{
 		$this->db->select("`id`, `name`")
 				->from("`branch`")
-				->where("`is_show`", $is_show);
+				->where("`is_show`", \Constants\BRANCH_CONST::ACTIVE);
 
 		$result = $this->db->get();
 

@@ -55,6 +55,9 @@
 					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>
+			<div class="max-row" align="right">
+				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
+			</div>
 		</div>
 	</div>
 </div>
