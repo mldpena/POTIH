@@ -13,6 +13,7 @@
 		        $("#drop-notif").toggle(
 		        	function(){
 		           		$("#notifications-panel").show();
+		           		$("#drop-notif").removeClass('active');
 		           	},
 		           	function(){
 		           		$("#notifications-panel").hide();
