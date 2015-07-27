@@ -214,7 +214,8 @@ class Product_Model extends CI_Model {
 		if ($with_inventory)
 			$this->db->join("`product_branch_inventory` AS PBI","PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->db->escape($branch_id),"left");
 
-		$this->db->group_start()
+		$this->db->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE)
+				->group_start()
 					->like("P.`description`", $term, "both")
 					->or_like("P.`material_code`", $term, "both")
 				->group_end()
