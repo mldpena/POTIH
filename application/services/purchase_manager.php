@@ -60,13 +60,13 @@ class Purchase_Manager
 			foreach ($result_old_purchase_details->result() as $row) 
 			{
 				array_push($new_purchase_detail, array('headid' => $new_purchase_head_id,
-														'quantity' => $row->recv_quantity,
+														'quantity' => $row->quantity - $row->recv_quantity,
 														'product_id' => $row->product_id,
 														'description' => $row->description,
 														'memo' => $row->memo));
 
 				$old_purchase_detail[$i]['id'] = $row->id;
-				$old_purchase_detail[$i]['detail'] = array('quantity' => $row->quantity - $row->recv_quantity);
+				$old_purchase_detail[$i]['detail'] = array('quantity' => $row->recv_quantity);
 
 				$i++;
 			}

@@ -65,6 +65,8 @@ $route['custreceive/view/(:any)'] = 'stockdelivery';
 $route['adjust/(:any)'] = 'inventoryadjust';
 $route['pending/(:any)'] = 'inventoryadjust';
 
+$route['assort/(:any)'] = 'release';
+
 $route['404_override'] = '';
 
 
