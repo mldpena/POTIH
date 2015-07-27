@@ -14,7 +14,8 @@ class Delivery_Model extends CI_Model {
 									'UNABLE_TO_DELETE' => 'Unable to delete delivery detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete delivery head!',
 									'HAS_RECEIVED' => 'Item Delivery can only be deleted if delivery status is no received!',
-									'NOT_OWN_BRANCH' => 'Cannot delete item delivery entry of other branches!');
+									'NOT_OWN_BRANCH' => 'Cannot delete item delivery entry of other branches!',
+									'NO_ITEMS_TO_PRINT' => 'No items to print!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -827,7 +828,7 @@ class Delivery_Model extends CI_Model {
 			}
 		}
 		else
-			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+			throw new Exception($this->_error_message['NO_ITEMS_TO_PRINT']);
 
 		$result_detail->free_result();
 

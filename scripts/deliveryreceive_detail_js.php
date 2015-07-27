@@ -228,7 +228,12 @@
 
 	function goToPrintOut()
 	{
-		var arr = { fnc : 'set_session' }
+		var printType = 'transfer';
+
+		var arr = 	{ 
+						fnc : 'set_session_receive',
+						print_type : printType 
+					}
 
 		$.ajax({
 			type: "POST",

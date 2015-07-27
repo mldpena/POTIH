@@ -91,6 +91,8 @@ if (!function_exists('get_product_list_autocomplete'))
 
 		$i = 0;
 		
+		$response = array();
+		
 		foreach ($result->result() as $row) 
 		{
 			$response[$i]['label'] = $row->description;

@@ -225,7 +225,10 @@
 				if (response.error != '')
 					build_message_box('messagebox_4',response.error,'danger');
 				else
+				{
+					$('#uploadModal').modal('hide');
 					window.location = "<?= base_url() ?>product/logs";
+				}
 				
 				flag = false;
 

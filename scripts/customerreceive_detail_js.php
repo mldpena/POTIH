@@ -203,7 +203,12 @@
 
 	function goToPrintOut()
 	{
-		var arr = { fnc : 'set_session_receive' }
+		var printType = 'customer';
+
+		var arr = 	{ 
+						fnc : 'set_session_receive',
+						print_type : printType 
+					}
 
 		$.ajax({
             type: "POST",

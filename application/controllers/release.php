@@ -3,6 +3,7 @@
 class Release extends CI_Controller {
 	
 	private $_authentication_manager;
+	private $_autocomplete_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -13,8 +14,8 @@ class Release extends CI_Controller {
 	{
 		parent::__construct();
 
-		$this->load->library('permission_checker');
 		$this->load->service('authentication_manager');
+		$this->load->library('permission_checker');
 
 		$this->_authentication_manager = new Services\Authentication_Manager();
 	}
@@ -28,8 +29,9 @@ class Release extends CI_Controller {
 	{	
 		$this->_authentication_manager->check_user_credentials();
 
-		$page = $this->uri->segment(2);
-		
+		$page 		= $this->uri->segment(2);
+		$controller = $this->uri->segment(1);
+
 		if (isset($_POST['data'])) 
 		{
 			$this->_ajax_request();
@@ -41,26 +43,21 @@ class Release extends CI_Controller {
 		switch ($page) 
 		{
 			case 'list':
-				$page = 'release_list';
+				$page = 'purchaseorder_list';
 				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
-				$allow_user = $this->permission_checker->check_permission(\Permission\Release_Code::VIEW_RELEASE);
-				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Release_Code::ADD_RELEASE),
-									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Release_Code::VIEW_RELEASE_DETAIL),
-									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Release_Code::DELETE_RELEASE));
+				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
+				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE),
+									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE_DETAIL),
+									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Purchase_Code::DELETE_PURCHASE));
 				break;
 
 			case 'view':
-				$page = 'release_detail';
+				$page = 'purchaseorder_detail';
 				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
-				$allow_user = $this->permission_checker->check_permission(\Permission\Release_Code::VIEW_RELEASE);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Release_Code::EDIT_RELEASE),
-									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Release_Code::ADD_RELEASE));
-				break;
-
-			case 'pickup':
-				$page = 'pickup_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
-				$allow_user = TRUE;
+				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Purchase_Code::EDIT_PURCHASE),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE),
+									'allow_to_edit_transfer' => $this->permission_checker->check_permission(\Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO));
 				
 				break;
 
@@ -69,7 +66,7 @@ class Release extends CI_Controller {
 				exit();
 				break;
 		}
-		
+
 		if (!$allow_user) 
 			header('Location:'.base_url().'login');
 
@@ -98,7 +95,6 @@ class Release extends CI_Controller {
 	    $params = array_slice($this->uri->rsegment_array(), $param_offset);
 
 	    call_user_func_array(array($this, $method), $params);
-
 	} 
 
 	/**
@@ -108,7 +104,12 @@ class Release extends CI_Controller {
 	
 	private function _ajax_request()
 	{
-		$this->load->model('release_model');
+		$this->load->model('purchaseorder_model');
+		$this->load->service('autocomplete_manager');
+		$this->load->service('purchase_manager');
+
+		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
+		$this->_purchase_manager = new Services\Purchase_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -122,19 +123,11 @@ class Release extends CI_Controller {
 			switch ($fnc) 
 			{
 				case 'create_reference_number':
-					$response = get_next_number('release_head','reference_number', array('entry_date' => date("Y-m-d h:i:s")));
+					$response = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
 					break;
 
-				case 'search_release_list':
-					$response = $this->release_model->search_release_list($post_data);
-					break;
-
-				case 'delete_head':
-					$response = $this->release_model->delete_release_head($post_data);
-					break;
-
-				case 'get_release_details':
-					$response = $this->release_model->get_release_details();
+				case 'get_purchaseorder_details':
+					$response = $this->purchaseorder_model->get_purchaseorder_details();
 					break;
 
 				case 'autocomplete_product':
@@ -142,66 +135,71 @@ class Release extends CI_Controller {
 					break;
 
 				case 'insert_detail':
-					$response = $this->release_model->insert_release_detail($post_data);
+					$response = $this->purchaseorder_model->insert_purchaseorder_detail($post_data);
 					break;
 
 				case 'update_detail':
-					$response = $this->release_model->update_release_detail($post_data);
+					$response = $this->purchaseorder_model->update_purchaseorder_detail($post_data);
 					break;
 
 				case 'delete_detail':
-					$response = $this->release_model->delete_release_detail($post_data);
+					$response = $this->purchaseorder_model->delete_purchaseorder_detail($post_data);
 					break;
 
-				case 'save_release_head':
-					$response = $this->release_model->update_release_head($post_data);
+				case 'save_purchaseorder_head':
+					$response = $this->purchaseorder_model->update_purchaseorder_head($post_data);
 					break;
 
-				case 'update_release_detail':
-					$response = $this->release_model->update_release_qty_detail($post_data);
+				case 'search_purchaseorder_list':
+					$response = $this->purchaseorder_model->search_purchaseorder_list($post_data);
+					break;
+
+				case 'delete_head':
+					$response = $this->purchaseorder_model->delete_purchaseorder_head($post_data);
 					break;
 
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data,0);
+					$response = check_current_inventory($post_data,1);
 					break;
-					
+
 				case 'set_session':
-					$this->set_session_data();
+					$response = $this->set_session_data();
 					break;
 
-				case 'set_session_pickup':
-					$this->set_session_pickup_data($post_data);
+				case 'recent_name_autocomplete':
+					$response = $this->_autocomplete_manager->get_recent_names($post_data, 2);
 					break;
 
-				case 'get_pickup_summary':
-					$response = $this->release_model->get_pickup_summary_detail($post_data);
+				case 'transfer_remaining':
+					$response = $this->_purchase_manager->transfer_remaining_po_to_new($post_data);
 					break;
 
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
 			}
-		}catch (Exception $e) {
+		}
+		catch (Exception $e) 
+		{
 			$response['error'] = $e->getMessage();
 		}
-
+		
 		echo json_encode($response);
 	}
 
 	private function set_session_data()
 	{
-		$this->session->set_userdata('release_slip',$this->uri->segment(3));
-	}
+		$response['error'] = '';
 
-	private function set_session_pickup_data($param)
-	{
-		extract($param);
+		$result = $this->purchaseorder_model->check_if_transaction_has_product();
 
-		$release_id_list = array();
+		if ($result->num_rows() == 0)
+			throw new Exception("Please encode at least one product!");
+		else
+			$this->session->set_userdata('purchase_order',$this->uri->segment(3));
 
-		for ($i = 0; $i < count($release_id); $i++)
-			array_push($release_id_list,$release_id[$i]);
-
-		$this->session->set_userdata('pickup_summary',$release_id_list);
+		$result->free_result();
+		
+		return $response;
 	}
 }
