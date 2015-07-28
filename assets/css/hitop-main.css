@@ -25,7 +25,10 @@ body{
 	width: auto;
 }
 .main-wrapper{
-	/*width: 1366px;*/
+	width: 1349px;
+}
+.container-wrap{
+	/*width: 1349px;*/
 }
 /*Notifications*/
 .user-creds .notifications-icon{
@@ -190,7 +193,7 @@ body{
 
 /*Sidebar*/
 .sidebar{
-	width: 22%;
+	width: 296.7px;
 	height: 100%;
 	margin-left: 15px;
 	margin-top: 10px;
@@ -346,7 +349,7 @@ body{
 }
 /*Main Content*/
 .main-content{
-	width: 74.7%;
+	width: 1007.7px;
 	margin-right: 15px;
 	margin-top: 15px;
 	min-height: 534px;
