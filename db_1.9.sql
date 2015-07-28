@@ -425,14 +425,13 @@ CREATE TABLE `pickup_summary_head` (
   `branch_id` bigint(20) DEFAULT '0',
   `entry_date` datetime DEFAULT NULL,
   `is_show` int(1) DEFAULT '1',
-  `is_used` int(1) DEFAULT '0',
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   PRIMARY KEY (`id`),
-  KEY `idx_isshow_isused_forbranchid` (`is_show`,`is_used`),
-  KEY `idx_id_isshow_isused_forbranchid` (`id`,`is_show`,`is_used`)
+  KEY `idx_isshow_isused_forbranchid` (`is_show`),
+  KEY `idx_id_isshow_isused_forbranchid` (`id`,`is_show`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1044,7 +1043,63 @@ UNLOCK TABLES;
 /*!50003 SET collation_connection  = utf8_general_ci */ ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = '' */ ;
-
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_detail_BEFORE_INSERT` BEFORE INSERT ON `release_detail`
+FOR EACH ROW
+BEGIN
+	CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,'RELEASE DETAIL');
+	CALL process_update_receive(NEW.`release_order_detail_id`,NEW.`quantity`,'RELEASE DETAIL');
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_detail_BEFORE_UPDATE` BEFORE UPDATE ON `release_detail` 
+FOR EACH ROW
+BEGIN
+	IF (OLD.`product_id` <> NEW.`product_id`) THEN
+		CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'RELEASE DETAIL');
+        CALL process_update_receive(OLD.`release_order_detail_id`,(-1 * OLD.`quantity`),'RELEASE DETAIL');
+        
+        CALL process_compute_inventory_for_detail(NEW.`product_id`,( -1 * NEW.`quantity`),NEW.`headid`,'RELEASE DETAIL');
+        CALL process_update_receive(NEW.`release_order_detail_id`,NEW.`quantity`,'RELEASE DETAIL');
+	ELSEIF (OLD.`quantity` <> NEW.`quantity`) THEN
+		SET @qty := (NEW.`quantity` - OLD.`quantity`);
+		CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * @qty),NEW.`headid`,'RELEASE DETAIL');
+		CALL process_update_receive(NEW.`release_order_detail_id`,@qty,'RELEASE DETAIL');
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_detail_BEFORE_DELETE` BEFORE DELETE ON `release_detail` 
+FOR EACH ROW
+BEGIN
+	CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'RELEASE DETAIL');
+    CALL process_update_receive(OLD.`release_order_detail_id`,(-1) * OLD.`quantity`,'RELEASE DETAIL');
+END */;;
+DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
@@ -1081,6 +1136,52 @@ LOCK TABLES `release_head` WRITE;
 /*!40000 ALTER TABLE `release_head` DISABLE KEYS */;
 /*!40000 ALTER TABLE `release_head` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_head_BEFORE_UPDATE` BEFORE UPDATE ON `release_head` 
+FOR EACH ROW
+BEGIN
+	IF(NEW.`is_show` <> 1) THEN
+		CALL process_compute_inventory_for_head('RELEASE HEAD',NEW.`id`);
+    END IF;
+    
+    IF(DATE(OLD.`entry_date`) <> DATE(NEW.`entry_date`)) THEN
+		CALL process_recompute_transaction_summary('RELEASE HEAD',OLD.`id`,1);
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_head_AFTER_UPDATE` AFTER UPDATE ON `release_head` 
+FOR EACH ROW
+BEGIN
+	IF(DATE(OLD.`entry_date`) <> DATE(NEW.`entry_date`)) THEN
+		CALL process_recompute_transaction_summary('RELEASE HEAD',NEW.`id`,-1);
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `release_order_detail`
@@ -1146,6 +1247,47 @@ LOCK TABLES `release_order_head` WRITE;
 /*!40000 ALTER TABLE `release_order_head` DISABLE KEYS */;
 /*!40000 ALTER TABLE `release_order_head` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_order_head_BEFORE_INSERT` BEFORE INSERT ON `release_order_head` 
+FOR EACH ROW
+BEGIN
+	CALL process_insert_new_name(NEW.`customer`,1);
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = '' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`release_order_head_BEFORE_UPDATE` BEFORE UPDATE ON `release_order_head` 
+FOR EACH ROW
+BEGIN
+	IF(LOWER(OLD.`customer`) <> LOWER(NEW.`customer`)) THEN
+		DELETE FROM `recent_name` WHERE LOWER(`name`) = LOWER(OLD.`customer`) AND `type` = 1;
+        CALL process_insert_new_name(NEW.`customer`,1);
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `return_detail`
@@ -1388,6 +1530,10 @@ FOR EACH ROW
 BEGIN
 	IF(NEW.`is_for_branch` = 1) THEN
 		CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,'DELIVERY DETAIL');
+        
+        IF(NEW.`request_detail_id` <> 0) THEN
+			CALL process_update_receive(NEW.`request_detail_id`,NEW.`quantity`,'REQUEST DETAIL');
+		END IF;
 	END IF;
 END */;;
 DELIMITER ;
@@ -1416,6 +1562,7 @@ BEGIN
             SET @qty := @qty * -1;
         END IF;
 		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,@table_detail_name);
+        
     ELSEIF (OLD.`product_id` <> NEW.`product_id`) THEN
 		IF(OLD.`is_for_branch` = 1) THEN
 			CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
@@ -1427,6 +1574,11 @@ BEGIN
 	ELSEIF (OLD.`quantity` <> NEW.`quantity` AND NEW.`is_for_branch` = 1) THEN
 		SET @qty := (NEW.`quantity` - OLD.`quantity`) * -1;
 		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'DELIVERY DETAIL');
+        
+        IF(NEW.`request_detail_id` <> 0) THEN
+			CALL process_update_receive(NEW.`request_detail_id`,@qty,'REQUEST DETAIL');
+		END IF;
+        
 	ELSEIF(OLD.`is_for_branch` <> NEW.`is_for_branch`) THEN
 		IF(OLD.`is_for_branch` = 1) THEN
 			CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
@@ -1456,6 +1608,11 @@ FOR EACH ROW
 BEGIN
 	IF(OLD.`is_for_branch` = 1) THEN
 		CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
+        
+        IF(OLD.`request_detail_id` <> 0) THEN
+			CALL process_update_receive(OLD.`request_detail_id`,(-1 * OLD.`quantity`),'REQUEST DETAIL');
+		END IF;
+        
     END IF;
 END */;;
 DELIMITER ;
@@ -2254,9 +2411,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `process_update_receive`(
     IN `table_name_d` VARCHAR(50)
 )
 BEGIN
-	UPDATE `purchase_detail`
-		SET `recv_quantity` = `recv_quantity` + quantity_d
-        WHERE `id` = detail_id_d;
+	CASE table_name_d
+		WHEN 'RECEIVE DETAIL' THEN
+			UPDATE `purchase_detail`
+				SET `recv_quantity` = `recv_quantity` + quantity_d
+				WHERE `id` = detail_id_d;
+		
+        WHEN 'RELEASE DETAIL' THEN
+			UPDATE `release_order_detail`
+				SET `qty_released` = `qty_released` + quantity_d
+				WHERE `id` = detail_id_d;
+                
+		WHEN 'REQUEST DETAIL' THEN
+			UPDATE `stock_request_detail`
+				SET `qty_delivered` = `qty_delivered` + quantity_d
+				WHERE `id` = detail_id_d;
+	END CASE;
 END ;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -2273,4 +2443,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-07-27  9:39:39
+-- Dump completed on 2015-07-28  8:14:10

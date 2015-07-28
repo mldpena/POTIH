@@ -180,7 +180,7 @@
 	function actionAfterDelete()
 	{
 		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Stock Delivery successfully deleted!','success');
+		build_message_box('messagebox_1','Item Delivery successfully deleted!','success');
 	}
 
 </script>

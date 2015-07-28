@@ -8,18 +8,6 @@
 	tab.setAttribute("class","border-collapse:collapse;");
     
     var colarray = [];
-	
-	var chkchecktransfer = document.createElement('input');
-    chkchecktransfer.setAttribute('type','checkbox');
-    chkchecktransfer.setAttribute('class','chkforprint');
-
-	colarray['print'] = { 
-        header_title: "",
-        edit: [chkchecktransfer],
-        disp: [chkchecktransfer],
-        td_class: "tablerow tdview tdistransfer",
-		headertd_class : "tdview tdistransfer"
-    };
 
 	var spnid = document.createElement('span');
 	colarray['id'] = { 
@@ -61,30 +49,15 @@
         disp: [spndate],
         td_class: "tablerow column_click column_hover tddate"
     };
-
-    var spncustomer = document.createElement('span');
-	colarray['customer'] = { 
-        header_title: "Customer",
-        edit: [spncustomer],
-        disp: [spncustomer],
-        td_class: "tablerow column_click column_hover tdcustomer"
-    };
-
-    var spnmemo = document.createElement('span');
-	colarray['memo'] = { 
-        header_title: "Memo",
-        edit: [spnmemo],
-        disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tddate"
-    };
   	
-  	var spnstatus = document.createElement('span');
-	colarray['status'] = { 
-        header_title: "Status",
-        edit: [spnstatus],
-        disp: [spnstatus],
-        td_class: "tablerow column_click column_hover tdstatus"
-    };
+  	var imgDelete = document.createElement('i');
+	imgDelete.setAttribute("class","imgdel fa fa-trash");
+	colarray['coldelete'] = { 
+		header_title: "",
+		edit: [imgDelete],
+		disp: [imgDelete],
+		td_class: "tablerow column_hover tddelete"
+	};
 
 	var myjstbl;
 
@@ -100,69 +73,70 @@
 
 	$('#tbl').hide();
 	$('#branch_list').chosen();
-	$('#date_from, #date_to').datepicker();
-	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
-	$('#date_from, #date_to').datepicker("setDate", new Date());
-
-	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ notFoundMessage : 'No pick-up summary entry found!' });
 
 	tableHelper.headContent.bindSearchEvent(getSearchFilter);
+	tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-	$('#print').click(function(){
-		var idList = [];
+	$('#create_summary').click(function(){
 
-		$('.chkforprint:checked').each(function(index,element){
-			var rowIndex = $(this).parent().parent().index();
-			var rowId = tableHelper.contentProvider.getData(rowIndex,'id');
-			idList.push(rowId);
-		});
+		var arr = { fnc : 'generate_summary' }
 
-		if (idList.length == 0)
-		{
-			alert('Please select at least one entry!');
-			return;
-		}
+		$.ajax({
+            type: "POST",
+            dataType : 'JSON',
+            data: 'data=' + JSON.stringify(arr) + token,
+            success: function(response) {
+            	if(response.error != '') 
+					alert(response.error);
+				else
+                	tableHelper.contentHelper.refreshTable(getSearchFilter);
+            }
+        });
+	});
+
+	$('.column_click').live('click', function(){
+		var rowIndex = $(this).parent().index();
+		var rowId = tableHelper.contentProvider.getData(rowIndex, 'id');
 
 		var arr = 	{ 
-						fnc : 'set_session_pickup',
-					 	release_id : idList
+						fnc : 'set_session',
+						summary_head_id : rowId 
 					}
 
 		$.ajax({
             type: "POST",
             dataType : 'JSON',
             data: 'data=' + JSON.stringify(arr) + token,
-            success: function(data) {
-                window.open('<?= base_url() ?>printout/pickup/Pickup');
+            success: function(response) {
+            	if(response.error != '') 
+					alert(response.error);
+				else
+                	window.open('<?= base_url() ?>printout/pickup/Pickup');
             }
         });
-
 	});
 
 	function getSearchFilter()
 	{
 		var search_val 		= $('#search_string').val();
-		var order_val 		= $('#order_by').val();
-		var orde_type_val 	= $('#order_type').val();
-		var date_from_val 	= $('#date_from').val();
-		var date_to_val 	= $('#date_to').val();
 		var branch_val 		= $('#branch_list').val();
 
 		var arr = 	{ 
 						fnc 	 		: 'get_pickup_summary', 
 						search_string 	: search_val,
-						order_by  		: order_val,
-						order_type 		: orde_type_val,
-						date_from		: date_from_val,
-						date_to 		: date_to_val,
 						branch 			: branch_val
 					};
 
 		return arr;
 	}
 
+	function actionAfterDelete()
+	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		build_message_box('messagebox_1','Summary successfully deleted!','success');
+	}
 </script>

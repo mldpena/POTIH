@@ -50,13 +50,12 @@ class Assortment extends CI_Controller {
 									'allow_to_delete' => $this->permission_checker->check_permission(\Permission\Assortment_Code::DELETE_ASSORTMENT));
 				break;
 
-			/*case 'view':
+			case 'view':
 				$page = 'assortment_detail';
 				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
-				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
-				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Purchase_Code::EDIT_PURCHASE),
-									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE),
-									'allow_to_edit_transfer' => $this->permission_checker->check_permission(\Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO));*/
+				$allow_user = $this->permission_checker->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT);
+				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Assortment_Code::EDIT_ASSORTMENT),
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Assortment_Code::ADD_ASSORTMENT));
 				
 				break;
 
@@ -123,55 +122,46 @@ class Assortment extends CI_Controller {
 					$response = $this->assortment_model->search_assortment_list($post_data);
 					break;
 
-				/*case 'create_reference_number':
-					$response = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+				case 'create_reference_number':
+					$response = get_next_number('release_order_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
 					break;
 
-				case 'get_purchaseorder_details':
-					$response = $this->purchaseorder_model->get_purchaseorder_details();
+				case 'get_assortment_details':
+					$response = $this->assortment_model->get_assortment_details();
+					break;
+
+				case 'recent_name_autocomplete':
+					$response = $this->_autocomplete_manager->get_recent_names($post_data, 1);
+					break;
+
+				case 'insert_detail':
+					$response = $this->assortment_model->insert_assortment_detail($post_data);
+					break;
+
+				case 'update_detail':
+					$response = $this->assortment_model->update_assortment_detail($post_data);
+					break;
+
+				case 'delete_detail':
+					$response = $this->assortment_model->delete_assortment_detail($post_data);
+					break;
+
+				case 'set_session':
+					$response = $this->set_session_data();
 					break;
 
 				case 'autocomplete_product':
 					$response = get_product_list_autocomplete($post_data);
 					break;
 
-				case 'insert_detail':
-					$response = $this->purchaseorder_model->insert_purchaseorder_detail($post_data);
-					break;
-
-				case 'update_detail':
-					$response = $this->purchaseorder_model->update_purchaseorder_detail($post_data);
-					break;
-
-				case 'delete_detail':
-					$response = $this->purchaseorder_model->delete_purchaseorder_detail($post_data);
-					break;
-
-				case 'save_purchaseorder_head':
-					$response = $this->purchaseorder_model->update_purchaseorder_head($post_data);
-					break;
-
-				case 'search_purchaseorder_list':
-					$response = $this->purchaseorder_model->search_purchaseorder_list($post_data);
+				case 'save_assortment_head':
+					$response = $this->assortment_model->update_assortment_head($post_data);
 					break;
 
 				case 'delete_head':
-					$response = $this->purchaseorder_model->delete_purchaseorder_head($post_data);
+					$response = $this->assortment_model->delete_assortment_head($post_data);
 					break;
-
-				case 'check_product_inventory':
-					$response = check_current_inventory($post_data,1);
-					break;
-
-				/*case 'set_session':
-					$response = $this->set_session_data();
-					break;*/
-
-				/*
-				case 'recent_name_autocomplete':
-					$response = $this->_autocomplete_manager->get_recent_names($post_data, 2);
-					break;
-				*/
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
@@ -185,19 +175,19 @@ class Assortment extends CI_Controller {
 		echo json_encode($response);
 	}
 
-	/*private function set_session_data()
+	private function set_session_data()
 	{
 		$response['error'] = '';
 
-		$result = $this->purchaseorder_model->check_if_transaction_has_product();
+		$result = $this->assortment_model->check_if_transaction_has_product();
 
 		if ($result->num_rows() == 0)
 			throw new Exception("Please encode at least one product!");
 		else
-			$this->session->set_userdata('purchase_order',$this->uri->segment(3));
+			$this->session->set_userdata('release_slip',$this->uri->segment(3));
 
 		$result->free_result();
 		
 		return $response;
-	}*/
+	}
 }

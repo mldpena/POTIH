@@ -1,6 +1,6 @@
 <?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-class PurchaseOrder_Model extends CI_Model {
+class Assortment_Model extends CI_Model {
 
 	private $_assortment_head_id = 0;
 	private $_current_branch_id = 0;
@@ -13,7 +13,7 @@ class PurchaseOrder_Model extends CI_Model {
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get assortment details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete assortment detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete assortment head!',
-									'HAS_RECEIVED' => 'PO can only be deleted if assortment status is no received!',
+									'HAS_RELEASED' => 'Pick-Up Assortment can only be deleted if assortment status is no received!',
 									'NOT_OWN_BRANCH' => 'Cannot delete assortment order entry of other branches!');
 
 	/**
@@ -31,19 +31,17 @@ class PurchaseOrder_Model extends CI_Model {
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
-	public function get_purchaseorder_details()
+	public function get_assortment_details()
 	{
 		$response 		= array();
 		$response['error'] = '';
 
 		$response['detail_error'] = '';
 
-		$query_head = "SELECT CONCAT('PO',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
-					PH.`memo`, PH.`branch_id`, PH.`supplier`, PH.`for_branchid`, SUM(PD.`recv_quantity`) AS 'total_qty', 
-					PH.`is_imported`, PH.`is_used`, SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) AS 'remaining_qty', 
-					SUM(PD.`recv_quantity`) AS 'recv_quantity'
-					FROM `purchase_head` AS PH
-					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
+		$query_head = "SELECT CONCAT('PA',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
+					PH.`memo`, PH.`branch_id`, PH.`customer`, SUM(PD.`qty_released`) AS 'total_qty', PH.`is_used`
+					FROM release_order_head AS PH
+					LEFT JOIN release_order_detail AS PD ON PD.`headid` = PH.`id`
 					WHERE PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE." AND PH.`id` = ?
 					GROUP BY PH.`id`";
 
@@ -58,18 +56,15 @@ class PurchaseOrder_Model extends CI_Model {
 			$response['reference_number'] 	= $row->reference_number;
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
-			$response['supplier_name'] 		= $row->supplier;
-			$response['orderfor'] 			= $row->for_branchid;
-			$response['is_imported'] 		= $row->is_imported;
+			$response['customer_name'] 		= $row->customer;
 			$response['is_editable'] 		= $row->total_qty == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
-			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->recv_quantity > 0 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`recv_quantity`
-					FROM `purchase_detail` AS PD
-					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`
+					FROM `release_order_detail` AS PD
+					LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
 					WHERE PD.`headid` = ?";
 
@@ -84,12 +79,11 @@ class PurchaseOrder_Model extends CI_Model {
 			{
 				$break_line = $row->type == \Constants\ASSORTMENT_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
-				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
-				$response['detail'][$i][] = array($row->recv_quantity);
+				$response['detail'][$i][] = array($row->qty_released);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -103,7 +97,7 @@ class PurchaseOrder_Model extends CI_Model {
 		return $response;
 	}
 
-	public function insert_purchaseorder_detail($param)
+	public function insert_assortment_detail($param)
 	{
 		extract($param);
 
@@ -112,7 +106,7 @@ class PurchaseOrder_Model extends CI_Model {
 
 		$query_data 		= array($this->_assortment_head_id,$qty,$product_id,$memo,$description);
 
-		$query = "INSERT INTO `purchase_detail`
+		$query = "INSERT INTO `release_order_detail`
 					(`headid`,
 					`quantity`,
 					`product_id`,
@@ -131,17 +125,17 @@ class PurchaseOrder_Model extends CI_Model {
 		return $response;
 	}
 
-	public function update_purchaseorder_detail($param)
+	public function update_assortment_detail($param)
 	{
 		extract($param);
 
 		$response = array();
 		$response['error'] = '';
 
-		$purchase_detail_id = $this->encrypt->decode($detail_id);
-		$query_data 		= array($qty,$product_id,$memo,$description,$purchase_detail_id);
+		$assortment_detail_id = $this->encrypt->decode($detail_id);
+		$query_data 		= array($qty,$product_id,$memo,$description,$assortment_detail_id);
 
-		$query = "UPDATE `purchase_detail`
+		$query = "UPDATE `release_order_detail`
 					SET
 					`quantity` = ?,
 					`product_id` = ?,
@@ -157,18 +151,18 @@ class PurchaseOrder_Model extends CI_Model {
 		return $response;
 	}
 	
-	public function delete_purchaseorder_detail($param)
+	public function delete_assortment_detail($param)
 	{
 		extract($param);
 
 		$response = array();
 		$response['error'] 	= '';
 
-		$purchase_detail_id 	= $this->encrypt->decode($detail_id);
+		$assortment_detail_id 	= $this->encrypt->decode($detail_id);
 
-		$query = "DELETE FROM `purchase_detail` WHERE `id` = ?";
+		$query = "DELETE FROM `release_order_detail` WHERE `id` = ?";
 
-		$result = $this->sql->execute_query($query,$purchase_detail_id);
+		$result = $this->sql->execute_query($query,$assortment_detail_id);
 
 		if ($result['error'] != '') 
 			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
@@ -177,7 +171,7 @@ class PurchaseOrder_Model extends CI_Model {
 
 	}
 
-	public function update_purchaseorder_head($param)
+	public function update_assortment_head($param)
 	{
 		extract($param);
 
@@ -185,15 +179,13 @@ class PurchaseOrder_Model extends CI_Model {
 
 		$response['error'] 	= '';
 		$entry_date 		= $entry_date.' '.date('h:i:s');
-		$query_data 		= array($entry_date,$memo,$supplier_name,$orderfor,$is_imported,$this->_current_user,$this->_current_date,$this->_assortment_head_id);
+		$query_data 		= array($entry_date,$memo,$customer_name,$this->_current_user,$this->_current_date,$this->_assortment_head_id);
 
-		$query = "UPDATE `purchase_head`
+		$query = "UPDATE `release_order_head`
 					SET
 					`entry_date` = ?,
 					`memo` = ?,
-					`supplier` = ?,
-					`for_branchid` = ?,
-					`is_imported` = ?,
+					`customer` = ?,
 					`is_used` = ".\Constants\ASSORTMENT_CONST::USED.",
 					`last_modified_by` = ?,
 					`last_modified_date` = ?
@@ -240,7 +232,7 @@ class PurchaseOrder_Model extends CI_Model {
 	
 		if (!empty($search_string)) 
 		{
-			$conditions .= " AND CONCAT('PO',PH.`reference_number`,' ',PH.`memo`,' ',PH.`customer`) LIKE ?";
+			$conditions .= " AND CONCAT('PA',PH.`reference_number`,' ',PH.`memo`,' ',PH.`customer`) LIKE ?";
 			array_push($query_data,'%'.$search_string.'%');
 		}
 
@@ -289,10 +281,9 @@ class PurchaseOrder_Model extends CI_Model {
 							ELSE ".\Constants\ASSORTMENT_CONST::EXCESS."
 						END,'') 
 					, 0) AS 'status_code'
-					FROM purchase_head AS PH
-					LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`
+					FROM release_order_head AS PH
+					LEFT JOIN release_order_detail AS PD ON PD.`headid` = PH.`id`
 					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
 					WHERE PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE." $conditions
 					GROUP BY PH.`id`
 					$having
@@ -311,9 +302,8 @@ class PurchaseOrder_Model extends CI_Model {
 				$response['data'][$i][] = array($i+1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
-				$response['data'][$i][] = array($row->type);
 				$response['data'][$i][] = array($row->entry_date);
-				$response['data'][$i][] = array($row->supplier);
+				$response['data'][$i][] = array($row->customer);
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
 				$response['data'][$i][] = array($row->status);
@@ -327,25 +317,25 @@ class PurchaseOrder_Model extends CI_Model {
 		return $response;
 	}
 	
-	public function delete_purchaseorder_head($param)
+	public function delete_assortment_head($param)
 	{
 		extract($param);
 
-		$purchase_head_id = $this->encrypt->decode($head_id);
+		$assortment_head_id = $this->encrypt->decode($head_id);
 
 		$response = array();
 		$response['error'] = '';
 
-		$query 	= "SELECT SUM(D.`recv_quantity`) AS 'total_received', H.`branch_id` 
-						FROM purchase_head AS H
-						LEFT JOIN purchase_detail AS D ON D.`headid` = H.`id` 
+		$query 	= "SELECT SUM(D.`qty_released`) AS 'total_released', H.`branch_id` 
+						FROM release_order_head AS H
+						LEFT JOIN release_order_detail AS D ON D.`headid` = H.`id` 
 						WHERE H.`id` = ? AND H.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE;
 
-		$result = $this->db->query($query,$purchase_head_id);
+		$result = $this->db->query($query,$assortment_head_id);
 		$row 	= $result->row();
 
-		if ($row->total_received > 0) {
-			throw new Exception($this->_error_message['HAS_RECEIVED']);
+		if ($row->total_released > 0) {
+			throw new Exception($this->_error_message['HAS_RELEASED']);
 		}
 
 		if ($row->branch_id != $this->_current_branch_id) {
@@ -354,8 +344,9 @@ class PurchaseOrder_Model extends CI_Model {
 
 		$result->free_result();
 
-		$query_data = array($this->_current_date,$this->_current_user,$purchase_head_id);
-		$query 	= "UPDATE `purchase_head` 
+		$query_data = array($this->_current_date,$this->_current_user,$assortment_head_id);
+
+		$query 	= "UPDATE `release_order_head` 
 					SET 
 					`is_show` = ".\Constants\ASSORTMENT_CONST::DELETED.",
 					`last_modified_date` = ?,
@@ -370,21 +361,21 @@ class PurchaseOrder_Model extends CI_Model {
 		return $response;
 	}
 
-	public function get_purchase_order_printout_details()
+	public function get_release_order_printout_details()
 	{
 		$response = array();
 
 		$response['error'] = '';
 
-		$purchase_id = $this->encrypt->decode($this->session->userdata('purchase_order'));
+		$release_order_head_id = $this->encrypt->decode($this->session->userdata('release_slip'));
 
-		$query_head = "SELECT CONCAT('PO',H.`reference_number`) AS 'reference_number', 
-						DATE(H.`entry_date`) AS 'entry_date', H.`supplier`, H.`memo`, COALESCE(B.`name`,'') AS 'for_branch'
-					FROM purchase_head AS H
-					LEFT JOIN branch AS B ON B.`id` = H.`for_branchid` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
+		$query_head = "SELECT CONCAT('PA',H.`reference_number`) AS 'reference_number', 
+						DATE(H.`entry_date`) AS 'entry_date', H.`customer`, H.`memo`
+					FROM release_order_head AS H
+					LEFT JOIN branch AS B ON B.`id` = H.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
 					WHERE H.`id` = ?";
 
-		$result_head = $this->db->query($query_head,$purchase_id);
+		$result_head = $this->db->query($query_head,$release_order_head_id);
 		
 		if ($result_head->num_rows() == 1) 
 		{
@@ -400,12 +391,12 @@ class PurchaseOrder_Model extends CI_Model {
 
 		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
 							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
-							FROM purchase_head AS H
-							LEFT JOIN purchase_detail AS D ON D.`headid` = H.`id`
+							FROM release_order_head AS H
+							LEFT JOIN release_order_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
 							WHERE H.`id` = ?";
 
-		$result_detail = $this->db->query($query_detail,$purchase_id);
+		$result_detail = $this->db->query($query_detail,$release_order_head_id);
 
 		if ($result_detail->num_rows() > 0) 
 		{
@@ -429,8 +420,8 @@ class PurchaseOrder_Model extends CI_Model {
 	public function check_if_transaction_has_product()
 	{
 		$this->db->select("D.*")
-				->from("purchase_detail AS D")
-				->join("purchase_head AS H", "H.`id` = D.`headid`", "left")
+				->from("release_order_detail AS D")
+				->join("release_order_head AS H", "H.`id` = D.`headid`", "left")
 				->where("H.`is_show`", \Constants\ASSORTMENT_CONST::ACTIVE)
 				->where("H.`id`", $this->_assortment_head_id);
 
@@ -439,7 +430,7 @@ class PurchaseOrder_Model extends CI_Model {
 		return $result;
 	}
 
-	public function get_purchase_by_transaction($param)
+	/*public function get_purchase_by_transaction($param)
 	{
 		extract($param);
 
@@ -523,36 +514,5 @@ class PurchaseOrder_Model extends CI_Model {
 		$result = $this->db->get();
 
 		return $result;
-	}
-
-	public function get_purchase_order_details_with_remaining($selected_purchase_detail_id)
-	{
-		$this->db->select("`id`, `quantity`, `product_id`, `description`, `memo`, `recv_quantity`")
-				->from("purchase_detail")
-				->where("`recv_quantity` < `quantity`")
-				->where_in("`id`", $selected_purchase_detail_id);
-
-		$result = $this->db->get();
-
-		return $result;
-	}
-
-	public function transfer_remaining_details_to_new_po($old_purchase_detail, $new_purchase_detail)
-	{
-		$purchase_detail_ids = array();
-
-		for ($i=0; $i < count($old_purchase_detail); $i++) 
-		{
-			$this->db->where("`id`", $old_purchase_detail[$i]['id']);
-			$this->db->update("purchase_detail", $old_purchase_detail[$i]['detail']);
-
-			array_push($purchase_detail_ids, $old_purchase_detail[$i]['id']);
-		}
-
-		$this->db->where_in("`id`", $purchase_detail_ids)
-					->where("`recv_quantity`", 0);
-		$this->db->delete("purchase_detail");
-
-		$this->db->insert_batch("purchase_detail", $new_purchase_detail);
-	}
+	}*/
 }

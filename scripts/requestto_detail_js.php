@@ -1,10 +1,4 @@
 <script type="text/javascript">
-	var DeliveryType = {
-		Unsaved 	: 0,
-		Both 		: 1,
-		Sales 		: 2,
-		Transfer 	: 3
-	}
 
 	var TransactionState = {
 		Saved : 1,
@@ -29,21 +23,6 @@
         disp: [spnid],
         td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
-    };
-
-    var chkchecktransfer = document.createElement('input');
-    chkchecktransfer.setAttribute('type','checkbox');
-    chkchecktransfer.setAttribute('class','chktransfer');
-    var chkchecktransferdisabled = document.createElement('input');
-    chkchecktransferdisabled.setAttribute('type','checkbox');
-    chkchecktransferdisabled.setAttribute('disabled','disabled');
-    chkchecktransferdisabled.setAttribute('class','chktransfer');
-	colarray['istransfer'] = { 
-        header_title: "FT",
-        edit: [chkchecktransfer],
-        disp: [chkchecktransferdisabled],
-        td_class: "tablerow tdistransfer",
-		headertd_class : "tdistransfer"
     };
 
     var spnnumber = document.createElement('span');
@@ -101,12 +80,12 @@
     };
 
     var spnreceive = document.createElement('span');
-	colarray['receive'] = { 
-        header_title: "Received Qty",
+	colarray['delivered'] = { 
+        header_title: "Delivered Qty",
         edit: [spnreceive],
         disp: [spnreceive],
-        td_class: "tablerow column_click column_hover tdreceive",
-        headertd_class : "tdreceive"
+        td_class: "tablerow column_click column_hover tddelivered",
+        headertd_class : "tddelivered"
     };
 
     var spnmemo = document.createElement('span');
@@ -156,12 +135,10 @@
 	$('#tbl').hide();
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'delivery' });
+										{ baseURL : "<?= base_url() ?>", controller : 'requestto' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											 	updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
-											 	addInventoryChecker : true,
-											 	saveEventsAfterCallback : goToPrintOut } );
+											 	addInventoryChecker : false} );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -170,7 +147,7 @@
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
-						fnc : 'get_stock_delivery_details'
+						fnc : 'get_request_details'
 					};
 		$.ajax({
 			type: "POST",
@@ -185,7 +162,6 @@
 				{
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
-					$('#delivery_type').val(response.delivery_type);
 					$('#to_branch').val(response.to_branchid);
 
 					if (response.to_branchid != response.own_branch)
@@ -194,11 +170,6 @@
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 
-					if (response.delivery_type == 2) 
-						$('#delivery_to_list').hide();
-
-					if (response.is_saved == TransactionState.Unsaved) 
-						isUsed = ", .tdreceive";
 				}
 				
 				if (response.detail_error == '') 
@@ -211,20 +182,10 @@
 				}
 				else
 					tableHelper.contentProvider.addRow();
-
-				var isHideTransfer = false;
-
-				if (response.delivery_type == DeliveryType.Transfer) 
-					isHideTransfer = true;
 				
-				hideTransferAndReceived(isHideTransfer);
+				if (response.is_saved == TransactionState.Unsaved) 
+					hideDeliveredQuantity();
 
-				if (!$.inArray(response.delivery_type,[DeliveryType.Both,DeliveryType.Unsaved]))
-				{
-					$('.tdistransfer').hide();
-					hideTransferAndReceived(true);
-				} 
-					
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 
@@ -235,29 +196,7 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('#delivery_type').live('change',function(){
-		if ($(this).val() == DeliveryType.Sales) 
-		{
-			$('#delivery_to_list').hide();
-			$('.tdistransfer').hide();
-			hideTransferAndReceived(true);
-		}
-		else if ($(this).val() == DeliveryType.Transfer) 
-		{
-			$('#delivery_to_list').show();
-			$('.tdistransfer').hide();
-			hideTransferAndReceived(true);
-		}
-		else if ($(this).val() == DeliveryType.Both)
-		{
-			$('#delivery_to_list').show();
-			$('.tdistransfer').show();
-			$('#dynamic-css').html('');
-			hideTransferAndReceived();
-		}
-	});
-
-	$('.print').click(function(){
+	/*$('.print').click(function(){
 		goToPrintOut($(this));
 	});
 
@@ -284,62 +223,27 @@
                 	window.open('<?= base_url() ?>printout/delivery/Delivery');
             }
         });
-	}
+	}*/
 
 	function getHeadDetailsBeforeSubmit()
 	{
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
-		var type_val 	= $('#delivery_type').val();
-		var to_branch 	= type_val == 2 ? 0 : $('#to_branch').val();
+		var to_branch 	= $('#to_branch').val();
 
 		var arr = 	{ 
-						fnc 	 	: 'save_stock_delivery_head', 
+						fnc 	 	: 'save_request_head', 
 						entry_date 	: date_val,
 						memo 		: memo_val,
-						type 		: type_val,
 						to_branch 	: to_branch
 					};
 
 		return arr;
 	}
 
-	function getRowDetailsBeforeSubmit(element)
-	{
-		var rowIndex 		= $(element).parent().parent().index();
-		var productId 		= tableHelper.contentProvider.getData(rowIndex,'product',1);
-		var qty 			= tableHelper.contentProvider.getData(rowIndex,'qty');
-		var memo 			= tableHelper.contentProvider.getData(rowIndex,'memo');
-		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
-		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
-		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',4);
-		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
-
-		var arr = 	{ 
-						fnc 	 	: actionFunction, 
-						product_id 	: productId,
-						qty     	: qty,
-			     		memo 		: memo,
-			     		detail_id 	: rowId,
-			     		istransfer 	: isTransfer,
-			     		description : description
-					};
-
-		return arr;
-	}
-
-	function hideTransferAndReceived(isTransfer)
+	function hideDeliveredQuantity()
 	{
 		$('#dynamic-css').html('');
-
-		var css = "<style>";
-		css += ".tdsample" + isUsed;
-
-		if (isTransfer) 
-			css += ", .tdistransfer";
-
-		css += " { display:none; } </style>";
-
-		$('#dynamic-css').html(css);
+		$('#dynamic-css').html('<style> .tddelivered { display: none; }</style>');
 	}
 </script>

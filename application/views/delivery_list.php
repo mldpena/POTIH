@@ -93,11 +93,11 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Stock Delivery Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Item Delivery Entry</h4>
 			</div>
 			<div class="modal-body">
 				<div class="message-content">
-					Are you sure you want to delete this stock delivery entry?
+					Are you sure you want to delete this item delivery entry?
 				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>

@@ -1,18 +1,10 @@
 <script type="text/javascript">
-	var DeliveryType = {
-		Unsaved 	: 0,
-		Both 		: 1,
-		Sales 		: 2,
-		Transfer 	: 3
-	}
-
 	var TransactionState = {
 		Saved : 1,
 		Unsaved : 0
 	}
 
 	var token = '<?= $token ?>';
-	var isUsed = '';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -31,21 +23,6 @@
 		headertd_class : "tdheader_id"
     };
 
-    var chkchecktransfer = document.createElement('input');
-    chkchecktransfer.setAttribute('type','checkbox');
-    chkchecktransfer.setAttribute('class','chktransfer');
-    var chkchecktransferdisabled = document.createElement('input');
-    chkchecktransferdisabled.setAttribute('type','checkbox');
-    chkchecktransferdisabled.setAttribute('disabled','disabled');
-    chkchecktransferdisabled.setAttribute('class','chktransfer');
-	colarray['istransfer'] = { 
-        header_title: "FT",
-        edit: [chkchecktransfer],
-        disp: [chkchecktransferdisabled],
-        td_class: "tablerow tdistransfer",
-		headertd_class : "tdistransfer"
-    };
-
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -62,7 +39,7 @@
 
     var description = document.createElement('textarea');
     description.setAttribute('class','nonStackDescription form-control desc-margin');
-    description.setAttribute('placeholder', 'Description')
+    description.setAttribute('placeholder','Description');
     description.setAttribute('style','display:none;');
 
     var disabledDescription = document.createElement('textarea');
@@ -101,12 +78,12 @@
     };
 
     var spnreceive = document.createElement('span');
-	colarray['receive'] = { 
-        header_title: "Received Qty",
+	colarray['released'] = { 
+        header_title: "Released Qty",
         edit: [spnreceive],
         disp: [spnreceive],
-        td_class: "tablerow column_click column_hover tdreceive",
-        headertd_class : "tdreceive"
+        td_class: "tablerow column_click column_hover tdreleased",
+        headertd_class : "tdreleased"
     };
 
     var spnmemo = document.createElement('span');
@@ -153,15 +130,14 @@
 
 	root.appendChild(myjstbl.tab);
 
-	$('#tbl').hide();
+	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
+										{ baseURL : "<?= base_url() ?>", 
+										  controller : 'assort',
+										  recentNameElementId : 'customer' } );
 
-	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
-										{ baseURL : "<?= base_url() ?>", controller : 'delivery' });
-
-	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											 	updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
-											 	addInventoryChecker : true,
-											 	saveEventsAfterCallback : goToPrintOut } );
+	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
+											   addInventoryChecker : false,
+											   saveEventsAfterCallback : goToPrintOut } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -170,7 +146,7 @@
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
-						fnc : 'get_stock_delivery_details'
+						fnc : 'get_assortment_details'
 					};
 		$.ajax({
 			type: "POST",
@@ -185,20 +161,13 @@
 				{
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
-					$('#delivery_type').val(response.delivery_type);
-					$('#to_branch').val(response.to_branchid);
-
-					if (response.to_branchid != response.own_branch)
-						$("#to_branch option[value="+response.own_branch+"]").remove();
+					$('#customer').val(response.customer_name);
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 
-					if (response.delivery_type == 2) 
-						$('#delivery_to_list').hide();
-
-					if (response.is_saved == TransactionState.Unsaved) 
-						isUsed = ", .tdreceive";
+					if (response.is_saved == TransactionState.Unsaved)
+						hideQuantityReleasedColumn();
 				}
 				
 				if (response.detail_error == '') 
@@ -207,71 +176,27 @@
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
-					$('.tdupdate, .tddelete, #save').hide();
-				}
+					$('.tdupdate, .tddelete, #save, #transfer').hide();
+				}	
 				else
 					tableHelper.contentProvider.addRow();
 
-				var isHideTransfer = false;
-
-				if (response.delivery_type == DeliveryType.Transfer) 
-					isHideTransfer = true;
-				
-				hideTransferAndReceived(isHideTransfer);
-
-				if (!$.inArray(response.delivery_type,[DeliveryType.Both,DeliveryType.Unsaved]))
-				{
-					$('.tdistransfer').hide();
-					hideTransferAndReceived(true);
-				} 
-					
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 
-				$('#tbl').show();
 			}       
 		});
 	}
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('#delivery_type').live('change',function(){
-		if ($(this).val() == DeliveryType.Sales) 
-		{
-			$('#delivery_to_list').hide();
-			$('.tdistransfer').hide();
-			hideTransferAndReceived(true);
-		}
-		else if ($(this).val() == DeliveryType.Transfer) 
-		{
-			$('#delivery_to_list').show();
-			$('.tdistransfer').hide();
-			hideTransferAndReceived(true);
-		}
-		else if ($(this).val() == DeliveryType.Both)
-		{
-			$('#delivery_to_list').show();
-			$('.tdistransfer').show();
-			$('#dynamic-css').html('');
-			hideTransferAndReceived();
-		}
+	$('#print').click(function(){
+		goToPrintOut();
 	});
 
-	$('.print').click(function(){
-		goToPrintOut($(this));
-	});
-
-	function goToPrintOut(element)
+	function goToPrintOut()
 	{
-		var printType = "both";
-
-		if (element) 
-			printType = $(element).attr('id');
-
-		var arr = 	{ 
-						fnc : 'set_session_delivery',
-						print_type : printType 
-					}
+		var arr = { fnc : 'set_session' }
 
 		$.ajax({
             type: "POST",
@@ -281,7 +206,7 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
-                	window.open('<?= base_url() ?>printout/delivery/Delivery');
+                	window.open('<?= base_url() ?>printout/assortment/Release');
             }
         });
 	}
@@ -290,56 +215,27 @@
 	{
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
-		var type_val 	= $('#delivery_type').val();
-		var to_branch 	= type_val == 2 ? 0 : $('#to_branch').val();
+		var customer_name_val = $('#customer').val();
 
+		if (customer_name_val == '') 
+		{
+			alert('Customer Name should not be empty!');
+			return false;
+		};
+		
 		var arr = 	{ 
-						fnc 	 	: 'save_stock_delivery_head', 
+						fnc 	 	: 'save_assortment_head', 
 						entry_date 	: date_val,
 						memo 		: memo_val,
-						type 		: type_val,
-						to_branch 	: to_branch
+						customer_name : customer_name_val
 					};
 
 		return arr;
 	}
 
-	function getRowDetailsBeforeSubmit(element)
-	{
-		var rowIndex 		= $(element).parent().parent().index();
-		var productId 		= tableHelper.contentProvider.getData(rowIndex,'product',1);
-		var qty 			= tableHelper.contentProvider.getData(rowIndex,'qty');
-		var memo 			= tableHelper.contentProvider.getData(rowIndex,'memo');
-		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
-		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
-		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',4);
-		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
-
-		var arr = 	{ 
-						fnc 	 	: actionFunction, 
-						product_id 	: productId,
-						qty     	: qty,
-			     		memo 		: memo,
-			     		detail_id 	: rowId,
-			     		istransfer 	: isTransfer,
-			     		description : description
-					};
-
-		return arr;
-	}
-
-	function hideTransferAndReceived(isTransfer)
+	function hideQuantityReleasedColumn()
 	{
 		$('#dynamic-css').html('');
-
-		var css = "<style>";
-		css += ".tdsample" + isUsed;
-
-		if (isTransfer) 
-			css += ", .tdistransfer";
-
-		css += " { display:none; } </style>";
-
-		$('#dynamic-css').html(css);
+		$('#dynamic-css').html("<style> .tdreleased{ display:none; } </style>");
 	}
 </script>

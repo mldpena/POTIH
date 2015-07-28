@@ -88,12 +88,12 @@
 
 		$y+= $linegap * 2;
 
-		$pdf->writeHTMLCell('', '', $x, $y,'No. # AP123456', 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'No. # '.$reference_number, 0, 1, 0, true, 'L', true);
 
 		$pdf->SetFont($font,'B',$font_size,'','','');
 
 		$pdf->writeHTMLCell('', '', $x, $y - 6,'Page : '.$page_number, 0, 1, 0, true, 'R', true);
-		$pdf->writeHTMLCell('', '', $x, $y,'Date : '.date("M d, Y"), 0, 1, 0, true, 'R', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'Date : '.$entry_date, 0, 1, 0, true, 'R', true);
 
 		$y+= $linegap * 2;
 

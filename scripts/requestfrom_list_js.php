@@ -1,5 +1,5 @@
 <script type="text/javascript">
-	var token = "<?= $token ?>";
+	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -26,20 +26,28 @@
         td_class: "tablerow tdnumber"
     };
 
-    var spnlocation = document.createElement('span');
-	colarray['location'] = { 
-        header_title: "Location",
-        edit: [spnlocation],
-        disp: [spnlocation],
-        td_class: "tablerow column_click column_hover tdlocation"
-    };
-
     var spnreferencenumber = document.createElement('span');
 	colarray['referencenumber'] = { 
         header_title: "Reference #",
         edit: [spnreferencenumber],
         disp: [spnreferencenumber],
         td_class: "tablerow column_click column_hover tdreference"
+    };
+
+    var spnfrombranch = document.createElement('span');
+	colarray['frombranch'] = { 
+        header_title: "From Branch",
+        edit: [spnfrombranch],
+        disp: [spnfrombranch],
+        td_class: "tablerow column_click column_hover tdfrombranch"
+    };
+
+    var spntobranch = document.createElement('span');
+	colarray['tobranch'] = { 
+        header_title: "To Branch",
+        edit: [spntobranch],
+        disp: [spntobranch],
+        td_class: "tablerow column_click column_hover tdtobranch"
     };
    	
    	var spndate = document.createElement('span');
@@ -48,14 +56,6 @@
         edit: [spndate],
         disp: [spndate],
         td_class: "tablerow column_click column_hover tddate"
-    };
-
-    var spnsupplier= document.createElement('span');
-	colarray['customer'] = { 
-        header_title: "Customer",
-        edit: [spnsupplier],
-        disp: [spnsupplier],
-        td_class: "tablerow column_click column_hover tdsupplier"
     };
 
     var spnmemo = document.createElement('span');
@@ -79,7 +79,7 @@
         header_title: "Status",
         edit: [spnstatus],
         disp: [spnstatus],
-        td_class: "tablerow column_click column_hover status"
+        td_class: "tablerow column_click column_hover tdstatus"
     };
 
     var imgDelete = document.createElement('i');
@@ -111,7 +111,7 @@
 	root.appendChild(myjstbl.mypage.pagingtable);	
 
 	$('#tbl').hide();
-	$('#branch_list').chosen();
+	$('#from_branch, #to_branch').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
@@ -121,8 +121,8 @@
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'assort',
-										  notFoundMessage : 'No pick-up assortment entry found!',
+										  controller : 'requestfrom',
+										  notFoundMessage : 'No item request entry found!',
 										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
 										});
 
@@ -130,17 +130,17 @@
 											deleteEventsAfterCallback : actionAfterDelete } );
 
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
-
+	
 	/*$('#export').click(function () {
 		var arr = getSearchFilter();
 
-		arr.fnc = "purchase_transaction";
+		arr.fnc = "delivery_transaction";
 
 		var queryString = $.objectToQueryString(arr);
 
 		window.open("<?= base_url() ?>export?" + queryString);
 	});*/
-	
+
 	function getSearchFilter()
 	{
 		var search_val 		= $('#search_string').val();
@@ -148,17 +148,19 @@
 		var orde_type_val 	= $('#order_type').val();
 		var date_from_val 	= $('#date_from').val();
 		var date_to_val 	= $('#date_to').val();
-		var branch_val 		= $('#branch_list').val();
+		var from_branch_val = $('#from_branch').val();
+		var to_branch_val 	= $('#to_branch').val();
 		var status_val 		= $('#status').val();
 
 		var arr = 	{ 
-						fnc 	 		: 'search_assortment_list', 
+						fnc 	 		: 'search_request_to_list', 
 						search_string 	: search_val,
 						order_by  		: order_val,
 						order_type 		: orde_type_val,
 						date_from		: date_from_val,
 						date_to 		: date_to_val,
-						branch 			: branch_val,
+						from_branch 	: from_branch_val,
+						to_branch 		: to_branch_val,
 						status 			: status_val
 					};
 
@@ -168,7 +170,7 @@
 	function actionAfterDelete()
 	{
 		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Pick-Up Assortment entry successfully deleted!','success');
+		build_message_box('messagebox_1','Item Request successfully deleted!','success');
 	}
 
 </script>

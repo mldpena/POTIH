@@ -1,6 +1,6 @@
 <script type="text/javascript">
 	var token = '<?= $token ?>';
-
+	
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
 	tab.id = "tableid";
@@ -36,26 +36,26 @@
 
 	var spnreferencenumber = document.createElement('span');
 	colarray['referencenumber'] = { 
-        header_title: "Doc #",
+        header_title: "Reference #",
         edit: [spnreferencenumber],
         disp: [spnreferencenumber],
         td_class: "tablerow column_click column_hover tdreference"
     };
    	
+   	var spnponumbers = document.createElement('span');
+	colarray['panumber'] = { 
+        header_title: "Assortment #",
+        edit: [spnponumbers],
+        disp: [spnponumbers],
+        td_class: "tablerow column_click column_hover tdponumbers"
+    };
+
    	var spndate = document.createElement('span');
 	colarray['date'] = { 
-        header_title: "Entry Date",
+        header_title: "Released Date",
         edit: [spndate],
         disp: [spndate],
         td_class: "tablerow column_click column_hover tddate"
-    };
-
-    var spncustomer = document.createElement('span');
-	colarray['customer'] = { 
-        header_title: "Customer",
-        edit: [spncustomer],
-        disp: [spncustomer],
-        td_class: "tablerow column_click column_hover tdcustomer"
     };
 
     var spnmemo = document.createElement('span');
@@ -63,15 +63,15 @@
         header_title: "Memo",
         edit: [spnmemo],
         disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tddate"
+        td_class: "tablerow column_click column_hover tdmemo"
     };
-  	
-  	var spnstatus = document.createElement('span');
-	colarray['status'] = { 
-        header_title: "Status",
-        edit: [spnstatus],
-        disp: [spnstatus],
-        td_class: "tablerow column_click column_hover tdstatus"
+
+    var spntotalqty = document.createElement('span');
+	colarray['total_qty'] = { 
+        header_title: "Total Qty",
+        edit: [spntotalqty],
+        disp: [spntotalqty],
+        td_class: "tablerow column_click column_hover tdtotalqty"
     };
 
     var imgDelete = document.createElement('i');
@@ -82,7 +82,7 @@
 	imgDelete.setAttribute("style","display:none;");
 
 	<?php endif; ?>
-
+	
 	colarray['coldelete'] = { 
 		header_title: "",
 		edit: [imgDelete],
@@ -100,27 +100,40 @@
 							});
 
 	root.appendChild(myjstbl.tab);
-	root.appendChild(myjstbl.mypage.pagingtable);	
-
+	root.appendChild(myjstbl.mypage.pagingtable);
+	
+	/**
+	 * Bind datepicker and chosen functionality 
+	 */
+	
 	$('#tbl').hide();
 	$('#branch_list').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
-
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'release',
-										  notFoundMessage : 'No warehouse release entry found!',
-										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) }
+										  controller : 'release', 
+										  notFoundMessage : 'No release entry found!',
+										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
 										});
 
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	
+	/*$('#export').click(function () {
+		var arr = getSearchFilter();
+
+		arr.fnc = "purchase_receive_transaction";
+
+		var queryString = $.objectToQueryString(arr);
+
+		window.open("<?= base_url() ?>export?" + queryString);
+	});*/
 
 	function getSearchFilter()
 	{
@@ -130,7 +143,6 @@
 		var date_from_val 	= $('#date_from').val();
 		var date_to_val 	= $('#date_to').val();
 		var branch_val 		= $('#branch_list').val();
-		var status_val 		= $('#status').val();
 
 		var arr = 	{ 
 						fnc 	 		: 'search_release_list', 
@@ -139,8 +151,7 @@
 						order_type 		: orde_type_val,
 						date_from		: date_from_val,
 						date_to 		: date_to_val,
-						branch 			: branch_val,
-						status 			: status_val
+						branch 			: branch_val
 					};
 
 		return arr;
@@ -149,6 +160,6 @@
 	function actionAfterDelete()
 	{
 		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Warehouse Release entry successfully deleted!','success');
+		build_message_box('messagebox_1','Release entry successfully deleted!','success');
 	}
 </script>

@@ -26,12 +26,19 @@ class Printout extends CI_Controller {
 		{
 			switch ($page) 
 			{
-				case 'release':
+				case 'assortment':
 					
+					$this->load->model('assortment_model');
+
+					$page 		= 'release_slip';
+					$response 	= $this->assortment_model->get_release_order_printout_details();
+					break;
+
+				case 'release':
 					$this->load->model('release_model');
 
 					$page 		= 'release_slip';
-					$response 	= $this->release_model->get_release_printout_detail();
+					$response 	= $this->release_model->get_release_printout_details();
 					break;
 
 				case 'delivery_receive':
@@ -65,10 +72,10 @@ class Printout extends CI_Controller {
 					break;
 
 				case 'pickup':
-					$this->load->model('release_model');
+					$this->load->model('pickup_model');
 
 					$page 		= 'pickup_summary';
-					$response 	= $this->release_model->get_pickup_printout_details();
+					$response 	= $this->pickup_model->get_pickup_printout_details();
 					break;
 
 				case 'purchase_order':

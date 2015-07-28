@@ -129,7 +129,7 @@
 
 				<?php if($page_permissions['stock_request_to']) : ?>
 
-				<a href="<?= base_url() ?>delivery/list">
+				<a href="<?= base_url() ?>requestto/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>itemrequeststootherbranches.png">
 						<div>Item Request to Other Branches</div>
@@ -140,7 +140,7 @@
 
 				<?php if($page_permissions['stock_request_from']) : ?>
 
-				<a href="<?= base_url() ?>delivery/list">
+				<a href="<?= base_url() ?>requestfrom/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>itemrequestsfromotherbranches.png">
 						<div>Item Request from Other Branches</div>
@@ -254,7 +254,7 @@
 
 				<?php if($page_permissions['pickup']) : ?>
 
-				<a href="<?= base_url() ?>release/pickup">
+				<a href="<?= base_url() ?>pickup/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>pickupsummary.png">
 						<div>Pick-Up Summary</div>

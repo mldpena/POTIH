@@ -66,6 +66,13 @@ $route['adjust/(:any)'] = 'inventoryadjust';
 $route['pending/(:any)'] = 'inventoryadjust';
 
 $route['assort/(:any)'] = 'assortment';
+$route['assort/view/(:any)'] = 'assortment';
+
+$route['requestto/(:any)'] = 'stockrequest';
+$route['requestto/view/(:any)'] = 'stockrequest';
+
+$route['requestfrom/(:any)'] = 'stockrequest';
+$route['requestfrom/view/(:any)'] = 'stockrequest';
 
 $route['404_override'] = '';
 
