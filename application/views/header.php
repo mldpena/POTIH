@@ -81,7 +81,7 @@
 				</div>
 			</div>
 			<?php if ($page != 'login') : ?>
-			<div class="container-fluid">
+			<div class="container-fluid container-wrap">
 				<div class="row">
 					<?php require_once("sidebar.php"); ?>
 			<?php endif; ?>
