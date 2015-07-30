@@ -84,6 +84,7 @@ class Request_Model extends CI_Model {
 			{
 				$break_line = $row->type == \Constants\REQUEST_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
+				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
@@ -343,13 +344,11 @@ class Request_Model extends CI_Model {
 		$result = $this->db->query($query,$request_head_id);
 		$row 	= $result->row();
 
-		if ($row->total_delivered > 0) {
+		if ($row->total_delivered > 0)
 			throw new Exception($this->_error_message['HAS_DELIVERED']);
-		}
 
-		if ($row->branch_id != $this->_current_branch_id) {
+		if ($row->branch_id != $this->_current_branch_id)
 			throw new Exception($this->_error_message['NOT_OWN_BRANCH']);
-		}
 
 		$result->free_result();
 
@@ -369,62 +368,44 @@ class Request_Model extends CI_Model {
 		return $response;
 	}
 
-	public function create_stock_delivery()
+	public function get_stock_request_head_detail($id)
 	{
-		$response = array();
-		$response['error'] = '';
+		$this->db->select("*")
+				->from("stock_request_head")
+				->where("`id`", $id);
 
-		$to_branch_id = 0;
+		$result = $this->db->get();
 
-		$query_request_head = "SELECT `branch_id` FROM `stock_request_head` WHERE `id` = ?";
+		return $result;
+	}
 
-		$result_head = $this->db->query($query_request_head,$this->_request_head_id);
+	public function check_if_transaction_has_product()
+	{
+		$this->db->select("D.*")
+				->from("stock_request_detail AS D")
+				->join("stock_request_head AS H", "H.`id` = D.`headid`", "left")
+				->where("H.`is_show`", \Constants\REQUEST_CONST::ACTIVE)
+				->where("H.`id`", $this->_request_head_id);
 
-		if ($result_head->num_rows() != 1) 
-			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
-		else
-		{
-			$row = $result_head->row();
+		$result = $this->db->get();
 
-			$to_branch_id = $row->branch_id;
-		}
+		return $result;
+	}
 
-		$result_head->free_result();
+	public function get_stock_request_details_with_remaining($selected_request_detail_id)
+	{
+		$this->db->select("`id`, `quantity`, `product_id`, `description`, `memo`, `qty_delivered`")
+				->from("stock_request_detail")
+				->where("`qty_delivered` < `quantity`")
+				->where_in("`id`", $selected_request_detail_id);
 
-		$result_reference_number = get_next_number('stock_delivery_head','reference_number',array('entry_date' => date("Y-m-d h:i:s"),
-																									'to_branchid' => $to_branch_id,
-																									'delivery_receive_date' => date("Y-m-d h:i:s"),
-																									'delivery_type' => 3));
-		$request_head_id = $this->encrypt->decode($result_reference_number['id']);
+		$result = $this->db->get();
 
-		$query_data = array($request_head_id, $this->_request_head_id);
+		return $result;
+	}
 
-		$query_request_detail = "SELECT ? AS 'headid', `quantity`, `product_id`, `description`, `memo`, 1 AS 'is_for_branch' , `id` FROM stock_request_detail WHERE `headid` = ?";
-
-		$result_request_detail = $this->db->query($query_request_detail, $query_data);
-
-		if ($result_request_detail->num_rows() > 0) 
-		{
-			foreach ($result_request_detail->result() as $row) 
-			{
-				$query_delivery_data = array();
-
-				$query = "INSERT INTO stock_delivery_detail(`headid`, `quantity`, `product_id`, `description`, `memo`, `is_for_branch`, `request_detail_id`)
-							VALUES(?,?,?,?,?,?,?)";
-
-				foreach ($row as $key => $value) 
-					array_push($query_delivery_data, $value);
-
-				$this->sql->execute_query($query,$query_delivery_data);
-			}
-		}
-		else
-			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
-
-		$result_request_detail->free_result();
-
-		$response['id'] = $result_reference_number['id'];
-
-		return $response;
+	public function create_delivery_from_remaining_request_detail($new_stock_delivery_detail)
+	{
+		$this->db->insert_batch("stock_delivery_detail", $new_stock_delivery_detail);
 	}
 }

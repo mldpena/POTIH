@@ -285,8 +285,13 @@
 				if (response.release_order_list_error == '') 
 				{
 					myjstbl_release_order_list.insert_multiplerow_with_value(1,response.release_order_lists);
-					if ($('.chkdetails:checked').length > 0) 
+					
+					if ($('.chkdetails:checked').length > 0)
+					{
 						$('.chkdetails').attr('disabled','disabled');
+						$('.chkdetails:checked').removeAttr('disabled');
+					} 
+						
 				}
 
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
@@ -340,7 +345,7 @@
 						checkReceivedDetails();
 					}
 
-					//$(self).removeAttr('disabled');
+					$(self).removeAttr('disabled');
 
 					flag = 0;
 				}       

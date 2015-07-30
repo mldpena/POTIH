@@ -25,6 +25,17 @@
 		headertd_class : "tdheader_id"
     };
 
+    var chkchecktransfer = document.createElement('input');
+    chkchecktransfer.setAttribute('type','checkbox');
+    chkchecktransfer.setAttribute('class','chktransfer');
+	colarray['istransfer'] = { 
+        header_title: "",
+        edit: [chkchecktransfer],
+        disp: [chkchecktransfer],
+        td_class: "tablerow tdistransfer",
+		headertd_class : "tdistransfer"
+    };
+
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -177,7 +188,7 @@
 
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
-					$('input, textarea, select').not('#print').attr('disabled','disabled');
+					$('input, textarea, select').not('#print, input[type=checkbox]').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save').hide();
 				}
 				else
@@ -227,7 +238,22 @@
 
 	$('#create_delivery').click(function(){
 
-		var arr = { fnc : 'create_delivery' }
+		var selectedDetailId = [];
+
+		$('.chktransfer:checked').each(function(index, element){
+			var rowIndex = $(element).parent().parent().index();
+			var currentId = tableHelper.contentProvider.getData(rowIndex, 'id');
+			selectedDetailId.push(currentId);
+		});
+
+		if (selectedDetailId.length == 0 )
+		{
+			alert('Please select at least one product!');
+			return;
+		}
+
+		var arr = { fnc : 'create_delivery',
+					selected_detail_id : selectedDetailId }
 
 		$.ajax({
             type: "POST",
@@ -237,10 +263,12 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
-                	window.location = '<?= base_url() ?>delivery/view/' + response.id;
+				{
+					window.open('<?= base_url() ?>delivery/view/' + response.id);
+					window.location = '<?= base_url() ?>requestfrom/view/<?= $this->uri->segment(3) ?>';
+				}
             }
         });
-
 	});
 
 	function getHeadDetailsBeforeSubmit()

@@ -132,7 +132,7 @@
 				<a href="<?= base_url() ?>requestto/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>itemrequeststootherbranches.png">
-						<div>Item Request to Other Branches</div>
+						<div>Request Item from Other Branches</div>
 					</div>
 				</a>
 
@@ -143,7 +143,7 @@
 				<a href="<?= base_url() ?>requestfrom/list">
 					<div class="link">
 						<img src="<?= base_url().IMG ?>itemrequestsfromotherbranches.png">
-						<div>Item Request from Other Branches</div>
+						<div>Item Requested by Other Branches</div>
 					</div>
 				</a>
 

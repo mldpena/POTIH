@@ -128,7 +128,7 @@
 			<a href="<?= base_url() ?>requestto/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>itemrequeststootherbranches.png">
-					<div class="btn-title">Item Request to Other Branches</div>
+					<div class="btn-title">Request Item from Other Branches</div>
 				</div>
 			</a>
 
@@ -139,7 +139,7 @@
 			<a href="<?= base_url() ?>requestfrom/list">
 				<div class="each-btn" align="center">
 					<img src="<?= base_url().IMG ?>itemrequestsfromotherbranches.png">
-					<div class="btn-title">Item Request from Other Branches</div>
+					<div class="btn-title">Item Requested by Other Branches</div>
 				</div>
 			</a>
 

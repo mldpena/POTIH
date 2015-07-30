@@ -2,11 +2,11 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li class="active"><a href="<?= base_url() ?>requestfrom/list">Item Request from Other Branches List</a></li>
+			<li class="active"><a href="<?= base_url() ?>requestfrom/list">Item Requested by Other Branches List</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Item Request from Other Branches List</div>
+		<div class="form-header">Item Requested by Other Branches List</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters" align="center">
 				<table>

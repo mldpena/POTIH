@@ -3,12 +3,12 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li><a href="<?= base_url() ?>requestto/list">Item Request to Other Branches List</a></li>
-			<li class="active"><a href="<?= base_url() ?>requestto/view/<?= $this->uri->segment(3) ?>">Item Request to Other Branches Detail</a></li>
+			<li><a href="<?= base_url() ?>requestto/list">Request Item from Other Branches List</a></li>
+			<li class="active"><a href="<?= base_url() ?>requestto/view/<?= $this->uri->segment(3) ?>">Request Item from Other Branches Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Item Request to Other Branches Detail</div>
+		<div class="form-header">Request Item from Other Branches Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
 				<table>
@@ -50,7 +50,7 @@
 				</table>
 			</div>
 			<div class="max-row" align="right">
-				<input type="button" class="btn btn-primary" value="Print" data-toggle="modal" data-target="#printModal" id="print">
+				<!-- <input type="button" class="btn btn-primary" value="Print" data-toggle="modal" data-target="#printModal" id="print"> -->
 				<input type="button" class="btn btn-success" value="Save" id="save">
 			</div>
 		</div>

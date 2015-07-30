@@ -12,7 +12,7 @@
 				<table>
 					<tr>
 						<td>Location:</td>
-						<td colspan="3">
+						<td style="width:300px;">
 							<select class="form-control" id="branch_list"><?= $branch_list ?></select>
 						</td>
 					</tr>

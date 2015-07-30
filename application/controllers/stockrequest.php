@@ -3,7 +3,7 @@
 class StockRequest extends CI_Controller {
 
 	private $_authentication_manager;
-
+	private $_request_manager;
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
@@ -138,6 +138,9 @@ class StockRequest extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('request_model');
+		$this->load->service('request_manager');
+
+		$this->_request_manager = new Services\Request_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -187,7 +190,11 @@ class StockRequest extends CI_Controller {
 					break;
 
 				case 'create_delivery':
-					$response = $this->request_model->create_stock_delivery($post_data);
+					$response = $this->_request_manager->create_stock_delivery_from_selected_request_detail($post_data);
+					break;
+
+				case 'set_session':
+					$response = $this->set_session_data();
 					break;
 
 				default:
@@ -203,24 +210,21 @@ class StockRequest extends CI_Controller {
 		echo json_encode($response);
 	}
 
-	/*private function set_session_data($session_name, $param)
+	private function set_session_data()
 	{
 		extract($param);
 
 		$response['error'] = '';
 
-		$result = $this->delivery_model->check_if_transaction_has_product($session_name);
+		$result = $this->request_model->check_if_transaction_has_product();
 
 		if ($result->num_rows() == 0)
 			throw new Exception("Please encode at least one product!");
 		else
-		{
-			$this->session->set_userdata($session_name,$this->uri->segment(3));
-			$this->session->set_userdata('print_type',$print_type);
-		}
+			$this->session->set_userdata('stock_request',$this->uri->segment(3));
 
 		$result->free_result();
 		
 		return $response;
-	}*/
+	}
 }

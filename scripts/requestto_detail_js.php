@@ -25,6 +25,17 @@
 		headertd_class : "tdheader_id"
     };
 
+    var chkchecktransfer = document.createElement('input');
+    chkchecktransfer.setAttribute('type','checkbox');
+    chkchecktransfer.setAttribute('class','chktransfer');
+	colarray['istransfer'] = { 
+        header_title: "",
+        edit: [chkchecktransfer],
+        disp: [chkchecktransfer],
+        td_class: "tablerow tdistransfer tdhide",
+		headertd_class : "tdistransfer tdhide"
+    };
+
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -196,7 +207,7 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	/*$('.print').click(function(){
+	$('.print').click(function(){
 		goToPrintOut($(this));
 	});
 
@@ -223,7 +234,7 @@
                 	window.open('<?= base_url() ?>printout/delivery/Delivery');
             }
         });
-	}*/
+	}
 
 	function getHeadDetailsBeforeSubmit()
 	{

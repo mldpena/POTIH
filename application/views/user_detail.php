@@ -190,7 +190,7 @@
 						<td style="width:320px;">Others</td>
 					</tr>
 					<tr>
-						<td>Stock Request To Other Branch</td>
+						<td>Request Item from Other Branches</td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::VIEW_STOCKREQUEST ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::VIEW_STOCKREQUEST_DETAIL ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::ADD_STOCKREQUEST ?>"></td>
@@ -199,7 +199,7 @@
 						<td></td>
 					</tr>
 					<tr>
-						<td>Stock Request From Other Branch</td>
+						<td>Item Requested by Other Branches</td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST_DETAIL ?>"></td>
 						<td></td>
