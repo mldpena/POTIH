@@ -55,7 +55,8 @@ class Assortment extends CI_Controller {
 				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Assortment_Code::EDIT_ASSORTMENT),
-									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Assortment_Code::ADD_ASSORTMENT));
+									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Assortment_Code::ADD_ASSORTMENT),
+									'allow_to_edit_incomplete' => $this->permission_checker->check_permission(\Permission\Assortment_Code::EDIT_INCOMPLETE_TRANSACTION));
 				
 				break;
 

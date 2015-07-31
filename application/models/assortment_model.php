@@ -38,12 +38,13 @@ class Assortment_Model extends CI_Model {
 
 		$response['detail_error'] = '';
 
-		$query_head = "SELECT CONCAT('PA',PH.`reference_number`) AS 'reference_number', COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', 
-					PH.`memo`, PH.`branch_id`, PH.`customer`, SUM(PD.`qty_released`) AS 'total_qty', PH.`is_used`
-					FROM release_order_head AS PH
-					LEFT JOIN release_order_detail AS PD ON PD.`headid` = PH.`id`
-					WHERE PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE." AND PH.`id` = ?
-					GROUP BY PH.`id`";
+		$query_head = "SELECT CONCAT('PA',RH.`reference_number`) AS 'reference_number', COALESCE(DATE(RH.`entry_date`),'') AS 'entry_date', 
+					RH.`memo`, RH.`branch_id`, RH.`customer`, SUM(RD.`qty_released`) AS 'qty_released', RH.`is_used`,
+					SUM(IF(RD.`quantity` - RD.`qty_released` < 0, 0, RD.`quantity` - RD.`qty_released`)) AS 'remaining_qty'
+					FROM release_order_head AS RH
+					LEFT JOIN release_order_detail AS RD ON RD.`headid` = RH.`id`
+					WHERE RH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE." AND RH.`id` = ?
+					GROUP BY RH.`id`";
 
 		$result_head = $this->db->query($query_head,$this->_assortment_head_id);
 
@@ -57,8 +58,11 @@ class Assortment_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 			$response['customer_name'] 		= $row->customer;
-			$response['is_editable'] 		= $row->total_qty == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
+			$response['is_editable'] 		= $row->qty_released == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
+			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->qty_released > 0 ? TRUE : FALSE;
+			$response['own_branch'] 		= $this->_current_branch_id;
+			$response['transaction_branch'] = $row->branch_id;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
@@ -383,6 +387,8 @@ class Assortment_Model extends CI_Model {
 
 			foreach ($row as $key => $value)
 				$response[$key] = $value;
+
+			$response['assortment_number'] = '';
 		}
 		else
 			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);

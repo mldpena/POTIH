@@ -177,6 +177,12 @@
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save, #transfer').hide();
+
+					if (response.is_saved && response.is_incomplete && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_edit_incomplete']?>) == true))
+					{
+						$('input, textarea, select').not('#print').removeAttr('disabled');
+						$('.tdupdate, #save').show();
+					}
 				}	
 				else
 					tableHelper.contentProvider.addRow();

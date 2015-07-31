@@ -8,7 +8,8 @@ class Pickup_Model extends CI_Model {
 	private $_error_message = array('UNABLE_TO_GENERATE_SUMMARY' => 'Unable to generate summary!',
 									'UNABLE_TO_DELETE' => 'Unable to delete summary!',
 									'UNABLE_TO_SELECT_HEAD' => 'Unable to get summary head details!',
-									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get summary details!');
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get summary details!',
+									'SUMMARY_FOR_TODAY_EXISTS' => 'Summary for today already exists!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -80,6 +81,16 @@ class Pickup_Model extends CI_Model {
 
 	public function generate_pickup_summary()
 	{
+		$response = array();
+		$response['error'] = '';
+
+		$result_summary_for_today = $this->_check_if_summary_exist_today();
+
+		if ($result_summary_for_today->num_rows() > 0)
+			throw new Exception($this->_error_message['SUMMARY_FOR_TODAY_EXISTS']);
+			
+		$result_summary_for_today->free_result();
+
 		$result_reference_number = get_next_number('pickup_summary_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
 		$summary_head_id = $this->encrypt->decode($result_reference_number['id']);
 
@@ -91,7 +102,9 @@ class Pickup_Model extends CI_Model {
 		$result = $this->sql->execute_query($query,$query_data);
 
 		if ($result['error'])
-			throw new Exception($this->_error_message['UNABLE_TO_GENERATE_SUMMARY']);		
+			throw new Exception($this->_error_message['UNABLE_TO_GENERATE_SUMMARY']);	
+
+		return $response;	
 	}
 
 	public function delete_pickup_summary($param)
@@ -169,7 +182,7 @@ class Pickup_Model extends CI_Model {
 		$query_detail = "SELECT RD.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
 							COALESCE(ROD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', 
 							COALESCE(ROD.`memo`,'') AS 'memo', COALESCE(ROH.`customer`, '') AS 'customer', 
-							COALESCE(CONCAT('PA',ROH.`reference_number`), '') AS 'reference_number'
+							COALESCE(CONCAT('WRS',RH.`reference_number`), '') AS 'reference_number'
 							FROM pickup_summary_head AS PH
 							LEFT JOIN pickup_summary_detail AS PD ON PD.`headid` = PH.`id`
 							LEFT JOIN release_head AS RH ON RH.`id` = PD.`release_head_id`
@@ -199,5 +212,17 @@ class Pickup_Model extends CI_Model {
 		$result_detail->free_result();
 
 		return $response;
+	}
+
+	private function _check_if_summary_exist_today()
+	{
+		$this->db->select("*")
+				->from("pickup_summary_head")
+				->where("DATE(entry_date)", $this->_current_date)
+				->where("`is_show`", \Constants\PICKUP_CONST::ACTIVE);
+
+		$result = $this->db->get();
+
+		return $result;
 	}
 }

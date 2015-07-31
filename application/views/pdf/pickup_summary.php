@@ -104,7 +104,7 @@
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
 						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
-						<td style="width:$column_width[3];" class="tdcenter header-border">Doc #</td>
+						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
 						<td style="width:$column_width[4];" class="tdcenter header-border">WRS #</td>
 						<td style="width:$column_width[5];" class="tdcenter header-border">Customer Name</td>
 					</tr>

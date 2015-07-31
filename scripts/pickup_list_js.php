@@ -77,9 +77,9 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ notFoundMessage : 'No pick-up summary entry found!' });
 
-	tableHelper.headContent.bindSearchEvent(getSearchFilter);
+	tableHelper.headContent.bindSearchEvent(getSearchFilter, lockEntriesForPreviousDays);
 	tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	tableHelper.contentHelper.refreshTable(getSearchFilter, lockEntriesForPreviousDays);
 
 	$('#create_summary').click(function(){
 
@@ -93,7 +93,7 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
-                	tableHelper.contentHelper.refreshTable(getSearchFilter);
+                	tableHelper.contentHelper.refreshTable(getSearchFilter, lockEntriesForPreviousDays);
             }
         });
 	});
@@ -119,6 +119,19 @@
             }
         });
 	});
+
+	function lockEntriesForPreviousDays()
+	{
+		for (var i = 1; i < myjstbl.get_row_count(); i++) 
+		{
+			var deleteIconElement = tableHelper.contentProvider.getElement(i,'coldelete');
+			var rowEntryDate = tableHelper.contentProvider.getData(i,'date');
+			var dateToday = $.datepicker.formatDate('yy-mm-dd', new Date());
+
+			if (dateToday != rowEntryDate) 
+				$(deleteIconElement).hide();
+		};
+	}
 
 	function getSearchFilter()
 	{

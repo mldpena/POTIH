@@ -109,7 +109,7 @@ class Pickup extends CI_Controller {
 					break;
 
 				case 'generate_summary':
-					$this->pickup_model->generate_pickup_summary($post_data);
+					$response = $this->pickup_model->generate_pickup_summary($post_data);
 					break;
 
 				case 'delete_head':

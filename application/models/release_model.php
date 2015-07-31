@@ -479,8 +479,9 @@ class Release_Model extends CI_Model {
 
 		$release_head_id = $this->encrypt->decode($this->session->userdata('release_slip'));
 
-		$query_head = "SELECT CONCAT('PA',RH.`reference_number`) AS 'reference_number', 
-						DATE(H.`entry_date`) AS 'entry_date', RH.`customer`, RH.`memo`
+		$query_head = "SELECT CONCAT('WR',RH.`reference_number`) AS 'reference_number', 
+						DATE(H.`entry_date`) AS 'entry_date', RH.`customer`, RH.`memo`, 
+						CONCAT('PA',RH.`reference_number`) AS 'assortment_number'
 					FROM release_head AS H
 					LEFT JOIN release_detail AS D ON D.`headid` = H.`id`
 					LEFT JOIN release_order_detail AS RD ON RD.`id` = D.`release_order_detail_id` 

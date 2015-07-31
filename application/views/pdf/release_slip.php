@@ -110,9 +110,16 @@
 
 		$y+= $linegap * 2;
 
+		if (!empty($assortment_number)) 
+		{
+			$pdf->writeHTMLCell('', '', $x, $y,'Reference # : '.$assortment_number, 0, 1, 0, true, 'L', true);
+
+			$y+= $linegap;
+		}
+		
 		$pdf->writeHTMLCell('', '', $x, $y,'Customer : '.$customer, 0, 1, 0, true, 'L', true);
 
-		$y+= $linegap + 4;
+		$y+= $linegap;
 
 		$pdf->writeHTMLCell('', '', $x, $y,'Special Instruction : '.$memo, 0, 1, 0, true, 'L', true);
 
@@ -125,7 +132,7 @@
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
 						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
-						<td style="width:$column_width[3];" class="tdcenter header-border">Doc #</td>
+						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
 					</tr>
 				</table>
 EOD;

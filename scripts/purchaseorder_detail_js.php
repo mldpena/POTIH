@@ -207,7 +207,7 @@
 					if (response.is_saved && response.is_incomplete && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_edit_transfer']?>) == true))
 					{
 						$('input, textarea, select').not('#print').removeAttr('disabled');
-						$('.tdupdate, .tddelete, #save, #transfer').show();
+						$('.tdupdate, #save, #transfer').show();
 					}
 				}	
 				else

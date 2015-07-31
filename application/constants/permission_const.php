@@ -164,6 +164,7 @@
 		const ADD_ASSORTMENT = 225;
 		const EDIT_ASSORTMENT = 226;
 		const DELETE_ASSORTMENT= 227;
+		const EDIT_INCOMPLETE_TRANSACTION = 243;
 	}
 
 	class PickUp_Code

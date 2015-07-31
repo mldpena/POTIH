@@ -279,7 +279,7 @@
 				{
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
 					checkReceivedDetails();
-					recomputeReceivedQuantity();
+					recomputeTotalItem();
 				};
 
 				if (response.release_order_list_error == '') 
@@ -300,7 +300,6 @@
 					$('.tdupdate, .tddelete, #save').hide();
 				}
 
-				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 			}       
 		});
@@ -340,9 +339,9 @@
 					else
 					{
 						myjstbl.insert_multiplerow_with_value(1,response.detail);
-						tableHelper.contentProvider.recomputeTotalQuantity();
 						tableHelper.contentHelper.checkProductTypeDescription();
 						checkReceivedDetails();
+						recomputeTotalItem();
 					}
 
 					$(self).removeAttr('disabled');
@@ -364,7 +363,7 @@
 					myjstbl.delete_row(i);
 			};
 
-			tableHelper.contentProvider.recomputeTotalQuantity();
+			recomputeTotalItem();
 
 			flag = 0;
 		}
@@ -401,6 +400,7 @@
 		{
 			myjstbl.delete_row(rowIndex);
 			checkRemainingPODetails();
+			recomputeTotalItem();
 		}
 		else
 		{
@@ -445,8 +445,9 @@
 				else
 				{
 					myjstbl.delete_row(rowIndex);
-					checkRemainingPODetails();
 					tableHelper.contentProvider.recomputeRowNumber();
+					recomputeTotalItem();
+					checkRemainingPODetails();
 					$('#deleteReleasedModal').modal('hide');
 				}
 
@@ -539,8 +540,6 @@
 
 	function recomputeRemainingQuantity(element)
 	{
-		recomputeReceivedQuantity();
-
 		var rowIndex = $(element).parent().parent().index();
 		
 		var quantityOrdered = Number(tableHelper.contentProvider.getData(rowIndex, 'qty'));
@@ -624,16 +623,9 @@
 		};
 	}
 
-	function recomputeReceivedQuantity()
+	function recomputeTotalItem()
 	{
-		var totalQty = 0;
-
-        for (var i = 1; i < myjstbl.get_row_count(); i++) 
-        {
-            var currentQty = tableHelper.contentProvider.getData(i,'qtyrecv',0);
-            totalQty += Number(currentQty);
-        };
-
-        $('#totalQuantityReceived').html(totalQty);
+		var totalQty = myjstbl.get_row_count() - 1;
+        $('#totalReleasedItem').html(totalQty);
 	}
 </script>

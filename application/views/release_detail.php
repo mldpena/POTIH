@@ -44,8 +44,8 @@
 			<div class="max-row tbl-total" align="right">
 				<table>
 					<tr>
-						<td>Total Released Quantity:</td>
-						<td><span id="totalQuantityReceived">0</span></td>
+						<td>Total Released Item:</td>
+						<td><span id="totalReleasedItem">0</span></td>
 					</tr>
 				</table>
 			</div>
