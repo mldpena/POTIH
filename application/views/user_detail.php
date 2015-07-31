@@ -196,7 +196,7 @@
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::ADD_STOCKREQUEST ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::EDIT_STOCKREQUEST ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::DELETE_STOCKREQUEST ?>"></td>
-						<td></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::EDIT_INCOMPLETE_TRANSACTION ?>">Edit Incomplete Transaction</td>
 					</tr>
 					<tr>
 						<td>Item Requested by Other Branches</td>

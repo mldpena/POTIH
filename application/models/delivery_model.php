@@ -32,7 +32,7 @@ class Delivery_Model extends CI_Model {
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
-	public function get_stock_delivery_details()
+	public function get_stock_delivery_transaction_info()
 	{
 		$response 		= array();
 		$branch_id 		= 0;
@@ -140,8 +140,27 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
+
 		$delivery_detail_id = $this->encrypt->decode($detail_id);
-		$query_data 		= array($qty,$product_id,$memo,$istransfer,$description,$delivery_detail_id);
+		$request_detail_id = 0;
+
+		$old_delivery_detail_result = $this->get_stock_delivery_detail_info($delivery_detail_id);
+
+		if ($old_delivery_detail_result->num_rows() == 1) 
+		{
+			$row = $old_delivery_detail_result->row();
+
+			$request_detail_id = $row->request_detail_id;
+
+			if ($row->product_id != $product_id) 
+				$request_detail_id = 0;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+			
+		$old_delivery_detail_result->free_result();
+
+		$query_data 		= array($qty, $product_id, $memo, $istransfer, $description, $request_detail_id, $delivery_detail_id);
 
 		$query = "UPDATE `stock_delivery_detail`
 					SET
@@ -149,7 +168,8 @@ class Delivery_Model extends CI_Model {
 					`product_id` = ?,
 					`memo` = ?,
 					`is_for_branch` = ?,
-					`description` = ?
+					`description` = ?,
+					`request_detail_id` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);
@@ -1069,6 +1089,17 @@ class Delivery_Model extends CI_Model {
 
 		$this->db->order_by($order_field, $order_type);
 		
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function get_stock_delivery_detail_info($id)
+	{
+		$this->db->select("*")
+				->from("stock_delivery_detail")
+				->where("`id`", $id);
+
 		$result = $this->db->get();
 
 		return $result;

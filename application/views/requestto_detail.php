@@ -47,6 +47,10 @@
 						<td>Total Quantity:</td>
 						<td><span id="total_qty">0</span></td>
 					</tr>
+					<tr id="row_reference_number">
+						<td>Delivery Reference #:</td>
+						<td><span id="reference_numbers"></span></td>
+					</tr>
 				</table>
 			</div>
 			<div class="max-row" align="right">

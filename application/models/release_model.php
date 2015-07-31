@@ -71,7 +71,7 @@ class Release_Model extends CI_Model {
 							    CONCAT('PA', PH.`reference_number`) AS 'pa_number', PH.`customer`,
 							    DATE(PH.`entry_date`) AS 'po_date',
 							    SUM(PD.`quantity`) AS 'total_qty',
-							    SUM(PD.`quantity` - PD.`qty_released`) AS 'total_remaining_qty'
+							    SUM(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'total_remaining_qty'
 							FROM
 							    release_order_head AS PH
 								LEFT JOIN release_order_detail AS PD ON PD.`headid` = PH.`id`

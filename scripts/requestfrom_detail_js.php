@@ -28,12 +28,18 @@
     var chkchecktransfer = document.createElement('input');
     chkchecktransfer.setAttribute('type','checkbox');
     chkchecktransfer.setAttribute('class','chktransfer');
+
+    var chktransferall = document.createElement('input');
+	chktransferall.setAttribute('type','checkbox');
+	chktransferall.setAttribute('id','chktransferall');
+
 	colarray['istransfer'] = { 
         header_title: "",
         edit: [chkchecktransfer],
         disp: [chkchecktransfer],
         td_class: "tablerow tdistransfer",
-		headertd_class : "tdistransfer"
+		headertd_class : "tdistransfer",
+		header_elem: chktransferall
     };
 
     var spnnumber = document.createElement('span');
@@ -144,6 +150,7 @@
 	root.appendChild(myjstbl.tab);
 
 	$('#tbl').hide();
+	$('#row_reference_number').hide();
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", controller : 'requestfrom' });
@@ -181,6 +188,11 @@
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 
+					if (response.delivery_reference_numbers != '') 
+					{
+						$('#row_reference_number').show();
+						$('#reference_numbers').html(response.delivery_reference_numbers);
+					}
 				}
 				
 				if (response.detail_error == '') 
@@ -235,6 +247,24 @@
             }
         });
 	}*/
+
+	$('#chktransferall').live('click', function(){
+		if ($(this).is(':checked')) 
+			$('.chktransfer').attr('checked','checked');
+		else
+			$('.chktransfer').removeAttr('checked');
+	});
+
+	$('.chktransfer').live('click', function(){
+		if ($(this).is(':checked'))
+		{
+			if ($('.chktransfer').length == $('.chktransfer:checked').length) 
+				$('#chktransferall').attr('checked','checked');
+		} 
+		else
+			$('#chktransferall').removeAttr('checked');
+	});
+
 
 	$('#create_delivery').click(function(){
 

@@ -39,9 +39,11 @@ class Request_Model extends CI_Model {
 
 		$response['error'] 	= '';
 		$response['detail_error'] 	= ''; 
+		$response['delivery_reference_numbers'] = '';
 
 		$query_head = "SELECT CONCAT('SR',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`request_to_branchid`, SUM(SD.`qty_delivered`) AS 'total_qty', SH.`is_used`
+					SH.`memo`, SH.`branch_id`, SH.`request_to_branchid`, SUM(SD.`qty_delivered`) AS 'qty_delivered', SH.`is_used`,
+					SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) AS 'remaining_qty'
 					FROM `stock_request_head` AS SH
 					LEFT JOIN stock_request_detail AS SD ON SD.`headid` = SH.`id`
 					WHERE SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE." AND SH.`id` = ?
@@ -59,9 +61,11 @@ class Request_Model extends CI_Model {
 			$response['entry_date'] 		= $row->entry_date;
 			$response['memo'] 				= $row->memo;
 			$response['to_branchid'] 		= $row->request_to_branchid;
-			$response['is_editable'] 		= ($row->total_qty == 0 && $row->branch_id == $this->_current_branch_id) ? TRUE : FALSE;
+			$response['is_editable'] 		= ($row->qty_delivered == 0 && $row->branch_id == $this->_current_branch_id) ? TRUE : FALSE;
 			$response['is_saved'] 			= $row->is_used;
 			$response['own_branch'] 		= $this->_current_branch_id;
+			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->qty_delivered > 0 ? TRUE : FALSE;
+			$response['transaction_branch'] = $row->branch_id;
 		}
 
 
@@ -99,6 +103,25 @@ class Request_Model extends CI_Model {
 
 		$result_head->free_result();
 		$result_detail->free_result();
+
+		$this->db->select("COALESCE(GROUP_CONCAT(DISTINCT CONCAT('SD',SH.`reference_number`)),'') AS 'delivery_reference_numbers'")
+				->from("stock_request_head AS SRH")
+				->join("stock_request_detail AS SRD", "SRD.`headid` = SRH.`id`", "left")
+				->join("stock_delivery_detail AS SD", "SD.`request_detail_id` = SRD.`id`", "left")
+				->join("stock_delivery_head AS SH", "SH.`id` = SD.`headid`", "left")
+				->where("SRH.`is_show`", \Constants\REQUEST_CONST::ACTIVE)
+				->where("SH.`is_show`", \Constants\REQUEST_CONST::ACTIVE)
+				->where("SRH.`id`", $this->_request_head_id);
+
+		$result = $this->db->get();
+
+		if ($result->num_rows() == 1) 
+		{
+			$row = $result->row();
+			$response['delivery_reference_numbers'] = $row->delivery_reference_numbers;
+		}
+
+		$result->free_result();
 
 		return $response;
 	}
@@ -368,7 +391,7 @@ class Request_Model extends CI_Model {
 		return $response;
 	}
 
-	public function get_stock_request_head_detail($id)
+	public function get_stock_request_head_info($id)
 	{
 		$this->db->select("*")
 				->from("stock_request_head")

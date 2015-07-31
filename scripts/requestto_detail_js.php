@@ -181,6 +181,11 @@
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 
+					if (response.delivery_reference_numbers != '') 
+					{
+						$('#row_reference_number').show();
+						$('#reference_numbers').html(response.delivery_reference_numbers);
+					}
 				}
 				
 				if (response.detail_error == '') 
@@ -190,6 +195,12 @@
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save').hide();
+
+					if (response.is_saved && response.is_incomplete && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_edit_incomplete']?>) == true))
+					{
+						$('input, textarea, select').not('#print').removeAttr('disabled');
+						$('.tdupdate, .tddelete, #save').show();
+					}
 				}
 				else
 					tableHelper.contentProvider.addRow();

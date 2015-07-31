@@ -71,7 +71,7 @@ class PurchaseReceive_Model extends CI_Model {
 							    CONCAT('PO', PH.`reference_number`) AS 'po_number',
 							    DATE(PH.`entry_date`) AS 'po_date',
 							    SUM(PD.`quantity`) AS 'total_qty',
-							    SUM(PD.`quantity` - PD.`recv_quantity`) AS 'total_remaining_qty'
+							    SUM(IF((PD.`quantity` - PD.`recv_quantity`) < 0, 0, PD.`quantity` - PD.`recv_quantity`)) AS 'total_remaining_qty'
 							FROM
 							    purchase_head AS PH
 								LEFT JOIN purchase_detail AS PD ON PD.`headid` = PH.`id`

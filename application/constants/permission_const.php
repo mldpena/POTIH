@@ -179,6 +179,7 @@
 		const ADD_STOCKREQUEST = 236;
 		const EDIT_STOCKREQUEST = 237;
 		const DELETE_STOCKREQUEST= 238;
+		const EDIT_INCOMPLETE_TRANSACTION = 242;
 	}
 
 	class StockRequestFrom_Code

@@ -19,8 +19,9 @@ class Request_Manager
 
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
+		$this->_request_head_id 	= $this->_CI->encrypt->decode($this->_CI->uri->segment(3));
+
 		$this->_current_date 		= date("Y-m-d h:i:s");
-		$this->_request_head_id = $this->_CI->uri->segment(3);
 	}
 
 	public function create_stock_delivery_from_selected_request_detail($param)
@@ -34,7 +35,7 @@ class Request_Manager
 		$new_stock_delivery_head_id = 0;
 		$selected_request_detail_id = $this->_CI->encrypt->decode_array($selected_detail_id);
 
-		$stock_request_head_result = $this->_CI->request_model->get_stock_request_head_detail($this->_CI->encrypt->decode($this->_request_head_id));
+		$stock_request_head_result = $this->_CI->request_model->get_stock_request_head_info($this->_request_head_id);
 
 		if ($stock_request_head_result->num_rows() == 1) 
 		{

@@ -178,7 +178,7 @@ class StockDelivery extends CI_Controller {
 					break;
 
 				case 'get_stock_delivery_details':
-					$response = $this->delivery_model->get_stock_delivery_details();
+					$response = $this->delivery_model->get_stock_delivery_transaction_info();
 					break;
 
 				case 'autocomplete_product':
