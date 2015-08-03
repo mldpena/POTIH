@@ -1999,7 +1999,7 @@ BEGIN
     DECLARE cursor_release CURSOR FOR SELECT `product_id`, `quantity` FROM release_detail WHERE `headid` = head_id_d;
     DECLARE cursor_purchase_return CURSOR FOR SELECT `product_id`, `quantity` FROM purchase_return_detail WHERE `headid` = head_id_d;
     DECLARE cursor_received CURSOR FOR SELECT `product_id`, `quantity`, `purchase_detail_id` FROM purchase_receive_detail WHERE `headid` = head_id_d;
-    DECLARE cursor_delivery CURSOR FOR SELECT `product_id`, `quantity` FROM stock_delivery_detail WHERE `headid` = head_id_d AND `is_for_branch` = 1; 
+    DECLARE cursor_delivery CURSOR FOR SELECT `product_id`, `quantity`, `request_detail_id` FROM stock_delivery_detail WHERE `headid` = head_id_d; 
     
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;		
 	
@@ -2030,7 +2030,7 @@ BEGIN
 		ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
 			FETCH cursor_purchase_return INTO cursor_product_id, cursor_quantity;
 		ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
-			FETCH cursor_delivery INTO cursor_product_id, cursor_quantity;
+			FETCH cursor_delivery INTO cursor_product_id, cursor_quantity, cursor_other_id;
 		END IF;
         
 		IF done THEN
@@ -2050,6 +2050,9 @@ BEGIN
 				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'PURCHASE RETURN DETAIL');
 			ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
 				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'DELIVERY DETAIL');
+				IF(cursor_other_id <> 0) THEN
+					CALL process_update_receive(cursor_other_id,(-1 * cursor_quantity),'REQUEST DETAIL');
+				END IF;
             END IF;
 	END LOOP;
     
@@ -2437,4 +2440,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-03 18:58:20
+-- Dump completed on 2015-08-03 19:36:49
