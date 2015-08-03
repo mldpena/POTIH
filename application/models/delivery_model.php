@@ -111,7 +111,7 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 		= array($this->_delivery_head_id,$qty,$product_id,$memo,$istransfer,$description);
+		$query_data 	= array($this->_delivery_head_id, $qty, $product_id, $memo, $istransfer, $description);
 
 		$query = "INSERT INTO `stock_delivery_detail`
 					(`headid`,
@@ -160,7 +160,7 @@ class Delivery_Model extends CI_Model {
 			
 		$old_delivery_detail_result->free_result();
 
-		$query_data 		= array($qty, $product_id, $memo, $istransfer, $description, $request_detail_id, $delivery_detail_id);
+		$query_data 	= array($qty, $product_id, $memo, $istransfer, $description, $request_detail_id, $delivery_detail_id);
 
 		$query = "UPDATE `stock_delivery_detail`
 					SET
@@ -585,13 +585,17 @@ class Delivery_Model extends CI_Model {
 			$is_transfer = 0;
 		}
 
+		$query_head_data = array($is_transfer, $this->_delivery_head_id);
+
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SH.`delivery_type`, DATE($receive_date_column) AS 'receive_date'
+					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SH.`delivery_type`, DATE($receive_date_column) AS 'receive_date',
+					SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) AS 'remaining_qty', SUM(SD.`recv_quantity`) AS 'recv_quantity'
 					FROM `stock_delivery_head` AS SH
+					LEFT JOIN `stock_delivery_detail` AS SD ON SD.`headid` = SH.`id` AND SD.`is_for_branch` = ?
 					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
 					GROUP BY SH.`id`";
 
-		$result_head = $this->db->query($query_head,$this->_delivery_head_id);
+		$result_head = $this->db->query($query_head, $query_head_data);
 
 		if ($result_head->num_rows() != 1) 
 			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
@@ -613,6 +617,9 @@ class Delivery_Model extends CI_Model {
 				
 			$response['delivery_type'] 		= $row->delivery_type;
 			$response['receive_date'] 		= $row->receive_date;
+			$response['own_branch'] 		= $this->_current_branch_id;
+			$response['transaction_branch'] = $row->branch_id;
+			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->recv_quantity > 0 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
@@ -780,6 +787,8 @@ class Delivery_Model extends CI_Model {
 			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
 
 		$result_detail->free_result();
+
+		$response['title'] = 'RECEIVING SUMMARY';
 
 		return $response;
 	}
@@ -1103,5 +1112,66 @@ class Delivery_Model extends CI_Model {
 		$result = $this->db->get();
 
 		return $result;
+	}
+
+	public function get_stock_delivery_head_info($id)
+	{
+		$this->db->select("*")
+				->from("stock_delivery_head")
+				->where("`id`", $id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function get_customer_receive_with_remaining($delivery_head_id)
+	{
+		$this->db->select("`id`, `quantity`, `product_id`, `description`, `memo` AS 'customer_name', `recv_quantity`")
+				->from("stock_delivery_detail")
+				->where("`recv_quantity` < `quantity`")
+				->where("`recv_quantity` <> 0")
+				->where("`headid`", $delivery_head_id)
+				->where("`is_for_branch`", 0)
+				->where("`memo` <> ''")
+				->order_by("`memo`", "ASC");
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function transfer_remaining_details_to_new_return($customer_receive_detail, $customer_return_detail)
+	{
+		for ($i=0; $i < count($customer_receive_detail); $i++) 
+		{
+			$this->db->where("`id`", $customer_receive_detail[$i]['id']);
+			$this->db->update("stock_delivery_detail", $customer_receive_detail[$i]['detail']);
+		}
+
+		$this->db->insert_batch("return_detail", $customer_return_detail);
+	}
+
+	public function check_if_transaction_is_incomplete()
+	{
+		$is_incomplete = TRUE;
+
+		$this->db->select("SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) AS 'remaining_qty'")
+				->from("stock_delivery_head AS SH")
+				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id` AND SD.`is_for_branch` = 0", "left")
+				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE)
+				->where("SH.`id`", $this->_delivery_head_id)
+				->group_by("SH.`id`");
+		
+		$result = $this->db->get();
+
+		$row = $result->row();
+
+		if ($row->remaining_qty == 0)
+			$is_incomplete = FALSE;
+
+		$result->free_result();
+
+		return $is_incomplete;
 	}
 }

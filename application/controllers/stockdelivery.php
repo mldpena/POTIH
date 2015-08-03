@@ -3,6 +3,7 @@
 class StockDelivery extends CI_Controller {
 	
 	private $_authentication_manager;
+	private $_delivery_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -110,7 +111,8 @@ class StockDelivery extends CI_Controller {
 				case 'view':
 					$page = 'customerreceive_detail';
 					$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE);
-					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::EDIT_CUSTOMER_RECEIVE));
+					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::EDIT_CUSTOMER_RECEIVE),
+										'allow_to_transfer_remaining' => $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::TRANSFER_TO_RETURN));
 					break;
 
 				default:
@@ -159,6 +161,9 @@ class StockDelivery extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('delivery_model');
+		$this->load->service('delivery_manager');
+
+		$this->_delivery_manager = new Services\Delivery_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -255,6 +260,11 @@ class StockDelivery extends CI_Controller {
 
 				case 'set_session_receive':
 					$response = $this->set_session_data('customer_receive', $post_data);
+					$response['is_incomplete'] = $this->delivery_model->check_if_transaction_is_incomplete();
+					break;
+
+				case 'transfer_remaining_to_return':
+					$response = $this->_delivery_manager->transfer_remaining_to_new_return();
 					break;
 
 				default:

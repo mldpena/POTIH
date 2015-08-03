@@ -17,12 +17,19 @@
 		var id = $(this).attr('id');
 		id = id.replace('-permission','');
 
-		var presetDetailPermissionClass = (id == 'admin')  ?  'check-detail, .permission-section' : id + '-preset';
+		var presetDetailPermissionClass = (id == 'admin')  ?  'check-detail, .permission-section' : id + '-preset, .' + id + '-preset-section';
 
-		if ($(this).is(':checked')) 
+		if ($(this).is(':checked'))
+		{
 			$('.' + presetDetailPermissionClass).attr('checked','checked');
+			$('.preset').attr('disabled', 'disabled');
+			$(this).removeAttr('disabled');
+		} 
 		else
+		{
 			$('.' + presetDetailPermissionClass).removeAttr('checked');
+			$('.preset').removeAttr('disabled');
+		}
 	});
 
 	$('.permission-section').click(function(){
@@ -43,6 +50,9 @@
 			$('#admin-permission').removeAttr('checked');
 			$('.' + detailPermissionClass).removeAttr('checked');
 		}
+
+		//Hard coded entity
+		checkPresetPermission('encoder');
 	});
 
 	$('.check-detail').click(function(){
@@ -50,18 +60,22 @@
 		permissionSection = permissionSection.split(' ');
 		permissionSectionId = permissionSection[1].replace('-detail','');
 
-		
+		//Hard coded entity
+		checkPresetPermission('encoder');
+
+		//For admin preset
 		if ($('.check-detail').length == $('.check-detail:checked').length)
 			$('#admin-permission').attr('checked','checked');
 		else if ($('.check-detail').length != $('.check-detail:checked').length)
 			$('#admin-permission').removeAttr('checked');
 
+		//For section permissions
 		if ($('.' + permissionSection[1]).length == $('.' + permissionSection[1] + ':checked').length)
 			$('#' + permissionSectionId + '-permission').attr('checked','checked');
 		else if ($('.' + permissionSection[1]).length != $('.' + permissionSection[1] + ':checked').length)
 			$('#' + permissionSectionId + '-permission').removeAttr('checked');
-
 	});
+
 
 	$("#show-info-btn").click(function(){
 		var value = $(this).val();
@@ -243,7 +257,8 @@
 					}
 					
 					checkSectionPermission();
-
+					checkPresetPermission('encoder');
+					
 					if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && response.is_own_profile != ProfileStatus.OwnProfile)
 						$('#save').hide();
 
@@ -274,5 +289,21 @@
 
 		if ($('.reports-detail').length == $('.reports-detail:checked').length)
 			$('#reports-permission').attr('checked','checked');
+	}
+
+	function checkPresetPermission(presetEntity)
+	{
+		//For additional entity preset
+		if ($('.' + presetEntity + '-preset:checked').length == $('.' + presetEntity + '-preset').length)
+		{
+			$('#' + presetEntity + '-permission').attr('checked','checked');
+			$('.preset').attr('disabled','disabled');
+			$('#' + presetEntity + '-permission').removeAttr('disabled');
+		}
+		else
+		{
+			$('#' + presetEntity + '-permission').removeAttr('checked');
+			$('.preset').removeAttr('disabled');
+		}
 	}
 </script>

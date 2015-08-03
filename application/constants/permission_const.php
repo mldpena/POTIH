@@ -115,6 +115,7 @@
 		const VIEW_CUSTOMER_RECEIVE = 179;
 		const VIEW_CUSTOMER_RECEIVE_DETAIL = 180;
 		const EDIT_CUSTOMER_RECEIVE = 181;
+		const TRANSFER_TO_RETURN = 245;
 	}
 
 	class InventoryAdjust_Code

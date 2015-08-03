@@ -177,6 +177,9 @@
 					};
 				}
 
+				if ((response.is_incomplete) && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_transfer_remaining']?>) == true))
+					$('#transfer').show();
+
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 
@@ -201,6 +204,28 @@
 		goToPrintOut();
 	});
 
+	$('#transfer').click(function(){
+
+		var arr = { fnc : 'transfer_remaining_to_return' }
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				if(response.error != '') 
+					alert(response.error);
+				else
+				{
+					for (var i = 0; i < response.id.length; i++) 
+						window.open('<?= base_url() ?>return/view/' + response.id[i]);
+				
+					window.location = '<?= base_url() ?>custreceive/view/<?= $this->uri->segment(3) ?>';
+				}
+			}
+		});
+	});
+
 	function goToPrintOut()
 	{
 		var printType = 'customer';
@@ -218,7 +243,17 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
+				{
+					if (response.is_incomplete == true) 
+					{
+						if ((Boolean(<?= $permission_list['allow_to_transfer_remaining']?>) == true))
+							$('#transfer').show();
+					}
+					else
+						$('#transfer').hide();
+					
                 	window.open('<?= base_url() ?>printout/customer_receive/Receive');
+				}
             }
         });
 	}

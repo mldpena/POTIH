@@ -5,7 +5,7 @@ namespace Services;
 class Purchase_Manager
 {
 	private $_CI;
-	private $_current_purchase_head_id;
+	private $_purchase_head_id;
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
@@ -27,8 +27,9 @@ class Purchase_Manager
 
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
+		$this->_purchase_head_id 	= $this->_CI->encrypt->decode($this->_CI->uri->segment(3));
+
 		$this->_current_date 		= date("Y-m-d h:i:s");
-		$this->_current_purchase_head_id = $this->_CI->uri->segment(3);
 	}
 
 	public function transfer_remaining_po_to_new($param)

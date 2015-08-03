@@ -602,6 +602,9 @@ body{
 .desc-margin{
 	margin-top: -15px;
 }
+.margin-left5{
+	margin-left: 5px;
+}
 
 /*Mozilla Firefox Override CSS*/
 /*@-moz-document url-prefix() {

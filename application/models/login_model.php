@@ -35,11 +35,11 @@ class Login_Model extends CI_Model {
 	 */
 	public function get_user_branch_list($user_id)
 	{
-		$this->db->select("DISTINCT(U.`branch_id`) AS 'branch_id', B.`name` AS 'branch_name'")
-				->from("`user_permission` AS U")
-				->join("`branch` AS B","B.id = U.`branch_id`","left")
-				->where("B.`is_show`",\Constants\LOGIN_CONST::ACTIVE)
-				->where("U.`user_id`",$user_id);
+		$this->db->select("U.`user_branch_id` AS 'branch_id', B.`name` AS 'branch_name'")
+				->from("`user_branch` AS U")
+				->join("`branch` AS B", "B.id = U.`user_branch_id`", "left")
+				->where("B.`is_show`", \Constants\LOGIN_CONST::ACTIVE)
+				->where("U.`user_id`", $user_id);
 
 		$result = $this->db->get();
 
@@ -52,12 +52,11 @@ class Login_Model extends CI_Model {
 	 * @return result set 
 	 */
 	
-	public function get_permission_list_by_userid($user_id, $branch_id)
+	public function get_permission_list_by_userid($user_id)
 	{
-		$this->db->select("DISTINCT(`permission_code`)")
+		$this->db->select("`permission_code`")
 				->from("`user_permission`")
-				->where("`user_id`",$user_id)
-				->where("`branch_id`",$branch_id);
+				->where("`user_id`",$user_id);
 
 		$result = $this->db->get();
 

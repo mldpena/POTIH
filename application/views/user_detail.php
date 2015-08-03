@@ -56,18 +56,24 @@
 			</div>
 		</div>
 	</div>
-	<div class="content-form" id="show-info" style="display:none;">
+	<div class="content-form hide-elem" id="show-info">
 		<div class="form-header">User Permissions</div>
 		<div class="form-body">
 			<div class="max-row">
 				<div class="tbl-checkbtn">
-					<input type="checkbox" class="preset" id="admin-permission" value="<?= \Permission\SuperAdmin_Code::ADMIN ?>">
-					<span>Admin</span>
+					<div class="pull-left">
+						<input type="checkbox" class="preset" id="admin-permission" value="<?= \Permission\SuperAdmin_Code::ADMIN ?>">
+						<span>Admin</span>
+					</div>
+					<div class="pull-left margin-left5">
+						<input type="checkbox" class="preset" id="encoder-permission" value="<?= \Permission\SuperAdmin_Code::ADMIN ?>">
+						<span>Encoder</span>
+					</div>
 				</div>
 			</div>
 			<div class="sub-panel header-section">
 				<div align="left">
-					<input type="checkbox" class="permission-section" id="data-permission"> Data Section
+					<input type="checkbox" class="permission-section encoder-preset-section" id="data-permission"> Data Section
 				</div>
 			</div>
 			<div class="max-row tbl max user">
@@ -83,47 +89,47 @@
 					</tr>
 					<tr>
 						<td>Product</td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Product_Code::VIEW_PRODUCT ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Product_Code::VIEW_PRODUCT ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Product_Code::ADD_PRODUCT ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Product_Code::EDIT_PRODUCT ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Product_Code::DELETE_PRODUCT ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Product_Code::ADD_PRODUCT ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Product_Code::EDIT_PRODUCT ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Product_Code::DELETE_PRODUCT ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Material Type</td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Material_Code::VIEW_MATERIAL ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Material_Code::VIEW_MATERIAL ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Material_Code::ADD_MATERIAL ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Material_Code::EDIT_MATERIAL ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Material_Code::DELETE_MATERIAL ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Material_Code::ADD_MATERIAL ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Material_Code::EDIT_MATERIAL ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Material_Code::DELETE_MATERIAL ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Sub Grouping</td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\SubGroup_Code::VIEW_SUBGROUP ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\SubGroup_Code::VIEW_SUBGROUP ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\SubGroup_Code::ADD_SUBGROUP ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\SubGroup_Code::EDIT_SUBGROUP ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\SubGroup_Code::DELETE_SUBGROUP ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\SubGroup_Code::ADD_SUBGROUP ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\SubGroup_Code::EDIT_SUBGROUP ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\SubGroup_Code::DELETE_SUBGROUP ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>User</td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::VIEW_USER ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::VIEW_USER_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::ADD_USER ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::EDIT_USER ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::DELETE_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::VIEW_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::VIEW_USER_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::ADD_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::EDIT_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::DELETE_USER ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Branch</td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::VIEW_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::VIEW_BRANCH ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::ADD_BRANCH ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::EDIT_BRANCH ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::DELETE_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::ADD_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::EDIT_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::DELETE_BRANCH ?>"></td>
 						<td></td>
 					</tr>
 				</table>
@@ -146,29 +152,29 @@
 					</tr>
 					<tr>
 						<td>Purchase Order</td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::VIEW_PURCHASE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::VIEW_PURCHASE_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::ADD_PURCHASE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::EDIT_PURCHASE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::DELETE_PURCHASE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::VIEW_PURCHASE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::VIEW_PURCHASE_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::ADD_PURCHASE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::EDIT_PURCHASE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::DELETE_PURCHASE ?>"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO ?>"> Edit and Transfer Incomplete PO</td>
 					</tr>
 					<tr>
 						<td>Purchase Receive</td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReceive_Code::ADD_PURCHASE_RECEIVE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReceive_Code::EDIT_PURCHASE_RECEIVE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReceive_Code::DELETE_PURCHASE_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReceive_Code::ADD_PURCHASE_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReceive_Code::EDIT_PURCHASE_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReceive_Code::DELETE_PURCHASE_RECEIVE ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Purchase Return</td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReturn_Code::ADD_PURCHASE_RETURN ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReturn_Code::EDIT_PURCHASE_RETURN ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\PurchaseReturn_Code::DELETE_PURCHASE_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReturn_Code::ADD_PURCHASE_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReturn_Code::EDIT_PURCHASE_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\PurchaseReturn_Code::DELETE_PURCHASE_RETURN ?>"></td>
 						<td></td>
 					</tr>
 				</table>
@@ -191,17 +197,17 @@
 					</tr>
 					<tr>
 						<td>Request Item from Other Branches</td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::VIEW_STOCKREQUEST ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::VIEW_STOCKREQUEST_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::ADD_STOCKREQUEST ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::EDIT_STOCKREQUEST ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::DELETE_STOCKREQUEST ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::VIEW_STOCKREQUEST ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::VIEW_STOCKREQUEST_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::ADD_STOCKREQUEST ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::EDIT_STOCKREQUEST ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::DELETE_STOCKREQUEST ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::EDIT_INCOMPLETE_TRANSACTION ?>"> Edit Incomplete Transaction</td>
 					</tr>
 					<tr>
 						<td>Item Requested by Other Branches</td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST_DETAIL ?>"></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -209,45 +215,45 @@
 					</tr>
 					<tr>
 						<td>Stock Delivery</td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockDelivery_Code::ADD_STOCK_DELIVERY ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockDelivery_Code::DELETE_STOCK_DELIVERY ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::ADD_STOCK_DELIVERY ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::DELETE_STOCK_DELIVERY ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Stock Receive</td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockReceive_Code::VIEW_STOCK_RECEIVE ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockReceive_Code::VIEW_STOCK_RECEIVE_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockReceive_Code::VIEW_STOCK_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockReceive_Code::VIEW_STOCK_RECEIVE_DETAIL ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockReceive_Code::EDIT_STOCK_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockReceive_Code::EDIT_STOCK_RECEIVE ?>"></td>
 						<td></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Customer Receive</td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE_DETAIL ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReceive_Code::EDIT_CUSTOMER_RECEIVE ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::EDIT_CUSTOMER_RECEIVE ?>"></td>
 						<td></td>
-						<td></td>
+						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReceive_Code::TRANSFER_TO_RETURN ?>"> Transfer Remaining to Customer Return</td>
 					</tr>
 					<tr>
 						<td>Customer Return</td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReturn_Code::ADD_CUSTOMER_RETURN ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReturn_Code::EDIT_CUSTOMER_RETURN ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReturn_Code::DELETE_CUSTOMER_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReturn_Code::ADD_CUSTOMER_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReturn_Code::EDIT_CUSTOMER_RETURN ?>"></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReturn_Code::DELETE_CUSTOMER_RETURN ?>"></td>
 						<td></td>
 					</tr>
 				</table>
 			</div>
 			<div class="sub-panel header-section">
 				<div align="left">
-					<input type="checkbox" class="permission-section" id="return-permission"> Damage Section
+					<input type="checkbox" class="permission-section encoder-preset-section" id="return-permission"> Damage Section
 				</div>
 			</div>
 			<div class="max-row tbl max user">
@@ -263,11 +269,11 @@
 					</tr>
 					<tr>
 						<td>Damage</td>
-						<td><input type="checkbox" class="check-detail return-detail" value="<?= \Permission\Damage_Code::VIEW_DAMAGE ?>"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="<?= \Permission\Damage_Code::VIEW_DAMAGE_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="<?= \Permission\Damage_Code::ADD_DAMAGE ?>"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="<?= \Permission\Damage_Code::EDIT_DAMAGE ?>"></td>
-						<td><input type="checkbox" class="check-detail return-detail" value="<?= \Permission\Damage_Code::DELETE_DAMAGE ?>"></td>
+						<td><input type="checkbox" class="check-detail return-detail encoder-preset" value="<?= \Permission\Damage_Code::VIEW_DAMAGE ?>"></td>
+						<td><input type="checkbox" class="check-detail return-detail encoder-preset" value="<?= \Permission\Damage_Code::VIEW_DAMAGE_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail return-detail encoder-preset" value="<?= \Permission\Damage_Code::ADD_DAMAGE ?>"></td>
+						<td><input type="checkbox" class="check-detail return-detail encoder-preset" value="<?= \Permission\Damage_Code::EDIT_DAMAGE ?>"></td>
+						<td><input type="checkbox" class="check-detail return-detail encoder-preset" value="<?= \Permission\Damage_Code::DELETE_DAMAGE ?>"></td>
 						<td></td>
 					</tr>
 				</table>
@@ -290,20 +296,20 @@
 					</tr>
 					<tr>
 						<td>Pick-Up Assortment</td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Assortment_Code::VIEW_ASSORTMENT ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Assortment_Code::VIEW_ASSORTMENT_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Assortment_Code::ADD_ASSORTMENT ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Assortment_Code::EDIT_ASSORTMENT ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Assortment_Code::DELETE_ASSORTMENT ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::VIEW_ASSORTMENT ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::VIEW_ASSORTMENT_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::ADD_ASSORTMENT ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::EDIT_ASSORTMENT ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::DELETE_ASSORTMENT ?>"></td>
 						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Assortment_Code::EDIT_INCOMPLETE_TRANSACTION ?>"> Edit Incomplete Transaction</td>
 					</tr>
 					<tr>
 						<td>Warehouse Release</td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Release_Code::VIEW_RELEASE ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Release_Code::VIEW_RELEASE_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Release_Code::ADD_RELEASE ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Release_Code::EDIT_RELEASE ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Release_Code::DELETE_RELEASE ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Release_Code::VIEW_RELEASE ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Release_Code::VIEW_RELEASE_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Release_Code::ADD_RELEASE ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Release_Code::EDIT_RELEASE ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Release_Code::DELETE_RELEASE ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
@@ -335,11 +341,11 @@
 					</tr>
 					<tr>
 						<td>Inventory Adjust</td>
-						<td><input type="checkbox" class="check-detail other-detail" value="<?= \Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST ?>"></td>
-						<td><input type="checkbox" class="check-detail other-detail" value="<?= \Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail other-detail" value="<?= \Permission\InventoryAdjust_Code::ADD_INVENTORY_ADJUST ?>"></td>
-						<td><input type="checkbox" class="check-detail other-detail" value="<?= \Permission\InventoryAdjust_Code::EDIT_INVENTORY_ADJUST ?>"></td>
-						<td><input type="checkbox" class="check-detail other-detail" value="<?= \Permission\InventoryAdjust_Code::DELETE_INVENTORY_ADJUST ?>"></td>
+						<td><input type="checkbox" class="check-detail other-detail encoder-preset" value="<?= \Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST ?>"></td>
+						<td><input type="checkbox" class="check-detail other-detail encoder-preset" value="<?= \Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail other-detail encoder-preset" value="<?= \Permission\InventoryAdjust_Code::ADD_INVENTORY_ADJUST ?>"></td>
+						<td><input type="checkbox" class="check-detail other-detail encoder-preset" value="<?= \Permission\InventoryAdjust_Code::EDIT_INVENTORY_ADJUST ?>"></td>
+						<td><input type="checkbox" class="check-detail other-detail encoder-preset" value="<?= \Permission\InventoryAdjust_Code::DELETE_INVENTORY_ADJUST ?>"></td>
 						<td></td>
 					</tr>
 					<tr>

@@ -150,7 +150,7 @@ class Release extends CI_Controller {
 					break;
 
 				case 'delete_head':
-					$response = $this->purchasereceive_model->delete_purchase_receive_head($post_data);
+					$response = $this->release_model->delete_release_head($post_data);
 					break;
 					
 				case 'set_session':

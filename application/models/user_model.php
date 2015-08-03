@@ -72,25 +72,39 @@ class User_Model extends CI_Model {
 		array_push($query_data,$query_user_data,array());
 
 		$query_permissions = "INSERT INTO `user_permission`
-					(`branch_id`,
-					`user_id`,
+					(`user_id`,
 					`permission_code`)
 					VALUES";
 
 		$query_permission_code = "";
 		$query_permissions_data = array();
 
-		foreach ($branches as $key => $value) 
+		
+		foreach ($permission_list as $key_permission => $value_permission) 
 		{
-			foreach ($permission_list as $key_permission => $value_permission) 
-			{
-				$query_permission_code .= ",(?,@insert_id,?)";
-				array_push($query_permissions_data,$value,$value_permission);
-			}
+			$query_permission_code .= ",(@insert_id,?)";
+			array_push($query_permissions_data,$value_permission);
 		}
-
+		
 		array_push($query,$query_permissions.substr($query_permission_code,1).";");
 		array_push($query_data,$query_permissions_data);
+
+		$query_user_branch = "INSERT INTO `user_branch`
+								(`user_id`,
+								`user_branch_id`)
+								VALUES";
+
+		$query_user_branch_id = "";
+		$query_user_branch_data = array();
+
+		foreach ($branches as $key => $value) 
+		{
+			$query_user_branch_id .= ",(@insert_id,?)";
+			array_push($query_user_branch_data,$value);
+		}
+
+		array_push($query,$query_user_branch.substr($query_user_branch_id,1).";");
+		array_push($query_data,$query_user_branch_data);
 
 		$result = $this->sql->execute_transaction($query,$query_data);
 		
@@ -170,26 +184,43 @@ class User_Model extends CI_Model {
 		array_push($query,$query_user,"DELETE FROM user_permission WHERE `user_id` = ?;");
 		array_push($query_data,$query_user_data,$this->_user_head_id);
 
+		array_push($query,$query_user,"DELETE FROM user_branch WHERE `user_id` = ?;");
+		array_push($query_data,$query_user_data,$this->_user_head_id);
+
 		$query_permissions = "INSERT INTO `user_permission`
-					(`branch_id`,
-					`user_id`,
+					(`user_id`,
 					`permission_code`)
 					VALUES";
 
 		$query_permission_code = "";
 		$query_permissions_data = array();
 
-		foreach ($branches as $key => $value) 
+		
+		foreach ($permission_list as $key_permission => $value_permission) 
 		{
-			foreach ($permission_list as $key_permission => $value_permission) 
-			{
-				$query_permission_code .= ",(?,?,?)";
-				array_push($query_permissions_data,$value,$this->_user_head_id,$value_permission);
-			}
+			$query_permission_code .= ",(?,?)";
+			array_push($query_permissions_data, $this->_user_head_id, $value_permission);
 		}
-
+		
 		array_push($query,$query_permissions.substr($query_permission_code,1).";");
 		array_push($query_data,$query_permissions_data);
+
+		$query_user_branch = "INSERT INTO `user_branch`
+								(`user_id`,
+								`user_branch_id`)
+								VALUES";
+
+		$query_user_branch_id = "";
+		$query_user_branch_data = array();
+
+		foreach ($branches as $key => $value) 
+		{
+			$query_user_branch_id .= ",(?,?)";
+			array_push($query_user_branch_data, $this->_user_head_id, $value);
+		}
+
+		array_push($query,$query_user_branch.substr($query_user_branch_id,1).";");
+		array_push($query_data,$query_user_branch_data);
 
 		$result = $this->sql->execute_transaction($query,$query_data);
 		
@@ -314,10 +345,9 @@ class User_Model extends CI_Model {
 			$response['contact'] 	= $row->contact_number;
 			$response['is_own_profile'] = $this->encrypt->decode(get_cookie('temp')) == $row->id ? \Constants\USER_CONST::OWN_PROFILE : \Constants\USER_CONST::OTHER_PROFILE;
 
-			$query_branches = "SELECT DISTINCT(UP.`branch_id`) AS 'branch_id'
-								FROM user_permission AS UP
-								LEFT JOIN branch AS B ON B.`id` = UP.`branch_id`
-								WHERE B.`is_show` = ".\Constants\USER_CONST::ACTIVE." AND `user_id` = ?";
+			$query_branches = "SELECT `user_branch_id` AS 'branch_id'
+								FROM user_branch
+								WHERE `user_id` = ?";
 			
 			$result_branches = $this->db->query($query_branches,$this->_user_head_id);
 			
@@ -331,8 +361,8 @@ class User_Model extends CI_Model {
 
 			$result_branches->free_result();
 
-			$query_permissions = "SELECT DISTINCT(UP.`permission_code`) AS 'permissions'
-								FROM user_permission AS UP
+			$query_permissions = "SELECT `permission_code` AS 'permissions'
+								FROM user_permission
 								WHERE `user_id` = ?";
 
 			$result_permissions = $this->db->query($query_permissions,$this->_user_head_id);

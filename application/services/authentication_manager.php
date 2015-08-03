@@ -112,7 +112,7 @@ class Authentication_Manager
 		$user_verification_result = $this->_CI->login_model->check_user_credential($user_name, $password);
 		$user_detail_row = $user_verification_result->row();
 
-		$permission_list_result = $this->_CI->login_model->get_permission_list_by_userid($user_detail_row->id, $branch_id);
+		$permission_list_result = $this->_CI->login_model->get_permission_list_by_userid($user_detail_row->id);
 
 		if ($permission_list_result->num_rows() == 0) 
 			throw new \Exception($this->_error_message['NO_PERMISSION']);

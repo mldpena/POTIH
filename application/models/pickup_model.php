@@ -182,7 +182,7 @@ class Pickup_Model extends CI_Model {
 		$query_detail = "SELECT RD.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
 							COALESCE(ROD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', 
 							COALESCE(ROD.`memo`,'') AS 'memo', COALESCE(ROH.`customer`, '') AS 'customer', 
-							COALESCE(CONCAT('WRS',RH.`reference_number`), '') AS 'reference_number'
+							COALESCE(CONCAT('WR',RH.`reference_number`), '') AS 'reference_number'
 							FROM pickup_summary_head AS PH
 							LEFT JOIN pickup_summary_detail AS PD ON PD.`headid` = PH.`id`
 							LEFT JOIN release_head AS RH ON RH.`id` = PD.`release_head_id`

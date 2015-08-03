@@ -377,6 +377,8 @@ class Return_Model extends CI_Model {
 
 		$result_detail->free_result();
 
+		$response['title'] = 'CUSTOMER RETURN SUMMARY';
+
 		return $response;
 	}
 

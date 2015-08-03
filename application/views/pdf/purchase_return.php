@@ -95,6 +95,10 @@
 
 		$pdf->writeHTMLCell('', '', $x, $y,'PURCHASE RETURN', 0, 1, 0, true, 'C', true);
 
+		$y+= $linegap;
+
+		$pdf->writeHTMLCell('', '', $x, $y,'HI-TOP MERCHANDISING INC.', 0, 1, 0, true, 'C', true);
+		
 		$y+= $linegap * 2;
 
 		$pdf->writeHTMLCell('', '', $x, $y,'No. # '.$reference_number, 0, 1, 0, true, 'L', true);

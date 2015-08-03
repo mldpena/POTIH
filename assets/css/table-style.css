@@ -113,7 +113,7 @@
 	border-collapse: collapse;
 	width: 100%;
 }
-.tdid, .tdheader_id, .tdwaybillid, .tdwaybillheader_id, .tdhide{
+.tdid, .tdheader_id, .tdwaybillid, .tdwaybillheader_id, .tdhide, .hide-elem{
 	display: none;
 }
 

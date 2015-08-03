@@ -560,14 +560,19 @@ class Product_Manager
 		return $response;
 	}
 
-	public function write_logs_to_file($logs_list)
+	/**
+	 * Write string logs to specified file name
+	 * @param  array $logs_list [array of string logs]
+	 * @param  string $file_name [import_logs - default file name]
+	 */
+	public function write_logs_to_file($logs_list, $file_name = 'import_logs')
 	{
 		$string_logs = "";
 
    		for ($i=0; $i < count($logs_list); $i++)
    			$string_logs .= $logs_list[$i].PHP_EOL;
    		
-   		file_put_contents("import_logs.txt", $string_logs);
+   		file_put_contents($file_name.".txt", $string_logs);
 	}
 
 	/**

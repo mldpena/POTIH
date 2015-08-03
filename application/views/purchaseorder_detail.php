@@ -58,7 +58,7 @@
 			</div>
 			<div class="max-row">
 				<div class="pull-left">
-					<button class="btn btn-info" id="transfer">Transfer Incomplete Details to New PO</button>	
+					<button class="btn btn-info hide-elem" id="transfer">Transfer Incomplete Details to New PO</button>	
 				</div>
 				<div class="pull-right">
 					<input type="button" class="btn btn-primary" value="Print" id="print">

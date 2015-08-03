@@ -216,7 +216,7 @@
 				if (!response.is_saved || !response.is_incomplete)
 				{
 					hideTransferColumn();
-					$(' #transfer').hide();
+					$('#transfer').hide();
 				}
 
 				tableHelper.contentProvider.recomputeTotalQuantity();

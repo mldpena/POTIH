@@ -84,7 +84,7 @@
 
 		$pdf->SetFont($font,'B',16,'','','');
 
-		$pdf->writeHTMLCell('', '', $x, $y,'RECEIVING SUMMARY', 0, 1, 0, true, 'C', true);
+		$pdf->writeHTMLCell('', '', $x, $y, $title, 0, 1, 0, true, 'C', true);
 
 		$y+= $linegap * 2;
 

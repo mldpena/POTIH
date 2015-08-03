@@ -13,8 +13,8 @@
 					<tr>
 						<td>Material Code:</td>
 						<td><input type="text" class="form-control" id="itemcode" maxlength="8"></td>
-						<td style="display:none;">Type:</td>
-						<td style="display:none;">
+						<td class="hide-elem">Type:</td>
+						<td class="hide-elem">
 							<select class="form-control" id="type">
 								<option value="0">ALL</option>
 								<option value="1" selected>Stock</option>
@@ -40,10 +40,10 @@
 						<td>
 							<select class="form-control" id="subgroup"><?= $subgroup_list ?></select>
 						</td>
-						<td style="display:none;">Date To:</td>
-						<td style="display:none;"><input type="text" class="form-control" id="date_from"></td>
-						<td style="display:none;">Date From:</td>
-						<td style="display:none;"><input type="text" class="form-control" id="date_to"></td>
+						<td class="hide-elem">Date To:</td>
+						<td class="hide-elem"><input type="text" class="form-control" id="date_from"></td>
+						<td class="hide-elem">Date From:</td>
+						<td class="hide-elem"><input type="text" class="form-control" id="date_to"></td>
 					</tr>
 				</table>
 			</div>

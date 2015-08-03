@@ -65,6 +65,7 @@ class PurchaseOrder_Model extends CI_Model {
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->recv_quantity > 0 ? TRUE : FALSE;
 			$response['transaction_branch'] = $row->branch_id;
+			$response['own_branch'] 		= $this->_current_branch_id;
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 

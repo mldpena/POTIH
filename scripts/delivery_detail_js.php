@@ -11,6 +11,11 @@
 		Unsaved : 0
 	}
 
+	var TransferState = {
+		ForTransfer : 1,
+		ForSales : 0
+	}
+
 	var token = '<?= $token ?>';
 	var isUsed = '';
 
@@ -169,9 +174,8 @@
     	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
     	$('#date').datepicker("setDate", new Date());
 
-		var arr = 	{ 
-						fnc : 'get_stock_delivery_details'
-					};
+		var arr = { fnc : 'get_stock_delivery_details' };
+		
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -194,7 +198,7 @@
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 
-					if (response.delivery_type == 2) 
+					if (response.delivery_type == DeliveryType.Sales)  
 						$('#delivery_to_list').hide();
 
 					if (response.is_saved == TransactionState.Unsaved) 
@@ -291,7 +295,19 @@
 		var date_val	= $('#date').val();
 		var memo_val 	= $('#memo').val();
 		var type_val 	= $('#delivery_type').val();
-		var to_branch 	= type_val == 2 ? 0 : $('#to_branch').val();
+		var to_branch 	= type_val == DeliveryType.Sales ? 0 : $('#to_branch').val();
+
+		for (var i = 1; i < myjstbl.get_row_count() - 1; i++) 
+		{
+			var isTransfer 	= Number(tableHelper.contentProvider.getData(i,'istransfer'));
+			var memo 		= tableHelper.contentProvider.getData(i,'memo');
+
+			if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && memo == '') || (type_val == DeliveryType.Sales && memo == '')) 
+			{
+				alert('Please add a customer name in remarks!');
+				return false;
+			}
+		};
 
 		var arr = 	{ 
 						fnc 	 	: 'save_stock_delivery_head', 
@@ -306,6 +322,7 @@
 
 	function getRowDetailsBeforeSubmit(element)
 	{
+		var type_val 		= $('#delivery_type').val();
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId 		= tableHelper.contentProvider.getData(rowIndex,'product',1);
 		var qty 			= tableHelper.contentProvider.getData(rowIndex,'qty');
@@ -314,6 +331,12 @@
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
 		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',4);
 		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
+
+		if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && memo == '') || (type_val == DeliveryType.Sales && memo == '')) 
+		{
+			alert('Please add a customer name in remarks!');
+			return false;
+		}
 
 		var arr = 	{ 
 						fnc 	 	: actionFunction, 

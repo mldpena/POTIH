@@ -534,6 +534,8 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$result_detail->free_result();
 
+		$response['title'] = 'PURCHASE RECEIVE SUMMARY';
+
 		return $response;
 	}
 
