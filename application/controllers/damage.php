@@ -3,6 +3,7 @@
 class Damage extends CI_Controller {
 	
 	private $_authentication_manager;
+	private $_notification_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -102,7 +103,10 @@ class Damage extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('damage_model');
-		
+		$this->load->service('notification_manager');
+
+		$this->_notification_manager = new Services\Notification_Manager();
+
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -158,11 +162,17 @@ class Damage extends CI_Controller {
 					$response = $this->set_session_data();
 					break;
 
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;
 			}
-		}catch (Exception $e) {
+		}
+		catch (Exception $e) 
+		{
 			$response['error'] = $e->getMessage();
 		}
 

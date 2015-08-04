@@ -8,7 +8,9 @@
 <?php require_once('internal_css.php'); ?>
 
 <script type="text/javascript"> 
-	var current_url = "<?= base_url().$this->uri->segment(1).'/' ?><?= (in_array($this->uri->segment(2),array('view','express','record'))) ? 'list' : $this->uri->segment(2)?>";
+	var currentURL = "<?= base_url().$this->uri->segment(1).'/' ?><?= (in_array($this->uri->segment(2),array('view','express','record'))) ? 'list' : $this->uri->segment(2)?>";
+	var notificationToken = "<?= $token ?>";
+	var baseURL = "<?= base_url() ?>";
 </script>
 <script type="text/javascript" src="<?= base_url().JS ?>jquery-1.8.0.min.js"></script>
 <script type="text/javascript" src="<?= base_url().JS ?>jquery-ui-1.8.23.custom.min.js"></script>
@@ -21,5 +23,6 @@
 <script type="text/javascript" src="<?= base_url().JS ?>sidebar.js"></script>   
 <script type="text/javascript" src="<?= base_url().JS ?>jquery.extend.js"></script>   
 <script type="text/javascript" src="<?= base_url().JS ?>jquery.binder.js"></script>   
+<script type="text/javascript" src="<?= base_url().JS ?>notification.js"></script>   
 
 

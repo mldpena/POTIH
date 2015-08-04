@@ -4,6 +4,7 @@ class Assortment extends CI_Controller {
 	
 	private $_authentication_manager;
 	private $_autocomplete_manager;
+	private $_notification_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -105,7 +106,9 @@ class Assortment extends CI_Controller {
 	{
 		$this->load->model('assortment_model');
 		$this->load->service('autocomplete_manager');
+		$this->load->service('notification_manager');
 
+		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
 
 		$post_data 	= array();
@@ -161,6 +164,10 @@ class Assortment extends CI_Controller {
 
 				case 'delete_head':
 					$response = $this->assortment_model->delete_assortment_head($post_data);
+					break;
+				
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
 					break;
 					
 				default:

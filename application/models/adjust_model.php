@@ -669,4 +669,13 @@ class Adjust_Model extends CI_Model {
 
 		return $result;
 	}
+
+	public function get_pending_adjust_count()
+	{
+		$this->db->where("`status`", \Constants\ADJUST_CONST::PENDING)
+				->where("`is_show`", \Constants\ADJUST_CONST::ACTIVE);
+
+
+		return $this->db->count_all_results('inventory_adjust');
+	}
 }

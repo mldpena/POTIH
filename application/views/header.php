@@ -3,27 +3,6 @@
 	<head>
 		<title>Hi-Top Inventory System</title>
 		<?php require_once("includes.php"); ?>
-		<script type="text/javascript">
-			$(function(){
-		        $(document).mouseup(function (e){
-		            var container = $("#notifications-panel");
-		            if (!container.is(e.target) && container.has(e.target).length === 0) 
-		                container.hide();
-		        });
-		        $("#drop-notif").toggle(
-		        	function(){
-		           		$("#notifications-panel").show();
-		           		$("#drop-notif").removeClass('active');
-		           	},
-		           	function(){
-		           		$("#notifications-panel").hide();
-		           	}
-		        );
-		        $(".notifications-single").click(function(){
-		            $("#notifications-panel").hide();
-		        });
-			});
-		</script>
 	</head>
 	<body>
 		<div class="main-wrapper">
@@ -46,35 +25,14 @@
 								</div>
 								<a href="<?= base_url() ?>controlpanel"><div class="ez-menu pull-right">Home</div></a>
 								<div class="pull-right">
-				                    <div class="notifications-icon active" id="drop-notif">
-				                        <div class="notif-circle" style="display:none;">10</div>
-				                        <i class="fa fa-bell"></i>
-				                    </div>
-				                    <div class="dropdown-menu-m notifications-dropdown" id="notifications-panel">
-				                        <div class="notifications-header" data-toggle="dropdown" aria-expanded="false">Notifications</div>
-				                        <div class="notifications-single">
-				                            <div class="detail-container">
-				                                <div class="subject">New Order Received</div>
-				                                <div class="time">30 minutes ago</div>
-				                            </div>
-				                            <img class="icon" src="<?= base_url().IMG ?>customerreceive.png">
-				                        </div>
-				                        <div class="notifications-single">
-				                            <div class="detail-container">
-				                                <div class="subject">New Return Report</div>
-				                                <div class="time">10 minutes ago</div>
-				                            </div>
-				                            <img class="icon" src="<?= base_url().IMG ?>stockreceive.png">
-				                        </div>
-				                        <div class="notifications-single">
-				                            <div class="detail-container">
-				                                <div class="subject">New Collection</div>
-				                                <div class="time">3 minutes ago</div>
-				                            </div>
-				                            <img class="icon" src="<?= base_url().IMG ?>return.png">
-				                        </div>
-				                    </div>
-				                </div>
+									<div class="notifications-icon" id="drop-notif">
+										<i class="fa fa-bell"></i>
+									</div>
+									<div class="dropdown-menu-m notifications-dropdown" id="notifications-panel">
+										<div class="notifications-header" data-toggle="dropdown" aria-expanded="false" id="header-notification">Notifications</div>
+										<div id="notification-container"></div>
+									</div>
+								</div>
 							</div>
 						<?php endif; ?>
 					</div>

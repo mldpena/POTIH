@@ -3,7 +3,7 @@
 class ControlPanel extends CI_Controller {
 	
 	private $_authentication_manager;
-
+	private $_notification_manager;
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
@@ -69,11 +69,35 @@ class ControlPanel extends CI_Controller {
 	
 	private function _ajax_request()
 	{
+		$this->load->service('notification_manager');
+		
+		$this->_notification_manager = new Services\Notification_Manager();
+
 		$post_data 	= array();
 		$fnc 		= '';
 
 		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
 		$fnc 		= $post_data['fnc'];
 
+		$response['error'] = '';
+
+		try {
+			switch ($fnc) 
+			{
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+
+				default:
+					$response['error'] = 'Invalid Arguments!';
+					break;
+			}
+		}
+		catch (Exception $e)
+		{
+			$response['error'] = $e->getMessage();
+		}
+		
+		echo json_encode($response);
 	}
 }

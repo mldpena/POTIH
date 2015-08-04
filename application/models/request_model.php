@@ -431,4 +431,25 @@ class Request_Model extends CI_Model {
 	{
 		$this->db->insert_batch("stock_delivery_detail", $new_stock_delivery_detail);
 	}
+
+	public function get_stock_request_count_with_no_receive()
+	{
+		$count = 0;
+
+		$this->db->select("SUM(COALESCE(`qty_delivered`,0)) AS 'qty_delivered'")
+				->from("stock_request_head AS SH")
+				->join("stock_request_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->where("SH.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
+				->where("SH.`request_to_branchid`", $this->_current_branch_id)
+				->group_by("SH.`id`")
+				->having("qty_delivered", 0);
+		
+		$result = $this->db->get();
+
+		$count = $result->num_rows();
+
+		$result->free_result();
+
+		return $count;
+	}
 }

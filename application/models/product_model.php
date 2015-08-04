@@ -2,6 +2,7 @@
 
 class Product_Model extends CI_Model {
 
+	private $_current_branch_id = 0;
 	private $_error_message = array('CODE_EXISTS' => 'Material code already exists!',
 									'NAME_EXISTS' => 'Product Name already exists!',
 									'UNABLE_TO_INSERT' => 'Unable to insert product!',
@@ -17,6 +18,8 @@ class Product_Model extends CI_Model {
 	 */
 	public function __construct() {
 		parent::__construct();
+
+		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 	}
 
 	public function insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data)
@@ -961,5 +964,23 @@ class Product_Model extends CI_Model {
 			throw new Exception($this->_error_message['NAME_EXISTS']);
 			
 		$result->free_result();
+	}
+
+	public function get_product_warning_count($warning_type)
+	{
+		if ($warning_type == 'MAX') 
+		{
+			$this->db->where("`inventory` >= `max_inv`")
+					->where("`max_inv` <>", 0);
+		}
+		else
+		{
+			$this->db->where("`inventory` <= `min_inv`")
+					->where("`min_inv` <>", 0);
+		}
+
+		$this->db->where("branch_id", $this->_current_branch_id);
+
+		return $this->db->count_all_results('product_branch_inventory');
 	}
 }

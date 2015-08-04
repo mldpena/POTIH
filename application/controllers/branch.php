@@ -3,7 +3,8 @@
 class Branch extends CI_Controller {
 
 	private $_authentication_manager;
-
+	private $_notification_manager;
+	
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
@@ -92,6 +93,9 @@ class Branch extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('branch_model');
+		$this->load->service('notification_manager');
+
+		$this->_notification_manager = new Services\Notification_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -128,11 +132,17 @@ class Branch extends CI_Controller {
 					$response = $this->_set_main_branch_config($post_data);
 					break;
 
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
 			}
-		}catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			$response['error'] = $e->getMessage();
 		}
 		
