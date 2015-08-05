@@ -57,7 +57,7 @@ class Branch extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),

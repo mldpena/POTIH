@@ -72,7 +72,7 @@
         var codeReg = /[^A-Za-z0-9]/;
         var letterReg = /[^A-Za-z ]/;
         var letterWthCharReg = /[^A-Za-z '".\/]/;
-        var credentialReg = /[^A-Za-z0-9_@!]/;
+        var credentialReg = /[^A-Za-z0-9_@.!]/;
 
         var error = [];
 

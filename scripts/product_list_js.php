@@ -187,6 +187,21 @@
 	tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
 	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
+	$('.btn-import').click(function(){
+		var btnId = $(this).attr('id');
+
+		if (btnId == 'import-product') 
+		{
+			$('#importModalLabel').html('Import Product');
+			$('#uploadFunction').val('import_product');
+		}
+		else
+		{
+			$('#importModalLabel').html('Update Beginning Inventory');
+			$('#uploadFunction').val('update_beginning_inventory');
+		}
+	});
+
 	$('#uploadFile').live('click',function(e){
 		e.preventDefault();
 		
@@ -206,9 +221,11 @@
 		var formData = new FormData();    
 		var tokenValue = token.substr(Number(token.indexOf('=')) + 1);    
 		var tokenName = token.substr(1,Number(token.indexOf('=')) - 1);
+		var uploadFunction = $('#uploadFunction').val();
 
 		formData.append('file', uploadedFile);                         
 		formData.append(tokenName,tokenValue);
+		formData.append('fnc',uploadFunction);
 		
 		flag = true;
 
@@ -227,7 +244,7 @@
 				else
 				{
 					$('#uploadModal').modal('hide');
-					window.location = "<?= base_url() ?>product/logs";
+					window.location = "<?= base_url() ?>product/logs/" + uploadFunction;
 				}
 				
 				flag = false;

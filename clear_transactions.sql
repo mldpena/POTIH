@@ -22,5 +22,5 @@ TRUNCATE pickup_summary_head;
 TRUNCATE pickup_summary_detail;
 TRUNCATE stock_request_head;
 TRUNCATE stock_request_detail;
-
+UPDATE user SET `is_first_login` = 0 WHERE `id` <> 1;
 UPDATE product_branch_inventory SET inventory = 0, min_inv = 0, max_inv = 0;

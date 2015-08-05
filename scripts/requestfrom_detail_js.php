@@ -1,10 +1,5 @@
 <script type="text/javascript">
 
-	var TransactionState = {
-		Saved : 1,
-		Unsaved : 0
-	}
-
 	var token = '<?= $token ?>';
 	var isUsed = '';
 
@@ -206,7 +201,7 @@
 				else
 					tableHelper.contentProvider.addRow();
 				
-				if (response.is_saved == TransactionState.Unsaved) 
+				if (!response.is_saved) 
 					hideDeliveredQuantity();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
@@ -282,8 +277,10 @@
 			return;
 		}
 
-		var arr = { fnc : 'create_delivery',
-					selected_detail_id : selectedDetailId }
+		var arr = 	{ 
+						fnc : 'create_delivery',
+						selected_detail_id : selectedDetailId 
+					}
 
 		$.ajax({
             type: "POST",

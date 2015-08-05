@@ -5,6 +5,7 @@ class PurchaseOrder extends CI_Controller {
 	private $_authentication_manager;
 	private $_autocomplete_manager;
 	private $_purchase_manager;
+	private $_notification_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -68,7 +69,7 @@ class PurchaseOrder extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),
@@ -107,7 +108,9 @@ class PurchaseOrder extends CI_Controller {
 		$this->load->model('purchaseorder_model');
 		$this->load->service('autocomplete_manager');
 		$this->load->service('purchase_manager');
-
+		$this->load->service('notification_manager');
+		
+		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
 		$this->_purchase_manager = new Services\Purchase_Manager();
 
@@ -174,6 +177,10 @@ class PurchaseOrder extends CI_Controller {
 					$response = $this->_purchase_manager->transfer_remaining_po_to_new($post_data);
 					break;
 
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

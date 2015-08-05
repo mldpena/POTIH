@@ -6,11 +6,6 @@
 		Transfer 	: 3
 	}
 
-	var TransactionState = {
-		Saved : 1,
-		Unsaved : 0
-	}
-
 	var TransferState = {
 		ForTransfer : 1,
 		ForSales : 0
@@ -201,7 +196,7 @@
 					if (response.delivery_type == DeliveryType.Sales)  
 						$('#delivery_to_list').hide();
 
-					if (response.is_saved == TransactionState.Unsaved) 
+					if (!response.is_saved) 
 						isUsed = ", .tdreceive";
 				}
 				
@@ -228,7 +223,10 @@
 					$('.tdistransfer').hide();
 					hideTransferAndReceived(true);
 				} 
-					
+				
+				if (!response.is_saved)
+					$('#print').hide();
+
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 
@@ -285,7 +283,10 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
+				{
+					$('#print').show();
                 	window.open('<?= base_url() ?>printout/delivery/Delivery');
+				}
             }
         });
 	}

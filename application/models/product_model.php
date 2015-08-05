@@ -983,4 +983,17 @@ class Product_Model extends CI_Model {
 
 		return $this->db->count_all_results('product_branch_inventory');
 	}
+
+	public function get_product_info_by_field_data($field_data)
+	{
+		$this->db->select("*")
+				->from("product");
+
+		foreach ($field_data as $key => $value) 
+			$this->db->where($key, $value);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
 }

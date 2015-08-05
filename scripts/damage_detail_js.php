@@ -1,6 +1,5 @@
 <script type="text/javascript">
 	var token = '<?= $token ?>';
-	var flag = 0;
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -165,6 +164,9 @@
 				else
 					tableHelper.contentProvider.addRow();
 				
+				if (!response.is_saved)
+					$('#print').hide();
+
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 			}       
@@ -189,7 +191,10 @@
 				if(response.error != '') 
 					alert(response.error);
 				else
+				{
+					$('#print').show();
 					window.open('<?= base_url() ?>printout/damage/Damage');
+				}
 			}
 		});
 	}

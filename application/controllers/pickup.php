@@ -3,6 +3,7 @@
 class Pickup extends CI_Controller {
 
 	private $_authentication_manager;
+	private $_notification_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -55,7 +56,7 @@ class Pickup extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),
@@ -92,6 +93,9 @@ class Pickup extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('pickup_model');
+		$this->load->service('notification_manager');
+		
+		$this->_notification_manager = new Services\Notification_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -118,6 +122,10 @@ class Pickup extends CI_Controller {
 
 				case 'set_session':
 					$response = $this->set_session_data($post_data);
+					break;
+
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
 					break;
 
 				default:

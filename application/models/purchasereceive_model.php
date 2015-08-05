@@ -122,7 +122,8 @@ class PurchaseReceive_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
 						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`recv_quantity`,0)) AS 'qty_remaining',
-						PRD.`received_by`, PRD.`receive_memo`, PRD.`quantity` AS 'qty_receive'
+						PRD.`received_by`, PRD.`receive_memo`, PRD.`quantity` AS 'qty_receive',
+						IF(PRD.`quantity` >= COALESCE(PD.`quantity`,0), 1, 0) AS 'is_checked'
 					FROM `purchase_receive_detail` AS PRD
 					LEFT JOIN `purchase_receive_head` AS PRH ON PRH.`id` = PRD.`headid` 
 					LEFT JOIN `purchase_detail` AS PD ON PD.`id` = PRD.`purchase_detail_id`
@@ -151,7 +152,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->qty_remaining, $row->qty_remaining);
 				$response['detail'][$i][] = array($row->received_by);
 				$response['detail'][$i][] = array($row->receive_memo);
-				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array($row->is_checked);
 				$response['detail'][$i][] = array($row->qty_receive, $row->qty_receive);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');

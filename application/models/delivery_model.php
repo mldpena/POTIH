@@ -152,7 +152,7 @@ class Delivery_Model extends CI_Model {
 
 			$request_detail_id = $row->request_detail_id;
 
-			if ($row->product_id != $product_id) 
+			if (($request_detail_id != 0) && ($row->product_id != $product_id || $row->is_for_branch != $istransfer)) 
 				$request_detail_id = 0;
 		}
 		else
@@ -624,7 +624,8 @@ class Delivery_Model extends CI_Model {
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`
+						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`,
+						IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -653,7 +654,7 @@ class Delivery_Model extends CI_Model {
 					$response['detail'][$i][] = array($row->receive_memo);
 				}
 
-				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array($row->is_checked);
 				$response['detail'][$i][] = array($row->recv_quantity);
 				$response['detail'][$i][] = array('');
 				$i++;

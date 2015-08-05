@@ -4,6 +4,7 @@ class Product extends CI_Controller {
 		
 	private $_product_manager;
 	private $_authentication_manager;
+	private $_notification_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -41,10 +42,16 @@ class Product extends CI_Controller {
 		if (isset($_FILES['file'])) 
 		{
 			$this->_product_manager = new Services\Product_Manager();
-			$response = $this->_product_manager->import_product_from_csv();
+
+			$upload_method = $this->input->post('fnc');
+
+			if ($upload_method == 'import_product') 
+				$response = $this->_product_manager->import_product_from_csv();
+			else
+				$response = $this->_product_manager->update_beginning_inventory_from_csv();
 
 			if ($response['error'] == '')
-				$this->_product_manager->write_logs_to_file($response['logs']);
+				$this->_product_manager->write_logs_to_file($response['logs'], $upload_method);
 
 			echo json_encode($response);
 
@@ -94,7 +101,8 @@ class Product extends CI_Controller {
 
 			case 'logs':
 				$this->load->helper("download");
-				force_download('import_logs.txt',file_get_contents(base_url().'import_logs.txt'));
+				$filename = $this->uri->segment(3);
+				force_download($filename.'.txt',file_get_contents(base_url().$filename.'.txt'));
 				break;
 
 			default:
@@ -104,7 +112,7 @@ class Product extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),
@@ -145,8 +153,9 @@ class Product extends CI_Controller {
 		//Temporary
 		$this->load->constant('product_const');
 		$this->load->model('product_model');
+		$this->load->service('notification_manager');
 		
-		//End of temporary
+		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_product_manager = new Services\Product_Manager();
 
 		$post_data 	= array();
@@ -219,6 +228,10 @@ class Product extends CI_Controller {
 
 				case 'get_transaction_breakdown':
 					$response = $this->product_model->get_transaction_breakdown($post_data);
+					break;
+
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
 					break;
 
 				default:

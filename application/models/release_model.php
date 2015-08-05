@@ -123,7 +123,8 @@ class Release_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
 						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`qty_released`,0)) AS 'qty_remaining',
-						PRD.`quantity` AS 'qty_released'
+						PRD.`quantity` AS 'qty_released', 
+						IF(PRD.`quantity` >= COALESCE(PD.`quantity`,0), 1, 0) AS 'is_checked'
 					FROM `release_detail` AS PRD
 					LEFT JOIN `release_head` AS PRH ON PRH.`id` = PRD.`headid` 
 					LEFT JOIN `release_order_detail` AS PD ON PD.`id` = PRD.`release_order_detail_id`
@@ -141,6 +142,7 @@ class Release_Model extends CI_Model {
 			foreach ($result_detail->result() as $row) 
 			{
 				$break_line = $row->type == \Constants\RELEASE_CONST::STOCK ? '' : '<br/>';
+
 				$response['detail'][$i][] = array($this->encrypt->encode($row->receive_detail_id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->release_order_detail_id));
 				$response['detail'][$i][] = array($i+1);
@@ -150,7 +152,7 @@ class Release_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining, $row->qty_remaining);
-				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array($row->is_checked);
 				$response['detail'][$i][] = array($row->qty_released, $row->qty_released);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');

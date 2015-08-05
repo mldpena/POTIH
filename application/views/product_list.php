@@ -82,7 +82,8 @@
 				</center>
 			</div>
 			<div class="max-row" align="right">
-				<button class="btn btn-success btn-excel" data-toggle="modal" data-target="#uploadModal"><i class="fa fa-file-excel-o"></i>&nbsp; Upload CSV</button>
+				<button class="btn btn-success btn-excel btn-import" data-toggle="modal" data-target="#uploadModal" id="import-product"><i class="fa fa-file-excel-o"></i>&nbsp; Import Product</button>
+				<button class="btn btn-success btn-excel btn-import" data-toggle="modal" data-target="#uploadModal" id="update-product-inventory"><i class="fa fa-file-excel-o"></i>&nbsp; Update Beginning Inventory</button>
 				<button class="btn btn-info btn-excel" id="export"><i class="fa fa-file-excel-o"></i>&nbsp; Export Excel</button>		
 			</div>
 		</div>
@@ -163,12 +164,13 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Upload Product Excel</h4>
+				<h4 class="modal-title" id="importModalLabel"></h4>
 			</div>
 			<div class="modal-body">
 				<div class="message-content">
 					Upload CSV File :
 					<input type="file" name="fileData" id="fileData" />
+					<input type="hidden" id="uploadFunction" />
 				</div>
 				<br/>
 				<center>

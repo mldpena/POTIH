@@ -4,6 +4,7 @@ class ProductReturn extends CI_Controller {
 	
 	private $_authentication_manager;
 	private $_autocomplete_manager;
+	private $_notification_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -65,7 +66,7 @@ class ProductReturn extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),
@@ -101,9 +102,11 @@ class ProductReturn extends CI_Controller {
 	
 	private function _ajax_request()
 	{
-		$this->load->service('autocomplete_manager');
 		$this->load->model('return_model');
-
+		$this->load->service('autocomplete_manager');
+		$this->load->service('notification_manager');
+		
+		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
 
 		$post_data 	= array();
@@ -165,6 +168,10 @@ class ProductReturn extends CI_Controller {
 					$response = $this->_autocomplete_manager->get_recent_names($post_data, 1);
 					break;
 
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;

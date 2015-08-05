@@ -520,7 +520,7 @@
 	"buffers":
 	[
 		{
-			"file": "application/services/product_manager.php",
+			"file": "services/product_manager.php",
 			"settings":
 			{
 				"buffer_size": 18351,
@@ -528,7 +528,7 @@
 			}
 		},
 		{
-			"file": "application/controllers/product.php",
+			"file": "controllers/product.php",
 			"settings":
 			{
 				"buffer_size": 7027,
@@ -536,7 +536,7 @@
 			}
 		},
 		{
-			"file": "application/config/config.php",
+			"file": "config/config.php",
 			"settings":
 			{
 				"buffer_size": 17740,
@@ -544,7 +544,7 @@
 			}
 		},
 		{
-			"file": "application/models/product_model.php",
+			"file": "models/product_model.php",
 			"settings":
 			{
 				"buffer_size": 30600,
@@ -552,7 +552,7 @@
 			}
 		},
 		{
-			"file": "scripts/product_list_js.php",
+			"file": "/C/xampp/htdocs/POTIH/scripts/product_list_js.php",
 			"settings":
 			{
 				"buffer_size": 16000,
@@ -560,7 +560,7 @@
 			}
 		},
 		{
-			"file": "application/views/product_list.php",
+			"file": "views/product_list.php",
 			"settings":
 			{
 				"buffer_size": 7021,
@@ -619,15 +619,11 @@
 		"side_bar_visible": false,
 		"status_bar_visible": false
 	},
-	"expanded_folders":
-	[
-		"/C/xampp/htdocs/POTIH"
-	],
 	"file_history":
 	[
+		"/C/xampp/htdocs/POTIH/hitop.sublime-workspace",
 		"/C/xampp/htdocs/POTIH/POTIH.sublime-project",
 		"/C/xampp/htdocs/POTIH/POTIH.sublime-workspace",
-		"/C/xampp/htdocs/POTIH/hitop.sublime-workspace",
 		"/C/xampp/htdocs/POTIH/system/database/DB_query_builder.php",
 		"/C/xampp/htdocs/POTIH/application/models/adjust_model.php",
 		"/C/xampp/htdocs/POTIH/application/constants/default_const.php",
@@ -1014,7 +1010,7 @@
 			[
 				{
 					"buffer": 0,
-					"file": "application/services/product_manager.php",
+					"file": "services/product_manager.php",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1043,7 +1039,7 @@
 				},
 				{
 					"buffer": 1,
-					"file": "application/controllers/product.php",
+					"file": "controllers/product.php",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1054,8 +1050,8 @@
 						"selection":
 						[
 							[
-								1181,
-								1181
+								1408,
+								1408
 							]
 						],
 						"settings":
@@ -1072,7 +1068,7 @@
 				},
 				{
 					"buffer": 2,
-					"file": "application/config/config.php",
+					"file": "config/config.php",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1100,7 +1096,7 @@
 				},
 				{
 					"buffer": 3,
-					"file": "application/models/product_model.php",
+					"file": "models/product_model.php",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1129,7 +1125,7 @@
 				},
 				{
 					"buffer": 4,
-					"file": "scripts/product_list_js.php",
+					"file": "/C/xampp/htdocs/POTIH/scripts/product_list_js.php",
 					"semi_transient": false,
 					"settings":
 					{
@@ -1158,7 +1154,7 @@
 				},
 				{
 					"buffer": 5,
-					"file": "application/views/product_list.php",
+					"file": "views/product_list.php",
 					"semi_transient": false,
 					"settings":
 					{

@@ -1,10 +1,5 @@
 <script type="text/javascript">
 
-	var TransactionState = {
-		Saved : 1,
-		Unsaved : 0
-	}
-
 	var token = '<?= $token ?>';
 	var isUsed = '';
 
@@ -206,9 +201,12 @@
 				else
 					tableHelper.contentProvider.addRow();
 				
-				if (response.is_saved == TransactionState.Unsaved) 
+				if (!response.is_saved)
+				{
+					$('#print').hide();
 					hideDeliveredQuantity();
-
+				} 
+					
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 
@@ -243,7 +241,10 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
+				{
+					$('#print').show();
                 	window.open('<?= base_url() ?>printout/delivery/Delivery');
+				}
             }
         });
 	}

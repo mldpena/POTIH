@@ -4,6 +4,8 @@ class StockRequest extends CI_Controller {
 
 	private $_authentication_manager;
 	private $_request_manager;
+	private $_notification_manager;
+
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
@@ -101,7 +103,7 @@ class StockRequest extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),
@@ -140,7 +142,9 @@ class StockRequest extends CI_Controller {
 	{
 		$this->load->model('request_model');
 		$this->load->service('request_manager');
-
+		$this->load->service('notification_manager');
+		
+		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_request_manager = new Services\Request_Manager();
 
 		$post_data 	= array();
@@ -198,6 +202,10 @@ class StockRequest extends CI_Controller {
 					$response = $this->set_session_data();
 					break;
 
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

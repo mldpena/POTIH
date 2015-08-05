@@ -399,6 +399,7 @@ class Product_Manager
 	/**
 	 * Validate file type and import products from csv file. Validates material code and product name per row. 
 	 * Beginning inventory will be set as an adjustment. 
+	 * @return array $response
 	 */
 	public function import_product_from_csv()
 	{
@@ -429,15 +430,27 @@ class Product_Manager
 			$branch_result = $this->_CI->branch_model->get_branch_list();
 
 			foreach ($branch_result->result() as $row) 
-				$current_branch_list[$row->name] = $row->id;
+				$current_branch_list[strtolower($row->name)] = $row->id;
 
 			$branch_result->free_result();
 
 			while (($product_csv_data = fgetcsv($handle,10000))!==FALSE) 
 			{
 				$i++;
-				if ($i != 1) 
+
+				if ($i == 1 && count($product_csv_data) > 3) 
 				{
+					for ($x=3; $x < count($product_csv_data); $x++) 
+						$csv_branch_id_list[strtolower($product_csv_data[$x])] = $x;
+				}
+				else
+				{
+					if (count($product_csv_data) <= 3)
+					{
+						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete details!";
+						continue;
+					}
+
 					$with_error 	= FALSE;
 					$material_code 	= trim($product_csv_data[0]);
 					$product_name 	= trim($product_csv_data[1]);
@@ -509,48 +522,169 @@ class Product_Manager
 						$branch_inventory_field_data = array();
 						$adjustment_field_data = array();
 
-						for ($x=0; $x < count($csv_branch_id_list); $x++) 
-						{ 
-							array_push($branch_inventory_field_data, array('branch_id' => $csv_branch_id_list[$x],
+						foreach ($current_branch_list as $key => $value) 
+						{
+							array_push($branch_inventory_field_data, array('branch_id' => $value,
 																			'product_id' => 0,
 																			'inventory' => 0,
 																			'min_inv' => 0,
 																			'max_inv' => 0));
 
-							array_push($adjustment_field_data, array('branch_id' => $csv_branch_id_list[$x],
+							if (array_key_exists($key, $csv_branch_id_list)) 
+							{
+								$new_inventory = is_numeric($product_csv_data[$csv_branch_id_list[$key]]) ? $product_csv_data[$csv_branch_id_list[$key]] : 0;
+
+								array_push($adjustment_field_data, array('branch_id' => $value,
 																	'product_id' => 0,
 																	'old_inventory' => 0,
-																	'new_inventory' => 0,
+																	'new_inventory' => $new_inventory,
 																	'is_show' => 1,
 																	'status' => 2,
 																	'memo' => 'Beginning Inventory',
 																	'created_by' => $this->_current_user,
 																	'date_created' => $this->_current_date));
+							}
 						}
 
 						$result_product_inserted_transaction = $this->_CI->product_model->insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data);
-
+					
 						if (!empty($result_product_inserted_transaction['error'])) 
 							throw new Exception($this->_error_message['UNABLE_TO_INSERT']);
 							
 						$product_id = $this->_CI->encrypt->decode($result_product_inserted_transaction['id']);
-						
-						for ($x=3; $x < count($product_csv_data); $x++) 
-						{ 
-							$adjustment_field_counter = $x - 3;
 
-							$adjustment_field_data[$adjustment_field_counter]['new_inventory'] 	= $product_csv_data[$x];
-							$adjustment_field_data[$adjustment_field_counter]['product_id'] 	= $product_id;
-						}
+						for ($x=0; $x < count($adjustment_field_data); $x++) 
+							$adjustment_field_data[$x]['product_id'] = $product_id;
+
+						if (count($adjustment_field_data) > 0) 
+							$this->_CI->adjust_model->insert_batch_adjustment($adjustment_field_data);
 						
-						$this->_CI->adjust_model->insert_inventory_adjust_for_import($adjustment_field_data);
 						$response['logs'][] = 'Row #'.$i." : Successfully imported!";
 					}
 				}
+			}
+		}
+		else
+			$response['error'] = 'Invalid file type!';
+		
+		return $response;
+	}
+
+	/**
+	 * Update beginning inventory of products per branch. If the specified branch doenst exist,
+	 * branch inventory will no be over written. Beginning inventory will inserted as an adjustment
+	 * @return array $response
+	 */
+	public function update_beginning_inventory_from_csv()
+	{
+		$this->_CI->load->model('branch_model');
+		$this->_CI->load->model('adjust_model');
+		$this->_CI->load->model('product_model');
+		$this->_CI->load->constant('product_const');
+
+		$exploded_name 	= explode(".", $_FILES["file"]["name"]);
+		$extension 		= end($exploded_name);
+
+		$response = array();
+
+		$response['error'] = '';
+
+		$i = 0;
+
+		if ($_FILES['file']['type'] == 'application/vnd.ms-excel' && $extension == 'csv')
+		{
+			$product_csv_file = $_FILES['file']['tmp_name'];
+			$handle = fopen($product_csv_file,"r");
+
+			$current_branch_list = array();
+			$csv_branch_id_list = array();
+
+			$branch_result = $this->_CI->branch_model->get_branch_list();
+
+			foreach ($branch_result->result() as $row) 
+				$current_branch_list[strtolower($row->name)] = $row->id;
+
+			$branch_result->free_result();
+
+			while (($product_csv_data = fgetcsv($handle,10000))!==FALSE) 
+			{
+				$i++;
+
+				if ($i == 1 && count($product_csv_data) > 1) 
+				{
+					for ($x=1; $x < count($product_csv_data); $x++) 
+						$csv_branch_id_list[strtolower($product_csv_data[$x])] = $x;
+				}
 				else
 				{
-					for ($x=3; $x < count($product_csv_data); $x++) 
-						array_push($csv_branch_id_list,$current_branch_list[$product_csv_data[$x]]);
+					if (count($product_csv_data) <= 1)
+					{
+						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete details!";
+						continue;
+					}
+
+					$with_error 	= FALSE;
+					$material_code 	= trim($product_csv_data[0]);
+					$product_id 	= 0;
+
+					$result = $this->_CI->product_model->check_if_field_data_exists(array("`material_code`" => $material_code));
+				
+					if ($result->num_rows() == 0) 
+					{
+						$response['logs'][] = 'Row #'.$i." : Product with material code [".$material_code."] doesnt exists!";
+						$with_error = TRUE;
+					}
+
+					$result->free_result();
+
+					$result_product_info = $this->_CI->product_model->get_product_info_by_field_data(array("`material_code`" => $material_code));
+
+					$row = $result_product_info->row();
+					$product_id = $row->id;
+
+					$result_product_info->free_result();
+
+					if (!$with_error) 
+					{
+						$adjustment_field_data = array();
+
+						foreach ($csv_branch_id_list as $key => $value) 
+						{
+							if (array_key_exists($key, $current_branch_list)) 
+							{
+								$old_inventory 	= 0;
+								$new_inventory = is_numeric($product_csv_data[$value]) ? $product_csv_data[$value] : 0;
+
+								$result_product_inventory_info = $this->_CI->product_model->get_product_inventory_info($product_id, $current_branch_list[$key]);
+
+								if ($result_product_inventory_info->num_rows() > 0)
+								{
+									$row = $result_product_inventory_info->row();
+									$old_inventory = $row->current_inventory;
+								}
+
+								$result_product_inventory_info->free_result();
+
+								array_push($adjustment_field_data, array('branch_id' => $current_branch_list[$key],
+																	'product_id' => $product_id,
+																	'old_inventory' => $old_inventory,
+																	'new_inventory' => $new_inventory,
+																	'is_show' => 1,
+																	'status' => 2,
+																	'memo' => 'Beginning Inventory',
+																	'created_by' => $this->_current_user,
+																	'date_created' => $this->_current_date));
+							}
+						}
+
+						if (count($adjustment_field_data) > 0)
+						{
+							$this->_CI->adjust_model->insert_batch_adjustment($adjustment_field_data);
+							$response['logs'][] = 'Row #'.$i." : Successfully updated beginning inventory!";
+						} 
+						else
+							$response['logs'][] = 'Row #'.$i." : Specified branch not found!";
+					}
 				}
 			}
 		}

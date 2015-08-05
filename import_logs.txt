@@ -1,3 +1,0 @@
-Row #2 : Material Code [BJ038A20] already exists!
-Row #3 : Material Code [SS223344] already exists!
-Row #3 : Product Name [SAMPLE FOR IMPORT] already exists!

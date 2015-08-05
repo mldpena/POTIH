@@ -131,11 +131,17 @@
 	var chkReceiveAllDis = document.createElement('input');
 	chkReceiveAllDis.setAttribute('type','checkbox');
 	chkReceiveAllDis.setAttribute('disabled','disabled');
+
+	var chktransferall = document.createElement('input');
+	chktransferall.setAttribute('type','checkbox');
+	chktransferall.setAttribute('id','chkcheckall');
+
 	colarray['receiveall'] = { 
-		header_title: "",
+		header_title: chktransferall,
 		edit: [chkreceiveall],
 		disp: [chkReceiveAllDis],
 		td_class: "tablerow tdreceiveall",
+		header_elem: chktransferall
 	};
 
 	var spnqtyrecv = document.createElement('span');
@@ -303,6 +309,9 @@
 					$('.tdupdate, .tddelete, #save').hide();
 				}
 
+				if (!response.is_saved)
+					$('#print').hide();
+
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 			}       
@@ -372,26 +381,15 @@
 	});
 	
 	$('.chkreceiveall').live('click',function(){
-		var rowIndex = $(this).parent().parent().index();
-		var totalQuantity = 0;
-		var remainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyremaining', 1));
-		var receivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv',1));
-		var receivedQuantityElement = tableHelper.contentProvider.getElement(rowIndex, 'qtyrecv');
+		transferRemainingToReceive($(this));
 
-		if ($(this).is(':checked'))
+		if ($(this).is(':checked')) 
 		{
-			$(receivedQuantityElement).attr('disabled','disabled');
-			totalQuantity = receivedQuantity + remainingQuantity;
+			if ($('.chkreceiveall:checked').length == $('.chkreceiveall').length)
+				$('#chkcheckall').attr('checked','checked');
 		}
 		else
-		{
-			$(receivedQuantityElement).removeAttr('disabled','disabled');
-			totalQuantity = receivedQuantity;
-		}
-
-		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[totalQuantity,receivedQuantity]);
-
-		recomputeRemainingQuantity($(this));
+			$('#chkcheckall').removeAttr('checked');
 	});
 
 	$('.imgdel').live('click',function(){
@@ -508,9 +506,44 @@
 		});
 	});
 	
+	$('#chkcheckall').live('click', function(){
+		if ($(this).is(':checked')) 
+			$('.chkreceiveall').attr('checked','checked');
+		else
+			$('.chkreceiveall').removeAttr('checked');
+		
+		$(".chkreceiveall").each(function(index, element){
+			transferRemainingToReceive(element);
+		});
+	});
+
 	$('#print').click(function(){
 		goToPrintOut();
 	});
+
+	function transferRemainingToReceive(element)
+	{
+		var rowIndex = $(element).parent().parent().index();
+		var totalQuantity = 0;
+		var remainingQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyremaining', 1));
+		var receivedQuantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qtyrecv',1));
+		var receivedQuantityElement = tableHelper.contentProvider.getElement(rowIndex, 'qtyrecv');
+
+		if ($(element).is(':checked'))
+		{
+			$(receivedQuantityElement).attr('disabled','disabled');
+			totalQuantity = receivedQuantity + remainingQuantity;
+		}
+		else
+		{
+			$(receivedQuantityElement).removeAttr('disabled','disabled');
+			totalQuantity = receivedQuantity;
+		}
+
+		tableHelper.contentProvider.setData(rowIndex,'qtyrecv',[totalQuantity,receivedQuantity]);
+
+		recomputeRemainingQuantity($(element));
+	}
 
 	function checkRemainingPODetails()
 	{
@@ -568,7 +601,10 @@
 				if(response.error != '') 
 					alert(response.error);
 				else
+				{
+					$('#print').show();
 					window.open('<?= base_url() ?>printout/purchase_receive/Receive');
+				}
 			}
 		});
 	}

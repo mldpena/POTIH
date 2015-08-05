@@ -143,6 +143,7 @@
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ fnc : 'get_return_details' };
+		
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
@@ -173,6 +174,9 @@
 				}	
 				else
 					tableHelper.contentProvider.addRow();
+
+				if (!response.is_saved)
+					$('#print').hide();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
@@ -206,7 +210,10 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
+				{
+					$('#print').show();
                 	window.open('<?= base_url() ?>printout/customer_return/Receive');
+				}
             }
         });
 	}

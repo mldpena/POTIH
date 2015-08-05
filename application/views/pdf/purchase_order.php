@@ -93,11 +93,11 @@
 
 		$pdf->SetFont($font,'B',16,'','','');
 
-		$pdf->writeHTMLCell('', '', $x, $y,'PURCHASE ORDER', 0, 1, 0, true, 'C', true);
-
+		$pdf->writeHTMLCell('', '', $x, $y,'HI-TOP MERCHANDISING INC.', 0, 1, 0, true, 'C', true);
+		
 		$y+= $linegap;
 
-		$pdf->writeHTMLCell('', '', $x, $y,'HI-TOP MERCHANDISING INC.', 0, 1, 0, true, 'C', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'PURCHASE ORDER', 0, 1, 0, true, 'C', true);
 
 		$y+= $linegap * 2;
 

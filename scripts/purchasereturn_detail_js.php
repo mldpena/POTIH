@@ -163,6 +163,9 @@
 				else
 					tableHelper.contentProvider.addRow();
 				
+				if (!response.is_saved) 
+					$('#print').hide();
+
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 			}       
@@ -187,7 +190,10 @@
 				if(response.error != '') 
 					alert(response.error);
 				else
+				{
+					$('#print').show();
 					window.open('<?= base_url() ?>printout/purchase_return/Return');
+				}
 			}
 		});
 	}

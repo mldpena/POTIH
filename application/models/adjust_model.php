@@ -584,7 +584,7 @@ class Adjust_Model extends CI_Model {
 		return $response;
 	}
 
-	public function insert_inventory_adjust_for_import($adjust_field_data)
+	public function insert_batch_adjustment($adjust_field_data)
 	{
 		$this->db->insert_batch('inventory_adjust', $adjust_field_data);
 	}

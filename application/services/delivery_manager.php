@@ -61,7 +61,7 @@ class Delivery_Manager
 
 		foreach ($result_customer_receive_details->result() as $row) 
 		{
-			if ($current_customer_name == '' || $current_customer_name != $row->customer_name) 
+			if ($current_customer_name == '' || strtolower($current_customer_name) != strtolower($row->customer_name)) 
 			{
 				$current_customer_name = $row->customer_name;
 				

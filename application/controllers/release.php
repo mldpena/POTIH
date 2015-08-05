@@ -3,7 +3,8 @@
 class Release extends CI_Controller {
 	
 	private $_authentication_manager;
-
+	private $_notification_manager;
+	
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
@@ -69,7 +70,7 @@ class Release extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),
@@ -106,6 +107,9 @@ class Release extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('release_model');
+		$this->load->service('notification_manager');
+		
+		$this->_notification_manager = new Services\Notification_Manager();
 
 		$response 	= array();
 		$post_data 	= array();
@@ -156,7 +160,11 @@ class Release extends CI_Controller {
 				case 'set_session':
 					$response = $this->set_session_data();
 					break;
-					
+				
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+
 				default:
 					$response['error'] = 'Invalid arguments!';
 					break;

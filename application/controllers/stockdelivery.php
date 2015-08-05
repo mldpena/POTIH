@@ -4,6 +4,7 @@ class StockDelivery extends CI_Controller {
 	
 	private $_authentication_manager;
 	private $_delivery_manager;
+	private $_notification_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -123,7 +124,7 @@ class StockDelivery extends CI_Controller {
 		}
 
 		if (!$allow_user) 
-			header('Location:'.base_url().'login');
+			header('Location:'.base_url().'controlpanel');
 
 		$data = array(	'name' 			=> $this->encrypt->decode(get_cookie('fullname')),
 						'branch' 		=> get_cookie('branch_name'),
@@ -162,7 +163,9 @@ class StockDelivery extends CI_Controller {
 	{
 		$this->load->model('delivery_model');
 		$this->load->service('delivery_manager');
-
+		$this->load->service('notification_manager');
+		
+		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_delivery_manager = new Services\Delivery_Manager();
 
 		$post_data 	= array();
@@ -267,6 +270,10 @@ class StockDelivery extends CI_Controller {
 					$response = $this->_delivery_manager->transfer_remaining_to_new_return();
 					break;
 
+				case 'check_notifications':
+					$response = $this->_notification_manager->get_header_notifications();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
