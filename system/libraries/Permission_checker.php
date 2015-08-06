@@ -138,4 +138,12 @@ class CI_Permission_checker
 						'assortment' => $this->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT),
 						'pickup' => $this->check_permission(\Permission\PickUp_Code::PRINT_SUMMARY));
 	}
+
+	public function check_page_permission_for_notification()
+	{
+		return array('pending_adjustment' => $this->check_permission(\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST),
+					'stock_request' => $this->check_permission(\Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST),
+					'stock_receive' => $this->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE),
+					'warning' => $this->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING));
+	}
 }

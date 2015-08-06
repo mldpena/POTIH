@@ -10,7 +10,7 @@
 		ForTransfer : 1,
 		ForSales : 0
 	}
-
+	
 	var token = '<?= $token ?>';
 	var isUsed = '';
 
@@ -224,7 +224,7 @@
 					hideTransferAndReceived(true);
 				} 
 				
-				if (!response.is_saved)
+				if (response.is_saved)
 					$('#print').hide();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();

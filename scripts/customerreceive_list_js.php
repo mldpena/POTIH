@@ -39,7 +39,8 @@
         header_title: "From Branch",
         edit: [spnfrombranch],
         disp: [spnfrombranch],
-        td_class: "tablerow column_click column_hover tdfrombranch"
+        td_class: "tablerow column_click column_hover tdhide tdfrombranch",
+        headertd_class: "tdhide"
     };
    	
    	var spndate = document.createElement('span');

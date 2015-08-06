@@ -26,6 +26,7 @@
 								<a href="<?= base_url() ?>controlpanel"><div class="ez-menu pull-right">Home</div></a>
 								<div class="pull-right">
 									<div class="notifications-icon" id="drop-notif">
+										<div class="notif-circle"></div>
 										<i class="fa fa-bell"></i>
 									</div>
 									<div class="dropdown-menu-m notifications-dropdown" id="notifications-panel">

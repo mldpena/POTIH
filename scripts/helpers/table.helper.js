@@ -688,6 +688,7 @@ var TableHelper = function(tableOptions,options) {
 
             var continueTransaction = true;
             var rowIndex    = $(element).parent().parent().index();
+            var orderFor    = $('#orderfor').val() !== undefined ? $('#orderfor').val() : 0;
             var rowUniqueId = tableHelper.contentProvider.getData(rowIndex,'id');
             var productId   = tableHelper.contentProvider.getData(rowIndex,'product',1);
             var enteredQty  = tableHelper.contentProvider.getData(rowIndex,'qty');
@@ -717,7 +718,8 @@ var TableHelper = function(tableOptions,options) {
                             fnc : 'check_product_inventory',
                             product_id : productId,
                             qty : enteredQty,
-                            row_id : rowUniqueId
+                            row_id : rowUniqueId,
+                            order_for : orderFor
                         }
 
             self._flag = 1;

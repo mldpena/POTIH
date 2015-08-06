@@ -224,6 +224,8 @@ class Product_Manager
 
 		$result->free_result();
 		
+		$response['own_branch'] = $this->_current_branch_id;
+		
 		return $response;
 	}
 
@@ -451,6 +453,12 @@ class Product_Manager
 						continue;
 					}
 
+					if (!in_array(strtolower($product_csv_data[2]), array('yes', 'no')) || empty($product_csv_data[0]) || empty($product_csv_data[1])) 
+					{
+						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete details!";
+						continue;
+					}
+
 					$with_error 	= FALSE;
 					$material_code 	= trim($product_csv_data[0]);
 					$product_name 	= trim($product_csv_data[1]);
@@ -617,13 +625,12 @@ class Product_Manager
 				}
 				else
 				{
-					if (count($product_csv_data) <= 1)
+					if (count($product_csv_data) <= 1 || empty($product_csv_data[0]))
 					{
 						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete details!";
 						continue;
 					}
 
-					$with_error 	= FALSE;
 					$material_code 	= trim($product_csv_data[0]);
 					$product_id 	= 0;
 
@@ -632,59 +639,55 @@ class Product_Manager
 					if ($result->num_rows() == 0) 
 					{
 						$response['logs'][] = 'Row #'.$i." : Product with material code [".$material_code."] doesnt exists!";
-						$with_error = TRUE;
+						continue;
 					}
+
+					$row = $result->row();
+					$product_id = $row->id;
 
 					$result->free_result();
 
-					$result_product_info = $this->_CI->product_model->get_product_info_by_field_data(array("`material_code`" => $material_code));
+					$adjustment_field_data = array();
 
-					$row = $result_product_info->row();
-					$product_id = $row->id;
-
-					$result_product_info->free_result();
-
-					if (!$with_error) 
+					foreach ($csv_branch_id_list as $key => $value) 
 					{
-						$adjustment_field_data = array();
-
-						foreach ($csv_branch_id_list as $key => $value) 
+						if (array_key_exists($key, $current_branch_list)) 
 						{
-							if (array_key_exists($key, $current_branch_list)) 
+							$old_inventory 	= 0;
+							$new_inventory = is_numeric($product_csv_data[$value]) ? $product_csv_data[$value] : 0;
+
+							$result_product_inventory_info = $this->_CI->product_model->get_product_inventory_info($product_id, $current_branch_list[$key]);
+
+							if ($result_product_inventory_info->num_rows() > 0)
 							{
-								$old_inventory 	= 0;
-								$new_inventory = is_numeric($product_csv_data[$value]) ? $product_csv_data[$value] : 0;
-
-								$result_product_inventory_info = $this->_CI->product_model->get_product_inventory_info($product_id, $current_branch_list[$key]);
-
-								if ($result_product_inventory_info->num_rows() > 0)
-								{
-									$row = $result_product_inventory_info->row();
-									$old_inventory = $row->current_inventory;
-								}
-
-								$result_product_inventory_info->free_result();
-
-								array_push($adjustment_field_data, array('branch_id' => $current_branch_list[$key],
-																	'product_id' => $product_id,
-																	'old_inventory' => $old_inventory,
-																	'new_inventory' => $new_inventory,
-																	'is_show' => 1,
-																	'status' => 2,
-																	'memo' => 'Beginning Inventory',
-																	'created_by' => $this->_current_user,
-																	'date_created' => $this->_current_date));
+								$row = $result_product_inventory_info->row();
+								$old_inventory = $row->current_inventory;
 							}
-						}
 
-						if (count($adjustment_field_data) > 0)
-						{
-							$this->_CI->adjust_model->insert_batch_adjustment($adjustment_field_data);
-							$response['logs'][] = 'Row #'.$i." : Successfully updated beginning inventory!";
-						} 
-						else
-							$response['logs'][] = 'Row #'.$i." : Specified branch not found!";
+							$result_product_inventory_info->free_result();
+
+							if ($new_inventory == 0 || $old_inventory == $new_inventory)
+								continue;
+
+							array_push($adjustment_field_data, array('branch_id' => $current_branch_list[$key],
+																'product_id' => $product_id,
+																'old_inventory' => $old_inventory,
+																'new_inventory' => $new_inventory,
+																'is_show' => 1,
+																'status' => 2,
+																'memo' => 'Beginning Inventory',
+																'created_by' => $this->_current_user,
+																'date_created' => $this->_current_date));
+						}
 					}
+
+					if (count($adjustment_field_data) > 0)
+					{
+						$this->_CI->adjust_model->insert_batch_adjustment($adjustment_field_data);
+						$response['logs'][] = 'Row #'.$i." : Successfully updated beginning inventory!";
+					} 
+					else
+						$response['logs'][] = 'Row #'.$i." : Unable to update beginning inventory!";
 				}
 			}
 		}

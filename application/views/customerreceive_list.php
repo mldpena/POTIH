@@ -16,7 +16,7 @@
 						<td>Date To:</td>
 						<td><input type="text" class="form-control" id="date_to"></td>
 					</tr>
-					<tr>
+					<tr class="tdhide">
 						<td>From Branch:</td>
 						<td colspan="3">
 							<select class="form-control" id="from_branch"><?= $branch_list ?></select>

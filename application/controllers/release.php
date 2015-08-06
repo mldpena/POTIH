@@ -49,7 +49,7 @@ class Release extends CI_Controller {
 		{
 			case 'list':
 				$page = 'release_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\Release_Code::VIEW_RELEASE);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Release_Code::ADD_RELEASE),
 									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Release_Code::VIEW_RELEASE_DETAIL),

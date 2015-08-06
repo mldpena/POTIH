@@ -49,8 +49,8 @@ class InventoryAdjust extends CI_Controller {
 			{
 				case 'list':
 					$page = 'adjust_list';
-					$material_list 	= get_name_list_from_table(TRUE,'material_type',TRUE);
-					$subgroup_list 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+					$material_list 	= get_name_list_from_table(TRUE, 'material_type', TRUE);
+					$subgroup_list 	= get_name_list_from_table(TRUE, 'subgroup', TRUE);
 					$allow_user = $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST);
 					$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::ADD_INVENTORY_ADJUST),
 										'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\InventoryAdjust_Code::VIEW_INVENTORY_ADJUST_DETAIL),
@@ -74,9 +74,9 @@ class InventoryAdjust extends CI_Controller {
 		else if ($controller == 'pending') 
 		{
 			$page = 'pending_list';
-			$material_list 	= get_name_list_from_table(TRUE,'material_type',TRUE);
-			$branch_list 	= get_name_list_from_table(TRUE,'branch',TRUE);
-			$subgroup_list 	= get_name_list_from_table(TRUE,'subgroup',TRUE);
+			$material_list 	= get_name_list_from_table(TRUE, 'material_type', TRUE);
+			$branch_list 	= get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
+			$subgroup_list 	= get_name_list_from_table(TRUE, 'subgroup' ,TRUE);
 			$allow_user = $this->permission_checker->check_permission(\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST);
 			$permissions = array('allow_to_approve' => $this->permission_checker->check_permission(\Permission\PendingAdjust_Code::ALLOW_TO_APPROVE_AND_DECLINE));
 		}

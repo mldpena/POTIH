@@ -99,11 +99,16 @@
 	chkreceiveallDis.setAttribute('type','checkbox');
 	chkreceiveallDis.setAttribute('disabled','disabled');
 
+	var chkcheckall = document.createElement('input');
+	chkcheckall.setAttribute('type','checkbox');
+	chkcheckall.setAttribute('id','chkcheckall');
+
 	colarray['receiveall'] = { 
-		header_title: "",
+		header_title: chkcheckall,
 		edit: [chkreceiveall],
 		disp: [chkreceiveallDis],
 		td_class: "tablerow tdreceiveall",
+		header_elem: chkcheckall
 	};
 
 	var spnreceiveqty = document.createElement('span');
@@ -193,7 +198,7 @@
 				}
 				else
 				{
-					$('input, textarea, select').not('#print, #receive_date, #save').attr('disabled','disabled');
+					$('input, textarea, select').not('#print, #receive_date, #save, input[type=checkbox]').attr('disabled','disabled');
 					for (var i = 1; i < myjstbl.get_row_count(); i++) 
 					{
 						var receive_qty = tableHelper.contentProvider.getData(i,'receiveqty');
@@ -213,18 +218,49 @@
 		$('input, textarea').attr('disabled','disabled');
 
 	$('.chkreceiveall').live('click',function(){
-		var rowIndex = $(this).parent().parent().index();
-		var totalQuantity = 0;
+		receiveAll($(this));
 
 		if ($(this).is(':checked')) 
-			 totalQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qty'));
+		{
+			if ($('.chkreceiveall:checked').length == $('.chkreceiveall').length)
+				$('#chkcheckall').attr('checked','checked');
+		}
+		else
+			$('#chkcheckall').removeAttr('checked');
+	});
+
+	$('#chkcheckall').live('click',function(){
+		if ($(this).is(':checked')) 
+			$('.chkreceiveall').attr('checked','checked');
+		else
+			$('.chkreceiveall').removeAttr('checked');
 		
-		tableHelper.contentProvider.setData(rowIndex,'receiveqty',[totalQuantity]);
+		$(".chkreceiveall").each(function(index, element){
+			receiveAll(element);
+		});
 	});
 
 	$('#print').click(function(){
 		goToPrintOut();
 	});
+
+	function receiveAll(element)
+	{
+		var rowIndex = $(element).parent().parent().index();
+		var receiveQuantityElement = tableHelper.contentProvider.getElement(rowIndex, 'receiveqty');
+
+		var totalQuantity = 0;
+
+		if ($(element).is(':checked')) 
+		{
+			$(receiveQuantityElement).attr('disabled','disabled');
+			totalQuantity = Number(tableHelper.contentProvider.getData(rowIndex,'qty'));
+		}
+		else
+			$(receiveQuantityElement).removeAttr('disabled');
+		
+		tableHelper.contentProvider.setData(rowIndex,'receiveqty',[totalQuantity]);
+	}
 
 	function goToPrintOut()
 	{

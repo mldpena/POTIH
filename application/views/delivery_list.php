@@ -25,7 +25,7 @@
 					<tr>
 						<td>To Branch:</td>
 						<td colspan="3">
-							<select class="form-control" id="to_branch"><?= $branch_list ?></select>
+							<select class="form-control" id="to_branch"><?= $to_branch_list ?></select>
 						</td>
 					</tr>
 					<tr>

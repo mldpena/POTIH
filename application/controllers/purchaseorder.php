@@ -45,7 +45,7 @@ class PurchaseOrder extends CI_Controller {
 		{
 			case 'list':
 				$page = 'purchaseorder_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE),
 									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE_DETAIL),
@@ -54,7 +54,7 @@ class PurchaseOrder extends CI_Controller {
 
 			case 'view':
 				$page = 'purchaseorder_detail';
-				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE,  $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Purchase_Code::EDIT_PURCHASE),
 									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Purchase_Code::ADD_PURCHASE),

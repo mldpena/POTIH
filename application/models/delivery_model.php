@@ -61,7 +61,7 @@ class Delivery_Model extends CI_Model {
 			$response['to_branchid'] 		= $row->to_branchid;
 			$response['delivery_type'] 		= $row->delivery_type;
 			$response['is_editable'] 		= ($row->total_qty == 0 && $row->branch_id == $this->_current_branch_id) ? TRUE : FALSE;
-			$response['is_saved'] 			= $row->is_used;
+			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 			$response['own_branch'] 		= $this->_current_branch_id;
 		}
 
@@ -1168,11 +1168,32 @@ class Delivery_Model extends CI_Model {
 
 		$row = $result->row();
 
-		if ($row->remaining_qty == 0)
+		if ($row->remaining_qty > 0)
 			$is_incomplete = FALSE;
 
 		$result->free_result();
 
 		return $is_incomplete;
+	}
+
+	public function get_stock_delivery_count_with_no_receive()
+	{
+		$count = 0;
+
+		$this->db->select("SUM(COALESCE(`recv_quantity`,0)) AS 'qty_delivered'")
+				->from("stock_delivery_head AS SH")
+				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->where("SH.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
+				->where("SH.`to_branchid`", $this->_current_branch_id)
+				->group_by("SH.`id`")
+				->having("qty_delivered", 0);
+		
+		$result = $this->db->get();
+
+		$count = $result->num_rows();
+
+		$result->free_result();
+
+		return $count;
 	}
 }

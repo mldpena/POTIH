@@ -290,7 +290,7 @@ class User_Model extends CI_Model {
 							WHEN `is_active` = ".\Constants\USER_CONST::INACTIVE." THEN 'Inactive'
 						END AS 'status'
 						FROM user
-						WHERE `is_show` = ".\Constants\USER_CONST::ACTIVE." AND `id` NOT IN(".$this->_current_user.",1) $conditions
+						WHERE `is_show` = ".\Constants\USER_CONST::ACTIVE." AND `id` NOT IN(".$this->_current_user.", 1, 8) $conditions
 						ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);

@@ -4,11 +4,6 @@
 		Local : 2
 	}
 
-	var TransactionState = {
-		Saved : 1,
-		Unsaved : 0
-	}
-
 	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');
@@ -192,8 +187,11 @@
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
 
-					if (response.is_saved == TransactionState.Unsaved)
+					if (!response.is_saved)
+					{
+						$('#print').hide();
 						hideQuantityReceivedColumn();
+					}
 				}
 				
 				if (response.detail_error == '') 
@@ -218,9 +216,7 @@
 					hideTransferColumn();
 					$('#transfer').hide();
 				}
-
-				if (!response.is_saved) 
-					$('#print').hide();
+					
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();

@@ -56,6 +56,7 @@ class Request_Manager
 			$new_stock_delivery_head_result = get_next_number('stock_delivery_head','reference_number',array('entry_date' => date("Y-m-d h:i:s"), 
 																											'to_branchid' => $to_branch_id,
 																											'delivery_receive_date' => date("Y-m-d h:i:s"),
+																											'customer_receive_date' => date("Y-m-d h:i:s"),
 																											'delivery_type' => 3));
 			if ($new_stock_delivery_head_result['error'] != '')
 				throw new \Exception($this->_error_message['UNABLE_TO_GENERATE_REFERENCE']);

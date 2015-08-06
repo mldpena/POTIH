@@ -45,7 +45,7 @@ class PurchaseReturn extends CI_Controller {
 		{
 			case 'list':
 				$page = 'purchasereturn_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::ADD_PURCHASE_RETURN),
 									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN_DETAIL),

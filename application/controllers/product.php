@@ -136,11 +136,11 @@ class Product extends CI_Controller {
 	
 	public function _remap()
 	{
-        $param_offset = 1;
-        $method = 'index';
-	    $params = array_slice($this->uri->rsegment_array(), $param_offset);
+		$param_offset = 1;
+		$method = 'index';
+		$params = array_slice($this->uri->rsegment_array(), $param_offset);
 
-	    call_user_func_array(array($this, $method), $params);
+		call_user_func_array(array($this, $method), $params);
 	} 
 
 	/**

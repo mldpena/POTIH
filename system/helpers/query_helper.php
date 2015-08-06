@@ -13,18 +13,18 @@ if (!function_exists('get_name_list_from_table'))
 		$result = $CI->db->query($query);
 
 		if ($include_all) {
-			if (!$is_option) {
+			if (!$is_option) 
 				$data_list[0] = 'ALL';
-			}else{
+			else
 				$data_list .= "<option value='0'>ALL</option>";
-			}
 		}
 		
 		if ($result->num_rows() > 0) {
 			foreach ($result->result() as $row) {
-				if (!$is_option) {
+				if (!$is_option)
 					$data_list[$row->id] = $row->name;
-				}else{
+				else
+				{
 					$selected = ($default_value != 0 && $default_value == $row->id) ? 'selected' : '';
 					$data_list .= "<option value='".$row->id."' $selected>".$row->name."</option>";
 				}
@@ -119,7 +119,7 @@ if (!function_exists('check_current_inventory'))
 		$CI->load->constant('product_const');
 
 		$data 		= array();
-		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
+		$branch_id 	= $order_for != 0 ? $order_for : $CI->encrypt->decode(get_cookie('branch'));
 		$row_id 	= strlen($row_id) > 1 ? $CI->encrypt->decode($row_id) : 0;
 		$inserted_quantity = 0;
 

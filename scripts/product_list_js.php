@@ -302,6 +302,19 @@
 
 					myjstbl_min_max.insert_multiplerow_with_value(1,response.branch_inventory);
 
+					for (var i = 1; i < myjstbl_min_max.get_row_count(); i++) 
+					{
+						var rowBranchId = minMaxTableHelper.contentProvider.getData(i, 'branch', 1);
+						var minElement 	= minMaxTableHelper.contentProvider.getElement(i, 'min_inv');
+						var maxElement 	= minMaxTableHelper.contentProvider.getElement(i, 'max_inv');
+
+						if (rowBranchId != response.own_branch)
+						{
+							$(minElement).attr('disabled', 'disabled');
+							$(maxElement).attr('disabled', 'disabled');
+						}
+					}
+
 					$('#createModal').modal('show');
 				}
 			}       

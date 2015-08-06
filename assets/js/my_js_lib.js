@@ -113,9 +113,11 @@ function my_autocomplete_add(token_val,sel, url_ac, options, customFunctionName 
             delay: 0,
 			source: function(req, add){
 
-				var arr = 	{ fnc : fnc_val, term : req.term }
-				
-				if (request) { request.abort(); };
+				var arr = { fnc : fnc_val, term : req.term }
+
+				if (request) 
+					request.abort();
+
 				request = $.ajax({
 		            type: "POST",
 		            dataType : 'JSON',

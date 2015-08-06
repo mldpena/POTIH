@@ -110,7 +110,7 @@ class Product_Model extends CI_Model {
 	{
 		extract($param);
 
-		$product_branch_inventory_condition = "AND PBI.`branch_id` = ".$this->db->escape($branch);
+		$product_branch_inventory_condition = "";
 
 		$this->db->select("P.`id`, P.`material_code`, P.`description`,
 							CASE 
@@ -265,8 +265,9 @@ class Product_Model extends CI_Model {
 
 		$this->db->select("P.`id`, P.`material_code`, P.`description`,
 							CASE
-								 WHEN  PBI.`inventory` < PBI.`min_inv` THEN 'Insufficient'
-								 WHEN  PBI.`inventory` > PBI.`max_inv` THEN 'Excess'	 
+								WHEN  PBI.`inventory` < 0 THEN 'Negative'
+								WHEN  PBI.`inventory` < PBI.`min_inv` THEN 'Insufficient'
+								WHEN  PBI.`inventory` > PBI.`max_inv` THEN 'Excess'	 
 							END AS 'status',
 							CASE 
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
@@ -285,6 +286,10 @@ class Product_Model extends CI_Model {
 					->group_end()
 					->or_group_start()
 						->where("PBI.`inventory` < PBI.`min_inv`")
+						->where("PBI.`min_inv` <>", 0)
+					->group_end()
+					->or_group_start()
+						->where("PBI.`inventory` <", 0)
 						->where("PBI.`min_inv` <>", 0)
 					->group_end()
 				->group_end()
@@ -968,32 +973,33 @@ class Product_Model extends CI_Model {
 
 	public function get_product_warning_count($warning_type)
 	{
-		if ($warning_type == 'MAX') 
-		{
-			$this->db->where("`inventory` >= `max_inv`")
+		switch ($warning_type) {
+			case 'MAX':
+				$this->db->where("`inventory` > `max_inv`")
 					->where("`max_inv` <>", 0);
-		}
-		else
-		{
-			$this->db->where("`inventory` <= `min_inv`")
-					->where("`min_inv` <>", 0);
+				break;
+			
+			case 'MIN':
+				$this->db->where("`inventory` < `min_inv`")
+					->where("`inventory` >", 0)
+					->where("`min_inv` <>", 0);					
+				break;
+
+			case 'NEGATIVE':
+				$this->db->from("product AS P")
+						->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->_current_branch_id, "left")
+						->where("P.`is_show`", 1)
+						->where("PBI.`inventory` < ", 0)
+						->where("PBI.`min_inv` <> ", 0)
+						->where("P.`type`", 1);
+
+				return $this->db->count_all_results();
+
+				break;
 		}
 
 		$this->db->where("branch_id", $this->_current_branch_id);
 
 		return $this->db->count_all_results('product_branch_inventory');
-	}
-
-	public function get_product_info_by_field_data($field_data)
-	{
-		$this->db->select("*")
-				->from("product");
-
-		foreach ($field_data as $key => $value) 
-			$this->db->where($key, $value);
-
-		$result = $this->db->get();
-
-		return $result;
 	}
 }

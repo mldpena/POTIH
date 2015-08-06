@@ -39,6 +39,7 @@ body{
     padding: 9px;
     font-size: 20px;
     cursor: pointer;
+    margin-right: 12px;
 }
 .user-creds .notifications-icon.active{
 	color: yellow;

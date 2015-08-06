@@ -4,6 +4,50 @@
 		"selected_items":
 		[
 			[
+				"_ci",
+				"_current_branch_id"
+			],
+			[
+				"order",
+				"orderFor"
+			],
+			[
+				"margin",
+				"margin-right"
+			],
+			[
+				"bran",
+				"branch_list"
+			],
+			[
+				"strto",
+				"strtolower"
+			],
+			[
+				"_cur",
+				"_current_user"
+			],
+			[
+				"chkre",
+				"chkreceiveall"
+			],
+			[
+				"is_num",
+				"is_numeric()	standard Function"
+			],
+			[
+				"header",
+				"headertd_class"
+			],
+			[
+				"materi",
+				"material_code"
+			],
+			[
+				"upload",
+				"uploadFunction"
+			],
+			[
 				"_",
 				"_POST"
 			],
@@ -54,10 +98,6 @@
 			[
 				"preset",
 				"presetEntity"
-			],
-			[
-				"margin",
-				"margin-left"
 			],
 			[
 				"For",
@@ -416,10 +456,6 @@
 				"class_name"
 			],
 			[
-				"bran",
-				"branch_text"
-			],
-			[
 				"bra",
 				"branch_text"
 			],
@@ -434,10 +470,6 @@
 			[
 				"adjust_",
 				"adjustment_field_data"
-			],
-			[
-				"_cur",
-				"_current_date"
 			],
 			[
 				"create",
@@ -482,72 +514,24 @@
 			[
 				"is_",
 				"is_nonstack"
-			],
-			[
-				"json",
-				"json_encode"
-			],
-			[
-				"update",
-				"update_product_details"
-			],
-			[
-				"branc",
-				"branch_inventory_field_data"
-			],
-			[
-				"branch_inventory_",
-				"branch_inventory_id"
-			],
-			[
-				"prd",
-				"product"
-			],
-			[
-				"produ",
-				"product_id"
-			],
-			[
-				"minv",
-				"max_inv"
-			],
-			[
-				"crete",
-				"created_by"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
-			"file": "application/services/product_manager.php",
+			"file": "clear_transactions.sql",
 			"settings":
 			{
-				"buffer_size": 18351,
+				"buffer_size": 816,
 				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "application/controllers/product.php",
-			"settings":
-			{
-				"buffer_size": 7027,
-				"line_ending": "Windows"
-			}
-		},
-		{
-			"file": "application/config/config.php",
-			"settings":
-			{
-				"buffer_size": 17740,
-				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "application/models/product_model.php",
 			"settings":
 			{
-				"buffer_size": 30600,
+				"buffer_size": 30796,
 				"line_ending": "Windows"
 			}
 		},
@@ -555,16 +539,76 @@
 			"file": "scripts/product_list_js.php",
 			"settings":
 			{
-				"buffer_size": 16000,
+				"buffer_size": 16109,
 				"line_ending": "Windows"
 			}
 		},
 		{
-			"file": "application/views/product_list.php",
+			"file": "application/services/product_manager.php",
 			"settings":
 			{
-				"buffer_size": 7021,
+				"buffer_size": 22375,
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "application/controllers/product.php",
+			"settings":
+			{
+				"buffer_size": 7115,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "system/helpers/query_helper.php",
+			"settings":
+			{
+				"buffer_size": 5087,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows",
+				"name": "Xdebug Context",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows",
+				"name": "Xdebug Watch",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows",
+				"name": "Xdebug Stack",
+				"read_only": true,
+				"scratch": true
+			}
+		},
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows",
+				"name": "Xdebug Breakpoint",
+				"read_only": true,
+				"scratch": true
 			}
 		}
 	],
@@ -576,9 +620,25 @@
 	"command_palette":
 	{
 		"height": 392.0,
-		"last_filter": "Package Control: ",
+		"last_filter": "list",
 		"selected_items":
 		[
+			[
+				"list",
+				"Package Control: List Packages"
+			],
+			[
+				"insta",
+				"Package Control: Install Package"
+			],
+			[
+				"start",
+				"Xdebug: Start Debugging"
+			],
+			[
+				"stop deb",
+				"Xdebug: Stop Debugging"
+			],
 			[
 				"Package Control: ",
 				"Package Control: Install Package"
@@ -586,10 +646,6 @@
 			[
 				"snipp",
 				"Snippet: jQuery AJAX call"
-			],
-			[
-				"insta",
-				"Package Control: Install Package"
 			],
 			[
 				"package",
@@ -600,7 +656,7 @@
 				"Package Control: Install Package"
 			]
 		],
-		"width": 400.0
+		"width": 528.0
 	},
 	"console":
 	{
@@ -621,53 +677,118 @@
 	},
 	"expanded_folders":
 	[
-		"/C/xampp/htdocs/POTIH"
+		"/C/xampp/htdocs/POTIH",
+		"/C/xampp/htdocs/POTIH/application",
+		"/C/xampp/htdocs/POTIH/application/controllers",
+		"/C/xampp/htdocs/POTIH/application/views/pdf"
 	],
 	"file_history":
 	[
+		"/C/xampp/htdocs/POTIH/application/views/purchaseorder_detail.php",
+		"/C/xampp/htdocs/POTIH/system/helpers/query_helper.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/purchaseorder.php",
+		"/C/xampp/htdocs/POTIH/scripts/purchaseorder_detail_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/helpers/table.helper.js",
+		"/C/xampp/htdocs/POTIH/assets/js/my_js_lib.js",
+		"/C/xampp/htdocs/POTIH/application/views/customerreceive_list.php",
+		"/C/xampp/htdocs/POTIH/scripts/customerreceive_list_js.php",
+		"/C/xampp/htdocs/POTIH/assets/css/table-style.css",
+		"/C/xampp/htdocs/POTIH/application/services/delivery_manager.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/stockdelivery.php",
+		"/C/xampp/htdocs/POTIH/scripts/customerreceive_detail_js.php",
+		"/C/xampp/htdocs/POTIH/application/models/delivery_model.php",
+		"/C/Users/LAWRENCE/Desktop/posd.txt",
+		"/C/xampp/htdocs/POTIH/scripts/deliveryreceive_detail_js.php",
+		"/C/xampp/htdocs/POTIH/application/models/user_model.php",
+		"/C/xampp/htdocs/POTIH/application/views/user_list.php",
+		"/C/xampp/htdocs/POTIH/application/views/product_list.php",
+		"/C/xampp/htdocs/POTIH/scripts/purchasereceive_detail_js.php",
+		"/C/Users/LAWRENCE/Downloads/Dump20150806.sql",
+		"/C/xampp/htdocs/nelsoft_inventory/sql queries/delete_postrans_by_date.sql",
+		"/C/xampp/htdocs/nelsoft_inventory/sql queries/delete_postrans_by_terminal.sql",
+		"/C/xampp/htdocs/POTIH/application/views/header.php",
+		"/C/xampp/htdocs/POTIH/assets/css/hitop-main.css",
+		"/C/xampp/htdocs/POTIH/assets/js/notification.js",
+		"/C/xampp/htdocs/POTIH/scripts/delivery_detail_js.php",
+		"/C/xampp/htdocs/POTIH/application/services/notification_manager.php",
+		"/C/xampp/htdocs/POTIH/application/services/product_manager.php",
+		"/C/xampp/htdocs/POTIH/application/models/product_model.php",
+		"/C/xampp/htdocs/POTIH/application/views/customerreceive_detail.php",
+		"/C/xampp/htdocs/POTIH/application/services/request_manager.php",
+		"/C/xampp/htdocs/POTIH/application/config/autoload.php",
+		"/C/xampp/htdocs/POTIH/application/models/purchaseorder_model.php",
+		"/C/xampp/htdocs/POTIH/system/libraries/Permission_checker.php",
+		"/C/xampp/htdocs/POTIH/application/views/user_detail.php",
+		"/C/xampp/htdocs/POTIH/scripts/user_detail_js.php",
+		"/C/xampp/htdocs/POTIH/application/constants/permission_const.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/inventoryadjust.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/release.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/assortment.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/pickup.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/damage.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/productreturn.php",
+		"/C/xampp/htdocs/POTIH/application/views/delivery_list.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/purchasereturn.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/purchasereceive.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/stockrequest.php",
+		"/C/xampp/htdocs/POTIH/application/models/release_model.php",
+		"/C/xampp/htdocs/POTIH/application/models/purchasereceive_model.php",
+		"/C/xampp/htdocs/POTIH/clear_transactions.sql",
+		"/C/xampp/htdocs/POTIH/scripts/release_detail_js.php",
+		"/C/xampp/htdocs/POTIH/assets/js/jquery.extend.js",
+		"/C/xampp/htdocs/POTIH/application/views/pdf/purchase_return.php",
+		"/C/xampp/htdocs/POTIH/application/views/pdf/purchase_order.php",
+		"/C/xampp/htdocs/POTIH/scripts/assortment_detail_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/damage_detail_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/return_detail_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/requestfrom_detail_js.php",
+		"/C/xampp/htdocs/POTIH/application/views/requestfrom_detail.php",
+		"/C/xampp/htdocs/POTIH/scripts/requestto_detail_js.php",
+		"/C/xampp/htdocs/POTIH/scripts/purchasereturn_detail_js.php",
+		"/C/xampp/htdocs/POTIH/application/controllers/product.php",
+		"/C/xampp/htdocs/POTIH/application/models/adjust_model.php",
+		"/C/Users/LAWRENCE/Downloads/stock_deliveryfrom_bs.php",
+		"/C/Users/LAWRENCE/Downloads/stock_deliveryfrom.php",
+		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/stock_deliveryfrom_bs.php",
+		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/salesorder.php",
+		"/C/Users/LAWRENCE/Downloads/salesorder.php",
+		"/C/xampp/htdocs/POTIH/assets/js/my_js_tbl.js",
+		"/C/Users/LAWRENCE/Downloads/pdf_salesorder.php",
+		"/C/Users/LAWRENCE/Downloads/permission_check_fncs.php",
+		"/C/Users/LAWRENCE/Downloads/check_auth_bs.php",
+		"/C/Users/LAWRENCE/Downloads/salesorderlist.php",
+		"/C/Users/LAWRENCE/Downloads/user.php",
+		"/C/Users/LAWRENCE/AppData/Roaming/Sublime Text 3/Packages/User/Xdebug.sublime-settings",
+		"/C/xampp/htdocs/POTIH/scripts/product_list_js.php",
+		"/C/xampp/htdocs/POTIH/system/core/Common.php",
+		"/C/xampp/htdocs/POTIH/system/core/Loader.php",
+		"/C/xampp/htdocs/POTIH/application/config/config.php",
+		"/C/xampp/htdocs/POTIH/system/core/Input.php",
+		"/C/xampp/htdocs/POTIH/system/core/Controller.php",
+		"/C/xampp/htdocs/POTIH/system/core/CodeIgniter.php",
+		"/C/xampp/htdocs/POTIH/application/models/branch_model.php",
+		"/C/xampp/htdocs/POTIH/system/core/Model.php",
 		"/C/xampp/htdocs/POTIH/POTIH.sublime-project",
 		"/C/xampp/htdocs/POTIH/POTIH.sublime-workspace",
 		"/C/xampp/htdocs/POTIH/hitop.sublime-workspace",
 		"/C/xampp/htdocs/POTIH/system/database/DB_query_builder.php",
-		"/C/xampp/htdocs/POTIH/application/models/adjust_model.php",
 		"/C/xampp/htdocs/POTIH/application/constants/default_const.php",
 		"/C/xampp/htdocs/POTIH/application/constants/product_const.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/controlpanel.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/user.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/subgroup.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/stockrequest.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/stockdelivery.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/release.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/purchasereturn.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/purchasereceive.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/purchaseorder.php",
 		"/C/xampp/htdocs/POTIH/system/helpers/authentication_helper.php",
 		"/C/xampp/htdocs/POTIH/application/services/authentication_manager.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/productreturn.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/product.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/printout.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/pickup.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/material.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/inventoryadjust.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/damage.php",
 		"/C/xampp/htdocs/POTIH/application/controllers/branch.php",
-		"/C/xampp/htdocs/POTIH/application/controllers/assortment.php",
-		"/C/xampp/htdocs/POTIH/application/views/header.php",
-		"/C/xampp/htdocs/POTIH/clear_transactions.sql",
-		"/C/xampp/htdocs/POTIH/application/services/notification_manager.php",
 		"/C/xampp/htdocs/POTIH/application/views/includes.php",
-		"/C/xampp/htdocs/POTIH/assets/js/notification.js",
-		"/C/xampp/htdocs/POTIH/application/models/product_model.php",
 		"/C/xampp/htdocs/POTIH/application/models/request_model.php",
-		"/C/xampp/htdocs/POTIH/application/models/delivery_model.php",
 		"/C/xampp/htdocs/POTIH/assets/js/sidebar.js",
 		"/C/xampp/htdocs/POTIH/system/helpers/url_helper.php",
 		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/controlpanel.php",
 		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/backstage/controlpanel_bs.php",
-		"/C/xampp/htdocs/POTIH/system/core/Model.php",
-		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/salesorder.php",
 		"/C/xampp/htdocs/nelsoft_jaca/application/views/newwaybill.php",
-		"/C/Users/LAWRENCE/Downloads/salesorder.php",
 		"/C/xampp/htdocs/nelsoft_inventory/Nelsoft/sales.php",
 		"/C/Users/LAWRENCE/Downloads/sales.php",
 		"/C/Users/LAWRENCE/Downloads/salesorder_bs.php",
@@ -689,70 +810,8 @@
 		"/C/xampp/htdocs/nelsoft_jaca/application/models/waybill_model.php",
 		"/C/xampp/htdocs/nelsoft_jaca/application/controllers/waybill.php",
 		"/C/xampp/htdocs/nelsoft_jaca/assets/css/style.css",
-		"/C/xampp/htdocs/POTIH/application/views/user_detail.php",
-		"/C/xampp/htdocs/POTIH/application/constants/permission_const.php",
-		"/C/xampp/htdocs/POTIH/scripts/user_detail_js.php",
-		"/C/xampp/htdocs/POTIH/assets/css/hitop-main.css",
-		"/C/xampp/htdocs/POTIH/scripts/helpers/table.helper.js",
-		"/C/xampp/htdocs/POTIH/scripts/customerreceive_detail_js.php",
-		"/C/xampp/htdocs/POTIH/scripts/delivery_detail_js.php",
-		"/C/xampp/htdocs/POTIH/application/services/delivery_manager.php",
 		"/C/xampp/htdocs/POTIH/application/constants/delivery_const.php",
-		"/C/xampp/htdocs/POTIH/application/views/delivery_detail.php",
-		"/C/Users/LAWRENCE/Documents/dumps/db_1.7.sql",
-		"/C/Users/LAWRENCE/Documents/dumps/db_1.9.3.sql",
-		"/C/xampp/htdocs/POTIH/application/views/customerreceive_detail.php",
-		"/C/xampp/htdocs/POTIH/application/models/purchaseorder_model.php",
-		"/C/xampp/htdocs/POTIH/scripts/purchaseorder_detail_js.php",
-		"/C/xampp/htdocs/POTIH/application/views/purchaseorder_detail.php",
-		"/C/xampp/htdocs/POTIH/system/libraries/Permission_checker.php",
-		"/C/xampp/htdocs/POTIH/application/services/product_manager.php",
-		"/C/xampp/htdocs/easyshop/application/libraries/Kernel.php",
-		"/C/xampp/htdocs/easyshop/composer.json",
-		"/C/xampp/htdocs/POTIH/scripts/requestto_detail_js.php",
-		"/C/xampp/htdocs/POTIH/application/views/pdf/purchase_return.php",
-		"/C/xampp/htdocs/POTIH/application/views/pdf/purchase_order.php",
-		"/C/xampp/htdocs/POTIH/application/views/pdf/receive_summary.php",
-		"/C/xampp/htdocs/POTIH/application/models/return_model.php",
-		"/C/xampp/htdocs/POTIH/application/models/purchasereceive_model.php",
-		"/C/xampp/htdocs/POTIH/license.txt",
-		"/C/xampp/htdocs/POTIH/scripts/assortment_detail_js.php",
-		"/C/xampp/htdocs/POTIH/application/models/user_model.php",
-		"/C/xampp/htdocs/POTIH/application/views/pdf/pickup_summary.php",
-		"/C/xampp/htdocs/POTIH/application/models/pickup_model.php",
-		"/C/xampp/htdocs/POTIH/assets/css/table-style.css",
-		"/C/xampp/htdocs/POTIH/application/views/product_list.php",
-		"/C/xampp/htdocs/POTIH/application/views/inventory_warning_list.php",
-		"/C/xampp/htdocs/POTIH/application/views/branch_inventory_list.php",
-		"/C/xampp/htdocs/POTIH/application/views/adjust_list.php",
-		"/C/xampp/htdocs/POTIH/assets/css/bootstrap.css",
-		"/C/xampp/htdocs/POTIH/system/helpers/form_helper.php",
-		"/C/xampp/htdocs/POTIH/application/models/login_model.php",
-		"/C/xampp/htdocs/POTIH/application/models/release_model.php",
-		"/C/Users/LAWRENCE/Dropbox/Tony - Robi/Rob/myqueries/check sales not equal to collection.txt",
-		"/C/Users/LAWRENCE/Desktop/posd.txt",
-		"/C/xampp/htdocs/POTIH/scripts/pickup_list_js.php",
-		"/C/xampp/htdocs/POTIH/index.php",
-		"/C/xampp/htdocs/POTIH/application/models/assortment_model.php",
-		"/C/xampp/htdocs/POTIH/application/views/pdf/release_slip.php",
-		"/C/xampp/htdocs/POTIH/application/views/requestfrom_detail.php",
-		"/C/xampp/htdocs/POTIH/application/views/release_detail.php",
-		"/C/xampp/htdocs/POTIH/scripts/release_detail_js.php",
-		"/C/xampp/htdocs/POTIH/application/views/assortment_detail.php",
-		"/C/xampp/htdocs/POTIH/application/views/requestto_detail.php",
-		"/C/xampp/htdocs/POTIH/scripts/requestfrom_detail_js.php",
-		"/C/xampp/htdocs/POTIH/application/services/request_manager.php",
-		"/C/xampp/htdocs/nelsoft_inventory/sql queries/delete_postrans_by_date.sql",
-		"/C/xampp/htdocs/nelsoft_inventory/sql queries/3_init_datas.sql",
-		"/C/xampp/htdocs/POTIH/application/views/pickup_list.php",
-		"/C/xampp/htdocs/POTIH/system/helpers/array_helper.php",
-		"/C/xampp/htdocs/POTIH/application/views/sidebar.php",
-		"/C/xampp/htdocs/POTIH/application/views/requestfrom_list.php",
-		"/C/xampp/htdocs/POTIH/application/views/requestto_list.php",
-		"/C/xampp/htdocs/nelsoft_jaca/application/views/dispatch.php",
-		"/C/xampp/htdocs/nelsoft_jaca/scripts/dispatch_js.php",
-		"/C/xampp/htdocs/nelsoft_jaca/system/libraries/Sqlfunction.php",
-		"/C/xampp/htdocs/nelsoft_jaca/application/config/config.php"
+		"/C/xampp/htdocs/POTIH/application/views/delivery_detail.php"
 	],
 	"find":
 	{
@@ -771,6 +830,54 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"undefined",
+			"checkCurrentInventory",
+			"chkcheckall",
+			"receiveAll",
+			"disabled",
+			"recomputeRemainingQuantity",
+			"transferRemainingToReceive",
+			"this",
+			"transferRemainingToReceive",
+			"chkcheckall",
+			"chktransferall",
+			"TRANSFERsTATE",
+			"transactionState",
+			"all",
+			"flag",
+			"TransactionState",
+			"gotoprint",
+			"insert_inventory_adjust_for_import",
+			"chkcurbranch",
+			"changeheadstatus",
+			"currentbranch",
+			"changeheadstatus",
+			"currentbranch",
+			"txt_received_amt_refresh",
+			"set_tbl_element_events",
+			"get_dr_data",
+			"advancein",
+			"showhideadvance_arr",
+			"displaycss_arr",
+			"tdadvancein",
+			"tdwprice",
+			"td_class",
+			"headertd_class",
+			"tdwprice",
+			"display:none;",
+			"none",
+			"hide",
+			"refresh",
+			"receive",
+			"txtprodqtyrecv",
+			"$style_str .= \"	.tdnote{",
+			"display_productamt",
+			"pnTotalAmount",
+			"amount",
+			"cbxSalesALL",
+			"<td class=\"chkbxothers\" colspan=\"2\"><input type=\"checkbox\" class=\"cbxSalesALL\" value=\"437\" /><?php echo $lbldisp_user_alloweditprice;?></td>",
+			"field_data",
+			"info",
 			"csv_branch_id_list",
 			"header('Location:'.base_url().'login');",
 			"current_url",
@@ -850,55 +957,7 @@
 			"old_purchase_detail",
 			"purchase_detail_id",
 			"_current_purchase_head_id",
-			"10",
-			"'2015-06-01'",
-			"11",
-			"array",
-			"SELF",
-			"insert int",
-			"addDispatchDetail",
-			"checkbutton",
-			"checkButtonPermission",
-			"jacaexp5_jaca",
-			"jacaexp5`@`localhost",
-			"sprice",
-			"<td><input id=\"chkProdListSenior20\" type=\"checkbox\" />",
-			"txtWidthProdListDIn",
-			" txtWidthProdListDInv: txtWidthProdListDInv_val,",
-			"chkProdListDE: chkProdListDE_val,",
-			" else $(\"#chkProdListE\").removeAttr(\"checked\");\n                        if(data.chkProdListSenior20 == 1) ",
-			"  \n",
-			"$data['chkProdListSenior20'] = (int)$xml->product_list_express_col_senior20;",
-			"(int)$xml->product_list_express_col_Eprice",
-			"$data['chkProdListE'] = (int)$xml->product_list_express_col_Eprice",
-			" $data['chkProdListE'] = (int)$xml->product_list_express_col_Eprice",
-			" $data['chkProdListE'] = (int)$xml->product_list_express_col_Eprice;",
-			"$data['chkProdListSenior20'] = (int)$xml->product_list_express_col_senior20;",
-			"$sitecode",
-			"update_sync",
-			"purchase_head",
-			"recv_quantity",
-			"PURCHASE_CONST",
-			"purchase",
-			"_purchase_head_id",
-			"Purchase_Code",
-			"modal",
-			"get_product_by_term",
-			"set_session_data",
-			"check_if_field_data_exists",
-			"qtyremaining",
-			"qtyrecv",
-			"recomputeRemainingQuantity",
-			"check_",
-			"chktransfer",
-			"product_model",
-			"get_next_number",
-			"style",
-			"st",
-			"loadingimg",
-			"qtyrecv",
-			"spnqtyrecvHidden",
-			"po_number"
+			"10"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -1009,110 +1068,52 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "application/services/product_manager.php",
+					"file": "clear_transactions.sql",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 18351,
+						"buffer_size": 816,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								17359,
-								17368
+								816,
+								816
 							]
 						],
 						"settings":
 						{
-							"syntax": "Packages/PHP/PHP.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 7733.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 2,
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"file": "application/controllers/product.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 7027,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								1181,
-								1181
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 504.0,
-						"zoom_level": 1.0
-					},
-					"stack_index": 0,
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "application/config/config.php",
-					"semi_transient": false,
-					"settings":
-					{
-						"buffer_size": 17740,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								629,
-								649
-							]
-						],
-						"settings":
-						{
-							"syntax": "Packages/PHP/PHP.tmLanguage"
+							"syntax": "Packages/SQL/SQL.tmLanguage"
 						},
 						"translation.x": 0.0,
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 3,
+					"buffer": 1,
 					"file": "application/models/product_model.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 30600,
+						"buffer_size": 30796,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								779,
-								779
+								6520,
+								6520
 							]
 						],
 						"settings":
@@ -1121,27 +1122,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 117.0,
+						"translation.y": 2301.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 3,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 2,
 					"file": "scripts/product_list_js.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 16000,
+						"buffer_size": 16109,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								5681,
-								5681
+								8569,
+								8569
 							]
 						],
 						"settings":
@@ -1150,27 +1151,27 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 2685.0,
+						"translation.y": 3715.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 0,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
-					"file": "application/views/product_list.php",
+					"buffer": 3,
+					"file": "application/services/product_manager.php",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 7021,
+						"buffer_size": 22375,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								6576,
-								6590
+								9234,
+								9234
 							]
 						],
 						"settings":
@@ -1178,11 +1179,193 @@
 							"syntax": "Packages/PHP/PHP.tmLanguage",
 							"translate_tabs_to_spaces": false
 						},
-						"translation.x": 56.0,
-						"translation.y": 1993.0,
+						"translation.x": 0.0,
+						"translation.y": 3744.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "application/controllers/product.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 7115,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								4784,
+								4784
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1831.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "system/helpers/query_helper.php",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5087,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								352,
+								356
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/PHP/PHP.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 6,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Xdebug Client/Xdebug.tmLanguage",
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Xdebug Client/Xdebug.tmLanguage",
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 8,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Xdebug Client/Xdebug.tmLanguage",
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Xdebug Client/Xdebug.tmLanguage",
+							"word_wrap": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
 					"type": "text"
 				}
 			]
@@ -1190,7 +1373,7 @@
 	],
 	"incremental_find":
 	{
-		"height": 22.0
+		"height": 21.0
 	},
 	"input":
 	{
@@ -1203,18 +1386,32 @@
 			[
 				0,
 				0,
-				1,
+				2,
 				1
+			],
+			[
+				0,
+				1,
+				1,
+				2
+			],
+			[
+				1,
+				1,
+				2,
+				2
 			]
 		],
 		"cols":
 		[
 			0.0,
+			0.5,
 			1.0
 		],
 		"rows":
 		[
 			0.0,
+			0.895518008904,
 			1.0
 		]
 	},
@@ -1223,11 +1420,15 @@
 	{
 		"height": 0.0
 	},
+	"output.xdebug":
+	{
+		"height": 0.0
+	},
 	"pinned_build_system": "",
 	"project": "POTIH.sublime-project",
 	"replace":
 	{
-		"height": 62.0
+		"height": 38.0
 	},
 	"save_all_on_build": true,
 	"select_file":
@@ -1237,12 +1438,252 @@
 		"selected_items":
 		[
 			[
-				"config",
-				"application\\config\\config.php"
+				"product_mana",
+				"application\\services\\product_manager.php"
 			],
 			[
 				"product",
 				"application\\controllers\\product.php"
+			],
+			[
+				"product_ls",
+				"scripts\\product_list_js.php"
+			],
+			[
+				"product_model",
+				"application\\models\\product_model.php"
+			],
+			[
+				"clear",
+				"clear_transactions.sql"
+			],
+			[
+				"purchaseorderde",
+				"application\\views\\purchaseorder_detail.php"
+			],
+			[
+				"tablehe",
+				"scripts\\helpers\\table.helper.js"
+			],
+			[
+				"my",
+				"assets\\js\\my_js_lib.js"
+			],
+			[
+				"purchaseorder",
+				"application\\controllers\\purchaseorder.php"
+			],
+			[
+				"purchaseore",
+				"application\\controllers\\purchaseorder.php"
+			],
+			[
+				"style",
+				"assets\\css\\table-style.css"
+			],
+			[
+				"customerrecelist",
+				"application\\views\\customerreceive_list.php"
+			],
+			[
+				"customerecelis",
+				"scripts\\customerreceive_list_js.php"
+			],
+			[
+				"delivery_man",
+				"application\\services\\delivery_manager.php"
+			],
+			[
+				"stockde",
+				"application\\controllers\\stockdelivery.php"
+			],
+			[
+				"delivery_mode",
+				"application\\models\\delivery_model.php"
+			],
+			[
+				"customerreceide",
+				"scripts\\customerreceive_detail_js.php"
+			],
+			[
+				"productlis",
+				"application\\views\\product_list.php"
+			],
+			[
+				"userlist",
+				"application\\views\\user_list.php"
+			],
+			[
+				"user_mode",
+				"application\\models\\user_model.php"
+			],
+			[
+				"deliveryre",
+				"scripts\\deliveryreceive_detail_js.php"
+			],
+			[
+				"purchareceivede",
+				"scripts\\purchasereceive_detail_js.php"
+			],
+			[
+				"customerrece",
+				"scripts\\customerreceive_detail_js.php"
+			],
+			[
+				"hit",
+				"assets\\css\\hitop-main.css"
+			],
+			[
+				"header",
+				"application\\views\\header.php"
+			],
+			[
+				"purchasereceivede",
+				"scripts\\purchasereceive_detail_js.php"
+			],
+			[
+				"customerre",
+				"scripts\\customerreceive_detail_js.php"
+			],
+			[
+				"request_man",
+				"application\\services\\request_manager.php"
+			],
+			[
+				"stock",
+				"application\\controllers\\stockdelivery.php"
+			],
+			[
+				"auto",
+				"application\\config\\autoload.php"
+			],
+			[
+				"notifi",
+				"assets\\js\\notification.js"
+			],
+			[
+				"notificaiton",
+				"application\\services\\notification_manager.php"
+			],
+			[
+				"he",
+				"application\\views\\header.php"
+			],
+			[
+				"request_manage",
+				"application\\services\\request_manager.php"
+			],
+			[
+				"delivery_model",
+				"application\\models\\delivery_model.php"
+			],
+			[
+				"delivery_de",
+				"scripts\\delivery_detail_js.php"
+			],
+			[
+				"purchaseordermo",
+				"application\\models\\purchaseorder_model.php"
+			],
+			[
+				"purchaseorder_de",
+				"scripts\\purchaseorder_detail_js.php"
+			],
+			[
+				"deliveryde",
+				"scripts\\delivery_detail_js.php"
+			],
+			[
+				"permiss",
+				"system\\libraries\\Permission_checker.php"
+			],
+			[
+				"userde",
+				"scripts\\user_detail_js.php"
+			],
+			[
+				"inventor",
+				"application\\controllers\\inventoryadjust.php"
+			],
+			[
+				"delivery_lis",
+				"application\\views\\delivery_list.php"
+			],
+			[
+				"stockreq",
+				"application\\controllers\\stockrequest.php"
+			],
+			[
+				"purchase",
+				"application\\controllers\\purchaseorder.php"
+			],
+			[
+				"manager",
+				"application\\services\\delivery_manager.php"
+			],
+			[
+				"release_mode",
+				"application\\models\\release_model.php"
+			],
+			[
+				"purchasereceive_mode",
+				"application\\models\\purchasereceive_model.php"
+			],
+			[
+				"release_de",
+				"scripts\\release_detail_js.php"
+			],
+			[
+				"user_de",
+				"scripts\\user_detail_js.php"
+			],
+			[
+				"damage_de",
+				"scripts\\damage_detail_js.php"
+			],
+			[
+				"assortmentde",
+				"scripts\\assortment_detail_js.php"
+			],
+			[
+				"returnde",
+				"scripts\\return_detail_js.php"
+			],
+			[
+				"requestfromde",
+				"application\\views\\requestfrom_detail.php"
+			],
+			[
+				"requestfrom",
+				"scripts\\requestfrom_detail_js.php"
+			],
+			[
+				"requesttode",
+				"scripts\\requestto_detail_js.php"
+			],
+			[
+				"purchasereturnde",
+				"scripts\\purchasereturn_detail_js.php"
+			],
+			[
+				"purchaserecei",
+				"scripts\\purchasereceive_detail_js.php"
+			],
+			[
+				"purchaseorerde",
+				"scripts\\purchaseorder_detail_js.php"
+			],
+			[
+				"clea",
+				"clear_transactions.sql"
+			],
+			[
+				"adjust_mode",
+				"application\\models\\adjust_model.php"
+			],
+			[
+				"config",
+				"application\\config\\config.php"
 			],
 			[
 				"adjust_model",
@@ -1269,24 +1710,12 @@
 				"scripts\\product_list_js.php"
 			],
 			[
-				"productlis",
-				"application\\views\\product_list.php"
-			],
-			[
 				"product_manage",
 				"application\\services\\product_manager.php"
 			],
 			[
-				"clear",
-				"clear_transactions.sql"
-			],
-			[
 				"request_model",
 				"application\\models\\request_model.php"
-			],
-			[
-				"delivery_model",
-				"application\\models\\delivery_model.php"
 			],
 			[
 				"inventory",
@@ -1299,10 +1728,6 @@
 			[
 				"includes",
 				"application\\views\\includes.php"
-			],
-			[
-				"header",
-				"application\\views\\header.php"
 			],
 			[
 				"notification_man",
@@ -1327,10 +1752,6 @@
 			[
 				"control",
 				"application\\controllers\\controlpanel.php"
-			],
-			[
-				"adjust_mode",
-				"application\\models\\adjust_model.php"
 			],
 			[
 				"notification_",
@@ -1363,10 +1784,6 @@
 			[
 				"footer",
 				"application\\views\\footer.php"
-			],
-			[
-				"notificaiton",
-				"assets\\js\\notification.js"
 			],
 			[
 				"adjust_cons",
@@ -1441,32 +1858,8 @@
 				"application\\constants\\permission_const.php"
 			],
 			[
-				"userde",
-				"scripts\\user_detail_js.php"
-			],
-			[
-				"tablehe",
-				"scripts\\helpers\\table.helper.js"
-			],
-			[
-				"delivery_de",
-				"scripts\\delivery_detail_js.php"
-			],
-			[
-				"deliveryde",
-				"scripts\\delivery_detail_js.php"
-			],
-			[
 				"delivery_manager",
 				"application\\services\\delivery_manager.php"
-			],
-			[
-				"delivery_mode",
-				"application\\models\\delivery_model.php"
-			],
-			[
-				"customerrece",
-				"scripts\\customerreceive_detail_js.php"
 			],
 			[
 				"stockdeliver",
@@ -1493,32 +1886,12 @@
 				"scripts\\customerreceive_detail_js.php"
 			],
 			[
-				"stockde",
-				"application\\controllers\\stockdelivery.php"
-			],
-			[
-				"customerre",
-				"scripts\\customerreceive_detail_js.php"
-			],
-			[
 				"purchaseorder_",
 				"application\\models\\purchaseorder_model.php"
 			],
 			[
-				"delivery_man",
-				"application\\services\\delivery_manager.php"
-			],
-			[
 				"delivery_cons",
 				"application\\constants\\delivery_const.php"
-			],
-			[
-				"purchaseorder",
-				"application\\models\\purchaseorder_model.php"
-			],
-			[
-				"purchaseorderde",
-				"scripts\\purchaseorder_detail_js.php"
 			],
 			[
 				"permission",
@@ -1541,16 +1914,8 @@
 				"application\\services\\purchase_manager.php"
 			],
 			[
-				"requesttode",
-				"scripts\\requestto_detail_js.php"
-			],
-			[
 				"purchase_return",
 				"application\\views\\pdf\\purchase_return.php"
-			],
-			[
-				"purchasereceive_mode",
-				"application\\models\\purchasereceive_model.php"
 			],
 			[
 				"return_mode",
@@ -1565,20 +1930,8 @@
 				"scripts\\assortment_detail_js.php"
 			],
 			[
-				"user_de",
-				"application\\views\\user_detail.php"
-			],
-			[
-				"user_mode",
-				"application\\models\\user_model.php"
-			],
-			[
 				"pickup_mo",
 				"application\\models\\pickup_model.php"
-			],
-			[
-				"style",
-				"assets\\css\\table-style.css"
 			],
 			[
 				"boot",
@@ -1595,158 +1948,6 @@
 			[
 				"release",
 				"application\\controllers\\release.php"
-			],
-			[
-				"release_mode",
-				"application\\models\\release_model.php"
-			],
-			[
-				"pickups",
-				"application\\views\\pdf\\pickup_summary.php"
-			],
-			[
-				"tableh",
-				"scripts\\helpers\\table.helper.js"
-			],
-			[
-				"pickup_mode",
-				"application\\models\\pickup_model.php"
-			],
-			[
-				"pickp",
-				"application\\controllers\\pickup.php"
-			],
-			[
-				"pickuplis",
-				"scripts\\pickup_list_js.php"
-			],
-			[
-				"assortmnetde",
-				"scripts\\assortment_detail_js.php"
-			],
-			[
-				"requesttp",
-				"scripts\\requestto_detail_js.php"
-			],
-			[
-				"requestfromde",
-				"application\\views\\requestfrom_detail.php"
-			],
-			[
-				"assortment_mode",
-				"application\\models\\assortment_model.php"
-			],
-			[
-				"releasesl",
-				"application\\views\\pdf\\release_slip.php"
-			],
-			[
-				"assortmen",
-				"application\\views\\assortment_detail.php"
-			],
-			[
-				"stockreq",
-				"application\\controllers\\stockrequest.php"
-			],
-			[
-				"assort",
-				"application\\controllers\\assortment.php"
-			],
-			[
-				"permiss",
-				"application\\constants\\permission_const.php"
-			],
-			[
-				"releasede",
-				"scripts\\release_detail_js.php"
-			],
-			[
-				"release_de",
-				"application\\views\\release_detail.php"
-			],
-			[
-				"stockrq",
-				"application\\controllers\\stockrequest.php"
-			],
-			[
-				"requestfrom",
-				"application\\views\\requestfrom_detail.php"
-			],
-			[
-				"requestto",
-				"application\\views\\requestto_detail.php"
-			],
-			[
-				"request_manage",
-				"application\\services\\request_manager.php"
-			],
-			[
-				"request_de",
-				"scripts\\requestto_detail_js.php"
-			],
-			[
-				"purchasereceive_",
-				"application\\models\\purchasereceive_model.php"
-			],
-			[
-				"p",
-				"application\\models\\product_model.php"
-			],
-			[
-				"purchaseorder_o",
-				"application\\models\\purchaseorder_model.php"
-			],
-			[
-				"purchase_mange",
-				"application\\services\\purchase_manager.php"
-			],
-			[
-				"purchase",
-				"application\\controllers\\purchaseorder.php"
-			],
-			[
-				"styles",
-				"assets\\css\\table-style.css"
-			],
-			[
-				"purchasedeta",
-				"scripts\\purchaseorder_detail_js.php"
-			],
-			[
-				"stockrequest",
-				"application\\controllers\\stockrequest.php"
-			],
-			[
-				"pickupls",
-				"application\\views\\pickup_list.php"
-			],
-			[
-				"array",
-				"system\\helpers\\array_helper.php"
-			],
-			[
-				"sidebar",
-				"application\\views\\sidebar.php"
-			],
-			[
-				"product_mde",
-				"application\\models\\product_model.php"
-			],
-			[
-				"cleartra",
-				"clear_transactions.sql"
-			],
-			[
-				"requestto_de",
-				"views\\requestto_detail.php"
-			],
-			[
-				"controlpanel",
-				"views\\controlpanel.php"
-			],
-			[
-				"sqlfunc",
-				"system\\libraries\\Sqlfunction.php"
 			]
 		],
 		"width": 0.0
@@ -1774,7 +1975,86 @@
 	{
 		"xdebug":
 		{
-			"hide_conflict": false
+			"hide_conflict": false,
+			"restore_index":
+			{
+				"256":
+				{
+					"group": 0,
+					"index": 0
+				},
+				"258":
+				{
+					"group": 0,
+					"index": 2
+				},
+				"262":
+				{
+					"group": 0,
+					"index": 3
+				},
+				"265":
+				{
+					"group": 2,
+					"index": 1
+				},
+				"266":
+				{
+					"group": 1,
+					"index": 0
+				},
+				"267":
+				{
+					"group": 2,
+					"index": 0
+				},
+				"268":
+				{
+					"group": 1,
+					"index": 1
+				},
+				"272":
+				{
+					"group": 0,
+					"index": 1
+				}
+			},
+			"restore_layout":
+			{
+				"cells":
+				[
+					[
+						0,
+						0,
+						2,
+						1
+					],
+					[
+						0,
+						1,
+						1,
+						2
+					],
+					[
+						1,
+						1,
+						2,
+						2
+					]
+				],
+				"cols":
+				[
+					0.0,
+					0.5,
+					1.0
+				],
+				"rows":
+				[
+					0.0,
+					0.698583569405,
+					1.0
+				]
+			}
 		}
 	},
 	"show_minimap": true,

@@ -49,7 +49,8 @@ class StockDelivery extends CI_Controller {
 			{
 				case 'list':
 					$page = 'delivery_list';
-					$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+					$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
+					$to_branch_list = get_name_list_from_table(TRUE, 'branch', TRUE);
 					$allow_user = $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY);
 					$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::ADD_STOCK_DELIVERY),
 										'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY_DETAIL),
@@ -59,7 +60,7 @@ class StockDelivery extends CI_Controller {
 
 				case 'view':
 					$page = 'delivery_detail';
-					$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+					$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE);
 					$allow_user = $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY);
 					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY),
 										'allow_to_add' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::ADD_STOCK_DELIVERY));
@@ -78,15 +79,15 @@ class StockDelivery extends CI_Controller {
 			{
 				case 'list':
 					$page = 'deliveryreceive_list';
-					$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
-					$to_branch_list = get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+					$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE);
+					$to_branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 					$allow_user = $this->permission_checker->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE);
 					$permissions = array('allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE_DETAIL));
 					break;
 
 				case 'view':
 					$page = 'deliveryreceive_detail';
-					$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+					$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE);
 					$allow_user = $this->permission_checker->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE);
 					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\StockReceive_Code::EDIT_STOCK_RECEIVE));
 					break;
@@ -104,7 +105,7 @@ class StockDelivery extends CI_Controller {
 			{
 				case 'list':
 					$page = 'customerreceive_list';
-					$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+					$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 					$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE);
 					$permissions = array('allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\CustomerReceive_Code::VIEW_CUSTOMER_RECEIVE_DETAIL));
 					break;

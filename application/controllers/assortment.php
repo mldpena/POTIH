@@ -39,12 +39,13 @@ class Assortment extends CI_Controller {
 		}
 
 		$permissions = array();
-
+		$branch_list = '';
+		
 		switch ($page) 
 		{
 			case 'list':
 				$page = 'assortment_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Assortment_Code::ADD_ASSORTMENT),
 									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT_DETAIL),
@@ -53,7 +54,6 @@ class Assortment extends CI_Controller {
 
 			case 'view':
 				$page = 'assortment_detail';
-				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
 				$allow_user = $this->permission_checker->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Assortment_Code::EDIT_ASSORTMENT),
 									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Assortment_Code::ADD_ASSORTMENT),
