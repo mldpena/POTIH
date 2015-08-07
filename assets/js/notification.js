@@ -49,42 +49,42 @@ $(function(){
 																	notificationSection : 'inventoryAdjust',
 																	notificationSubject : 'New Pending Inventory Adjustment',
 																	notificationMessage : 'You have ({0}) new pending inventory adjust!',
-																	notificationIcon 	: 'customerreceive.png',
+																	notificationIcon 	: 'pendinginventoryadjust-new.png',
 																	notificationLink 	: 'pending/list'
 																},
 																{
 																	notificationSection : 'itemRequest',
 																	notificationSubject : 'New Item Request',
 																	notificationMessage : 'You have ({0}) requested by other branches!',
-																	notificationIcon 	: 'customerreceive.png',
+																	notificationIcon 	: 'itemreceive-new.png',
 																	notificationLink 	: 'requestfrom/list'
 																},
 																{
 																	notificationSection : 'itemReceive',
 																	notificationSubject : 'New Item Receive',
 																	notificationMessage : 'You have ({0}) item receive from other branches!',
-																	notificationIcon 	: 'customerreceive.png',
+																	notificationIcon 	: 'pendinginventoryadjust-new.png',
 																	notificationLink 	: 'delreceive/list'
 																},
 																{
 																	notificationSection : 'minInventory',
 																	notificationSubject : 'Minimum Inventory Warning',
 																	notificationMessage : 'You have ({0}) item/s that have reached the minimum inventory!',
-																	notificationIcon 	: 'customerreceive.png',
+																	notificationIcon 	: 'mininventory.png',
 																	notificationLink 	: 'product/warning'
 																},
 																{
 																	notificationSection : 'maxInventory',
 																	notificationSubject : 'Maximum Inventory Warning',
 																	notificationMessage : 'You have ({0}) item/s that have reached the maximum inventory!',
-																	notificationIcon 	: 'customerreceive.png',
+																	notificationIcon 	: 'maxinventory.png',
 																	notificationLink 	: 'product/warning'
 																},
 																{
 																	notificationSection : 'negativeInventory',
 																	notificationSubject : 'Negative Inventory Warning',
 																	notificationMessage : 'You have ({0}) item/s that have reached negative inventory!',
-																	notificationIcon 	: 'customerreceive.png',
+																	notificationIcon 	: 'negativeinventory.png',
 																	notificationLink 	: 'product/warning'
 																}
 															];
