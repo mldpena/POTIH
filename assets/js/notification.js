@@ -35,14 +35,11 @@ $(function(){
 					var notificationContainer = $('#notification-container').html();
 
 					if (response.notification.all_count == 0)
-					{
 						$('#header-notification').html('No notifications found!');
-						$('.notif-circle').hide();
-					}
 					else
 					{
 						$('.notifications-icon').addClass('active');
-						$('.notif-circle').html(response.notification.all_count);
+						$('.notif-circle').html(response.notification.all_count).show();
 
 						var notificationContainerElements = [
 																{
