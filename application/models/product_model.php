@@ -3,6 +3,7 @@
 class Product_Model extends CI_Model {
 
 	private $_current_branch_id = 0;
+	private $_current_user 	= 0;
 	private $_error_message = array('CODE_EXISTS' => 'Material code already exists!',
 									'NAME_EXISTS' => 'Product Name already exists!',
 									'UNABLE_TO_INSERT' => 'Unable to insert product!',
@@ -20,6 +21,7 @@ class Product_Model extends CI_Model {
 		parent::__construct();
 
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
 	}
 
 	public function insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data)
@@ -445,7 +447,7 @@ class Product_Model extends CI_Model {
 				array_push($query_data,$date_from);
 
 				$temp_beginning = "COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',";
-				$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id`";
+				$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id` AND TEMP.`user_id` = ?";
 
 				$query_truncate = "TRUNCATE temp_beginning_transaction;";
 				$result_truncate = $this->sql->execute_query($query_truncate);
@@ -453,10 +455,10 @@ class Product_Model extends CI_Model {
 				if ($result_truncate['error'])
 					throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
 
-				$query_temp = "INSERT INTO temp_beginning_transaction(`product_id`,`beginning_inventory`)
+				$query_temp = "INSERT INTO temp_beginning_transaction(`product_id`,`beginning_inventory`, `user_id`)
 								SELECT P.`id`, COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
 													- `damage` - `purchase_return` - `stock_delivery` - `customer_delivery` 
-													- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
+													- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory', ".$this->_current_user."
 									FROM product AS P
 									LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
 									WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
@@ -466,6 +468,8 @@ class Product_Model extends CI_Model {
 
 				if ($result_temp['error'])
 					throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+
+				array_unshift($query_data, $this->_current_user);
       		}
 
       		if (!empty($date_to)) 
@@ -665,7 +669,7 @@ class Product_Model extends CI_Model {
 			array_push($query_data,$date_from);
 
 			$temp_beginning = "COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',";
-			$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id`";
+			$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id` AND TEMP.`user_id` = ?";
 
 			$query_truncate = "TRUNCATE temp_beginning_transaction;";
 			$result_truncate = $this->sql->execute_query($query_truncate);
@@ -689,6 +693,8 @@ class Product_Model extends CI_Model {
 
 			if ($result_temp['error'])
 				throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+
+			array_unshift($query_data, $this->_current_user);
   		}
 
   		if (!empty($date_to)) 
