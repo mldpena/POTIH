@@ -308,7 +308,7 @@
 						var minElement 	= minMaxTableHelper.contentProvider.getElement(i, 'min_inv');
 						var maxElement 	= minMaxTableHelper.contentProvider.getElement(i, 'max_inv');
 
-						if (rowBranchId != response.own_branch)
+						if (rowBranchId != response.own_branch && !response.is_exempted)
 						{
 							$(minElement).attr('disabled', 'disabled');
 							$(maxElement).attr('disabled', 'disabled');

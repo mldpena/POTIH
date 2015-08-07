@@ -219,7 +219,7 @@
 	});
 
 	$('#print').click(function(){
-		goToPrintOut();
+		goToPrintOut(true);
 	});
 
 	$('#transfer').click(function(){
@@ -262,7 +262,7 @@
 		tableHelper.contentProvider.setData(rowIndex,'receiveqty',[totalQuantity]);
 	}
 
-	function goToPrintOut()
+	function goToPrintOut(isPrintButtonClicked)
 	{
 		var printType = 'customer';
 
@@ -280,13 +280,16 @@
 					alert(response.error);
 				else
 				{
-					if (response.is_incomplete == true) 
+					if (!isPrintButtonClicked)
 					{
-						if ((Boolean(<?= $permission_list['allow_to_transfer_remaining']?>) == true))
-							$('#transfer').show();
+						if (response.is_incomplete == true) 
+						{
+							if ((Boolean(<?= $permission_list['allow_to_transfer_remaining']?>) == true))
+								$('#transfer').show();
+						}
+						else
+							$('#transfer').hide();	
 					}
-					else
-						$('#transfer').hide();
 					
                 	window.open('<?= base_url() ?>printout/customer_receive/Receive');
 				}

@@ -287,6 +287,7 @@ class Product_Model extends CI_Model {
 					->or_group_start()
 						->where("PBI.`inventory` < PBI.`min_inv`")
 						->where("PBI.`min_inv` <>", 0)
+						->where("PBI.`inventory` >", 0)
 					->group_end()
 					->or_group_start()
 						->where("PBI.`inventory` <", 0)
@@ -973,33 +974,32 @@ class Product_Model extends CI_Model {
 
 	public function get_product_warning_count($warning_type)
 	{
+		$this->db->from("product AS P")
+						->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->_current_branch_id, "left")
+						->where("P.`is_show`", 1)
+						->where("P.`type`", 1);
+
 		switch ($warning_type) {
 			case 'MAX':
-				$this->db->where("`inventory` > `max_inv`")
-					->where("`max_inv` <>", 0);
+				$this->db->where("PBI.`inventory` > PBI.`max_inv`")
+						->where("PBI.`max_inv` <>", 0);
+						
 				break;
 			
 			case 'MIN':
-				$this->db->where("`inventory` < `min_inv`")
-					->where("`inventory` >", 0)
-					->where("`min_inv` <>", 0);					
+				$this->db->where("PBI.`inventory` < PBI.`min_inv`")
+						->where("PBI.`inventory` >", 0)
+						->where("PBI.`min_inv` <>", 0);		
 				break;
 
 			case 'NEGATIVE':
-				$this->db->from("product AS P")
-						->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->_current_branch_id, "left")
-						->where("P.`is_show`", 1)
-						->where("PBI.`inventory` < ", 0)
-						->where("PBI.`min_inv` <> ", 0)
-						->where("P.`type`", 1);
-
-				return $this->db->count_all_results();
-
+				$this->db->where("PBI.`inventory` < ", 0)
+						->where("PBI.`min_inv` <> ", 0);
 				break;
 		}
 
 		$this->db->where("branch_id", $this->_current_branch_id);
 
-		return $this->db->count_all_results('product_branch_inventory');
+		return $this->db->count_all_results();
 	}
 }

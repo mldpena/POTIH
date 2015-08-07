@@ -64,7 +64,7 @@ class Product extends CI_Controller {
 		{
 			case 'list':
 				$page = 'product_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\Product_Code::VIEW_PRODUCT);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\Product_Code::ADD_PRODUCT),
 									'allow_to_edit' => $this->permission_checker->check_permission(\Permission\Product_Code::EDIT_PRODUCT),
@@ -74,7 +74,7 @@ class Product extends CI_Controller {
 			
 			case 'warning':
 				$page = 'inventory_warning_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',FALSE);
+				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING);
 
 				break;
@@ -82,20 +82,20 @@ class Product extends CI_Controller {
 
 			case 'summary':
 				$page = 'transaction_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE,$this->encrypt->decode(get_cookie('branch')));
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY);
 				break;
 
 			case 'inventory':
 				$page = 'branch_inventory_list';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE,' branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY);
 
 				break;
 
 			case 'record':
 				$page = 'transaction_record';
-				$branch_list = get_name_list_from_table(TRUE,'branch',TRUE);
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE);
 				$allow_user = TRUE;
 				break;
 

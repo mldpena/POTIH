@@ -12,7 +12,6 @@
 		const ADD_PRODUCT = 102;
 		const EDIT_PRODUCT = 103;
 		const DELETE_PRODUCT = 104;
-
 	}
 
 	class Material_Code

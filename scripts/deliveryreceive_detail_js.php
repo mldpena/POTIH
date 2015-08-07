@@ -267,7 +267,7 @@
 		var printType = 'transfer';
 
 		var arr = 	{ 
-						fnc : 'set_session_receive',
+						fnc : 'set_session',
 						print_type : printType 
 					}
 

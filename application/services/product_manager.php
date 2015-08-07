@@ -225,7 +225,7 @@ class Product_Manager
 		$result->free_result();
 		
 		$response['own_branch'] = $this->_current_branch_id;
-		
+		$response['is_exempted'] = !in_array($this->_current_user, array(1,8)) ? FALSE : TRUE;
 		return $response;
 	}
 

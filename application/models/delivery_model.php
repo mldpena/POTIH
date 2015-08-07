@@ -928,7 +928,8 @@ class Delivery_Model extends CI_Model {
 				->where("H.`is_show`", \Constants\DELIVERY_CONST::ACTIVE)
 				->where("H.`id`", $this->_delivery_head_id);
 
-		switch ($session_name) {
+		switch ($session_name) 
+		{
 			case 'delivery_receive':
 				$this->db->where("D.`is_for_branch`", 1);
 				break;
@@ -1168,7 +1169,7 @@ class Delivery_Model extends CI_Model {
 
 		$row = $result->row();
 
-		if ($row->remaining_qty > 0)
+		if ($row->remaining_qty <= 0)
 			$is_incomplete = FALSE;
 
 		$result->free_result();

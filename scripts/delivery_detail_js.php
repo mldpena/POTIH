@@ -196,8 +196,12 @@
 					if (response.delivery_type == DeliveryType.Sales)  
 						$('#delivery_to_list').hide();
 
-					if (!response.is_saved) 
+					if (!response.is_saved)
+					{
 						isUsed = ", .tdreceive";
+						$('#print').hide();
+					} 
+						
 				}
 				
 				if (response.detail_error == '') 
@@ -222,11 +226,8 @@
 				{
 					$('.tdistransfer').hide();
 					hideTransferAndReceived(true);
-				} 
-				
-				if (response.is_saved)
-					$('#print').hide();
-
+				}
+					
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
 
