@@ -20,6 +20,8 @@
 				color: #fff;
 			}
 			.footer{
+				position: absolute;
+				bottom: 0;
 				text-align: center;
 			}
 		</style>
