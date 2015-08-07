@@ -49,7 +49,7 @@
 			<div class="max-row">
 				<center>
 					<img src="<?= base_url().IMG ?>loading.gif" class="img-logo" id="loadingimg">
-					<div class="tbl max" id="tbl"></div>
+					<div class="tbl" id="tbl"></div>
 				</center>
 			</div>
 			<div class="max-row" align="right">
