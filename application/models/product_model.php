@@ -219,7 +219,7 @@ class Product_Model extends CI_Model {
 		if ($with_inventory)
 			$this->db->join("`product_branch_inventory` AS PBI","PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->db->escape($branch_id),"left");
 
-		$this->db->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE)
+		$this->db->where("P.`is_show`", 1)
 				->group_start()
 					->like("P.`description`", $term, "both")
 					->or_like("P.`material_code`", $term, "both")
@@ -447,29 +447,26 @@ class Product_Model extends CI_Model {
 				array_push($query_data,$date_from);
 
 				$temp_beginning = "COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',";
-				$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id` AND TEMP.`user_id` = ?";
+				$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id`";
 
-				$query_truncate = "TRUNCATE temp_beginning_transaction;";
-				$result_truncate = $this->sql->execute_query($query_truncate);
-
-				if ($result_truncate['error'])
-					throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
-
-				$query_temp = "INSERT INTO temp_beginning_transaction(`product_id`,`beginning_inventory`, `user_id`)
-								SELECT P.`id`, COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
-													- `damage` - `purchase_return` - `stock_delivery` - `customer_delivery` 
-													- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory', ".$this->_current_user."
-									FROM product AS P
-									LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
-									WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
-									GROUP BY P.`id`";
+				$query_temp = "CREATE TEMPORARY TABLE temp_beginning_transaction
+								(
+									product_id BIGINT NOT NULL DEFAULT 0,
+								    beginning_inventory INT NOT NULL DEFAULT 0,
+									INDEX idx_productid (product_id)
+								)
+								SELECT P.`id` AS 'product_id', COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
+												- `damage` - `purchase_return` - `stock_delivery` - `customer_delivery` 
+												- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
+								FROM product AS P
+								LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
+								WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
+								GROUP BY P.`id`";
 
 				$result_temp = $this->sql->execute_query($query_temp,$query_data);
 
 				if ($result_temp['error'])
 					throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
-
-				array_unshift($query_data, $this->_current_user);
       		}
 
       		if (!empty($date_to)) 
@@ -669,19 +666,19 @@ class Product_Model extends CI_Model {
 			array_push($query_data,$date_from);
 
 			$temp_beginning = "COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',";
-			$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id` AND TEMP.`user_id` = ?";
-
-			$query_truncate = "TRUNCATE temp_beginning_transaction;";
-			$result_truncate = $this->sql->execute_query($query_truncate);
-
-			if ($result_truncate['error'])
-				throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+			$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id`";
 
 			$query_temp_data = $query_data;
+
 			array_push($query_temp_data,$product_id);
 
-			$query_temp = "INSERT INTO temp_beginning_transaction(`product_id`,`beginning_inventory`)
-							SELECT P.`id`, COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
+			$query_temp = "CREATE TEMPORARY TABLE temp_beginning_transaction
+								(
+									product_id BIGINT NOT NULL DEFAULT 0,
+								    beginning_inventory INT NOT NULL DEFAULT 0,
+									INDEX idx_productid (product_id)
+								)
+								SELECT P.`id` AS 'product_id', COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
 												- `damage` - `purchase_return` - `stock_delivery` - `customer_delivery` 
 												- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
 								FROM product AS P
@@ -693,8 +690,6 @@ class Product_Model extends CI_Model {
 
 			if ($result_temp['error'])
 				throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
-
-			array_unshift($query_data, $this->_current_user);
   		}
 
   		if (!empty($date_to)) 
