@@ -473,7 +473,7 @@ CREATE TABLE `product` (
 
 LOCK TABLES `product` WRITE;
 /*!40000 ALTER TABLE `product` DISABLE KEYS */;
-INSERT INTO `product` VALUES (1,'BJ014L20','BI Tube 1/4\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-08-06 07:50:11','2015-05-26 12:29:49',1,1),(2,'BJ056L20','BI Tube 5/16\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-08-07 01:15:38','2015-05-26 12:30:14',1,1),(3,'BJ038A20','BI Tube 3/8\" (1.0mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:41','2015-05-26 12:34:41',1,1),(4,'BJ012C20','BI Tube 1/2\" (1.6mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:52','2015-05-26 12:34:52',1,1),(5,'BJ058B19','BI Tube 5/8\" (1.2mm) x 19 Ft.',1,6,6,1,'2015-08-07 01:13:00','2015-05-26 12:35:11',1,1),(6,'BJ058B20','BI Tube 5/8\" (1.2mm) x 20 Ft.',1,6,6,1,'2015-08-07 04:31:43','2015-05-26 12:35:21',6,1),(7,'BC06004F','Hot Rolled COIL 6.0mm x 4 Ft.',1,6,2,1,'2015-05-26 12:38:46','2015-06-30 12:44:43',1,1),(8,'BC05004S','Hot Rolled COIL 5.0mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:38:58','2015-06-30 12:54:40',1,1),(9,'SE112233','Hot Rolled COIL 4.5mm x 4 Ft. ',1,2,3,1,'2015-08-07 03:18:38','2015-06-30 01:29:35',4,1),(10,'SS304CUT','SS-304  CUTTINGS',0,0,0,1,'2015-05-26 12:47:26','2015-05-26 12:47:26',1,1),(11,'SS316CUT','SS-316  CUTTINGSS',0,0,0,1,'2015-08-07 03:23:58','2015-05-26 12:47:36',8,1),(12,'ALUMNCUT','ALUMINUM  CUTTING',0,0,0,1,'2015-05-26 12:50:35','2015-05-26 12:50:35',1,1),(13,'MATLABOR','LABOR ONLY, MAT.  FROM CUSTOMER',0,0,0,1,'2015-05-26 12:52:17','2015-05-26 12:52:17',1,1),(14,'COPPRCUT','COPPER  CUTTINGS',0,0,0,1,'2015-05-26 12:52:27','2015-05-26 12:52:27',1,1),(15,'AA123','sample',1,5,1,1,'2015-08-07 03:24:21','0000-00-00 00:00:00',8,0);
+INSERT INTO `product` VALUES (1,'BJ014L20','BI Tube 1/4\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-08-06 07:50:11','2015-05-26 12:29:49',1,1),(2,'BJ056L20','BI Tube 5/16\" (0.8mm) x 20 Ft.',1,6,6,1,'2015-08-07 01:15:38','2015-05-26 12:30:14',1,1),(3,'BJ038A20','BI Tube 3/8\" (1.0mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:41','2015-05-26 12:34:41',1,1),(4,'BJ012C20','BI Tube 1/2\" (1.6mm) x 20 Ft.',1,6,6,1,'2015-05-26 12:34:52','2015-05-26 12:34:52',1,1),(5,'BJ058B19','BI Tube 5/8\" (1.2mm) x 19 Ft.',1,6,6,1,'2015-08-07 01:13:00','2015-05-26 12:35:11',1,1),(6,'BJ058B20','BI Tube 5/8\" (1.2mm) x 20 Ft.',1,6,6,1,'2015-08-07 07:42:14','2015-05-26 12:35:21',6,1),(7,'BC06004F','Hot Rolled COIL 6.0mm x 4 Ft.',1,6,2,1,'2015-05-26 12:38:46','2015-06-30 12:44:43',1,1),(8,'BC05004S','Hot Rolled COIL 5.0mm x 4 Ft. ',1,6,2,1,'2015-05-26 12:38:58','2015-06-30 12:54:40',1,1),(9,'SE112233','Hot Rolled COIL 4.5mm x 4 Ft. ',1,2,3,1,'2015-08-07 03:18:38','2015-06-30 01:29:35',4,1),(10,'SS304CUT','SS-304  CUTTINGS',0,0,0,1,'2015-05-26 12:47:26','2015-05-26 12:47:26',1,1),(11,'SS316CUT','SS-316  CUTTINGSS',0,0,0,1,'2015-08-07 03:23:58','2015-05-26 12:47:36',8,1),(12,'ALUMNCUT','ALUMINUM  CUTTING',0,0,0,1,'2015-05-26 12:50:35','2015-05-26 12:50:35',1,1),(13,'MATLABOR','LABOR ONLY, MAT.  FROM CUSTOMER',0,0,0,1,'2015-05-26 12:52:17','2015-05-26 12:52:17',1,1),(14,'COPPRCUT','COPPER  CUTTINGS',0,0,0,1,'2015-05-26 12:52:27','2015-05-26 12:52:27',1,1),(15,'AA123','sample',1,5,1,1,'2015-08-07 03:24:21','0000-00-00 00:00:00',8,0);
 /*!40000 ALTER TABLE `product` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1528,7 +1528,13 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_detail_BEFORE_INSERT` BEFORE INSERT ON `stock_delivery_detail` 
 FOR EACH ROW
 BEGIN
-	CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,'DELIVERY DETAIL');
+	SET @inventory_table_name := 'CUSTOMER DETAIL';
+    
+    IF(NEW.`is_for_branch` = 1) THEN
+		SET @inventory_table_name := 'DELIVERY DETAIL';
+	END IF;
+    
+	CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,@inventory_table_name);
 	
 	IF(NEW.`request_detail_id` <> 0) THEN
 		CALL process_update_receive(NEW.`request_detail_id`,NEW.`quantity`,'REQUEST DETAIL');
@@ -1551,39 +1557,58 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_detail_BEFORE_UPDATE` BEFORE UPDATE ON `stock_delivery_detail` 
 FOR EACH ROW
 BEGIN
-	IF (OLD.`recv_quantity` <> NEW.`recv_quantity`) THEN
+	SET @new_inventory_table := 'CUSTOMER DETAIL';
+	
+    IF(NEW.`is_for_branch` = 1) THEN
+		SET @new_inventory_table := 'DELIVERY DETAIL';
+    END IF;
     
-		SET @qty := (NEW.`recv_quantity` - OLD.`recv_quantity`);
+    IF(OLD.`is_for_branch` <> NEW.`is_for_branch`) THEN
+		SET @old_inventory_table := 'CUSTOMER DETAIL';
+		SET @new_inventory_table := 'DELIVERY DETAIL';
         
-        IF(NEW.`is_for_branch` = 1) THEN
-            CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'TRANSFER DETAIL');
-        END IF;
-        
-    ELSEIF (OLD.`product_id` <> NEW.`product_id`) THEN
-		CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
-		CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,'DELIVERY DETAIL');
-        
-        IF(OLD.`request_detail_id` <> 0) THEN
-			CALL process_update_receive(OLD.`request_detail_id`,(-1 * OLD.`quantity`),'REQUEST DETAIL');
-        END IF;
-        
-	ELSEIF (OLD.`quantity` <> NEW.`quantity` AND NEW.`is_for_branch` = 1) THEN
-		SET @qty := (NEW.`quantity` - OLD.`quantity`) * -1;
-		CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'DELIVERY DETAIL');
-        
-        IF(NEW.`request_detail_id` <> 0) THEN
-			CALL process_update_receive(NEW.`request_detail_id`,@qty * -1,'REQUEST DETAIL');
+		IF(OLD.`is_for_branch` = 1) THEN
+			SET @old_inventory_table := 'DELIVERY DETAIL';
+            SET @new_inventory_table := 'CUSTOMER DETAIL';
 		END IF;
         
-	ELSEIF(OLD.`is_for_branch` <> NEW.`is_for_branch`) THEN
-		IF(OLD.`request_detail_id` <> 0) THEN
+        IF(OLD.`request_detail_id` <> 0) THEN
 			CALL process_update_receive(OLD.`request_detail_id`,(-1 * OLD.`quantity`),'REQUEST DETAIL');
 		END IF;
         
 		IF(NEW.`request_detail_id` <> 0) THEN
 			CALL process_update_receive(NEW.`request_detail_id`,NEW.`quantity`,'REQUEST DETAIL');
 		END IF;
-    END IF;
+        
+        CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,@old_inventory_table);
+        CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,@new_inventory_table);
+	
+    ELSEIF (OLD.`recv_quantity` <> NEW.`recv_quantity`) THEN
+    
+		SET @qty := (NEW.`recv_quantity` - OLD.`recv_quantity`);
+        
+        IF(NEW.`is_for_branch` = 1) THEN
+            CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,'TRANSFER DETAIL');
+        END IF;
+    
+    ELSEIF (OLD.`product_id` <> NEW.`product_id`) THEN
+		CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,@new_inventory_table);
+		CALL process_compute_inventory_for_detail(NEW.`product_id`,(-1 * NEW.`quantity`),NEW.`headid`,@new_inventory_table);
+        
+        IF(OLD.`request_detail_id` <> 0) THEN
+			CALL process_update_receive(OLD.`request_detail_id`,(-1 * OLD.`quantity`),'REQUEST DETAIL');
+        END IF;
+        
+	ELSEIF (OLD.`quantity` <> NEW.`quantity`) THEN
+		SET @qty := (NEW.`quantity` - OLD.`quantity`) * -1;
+		
+        CALL process_compute_inventory_for_detail(NEW.`product_id`,@qty,NEW.`headid`,@new_inventory_table);
+        
+        IF(NEW.`request_detail_id` <> 0) THEN
+			CALL process_update_receive(NEW.`request_detail_id`,@qty * -1,'REQUEST DETAIL');
+		END IF;
+        
+	END IF;
 END */;;
 DELIMITER ;
 /*!50003 SET sql_mode              = @saved_sql_mode */ ;
@@ -1602,7 +1627,13 @@ DELIMITER ;;
 /*!50003 CREATE*/ /*!50017 DEFINER=`root`@`localhost`*/ /*!50003 TRIGGER `dbs_hitop`.`stock_delivery_detail_BEFORE_DELETE` BEFORE DELETE ON `stock_delivery_detail` 
 FOR EACH ROW
 BEGIN
-	CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,'DELIVERY DETAIL');
+	SET @inventory_table_name := 'CUSTOMER DETAIL';
+    
+    IF(OLD.`is_for_branch` = 1) THEN
+		SET @inventory_table_name := 'DELIVERY DETAIL';
+	END IF;
+    
+    CALL process_compute_inventory_for_detail(OLD.`product_id`,OLD.`quantity`,OLD.`headid`,@inventory_table_name);
 	
 	IF(OLD.`request_detail_id` <> 0) THEN
 		CALL process_update_receive(OLD.`request_detail_id`,(-1 * OLD.`quantity`),'REQUEST DETAIL');
@@ -1793,7 +1824,7 @@ CREATE TABLE `subgroup` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1802,33 +1833,8 @@ CREATE TABLE `subgroup` (
 
 LOCK TABLES `subgroup` WRITE;
 /*!40000 ALTER TABLE `subgroup` DISABLE KEYS */;
-INSERT INTO `subgroup` VALUES (1,'A','ANGEL BEAR',1,'2015-05-20 00:00:00','2015-06-30 02:47:44',1,1),(2,'C','COIL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'E','EMBROSSED / CHECKERED PLATE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'F','FLAT BAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(5,'H','HEXAGON BAR',1,'2015-05-26 12:18:49','2015-05-26 12:18:49',1,1),(6,'J','ROUND TUBE',1,'2015-05-26 12:19:00','2015-05-26 12:19:00',1,1),(7,'K','SQUARE TUBE',1,'2015-05-26 12:19:12','2015-05-26 12:19:12',1,1),(8,'L','RECTANGULAR TUBE',1,'2015-05-26 12:19:26','2015-05-26 12:19:26',1,1),(9,'M','MESH - IMPORTED',1,'2015-05-26 12:19:38','2015-05-26 12:19:38',1,1),(10,'N','PIPE',1,'2015-05-26 12:19:48','2015-05-26 12:19:48',1,1),(11,'P','PERFORATED SHEET',1,'2015-05-26 12:20:07','2015-05-26 12:20:07',1,1),(12,'Q','SQUARE BAR',1,'2015-05-26 12:20:26','2015-05-26 12:20:26',1,1),(13,'R','ROUND BAR',1,'2015-05-26 12:20:41','2015-05-26 12:20:41',1,1),(14,'S','SHEETS AND PLATES - PLAIN',1,'2015-05-26 12:20:54','2015-05-26 12:20:54',1,1),(15,'U','WIRE',1,'2015-05-26 12:21:04','2015-05-26 12:21:04',1,1),(16,'V','WIELDING ROD / ELECTRODE',1,'2015-05-26 12:21:27','2015-05-26 12:21:27',1,1),(17,'W','WEDLED WIRE SCREEN - IMPORTED',1,'2015-05-26 12:21:47','2015-05-26 12:21:47',1,1),(18,'X','EXPANDED METAL',1,'2015-05-26 12:22:21','2015-05-26 12:22:21',1,1),(19,'Z','ZINGA',0,'2015-06-30 02:54:54','2015-06-30 02:56:08',1,1),(20,'Z','ZINGA',0,'2015-06-30 02:56:17','2015-07-22 11:57:02',1,1);
+INSERT INTO `subgroup` VALUES (1,'A','ANGEL BEAR',1,'2015-05-20 00:00:00','2015-06-30 02:47:44',1,1),(2,'C','COIL',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(3,'E','EMBROSSED / CHECKERED PLATE',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(4,'F','FLAT BAR',1,'2015-05-20 00:00:00','2015-05-20 00:00:00',1,1),(5,'H','HEXAGON BAR',1,'2015-05-26 12:18:49','2015-05-26 12:18:49',1,1),(6,'J','ROUND TUBE',1,'2015-05-26 12:19:00','2015-05-26 12:19:00',1,1),(7,'K','SQUARE TUBE',1,'2015-05-26 12:19:12','2015-05-26 12:19:12',1,1),(8,'L','RECTANGULAR TUBE',1,'2015-05-26 12:19:26','2015-05-26 12:19:26',1,1),(9,'M','MESH - IMPORTED',1,'2015-05-26 12:19:38','2015-05-26 12:19:38',1,1),(10,'N','PIPE',1,'2015-05-26 12:19:48','2015-05-26 12:19:48',1,1),(11,'P','PERFORATED SHEET',1,'2015-05-26 12:20:07','2015-05-26 12:20:07',1,1),(12,'Q','SQUARE BAR',1,'2015-05-26 12:20:26','2015-05-26 12:20:26',1,1),(13,'R','ROUND BAR',1,'2015-05-26 12:20:41','2015-05-26 12:20:41',1,1),(14,'S','SHEETS AND PLATES - PLAIN',1,'2015-05-26 12:20:54','2015-05-26 12:20:54',1,1),(15,'U','WIRE',1,'2015-05-26 12:21:04','2015-05-26 12:21:04',1,1),(16,'V','WIELDING ROD / ELECTRODE',1,'2015-05-26 12:21:27','2015-05-26 12:21:27',1,1),(17,'W','WEDLED WIRE SCREEN - IMPORTED',1,'2015-05-26 12:21:47','2015-05-26 12:21:47',1,1),(18,'X','EXPANDED METAL',1,'2015-05-26 12:22:21','2015-05-26 12:22:21',1,1),(19,'Z','ZINGA',0,'2015-06-30 02:54:54','2015-06-30 02:56:08',1,1),(20,'Z','ZINGA',0,'2015-06-30 02:56:17','2015-07-22 11:57:02',1,1),(21,'Y','YENO',0,'2015-08-07 07:49:48','2015-08-07 07:54:37',6,6),(22,'T','TENO',1,'2015-08-07 07:54:04','2015-08-07 07:54:04',6,6),(23,'Y','YENO',1,'2015-08-07 07:54:45','2015-08-07 07:54:45',6,6),(24,'O','OPPA',1,'2015-08-07 07:58:01','2015-08-07 07:58:01',6,6);
 /*!40000 ALTER TABLE `subgroup` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `temp_beginning_transaction`
---
-
-DROP TABLE IF EXISTS `temp_beginning_transaction`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `temp_beginning_transaction` (
-  `product_id` bigint(20) DEFAULT NULL,
-  `branch_id` bigint(20) DEFAULT '0',
-  `beginning_inventory` int(11) DEFAULT '0',
-  `user_id` bigint(20) DEFAULT '0',
-  KEY `idx_productid_branchid_userid` (`product_id`,`branch_id`,`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `temp_beginning_transaction`
---
-
-LOCK TABLES `temp_beginning_transaction` WRITE;
-/*!40000 ALTER TABLE `temp_beginning_transaction` DISABLE KEYS */;
-/*!40000 ALTER TABLE `temp_beginning_transaction` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1993,6 +1999,8 @@ BEGIN
 	DECLARE cursor_product_id BIGINT;
 	DECLARE cursor_quantity INT;
     DECLARE cursor_other_id BIGINT;
+    DECLARE cursor_for_branch INT(1);
+    
 	DECLARE done INT DEFAULT FALSE;
     
     DECLARE cursor_return CURSOR FOR SELECT `product_id`, `quantity` FROM return_detail WHERE `headid` = head_id_d;
@@ -2000,7 +2008,7 @@ BEGIN
     DECLARE cursor_release CURSOR FOR SELECT `product_id`, `quantity`, `release_order_detail_id` FROM release_detail WHERE `headid` = head_id_d;
     DECLARE cursor_purchase_return CURSOR FOR SELECT `product_id`, `quantity` FROM purchase_return_detail WHERE `headid` = head_id_d;
     DECLARE cursor_received CURSOR FOR SELECT `product_id`, `quantity`, `purchase_detail_id` FROM purchase_receive_detail WHERE `headid` = head_id_d;
-    DECLARE cursor_delivery CURSOR FOR SELECT `product_id`, `quantity`, `request_detail_id` FROM stock_delivery_detail WHERE `headid` = head_id_d; 
+    DECLARE cursor_delivery CURSOR FOR SELECT `product_id`, `quantity`, `request_detail_id`, `is_for_branch` FROM stock_delivery_detail WHERE `headid` = head_id_d; 
     
 	DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;		
 	
@@ -2031,7 +2039,7 @@ BEGIN
 		ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
 			FETCH cursor_purchase_return INTO cursor_product_id, cursor_quantity;
 		ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
-			FETCH cursor_delivery INTO cursor_product_id, cursor_quantity, cursor_other_id;
+			FETCH cursor_delivery INTO cursor_product_id, cursor_quantity, cursor_other_id, cursor_for_branch;
 		END IF;
         
 		IF done THEN
@@ -2039,24 +2047,43 @@ BEGIN
 		END IF;
         
 			IF (table_name_d = 'CUSTOMER RETURN HEAD') THEN
+            
 				CALL process_compute_inventory_for_detail(cursor_product_id,(-1 * cursor_quantity),head_id_d,'CUSTOMER RETURN DETAIL');
-			ELSEIF (table_name_d = 'DAMAGE HEAD') THEN
+			
+            ELSEIF (table_name_d = 'DAMAGE HEAD') THEN
+            
 				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'DAMAGE DETAIL');
-			ELSEIF (table_name_d = 'RELEASE HEAD') THEN
+			
+            ELSEIF (table_name_d = 'RELEASE HEAD') THEN
+            
 				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'RELEASE DETAIL');
-				IF(cursor_other_id <> 0) THEN
+				
+                IF(cursor_other_id <> 0) THEN
 					CALL process_update_receive(cursor_other_id,(-1 * cursor_quantity),'RELEASE DETAIL');
 				END IF;
+                
             ELSEIF (table_name_d = 'RECEIVE HEAD') THEN
+            
 				CALL process_compute_inventory_for_detail(cursor_product_id,(-1 * cursor_quantity),head_id_d,'RECEIVE DETAIL');
 				CALL process_update_receive(cursor_other_id,(-1 * cursor_quantity),'RECEIVE DETAIL');
-			ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
-				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'PURCHASE RETURN DETAIL');
-			ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
-				CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'DELIVERY DETAIL');
-				IF(cursor_other_id <> 0) THEN
+			
+            ELSEIF (table_name_d = 'PURCHASE RETURN HEAD') THEN
+				
+                CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,'PURCHASE RETURN DETAIL');
+			
+            ELSEIF (table_name_d = 'DELIVERY HEAD') THEN
+				SET @inventory_table_name := 'CUSTOMER DETAIL';
+                
+                IF(cursor_for_branch = 1) then
+					SET @inventory_table_name := 'DELIVERY DETAIL';
+                END IF;
+                
+                CALL process_compute_inventory_for_detail(cursor_product_id,cursor_quantity,head_id_d,@inventory_table_name);
+				
+                IF(cursor_other_id <> 0) THEN
 					CALL process_update_receive(cursor_other_id,(-1 * cursor_quantity),'REQUEST DETAIL');
 				END IF;
+            
             END IF;
 	END LOOP;
     
@@ -2444,4 +2471,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-07 16:59:20
+-- Dump completed on 2015-08-10 16:38:23

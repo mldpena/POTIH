@@ -855,7 +855,6 @@ class Product_Model extends CI_Model {
 					$detail_table 	= "stock_delivery_detail";
 					$reference_character = "SD";
 					$additional_condition = " AND D.`is_for_branch` = 0";
-					$quantity_column = "D.`recv_quantity`";
 					$date_column = "H.`customer_receive_date`";
 					$link_location 	= "custreceive";
 					break;
