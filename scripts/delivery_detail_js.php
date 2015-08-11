@@ -253,10 +253,16 @@
 		}
 		else if ($(this).val() == DeliveryType.Both)
 		{
+			for (var i = 1; i < myjstbl.get_row_count(); i++) 
+					myjstbl.edit_row(i);
+
 			$('#delivery_to_list').show();
 			$('.tdistransfer').show();
+			$('.chktransfer').removeAttr('checked');
 			$('#dynamic-css').html('');
 			hideTransferAndReceived();
+
+
 		}
 	});
 

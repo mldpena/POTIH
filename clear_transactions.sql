@@ -14,7 +14,6 @@ TRUNCATE release_detail;
 TRUNCATE purchase_return_head;
 TRUNCATE purchase_return_detail;
 TRUNCATE daily_transaction_summary;
-TRUNCATE temp_beginning_transaction;
 TRUNCATE recent_name;
 TRUNCATE release_order_head;
 TRUNCATE release_order_detail;

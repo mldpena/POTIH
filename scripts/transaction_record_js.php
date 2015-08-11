@@ -86,6 +86,7 @@
 
     rootBreakDown.appendChild(myjstblBreakDown.tab);
 
+    $('#tbl, #tbl_breakdown').hide();
     $('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
