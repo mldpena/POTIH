@@ -35,6 +35,7 @@
  * @since	Version 1.0.0
  * @filesource
  */
+set_time_limit(0);
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**

@@ -445,11 +445,11 @@ class Product_Manager
 					for ($x=3; $x < count($product_csv_data); $x++) 
 						$csv_branch_id_list[strtolower($product_csv_data[$x])] = $x;
 				}
-				else
+				else if ($i > 1 && count($product_csv_data) >= 3)
 				{
-					if (count($product_csv_data) <= 3)
+					if (count($product_csv_data) <= 2)
 					{
-						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete details!";
+						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete detail count!";
 						continue;
 					}
 
