@@ -113,6 +113,7 @@ class Product_Model extends CI_Model {
 		extract($param);
 
 		$product_branch_inventory_condition = "";
+		$limit = $row_end - $row_start + 1;
 
 		$this->db->select("P.`id`, P.`material_code`, P.`description`,
 							CASE 
@@ -200,11 +201,82 @@ class Product_Model extends CI_Model {
 				break;
 		}
 
-		$this->db->order_by($order_field,"DESC");
+		$this->db->order_by($order_field,"DESC")
+					->limit($limit, $row_start);
 
 		$result = $this->db->get();
 
 		return $result;		
+	}
+
+	public function get_product_list_info_count($param)
+	{
+		extract($param);
+
+		$product_branch_inventory_condition = "";
+
+		if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
+			$product_branch_inventory_condition = " AND PBI.`branch_id` = ".$this->db->escape($branch);
+
+		$this->db->from("product AS P")
+				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` $product_branch_inventory_condition", "left")
+				->where("P.`is_show`",\Constants\PRODUCT_CONST::ACTIVE);
+
+		if (!empty($code)) 
+			$this->db->like("P.`material_code`", $code, "both");
+
+		if (!empty($product)) 
+			$this->db->like("P.`description`", $product, "both");
+
+		if ($subgroup != \Constants\PRODUCT_CONST::ALL_OPTION) 
+			$this->db->where("P.`subgroup_id`", $subgroup);
+
+		if ($material != \Constants\PRODUCT_CONST::ALL_OPTION) 
+			$this->db->where("P.`material_type_id`", $material);
+
+		if (!empty($datefrom))
+			$this->db->where("P.`date_created` >=", $datefrom.' 00:00:00');
+
+		if (!empty($dateto))
+			$this->db->where("P.`date_created` <=", $dateto.' 23:59:59');
+
+		if ($invstat != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($invstat) {
+				case \Constants\PRODUCT_CONST::POSITIVE_INV:
+					$this->db->where("PBI.`inventory` > ",0);
+					break;
+				
+				case \Constants\PRODUCT_CONST::NEGATIVE_INV:
+					$this->db->where("PBI.`inventory` < ",0);
+					break;
+
+				case \Constants\PRODUCT_CONST::ZERO_INV:
+					$this->db->where("PBI.`inventory`",0);
+					break;
+			}
+		}
+
+		if ($type != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type = \Constants\PRODUCT_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type = \Constants\PRODUCT_CONST::NON_STOCK;
+					break;
+			}
+
+			$this->db->where("P.`type`",$type);
+		}
+
+		if ($branch == \Constants\PRODUCT_CONST::ALL_OPTION)
+			$this->db->group_by("P.`id`");
+
+		return $this->db->count_all_results();;	
 	}
 
 	public function get_product_by_term($term, $branch_id, $with_inventory)

@@ -161,6 +161,10 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
+	myjstbl.mypage.set_mysql_interval(100);
+	myjstbl.mypage.isOldPaging = true;
+	myjstbl.mypage.pass_refresh_filter_page(getSearchFilter);
+
 	var root_min_max = document.getElementById("tbl_min_max");
 	myjstbl_min_max = new my_table(tab_min_max, colarray_min_max, {	ispaging : false, 
 											tdhighlight_when_hover : "tablerow",
@@ -185,7 +189,8 @@
 
 	tableHelper.headContent.bindSearchEvent(getSearchFilter);
 	tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+
+	getSearchFilter();
 
 	$('.btn-import').click(function(){
 		var btnId = $(this).attr('id');
@@ -551,7 +556,7 @@
 		});
 	}
 
-	function getSearchFilter()
+	function getSearchFilter(rowStart, rowEnd)
 	{
 		var itemcode_val 	= $('#itemcode').val();
 		var product_val 	= $('#product').val();
@@ -564,8 +569,17 @@
 		var inv_val			= $('#invstatus').val();
 		var orderby_val		= $('#orderby').val();
 
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
 
-		var arr = 	{ 
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+		var objectValues = 	
+					{ 
 						fnc 	 : 'get_product_list', 
 						code 	 : itemcode_val,
 						product  : product_val,
@@ -576,10 +590,13 @@
 						dateto 	 : dateto_val,
 						branch 	 : branch_val,
 						invstat  : inv_val,
-						orderby  : orderby_val
+						orderby  : orderby_val,
+						filter_reset : filterResetValue,
+						row_start : rowStartValue,
+						row_end : rowEndValue
 					};
 
-		return arr;
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}
 
 	function actionAfterDelete()

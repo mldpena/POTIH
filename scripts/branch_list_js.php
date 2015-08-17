@@ -82,29 +82,10 @@
 
     tableHelper.headContent.bindSearchEvent(getSearchFilter);
     tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
-    tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-    function getSearchFilter()
-	{
-		var search_val 	= $('#search_string').val();
-		var order_val 	= $('#orderby').val();
+    getSearchFilter();
 
-		var arr = 	{ 
-						fnc 	 : 'search_branch_list', 
-						search 	 : search_val,
-						orderby  : order_val
-					};
-
-		return arr;
-	}
-
-	function actionAfterDelete()
-	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Branch successfully deleted!','success');
-	}
-
-	$('#save').click(function(){
+    $('#save').click(function(){
     	if (flag == 1) 
     		return;
 
@@ -214,4 +195,25 @@
         global_branch_id 	= 0;
         global_row_index 	= 0;
     });
+
+    function getSearchFilter()
+	{
+		var search_val 	= $('#search_string').val();
+		var order_val 	= $('#orderby').val();
+
+		var objectValues = 	
+					{ 
+						fnc 	 : 'search_branch_list', 
+						search 	 : search_val,
+						orderby  : order_val
+					};
+
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
+	}
+
+	function actionAfterDelete()
+	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		build_message_box('messagebox_1','Branch successfully deleted!','success');
+	}
 </script>

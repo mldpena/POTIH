@@ -43,12 +43,15 @@ class Product_Manager
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			
+			$response['rowcnt'] = $this->_CI->product_model->get_product_list_info_count($param);
+
+			extract($param);
 
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
 				$response['data'][$i][] = array($row->type);
