@@ -109,7 +109,7 @@
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	getSearchFilter();
 
     function getSearchFilter()
 	{
@@ -118,7 +118,8 @@
 		var status_val 		= $('#status').val();
 		var order_type_val 	= $('#order_type').val();
 		
-		var arr = 	{ 
+		var objectValues = 	
+					{ 
 						fnc 	 	: 'get_user_list', 
 						search_string : search_string_val,
 						order_by  	: order_by_val,
@@ -126,7 +127,7 @@
 						status 		: status_val
 					};
 
-		return arr;
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}
 
 	function actionAfterDelete()

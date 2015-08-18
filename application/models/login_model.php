@@ -20,8 +20,8 @@ class Login_Model extends CI_Model {
 	{
 		$this->db->select("`id`,`is_active`, `is_first_login`, `password`, `full_name`, `username`")
 				->from("`user`")
-				->where("`username`",$username)
-				->where("`password`",$password);
+				->where("`username`", $username)
+				->where("`password`", $password);
 
 		$result = $this->db->get();
 
@@ -36,10 +36,10 @@ class Login_Model extends CI_Model {
 	public function get_user_branch_list($user_id)
 	{
 		$this->db->select("U.`user_branch_id` AS 'branch_id', B.`name` AS 'branch_name'")
-				->from("`user_branch` AS U")
-				->join("`branch` AS B", "B.id = U.`user_branch_id`", "left")
+				->from("`user_branch` AS U, `branch` AS B FORCE INDEX(idx_id_show)")
 				->where("B.`is_show`", \Constants\LOGIN_CONST::ACTIVE)
-				->where("U.`user_id`", $user_id);
+				->where("B.id = U.`user_branch_id`")
+				->where("U.`user_id`", (int)$user_id);
 
 		$result = $this->db->get();
 
@@ -56,7 +56,7 @@ class Login_Model extends CI_Model {
 	{
 		$this->db->select("`permission_code`")
 				->from("`user_permission`")
-				->where("`user_id`",$user_id);
+				->where("`user_id`", (int)$user_id);
 
 		$result = $this->db->get();
 
@@ -74,10 +74,10 @@ class Login_Model extends CI_Model {
 	{
 		$this->db->select("`id`, `username`, `password`, `full_name`")
 				->from("`user`")
-				->where("`is_show`",\Constants\LOGIN_CONST::ACTIVE)
-				->where("`username`",$username)
-				->where("`full_name`",$fullname)
-				->where("`id`",$user_id);
+				->where("`is_show`", \Constants\LOGIN_CONST::ACTIVE)
+				->where("`username`", $username)
+				->where("`full_name`", $fullname)
+				->where("`id`", (int)$user_id);
 
 		$result = $this->db->get();
 
@@ -92,7 +92,7 @@ class Login_Model extends CI_Model {
 	{
 		$update_fields = array("is_first_login" => \Constants\LOGIN_CONST::ACTIVE);
 
-		$this->db->where('id', $id);
+		$this->db->where('id', (int)$id);
 		$this->db->update("`user`", $update_fields);
 	}
 

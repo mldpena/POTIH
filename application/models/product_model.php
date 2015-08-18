@@ -20,8 +20,8 @@ class Product_Model extends CI_Model {
 	public function __construct() {
 		parent::__construct();
 
-		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
-		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 	}
 
 	public function insert_new_product_using_transaction($product_field_data, $branch_inventory_field_data)
@@ -1046,12 +1046,13 @@ class Product_Model extends CI_Model {
 
 	public function get_product_warning_count($warning_type)
 	{
-		$this->db->from("product AS P")
-						->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->_current_branch_id, "left")
+		$this->db->from("product AS P, product_branch_inventory AS PBI")
 						->where("P.`is_show`", 1)
-						->where("P.`type`", 1);
+						->where("P.`type`", 1)
+						->where("PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->_current_branch_id);
 
-		switch ($warning_type) {
+		switch ($warning_type) 
+		{
 			case 'MAX':
 				$this->db->where("PBI.`inventory` > PBI.`max_inv`")
 						->where("PBI.`max_inv` <>", 0);
@@ -1069,8 +1070,6 @@ class Product_Model extends CI_Model {
 						->where("PBI.`min_inv` <> ", 0);
 				break;
 		}
-
-		$this->db->where("branch_id", $this->_current_branch_id);
 
 		return $this->db->count_all_results();
 	}

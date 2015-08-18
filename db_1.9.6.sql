@@ -33,7 +33,8 @@ CREATE TABLE `branch` (
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_id_show` (`is_show`,`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -88,7 +89,9 @@ CREATE TABLE `daily_transaction_summary` (
   `customer_delivery` int(11) DEFAULT '0',
   `adjust_decrease` int(11) DEFAULT '0',
   `warehouse_release` int(11) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_productid_date` (`product_id`,`date`),
+  KEY `idx_productid_branchid_date` (`product_id`,`branch_id`,`date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -290,7 +293,8 @@ CREATE TABLE `inventory_adjust` (
   `last_modified_by` bigint(20) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_status_isshow_branchid` (`status`,`is_show`,`branch_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -463,7 +467,12 @@ CREATE TABLE `product` (
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_isshow_type` (`is_show`,`type`),
+  KEY `idx_isshow` (`is_show`),
+  KEY `idx_isshow_subgroup` (`is_show`,`subgroup_id`),
+  KEY `idx_isshow_materialtype` (`is_show`,`material_type_id`),
+  KEY `idx_isshow_subgroup_materialtype` (`is_show`,`subgroup_id`,`material_type_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1338 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -493,7 +502,9 @@ CREATE TABLE `product_branch_inventory` (
   `max_inv` int(7) DEFAULT '0',
   PRIMARY KEY (`id`),
   KEY `idx_productid` (`product_id`),
-  KEY `idx_productid_branchid` (`product_id`,`branch_id`)
+  KEY `idx_productid_branchid` (`product_id`,`branch_id`),
+  KEY `idx_productud_branchid_maxinv_inv` (`product_id`,`branch_id`,`max_inv`,`inventory`),
+  KEY `idx_productud_branchid_mininv_inv` (`product_id`,`branch_id`,`min_inv`,`inventory`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4012 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1669,7 +1680,8 @@ CREATE TABLE `stock_delivery_head` (
   `last_modified_by` bigint(20) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_isshow_tobranchid_id` (`is_show`,`to_branchid`,`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1794,7 +1806,9 @@ CREATE TABLE `stock_request_head` (
   `last_modified_by` bigint(20) DEFAULT '0',
   `date_created` datetime DEFAULT '0000-00-00 00:00:00',
   `last_modified_date` datetime DEFAULT '0000-00-00 00:00:00',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_isshow_tobranchid_id` (`is_show`,`request_to_branchid`,`id`),
+  KEY `idx_isshow_tobranchid` (`is_show`,`request_to_branchid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1824,7 +1838,7 @@ CREATE TABLE `subgroup` (
   `created_by` bigint(20) DEFAULT '0',
   `last_modified_by` bigint(20) DEFAULT '0',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -1859,7 +1873,8 @@ CREATE TABLE `user` (
   `created_by` bigint(20) DEFAULT '1',
   `last_modified_by` bigint(20) DEFAULT '1',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id_UNIQUE` (`id`)
+  KEY `idx_user_pass` (`username`,`password`),
+  KEY `idx_isshow_username_fullname_id` (`is_show`,`id`,`username`,`full_name`)
 ) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1884,7 +1899,9 @@ CREATE TABLE `user_branch` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) DEFAULT '0',
   `user_branch_id` bigint(20) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_userid` (`user_id`),
+  KEY `idx_userid_branchid` (`user_id`,`user_branch_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -1909,7 +1926,8 @@ CREATE TABLE `user_permission` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) DEFAULT '0',
   `permission_code` int(5) DEFAULT '0',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_userid` (`user_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=243 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -2471,4 +2489,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2015-08-13 19:03:41
+-- Dump completed on 2015-08-18 20:21:54

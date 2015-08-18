@@ -82,20 +82,22 @@
 
     tableHelper.headContent.bindSearchEvent(getSearchFilter);
     tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
-    tableHelper.contentHelper.refreshTable(getSearchFilter);
+
+    getSearchFilter();
 
     function getSearchFilter()
 	{
 		var search_val 	= $('#search_string').val();
 		var order_val 	= $('#orderby').val();
 
-		var arr = 	{ 
+		var objectValues = 	
+					{ 
 						fnc 	 : 'search_subgroup_list', 
 						search 	 :  search_val,
 						orderby  : order_val
 					};
 
-		return arr;
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}
 
 	function actionAfterDelete()

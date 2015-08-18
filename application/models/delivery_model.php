@@ -26,9 +26,9 @@ class Delivery_Model extends CI_Model {
 
 		$this->load->constant('delivery_const');
 
-		$this->_delivery_head_id 	= $this->encrypt->decode($this->uri->segment(3));
-		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
-		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_delivery_head_id 	= (int)$this->encrypt->decode($this->uri->segment(3));
+		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 

@@ -82,27 +82,8 @@
 
 	tableHelper.headContent.bindSearchEvent(getSearchFilter);
 	tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
 
-	function getSearchFilter()
-	{
-		var search_val 	= $('#search_string').val();
-		var order_val 	= $('#orderby').val();
-
-		var arr = 	{ 
-						fnc 	 : 'search_material_list', 
-						search 	 : search_val,
-						orderby  : order_val
-					};
-
-		return arr;
-	}
-
-	function actionAfterDelete()
-	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Material successfully deleted!','success');
-	}
+	getSearchFilter();
 
 	$('#save').click(function(){
 		if (flag == 1) 
@@ -219,4 +200,24 @@
 		$(this).val($(this).val().toUpperCase());
 	});
 
+	function getSearchFilter()
+	{
+		var search_val 	= $('#search_string').val();
+		var order_val 	= $('#orderby').val();
+
+		var objectValues = 	
+					{ 
+						fnc 	 : 'search_material_list', 
+						search 	 : search_val,
+						orderby  : order_val
+					};
+
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
+	}
+
+	function actionAfterDelete()
+	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		build_message_box('messagebox_1','Material successfully deleted!','success');
+	}
 </script>

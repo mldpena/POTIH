@@ -18,8 +18,8 @@ class Adjust_Model extends CI_Model {
 
 		$this->load->constant('adjust_const');
 
-		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
-		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
@@ -674,7 +674,7 @@ class Adjust_Model extends CI_Model {
 	{
 		$this->db->where("`status`", \Constants\ADJUST_CONST::PENDING)
 				->where("`is_show`", \Constants\ADJUST_CONST::ACTIVE)
-				->where("branch_id", $this->_current_branch_id);
+				->where("`branch_id`", $this->_current_branch_id);
 
 
 		return $this->db->count_all_results('inventory_adjust');

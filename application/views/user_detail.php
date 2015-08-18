@@ -181,7 +181,7 @@
 			</div>
 			<div class="sub-panel header-section">
 				<div align="left">
-					<input type="checkbox" class="permission-section" id="transfer-permission"> Stock Transaferring Section
+					<input type="checkbox" class="permission-section" id="transfer-permission"> Item Transaferring Section
 				</div>
 			</div>
 			<div class="max-row tbl max user">
@@ -214,7 +214,7 @@
 						<td></td>
 					</tr>
 					<tr>
-						<td>Stock Delivery</td>
+						<td>Item Delivery</td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY_DETAIL ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::ADD_STOCK_DELIVERY ?>"></td>
@@ -223,7 +223,7 @@
 						<td></td>
 					</tr>
 					<tr>
-						<td>Stock Receive</td>
+						<td>Item Receive</td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockReceive_Code::VIEW_STOCK_RECEIVE ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockReceive_Code::VIEW_STOCK_RECEIVE_DETAIL ?>"></td>
 						<td></td>
