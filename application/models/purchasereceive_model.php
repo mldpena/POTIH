@@ -25,9 +25,9 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$this->load->constant('purchase_receive_const');
 
-		$this->_receive_head_id 	= $this->encrypt->decode($this->uri->segment(3));
-		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
-		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_receive_head_id 	= (int)$this->encrypt->decode($this->uri->segment(3));
+		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
@@ -101,20 +101,12 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['po_lists'][$i][] = array($row->po_number);
 				$response['po_lists'][$i][] = array($row->po_date);
 				$response['po_lists'][$i][] = array($row->total_qty);
-				
-				/*if ($row->is_received == 1 && !in_array($row->id,$po_head_ids)) 
-					array_push($po_head_ids,$row->id);*/
 
 				$i++;
 			}
 		}
 
 		$result_po_list->free_result();
-
-		/*if (count($po_head_ids) > 0) {
-			$param['po_head_id'] = $po_head_ids;
-			$response = $this->get_po_details($param,$response);
-		}*/
 		
 		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`purchase_detail_id`,
 						COALESCE(CONCAT('PO',PH.`reference_number`),'') AS 'po_number',
@@ -305,38 +297,33 @@ class PurchaseReceive_Model extends CI_Model {
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-
-		$response 	= array();
-		$query_data = array();
+		$limit = $row_end - $row_start + 1;
 
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select("PRH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'for_branch',
+							CONCAT('PR',PRH.`reference_number`) AS 'reference_number', COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PO',PH.`reference_number`)),'') AS 'po_numbers',
+						    COALESCE(DATE(PRH.`entry_date`),'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
+						    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'")
+				->from("purchase_receive_head AS PRH")
+				->join("purchase_receive_detail AS PRD", "PRD.`headid` = PRH.`id`", "left")
+				->join("purchase_detail AS PD", "PD.`id` = PRD.`purchase_detail_id`", "left")
+				->join("purchase_head AS PH", "PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED, "left")
+				->join("branch AS B", "B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE, "left")
+				->join("branch AS B2", "B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE, "left")
+				->where("PRH.`is_show`", \Constants\PURCHASE_RECEIVE_CONST::ACTIVE);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND PRH.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("PRH.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND PRH.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("PRH.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($branch != \Constants\PURCHASE_RECEIVE_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND PRH.`branch_id` = ?";
-			array_push($query_data,$branch);
-		}
-	
+			$this->db->where("PRH.`branch_id`", (int)$branch);
+
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -353,34 +340,21 @@ class PurchaseReceive_Model extends CI_Model {
 				break;
 		}
 
+		$this->db->group_by("PRH.`id`")
+				->order_by($order_field, $order_type)
+				->limit((int)$limit, (int)$row_start);
 
-		$query = "SELECT 
-						PRH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'for_branch',
-						CONCAT('PR',PRH.`reference_number`) AS 'reference_number', COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PO',PH.`reference_number`)),'') AS 'po_numbers',
-					    COALESCE(DATE(PRH.`entry_date`),'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
-					    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'
-					FROM
-						purchase_receive_head AS PRH
-					    LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
-					    LEFT JOIN purchase_detail AS PD ON PD.`id` = PRD.`purchase_detail_id`
-					    LEFT JOIN purchase_head AS PH ON PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED."
-					    LEFT JOIN branch AS B ON B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
-					    LEFT JOIN branch AS B2 ON B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
-					WHERE PRH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." $conditions
-					GROUP BY PRH.`id`
-					ORDER BY $order_field $order_type";
-
-		$result = $this->db->query($query,$query_data);
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_purchase_receive_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->for_branch);
 				$response['data'][$i][] = array($row->reference_number);
@@ -396,6 +370,34 @@ class PurchaseReceive_Model extends CI_Model {
 		$result->free_result();
 		
 		return $response;
+	}
+
+	public function get_purchase_receive_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$response['rowcnt'] = 0;
+
+		$this->db->from("purchase_receive_head AS PRH")
+				->join("purchase_receive_detail AS PRD", "PRD.`headid` = PRH.`id`", "left")
+				->where("PRH.`is_show`", \Constants\PURCHASE_RECEIVE_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("PRH.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("PRH.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($branch != \Constants\PURCHASE_RECEIVE_CONST::ALL_OPTION) 
+			$this->db->where("PRH.`branch_id`", (int)$branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`)", $search_string, "both");
+
+
+		$this->db->group_by("PRH.`id`");
+
+		return $this->db->count_all_results();
 	}
 
 	public function delete_purchase_receive_head($param)

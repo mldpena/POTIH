@@ -24,9 +24,9 @@ class PurchaseReturn_Model extends CI_Model {
 
 		$this->load->constant('purchase_return_const');
 
-		$this->_purchase_return_head_id = $this->encrypt->decode($this->uri->segment(3));
-		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
-		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_purchase_return_head_id = (int)$this->encrypt->decode($this->uri->segment(3));
+		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
@@ -202,38 +202,30 @@ class PurchaseReturn_Model extends CI_Model {
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-
-		$response 	= array();
-		$query_data = array();
-
+		$limit = $row_end - $row_start + 1;
+		
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select("PH.`id`, COALESCE(B.`name`,'') AS 'location',
+							CONCAT('PR',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
+							COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
+							COALESCE(SUM(PD.`quantity`),'') AS 'total_qty'")
+					->from("purchase_return_head AS PH")
+					->join("purchase_return_detail AS PD", "PD.`headid` = PH.`id`", "left")
+					->join("branch AS B", "B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE, "left")
+					->where("PH.`is_show`", \Constants\PURCHASE_RETURN_CONST::ACTIVE);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND PH.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("PH.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND PH.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("PH.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($branch != \Constants\PURCHASE_RETURN_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND PH.`branch_id` = ?";
-			array_push($query_data,$branch);
-		}
-	
+			$this->db->where("PH.`branch_id`", (int)$branch);
+
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('PR',PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('PR',PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -254,28 +246,21 @@ class PurchaseReturn_Model extends CI_Model {
 				break;
 		}
 
-		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location',
-					CONCAT('PR',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
-					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-					COALESCE(SUM(PD.`quantity`),'') AS 'total_qty'
-					FROM purchase_return_head AS PH
-					LEFT JOIN purchase_return_detail AS PD ON PD.`headid` = PH.`id`
-					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE."
-					WHERE PH.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE." $conditions
-					GROUP BY PH.`id`
-					ORDER BY $order_field $order_type";
+		$this->db->group_by("PH.`id`")
+				->order_by($order_field, $order_type)
+				->limit((int)$limit, (int)$row_start);
 
-		$result = $this->db->query($query,$query_data);
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_purchasereturn_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->entry_date);
@@ -292,6 +277,31 @@ class PurchaseReturn_Model extends CI_Model {
 		return $response;
 	}
 	
+	public function get_purchasereturn_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("purchase_return_head AS PH")
+					->join("purchase_return_detail AS PD", "PD.`headid` = PH.`id`", "left")
+					->where("PH.`is_show`", \Constants\PURCHASE_RETURN_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("PH.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("PH.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($branch != \Constants\PURCHASE_RETURN_CONST::ALL_OPTION) 
+			$this->db->where("PH.`branch_id`", (int)$branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('PR',PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`)", $search_string, "both");
+
+		$this->db->group_by("PH.`id`");
+
+		return $this->db->count_all_results();
+	}
+
 	public function delete_purchasereturn_head($param)
 	{
 		extract($param);

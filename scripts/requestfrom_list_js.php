@@ -129,19 +129,9 @@
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
-	
-	/*$('#export').click(function () {
-		var arr = getSearchFilter();
+	getSearchFilter();
 
-		arr.fnc = "delivery_transaction";
-
-		var queryString = $.objectToQueryString(arr);
-
-		window.open("<?= base_url() ?>export?" + queryString);
-	});*/
-
-	function getSearchFilter()
+	function getSearchFilter(rowStart, rowEnd)
 	{
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
@@ -152,19 +142,31 @@
 		var to_branch_val 	= $('#to_branch').val();
 		var status_val 		= $('#status').val();
 
-		var arr = 	{ 
-						fnc 	 		: 'search_request_to_list', 
-						search_string 	: search_val,
-						order_by  		: order_val,
-						order_type 		: orde_type_val,
-						date_from		: date_from_val,
-						date_to 		: date_to_val,
-						from_branch 	: from_branch_val,
-						to_branch 		: to_branch_val,
-						status 			: status_val
-					};
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
 
-		return arr;
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval - 1) : rowEnd;
+
+		var objectValues = 	{ 
+								fnc 	 		: 'search_request_to_list', 
+								search_string 	: search_val,
+								order_by  		: order_val,
+								order_type 		: orde_type_val,
+								date_from		: date_from_val,
+								date_to 		: date_to_val,
+								from_branch 	: from_branch_val,
+								to_branch 		: to_branch_val,
+								status 			: status_val,
+								filter_reset 	: filterResetValue,
+								row_start 		: rowStartValue,
+								row_end 		: rowEndValue
+							};
+
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}
 
 	function actionAfterDelete()

@@ -441,9 +441,6 @@
 		if (is_nonstack_val == 1 && material_val == 0)
 			errorList.push('Product should have a valid Material Type!');
 
-		if (is_nonstack_val == 1 && subgroup_val == 0)
-			errorList.push('Product should have a valid Sub Group!');
-
 		if (errorList.length > 0) {
 			build_message_box('messagebox_3',build_error_message(errorList),'danger');
 			return;
@@ -578,23 +575,22 @@
 		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
 		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
 
-		var objectValues = 	
-					{ 
-						fnc 	 : 'get_product_list', 
-						code 	 : itemcode_val,
-						product  : product_val,
-						subgroup : subgroup_val,
-						type 	 : type_val,
-						material : material_val,
-						datefrom : datefrom_val,
-						dateto 	 : dateto_val,
-						branch 	 : branch_val,
-						invstat  : inv_val,
-						orderby  : orderby_val,
-						filter_reset : filterResetValue,
-						row_start : rowStartValue,
-						row_end : rowEndValue
-					};
+		var objectValues = 	{ 
+								fnc 	 : 'get_product_list', 
+								code 	 : itemcode_val,
+								product  : product_val,
+								subgroup : subgroup_val,
+								type 	 : type_val,
+								material : material_val,
+								datefrom : datefrom_val,
+								dateto 	 : dateto_val,
+								branch 	 : branch_val,
+								invstat  : inv_val,
+								orderby  : orderby_val,
+								filter_reset : filterResetValue,
+								row_start : rowStartValue,
+								row_end : rowEndValue
+							};
 
 		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}

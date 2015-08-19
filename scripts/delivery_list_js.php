@@ -137,7 +137,7 @@
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	getSearchFilter();
 	
 	$('#export').click(function () {
 		var arr = getSearchFilter();

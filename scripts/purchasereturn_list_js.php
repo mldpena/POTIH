@@ -121,7 +121,7 @@
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	getSearchFilter();
 	
 	$('#export').click(function () {
 		var arr = getSearchFilter();
@@ -133,7 +133,7 @@
 		window.open("<?= base_url() ?>export?" + queryString);
 	});
 
-	function getSearchFilter()
+	function getSearchFilter(rowStart, rowEnd)
 	{
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
@@ -142,17 +142,29 @@
 		var date_to_val 	= $('#date_to').val();
 		var branch_val 		= $('#branch_list').val();
 
-		var arr = 	{ 
-						fnc 	 		: 'search_purchasereturn_list', 
-						search_string 	: search_val,
-						order_by  		: order_val,
-						order_type 		: orde_type_val,
-						date_from		: date_from_val,
-						date_to 		: date_to_val,
-						branch 			: branch_val
-					};
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
 
-		return arr;
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+		var objectValues = 	{ 
+								fnc 	 		: 'search_purchasereturn_list', 
+								search_string 	: search_val,
+								order_by  		: order_val,
+								order_type 		: orde_type_val,
+								date_from		: date_from_val,
+								date_to 		: date_to_val,
+								branch 			: branch_val,
+								filter_reset : filterResetValue,
+								row_start : rowStartValue,
+								row_end : rowEndValue
+							};
+
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}
 
 	function actionAfterDelete()

@@ -205,12 +205,11 @@
 		var search_val 	= $('#search_string').val();
 		var order_val 	= $('#orderby').val();
 
-		var objectValues = 	
-					{ 
-						fnc 	 : 'search_material_list', 
-						search 	 : search_val,
-						orderby  : order_val
-					};
+		var objectValues = 	{ 
+								fnc 	 : 'search_material_list', 
+								search 	 : search_val,
+								orderby  : order_val
+							};
 
 		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}

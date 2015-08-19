@@ -84,27 +84,6 @@
     tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
 
     getSearchFilter();
-
-    function getSearchFilter()
-	{
-		var search_val 	= $('#search_string').val();
-		var order_val 	= $('#orderby').val();
-
-		var objectValues = 	
-					{ 
-						fnc 	 : 'search_subgroup_list', 
-						search 	 :  search_val,
-						orderby  : order_val
-					};
-
-		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
-	}
-
-	function actionAfterDelete()
-	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
-		build_message_box('messagebox_1','Sub Group successfully deleted!','success');
-	}
 	
 	<?php if($permission_list['allow_to_edit']) : ?>
 
@@ -222,4 +201,24 @@
 	$('#code').blur(function(){
 		$(this).val($(this).val().toUpperCase());
 	});
+
+	function getSearchFilter()
+	{
+		var search_val 	= $('#search_string').val();
+		var order_val 	= $('#orderby').val();
+
+		var objectValues = 	{ 
+								fnc 	 : 'search_subgroup_list', 
+								search 	 : search_val,
+								orderby  : order_val
+							};
+
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
+	}
+
+	function actionAfterDelete()
+	{
+		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		build_message_box('messagebox_1','Sub Group successfully deleted!','success');
+	}
 </script>

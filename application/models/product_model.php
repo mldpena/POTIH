@@ -209,7 +209,7 @@ class Product_Model extends CI_Model {
 		return $result;		
 	}
 
-	public function get_product_list_info_count($param)
+	public function get_product_list_count_by_filter($param)
 	{
 		extract($param);
 
@@ -276,7 +276,7 @@ class Product_Model extends CI_Model {
 		if ($branch == \Constants\PRODUCT_CONST::ALL_OPTION)
 			$this->db->group_by("P.`id`");
 
-		return $this->db->count_all_results();;	
+		return $this->db->count_all_results();
 	}
 
 	public function get_product_by_term($term, $branch_id, $with_inventory)
@@ -1002,46 +1002,6 @@ class Product_Model extends CI_Model {
 		$result->free_result();
 
 		return $response;
-	}
-
-	private function validate_product($param, $function_type)
-	{
-		extract($param);
-
-		$query = "SELECT * FROM product WHERE `material_code` = ? AND `is_show` = ".\Constants\PRODUCT_CONST::ACTIVE;
-		$query .= $function_type == \Constants\PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
-
-		$query_data = array($code);
-		if ($function_type == \Constants\PRODUCT_CONST::UPDATE_PROCESS) 
-		{
-			$id = $this->encrypt->decode($product_id);
-			array_push($query_data,$id);
-		}
-
-		$result = $this->db->query($query,$query_data);
-
-		if ($result->num_rows() > 0) 
-			throw new Exception($this->_error_message['CODE_EXISTS']);
-			
-		$result->free_result();
-
-		$query = "SELECT * FROM product WHERE `description` = ? AND `is_show` = ".\Constants\PRODUCT_CONST::ACTIVE;
-		$query .= $function_type == \Constants\PRODUCT_CONST::INSERT_PROCESS ? "" : " AND `id` <> ?";
-
-		$query_data = array($product);
-
-		if ($function_type == \Constants\PRODUCT_CONST::UPDATE_PROCESS) 
-		{
-			$id = $this->encrypt->decode($product_id);
-			array_push($query_data,$id);
-		}
-
-		$result = $this->db->query($query,$query_data);
-
-		if ($result->num_rows() > 0) 
-			throw new Exception($this->_error_message['NAME_EXISTS']);
-			
-		$result->free_result();
 	}
 
 	public function get_product_warning_count($warning_type)

@@ -249,15 +249,17 @@
 						$('#admin-permission').attr('checked','checked');
 						$('.permission-section').attr('checked','checked');
 						$('.check-detail').attr('checked','checked');
+						$('.preset').not('#admin-permission').attr('disabled','disabled');
 					}
 					else
 					{
 						for (var i = 0; i < response.permissions.length; i++)
 							$('.check-detail[value=' + response.permissions[i] + ']').attr('checked','checked');
+
+						checkPresetPermission('encoder');
 					}
 					
 					checkSectionPermission();
-					checkPresetPermission('encoder');
 					
 					if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && response.is_own_profile != ProfileStatus.OwnProfile)
 						$('#save').hide();

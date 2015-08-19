@@ -236,45 +236,50 @@ class Request_Model extends CI_Model {
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-		$having 		= "";
-
-		$response 	= array();
-		$query_data = array();
+		$limit = $row_end - $row_start + 1;
 
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select("SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
+							CONCAT('SD',SH.`reference_number`) AS 'reference_number',
+							COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
+							COALESCE(SUM(SD.`quantity`),'') AS 'total_qty', SUM(SD.`quantity` - SD.`qty_delivered`) AS 'remaining_qty',
+							IF(SH.`is_used` = ".\Constants\REQUEST_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(SD.`qty_delivered`,0)) = 0 THEN 'No Received'
+									WHEN SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) > 0 THEN 'Incomplete'
+									WHEN SUM(SD.`quantity`) - SUM(SD.`qty_delivered`) = 0 THEN 'Complete'
+									ELSE 'Excess'
+								END,'') 
+							, '') AS 'status',
+							IF(SH.`is_used` = ".\Constants\REQUEST_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(SD.`qty_delivered`,0)) = 0 THEN ".\Constants\REQUEST_CONST::NO_RECEIVED."
+									WHEN SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) > 0 THEN ".\Constants\REQUEST_CONST::INCOMPLETE."
+									WHEN SUM(SD.`quantity`) - SUM(SD.`qty_delivered`) = 0 THEN ".\Constants\REQUEST_CONST::COMPLETE."
+									ELSE ".\Constants\REQUEST_CONST::EXCESS."
+								END,'') 
+							, 0) AS 'status_code'")
+				->from("stock_request_head AS SH")
+				->join("stock_request_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->join("branch AS B", "B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE, "left")
+				->join("branch AS B2", "B2.`id` = SH.`request_to_branchid` AND B2.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE, "left")
+				->where("SH.`is_show`", \Constants\REQUEST_CONST::ACTIVE);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND SH.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND SH.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($from_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND SH.`branch_id` = ?";
-			array_push($query_data,$from_branch);
-		}
+			$this->db->where("SH.`branch_id`", (int)$from_branch);
 
 		if ($to_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND SH.`request_to_branchid` = ?";
-			array_push($query_data,$to_branch);
-		}
-	
+			$this->db->where("SH.`request_to_branchid`", (int)$to_branch);
+
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('SR',SH.`reference_number`,' ',SH.`memo`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('SR',SH.`reference_number`,' ',SH.`memo`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -287,47 +292,20 @@ class Request_Model extends CI_Model {
 				break;
 		}
 
-		if ($status != \Constants\REQUEST_CONST::ALL_OPTION) 
-		{
-			$having = "HAVING status_code = ?";
-			array_push($query_data,$status);
-		}
+		$this->db->group_by("SH.`id`")
+				->order_by($order_field, $order_type);
 
-		$query = "SELECT SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
-					CONCAT('SD',SH.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
-					COALESCE(SUM(SD.`quantity`),'') AS 'total_qty', SUM(SD.`quantity` - SD.`qty_delivered`) AS 'remaining_qty',
-					IF(SH.`is_used` = ".\Constants\REQUEST_CONST::ACTIVE.",
-						COALESCE(CASE 
-							WHEN SUM(COALESCE(SD.`qty_delivered`,0)) = 0 THEN 'No Received'
-							WHEN SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) > 0 THEN 'Incomplete'
-							WHEN SUM(SD.`quantity`) - SUM(SD.`qty_delivered`) = 0 THEN 'Complete'
-							ELSE 'Excess'
-						END,'') 
-					, '') AS 'status',
-					IF(SH.`is_used` = ".\Constants\REQUEST_CONST::ACTIVE.",
-						COALESCE(CASE 
-							WHEN SUM(COALESCE(SD.`qty_delivered`,0)) = 0 THEN ".\Constants\REQUEST_CONST::NO_RECEIVED."
-							WHEN SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) > 0 THEN ".\Constants\REQUEST_CONST::INCOMPLETE."
-							WHEN SUM(SD.`quantity`) - SUM(SD.`qty_delivered`) = 0 THEN ".\Constants\REQUEST_CONST::COMPLETE."
-							ELSE ".\Constants\REQUEST_CONST::EXCESS."
-						END,'') 
-					, 0) AS 'status_code'
-					FROM stock_request_head AS SH
-					LEFT JOIN stock_request_detail AS SD ON SD.`headid` = SH.`id`
-					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = SH.`request_to_branchid` AND B2.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."
-					WHERE SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE." $conditions
-					GROUP BY SH.`id`
-					$having
-					ORDER BY $order_field $order_type";
+		if ($status != \Constants\REQUEST_CONST::ALL_OPTION)
+			$this->db->having("status_code", $status); 
 
-		$result = $this->db->query($query,$query_data);
+		$this->db->limit((int)$limit, (int)$row_start);
+
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_request_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -350,6 +328,45 @@ class Request_Model extends CI_Model {
 		return $response;
 	}
 	
+	public function get_request_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->select("IF(SH.`is_used` = ".\Constants\REQUEST_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(SD.`qty_delivered`,0)) = 0 THEN ".\Constants\REQUEST_CONST::NO_RECEIVED."
+									WHEN SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) > 0 THEN ".\Constants\REQUEST_CONST::INCOMPLETE."
+									WHEN SUM(SD.`quantity`) - SUM(SD.`qty_delivered`) = 0 THEN ".\Constants\REQUEST_CONST::COMPLETE."
+									ELSE ".\Constants\REQUEST_CONST::EXCESS."
+								END,'') 
+							, 0) AS 'status_code'")
+				->from("stock_request_head AS SH")
+				->join("stock_request_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->where("SH.`is_show`", \Constants\REQUEST_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($branch != \Constants\REQUEST_CONST::ALL_OPTION) 
+			$this->db->where("SH.`branch_id`", (int)$branch);
+
+		if ($to_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
+			$this->db->where("SH.`request_to_branchid`", (int)$to_branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('SR',SH.`reference_number`,' ',SH.`memo`)", $search_string, "both");
+
+		$this->db->group_by("SH.`id`");
+
+		if ($status != \Constants\REQUEST_CONST::ALL_OPTION)
+			$this->db->having("status_code", $status); 
+
+		return $this->db->count_all_results();
+	}
+
 	public function delete_stock_request_head($param)
 	{
 		extract($param);

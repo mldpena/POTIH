@@ -118,14 +118,13 @@
 		var status_val 		= $('#status').val();
 		var order_type_val 	= $('#order_type').val();
 		
-		var objectValues = 	
-					{ 
-						fnc 	 	: 'get_user_list', 
-						search_string : search_string_val,
-						order_by  	: order_by_val,
-						order_type 	: order_type_val,
-						status 		: status_val
-					};
+		var objectValues = 	{ 
+								fnc 	 	: 'get_user_list', 
+								search_string : search_string_val,
+								order_by  	: order_by_val,
+								order_type 	: order_type_val,
+								status 		: status_val
+							};
 
 		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}

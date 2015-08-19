@@ -145,7 +145,8 @@
 	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	getSearchFilter();
+	
 
 	$('#export').click(function () {
 		var arr = getSearchFilter();
@@ -157,7 +158,7 @@
 		window.open("<?= base_url() ?>export?" + queryString);
 	});
 	
-	function getSearchFilter()
+	function getSearchFilter(rowStart, rowEnd)
 	{
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
@@ -169,20 +170,32 @@
 		var type_val 		= $('#type').val();
 		var for_branch_val  = $('#for_branch').val();
 
-		var arr = 	{ 
-						fnc 	 		: 'search_purchaseorder_list', 
-						search_string 	: search_val,
-						order_by  		: order_val,
-						order_type 		: orde_type_val,
-						date_from		: date_from_val,
-						date_to 		: date_to_val,
-						branch 			: branch_val,
-						for_branch 		: for_branch_val,
-						status 			: status_val,
-						type 			: type_val	
-					};
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
 
-		return arr;
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+		var objectValues = 	{ 
+								fnc 	 		: 'search_purchaseorder_list', 
+								search_string 	: search_val,
+								order_by  		: order_val,
+								order_type 		: orde_type_val,
+								date_from		: date_from_val,
+								date_to 		: date_to_val,
+								branch 			: branch_val,
+								for_branch 		: for_branch_val,
+								status 			: status_val,
+								type 			: type_val	,
+								filter_reset : filterResetValue,
+								row_start : rowStartValue,
+								row_end : rowEndValue
+							};
+
+		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
 	}
 
 	function actionAfterDelete()

@@ -44,7 +44,7 @@ class Product_Manager
 		{
 			$i = 0;
 			
-			$response['rowcnt'] = $this->_CI->product_model->get_product_list_info_count($param);
+			$response['rowcnt'] = $this->_CI->product_model->get_product_list_count_by_filter($param);
 
 			extract($param);
 
@@ -505,12 +505,7 @@ class Product_Manager
 							$material_type_id = $row->id;
 						}
 
-						if($product_subgroup_result->num_rows() == 0)
-						{
-							$response['logs'][] = 'Row #'.$i." : Product should have a valid subgroup!";
-							$with_error = TRUE;
-						}
-						else
+						if($product_subgroup_result->num_rows() > 0)
 						{
 							$row = $product_subgroup_result->row();
 							$subgroup_id = $row->id;
