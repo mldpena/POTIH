@@ -249,64 +249,62 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_stock_delivery_list($param)
+	public function search_stock_delivery_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-		$having 		= "";
-
-		$response 	= array();
-		$query_data = array();
-
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select("SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
+							CONCAT('SD',SH.`reference_number`) AS 'reference_number',
+							COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
+							COALESCE(SUM(SD.`quantity`), 0) AS 'total_qty', SUM(SD.`quantity` - SD.`recv_quantity`) AS 'remaining_qty',
+							CASE 
+								WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::BOTH." THEN 'Both'
+								WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::SALES." THEN 'Sales'
+								WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER." THEN 'Transfer'
+								ELSE 'Unused'
+							END AS 'delivery_type',
+							IF(SH.`is_used` = ".\Constants\DELIVERY_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN 'No Received'
+									WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN 'Incomplete'
+									WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN 'Complete'
+									ELSE 'Excess'
+								END,'') 
+							, '') AS 'status',
+							IF(SH.`is_used` = ".\Constants\DELIVERY_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN ".\Constants\DELIVERY_CONST::NO_RECEIVED."
+									WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN ".\Constants\DELIVERY_CONST::INCOMPLETE."
+									WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN ".\Constants\DELIVERY_CONST::COMPLETE."
+									ELSE ".\Constants\DELIVERY_CONST::EXCESS."
+								END,'') 
+							, 0) AS 'status_code'")
+				->from("stock_delivery_head AS SH")
+				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->join("branch AS B2", "B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE, "left")
+				->join("branch AS B", "B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE, "left")
+				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND SH.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND SH.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($from_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND SH.`branch_id` = ?";
-			array_push($query_data,$from_branch);
-		}
+			$this->db->where("SH.`branch_id`", (int)$from_branch);
 
 		if ($to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND SH.`to_branchid` = ?";
-			array_push($query_data,$to_branch);
-		}
-	
+			$this->db->where("SH.`to_branchid`", (int)$to_branch);
+
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('SD',SH.`reference_number`,' ',SH.`memo`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('SD',SH.`reference_number`,' ',SH.`memo`)", $search_string, "both");
 
-		switch ($type) 
-		{
-			case \Constants\DELIVERY_CONST::BOTH:
-				$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::BOTH;
-				break;
-			
-			case \Constants\DELIVERY_CONST::SALES:
-				$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::SALES;
-				break;
+		if ($type != \Constants\DELIVERY_CONST::ALL_OPTION) 
+			$this->db->where("SH.`delivery_type`", (int)$type);
 
-			case \Constants\DELIVERY_CONST::TRANSFER:
-				$conditions .= " AND SH.`delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER;
-				break;
-		}
 
 		switch ($order_by) 
 		{
@@ -319,53 +317,24 @@ class Delivery_Model extends CI_Model {
 				break;
 		}
 
-		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION) 
+		$this->db->group_by("SH.`id`")
+				->order_by($order_field, $order_type);
+
+		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION)
+			$this->db->having("status_code", $status); 
+
+		if ($with_limit) 
 		{
-			$having = "HAVING status_code = ?";
-			array_push($query_data,$status);
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
 		}
-
-		$query = "SELECT SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
-					CONCAT('SD',SH.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
-					COALESCE(SUM(SD.`quantity`),'') AS 'total_qty', SUM(SD.`quantity` - SD.`recv_quantity`) AS 'remaining_qty',
-					CASE 
-						WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::BOTH." THEN 'Both'
-						WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::SALES." THEN 'Sales'
-						WHEN `delivery_type` = ".\Constants\DELIVERY_CONST::TRANSFER." THEN 'Transfer'
-						ELSE 'Unused'
-					END AS 'delivery_type',
-					IF(SH.`is_used` = ".\Constants\DELIVERY_CONST::ACTIVE.",
-						COALESCE(CASE 
-							WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN 'No Received'
-							WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN 'Incomplete'
-							WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN 'Complete'
-							ELSE 'Excess'
-						END,'') 
-					, '') AS 'status',
-					IF(SH.`is_used` = ".\Constants\DELIVERY_CONST::ACTIVE.",
-						COALESCE(CASE 
-							WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN ".\Constants\DELIVERY_CONST::NO_RECEIVED."
-							WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN ".\Constants\DELIVERY_CONST::INCOMPLETE."
-							WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN ".\Constants\DELIVERY_CONST::COMPLETE."
-							ELSE ".\Constants\DELIVERY_CONST::EXCESS."
-						END,'') 
-					, 0) AS 'status_code'
-					FROM stock_delivery_head AS SH
-					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
-					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." $conditions
-					GROUP BY SH.`id`
-					$having
-					ORDER BY $order_field $order_type";
-
-		$result = $this->db->query($query,$query_data);
+		
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_stock_delivery_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -389,6 +358,48 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 	
+	public function get_stock_delivery_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->select("IF(SH.`is_used` = ".\Constants\DELIVERY_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN ".\Constants\DELIVERY_CONST::NO_RECEIVED."
+									WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN ".\Constants\DELIVERY_CONST::INCOMPLETE."
+									WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN ".\Constants\DELIVERY_CONST::COMPLETE."
+									ELSE ".\Constants\DELIVERY_CONST::EXCESS."
+								END,'') 
+							, 0) AS 'status_code'")
+				->from("stock_delivery_head AS SH")
+				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($from_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
+			$this->db->where("SH.`branch_id`", (int)$from_branch);
+
+		if ($to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
+			$this->db->where("SH.`to_branchid`", (int)$to_branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('SD',SH.`reference_number`,' ',SH.`memo`)", $search_string, "both");
+
+		if ($type != \Constants\DELIVERY_CONST::ALL_OPTION) 
+			$this->db->where("SH.`delivery_type`", (int)$type);
+
+		$this->db->group_by("SH.`id`");
+
+		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION)
+			$this->db->having("status_code", $status);
+
+		return $this->db->count_all_results();
+	}
+
 	public function delete_stock_delivery_head($param)
 	{
 		extract($param);
@@ -432,67 +443,68 @@ class Delivery_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_receive_list($param, $search_type)
+	public function search_receive_list($param, $search_type, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-		$having 		= "";
-
-		$response 	= array();
-		$query_data = array();
-
 		$response['rowcnt'] = 0;
+
 		$date_type = $search_type == \Constants\DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
-		
-		if (!empty($date_from))
-		{
-			$conditions .= " AND SH.`$date_type` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
 
-		if (!empty($date_to))
-		{
-			$conditions .= " AND SH.`$date_type` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
-
-		if ($from_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND SH.`branch_id` = ?";
-			array_push($query_data,$from_branch);
-		}
-	
-		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('SD',SH.`reference_number`,' ',SH.`memo`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
-
-		$fixed_condition = "";
+		$this->db->select("SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
+							CONCAT('SD',SH.`reference_number`) AS 'reference_number',
+							COALESCE(DATE(SH.`$date_type`),'') AS 'entry_date', SH.`memo`,
+							SUM(SD.`quantity`) AS 'total_qty',
+							COALESCE(
+								CASE 
+									WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN 'No Received'
+									WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN 'Incomplete'
+									WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN 'Complete'
+									ELSE 'Excess'
+								END,'') AS 'status',
+							COALESCE(
+								CASE 
+									WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN ".\Constants\DELIVERY_CONST::NO_RECEIVED."
+									WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN ".\Constants\DELIVERY_CONST::INCOMPLETE."
+									WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN ".\Constants\DELIVERY_CONST::COMPLETE."
+									ELSE ".\Constants\DELIVERY_CONST::EXCESS."
+						END,'') AS 'status_code'")
+				->from("stock_delivery_head AS SH")
+				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->join("branch AS B2", "B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE, "left")
+				->join("branch AS B", "B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE, "left")
+				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE)
+				->where("SH.`is_used`", \Constants\DELIVERY_CONST::ACTIVE);
 
 		switch ($search_type) 
 		{
 			case \Constants\DELIVERY_CONST::FOR_TRANSFER:
-				$fixed_condition = "AND SH.`delivery_type` IN(".\Constants\DELIVERY_CONST::TRANSFER.",".\Constants\DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 1";
+				$this->db->where_in("SH.`delivery_type`", [\Constants\DELIVERY_CONST::TRANSFER, \Constants\DELIVERY_CONST::BOTH])
+						->where("SD.`is_for_branch`", 1);
+
 				if (($to_branch) && $to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
-				{
-					$conditions .= " AND SH.`to_branchid` = ?";
-					array_push($query_data,$to_branch);
-				}
+					$this->db->where("SH.`to_branchid`", $to_branch);
+
 				break;
 			
 			case \Constants\DELIVERY_CONST::FOR_CUSTOMER:
-				$fixed_condition = "AND SH.`delivery_type` IN(".\Constants\DELIVERY_CONST::SALES.",".\Constants\DELIVERY_CONST::BOTH.") AND SD.`is_for_branch` = 0";
+				$this->db->where_in("SH.`delivery_type`", [\Constants\DELIVERY_CONST::SALES, \Constants\DELIVERY_CONST::BOTH])
+						->where("SD.`is_for_branch`", 0);
+
 				break;
 		}
 
-		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION) 
-		{
-			$having = "HAVING status_code = ?";
-			array_push($query_data,$status);
-		}
+		if (!empty($date_from))
+			$this->db->where("SH.`$date_type` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("SH.`$date_type` <=", $date_to." 23:59:59");
+
+		if ($from_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
+			$this->db->where("SH.`branch_id`", (int)$from_branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('SD',SH.`reference_number`,' ',SH.`memo`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -501,44 +513,28 @@ class Delivery_Model extends CI_Model {
 				break;
 
 			case \Constants\DELIVERY_CONST::ORDER_BY_DATE:
-				$order_field = "SH.`entry_date`";
+				$order_field = "SH.`$date_type`";
 				break;
 		}
 
-		$query = "SELECT SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
-					CONCAT('SD',SH.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(SH.`$date_type`),'') AS 'entry_date', SH.`memo`,
-					SUM(SD.`quantity`) AS 'total_qty',
-					COALESCE(
-						CASE 
-							WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN 'No Received'
-							WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN 'Incomplete'
-							WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN 'Complete'
-							ELSE 'Excess'
-						END,'') AS 'status',
-					COALESCE(
-						CASE 
-							WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN ".\Constants\DELIVERY_CONST::NO_RECEIVED."
-							WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN ".\Constants\DELIVERY_CONST::INCOMPLETE."
-							WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN ".\Constants\DELIVERY_CONST::COMPLETE."
-							ELSE ".\Constants\DELIVERY_CONST::EXCESS."
-						END,'') AS 'status_code'
-					FROM stock_delivery_head AS SH
-					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
-					LEFT JOIN branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					LEFT JOIN branch AS B2 ON B2.`id` = SH.`to_branchid` AND B2.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SH.`is_used` = ".\Constants\DELIVERY_CONST::USED." 
-						$fixed_condition $conditions
-					GROUP BY SH.`id`
-					$having
-					ORDER BY $order_field $order_type";
+		$this->db->group_by("SH.`id`")
+				->order_by($order_field, $order_type);
 
-		$result = $this->db->query($query,$query_data);
+		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION)
+			$this->db->having("status_code", $status); 
+
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
+
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_receive_list_count_by_filter($param, $search_type);
 
 			foreach ($result->result() as $row) 
 			{
@@ -562,6 +558,62 @@ class Delivery_Model extends CI_Model {
 		$result->free_result();
 
 		return $response;
+	}
+
+	public function get_receive_list_count_by_filter($param, $search_type)
+	{
+		extract($param);
+
+		$date_type = $search_type == \Constants\DELIVERY_CONST::FOR_TRANSFER ? 'delivery_receive_date' : 'customer_receive_date';
+
+		$this->db->select("COALESCE(
+								CASE 
+									WHEN SUM(COALESCE(SD.`recv_quantity`,0)) = 0 THEN ".\Constants\DELIVERY_CONST::NO_RECEIVED."
+									WHEN SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) > 0 THEN ".\Constants\DELIVERY_CONST::INCOMPLETE."
+									WHEN SUM(SD.`quantity`) - SUM(SD.`recv_quantity`) = 0 THEN ".\Constants\DELIVERY_CONST::COMPLETE."
+									ELSE ".\Constants\DELIVERY_CONST::EXCESS."
+							END,'') AS 'status_code'")
+				->from("stock_delivery_head AS SH")
+				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
+				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE)
+				->where("SH.`is_used`", \Constants\DELIVERY_CONST::ACTIVE);
+
+		switch ($search_type) 
+		{
+			case \Constants\DELIVERY_CONST::FOR_TRANSFER:
+				$this->db->where_in("SH.`delivery_type`", [\Constants\DELIVERY_CONST::TRANSFER, \Constants\DELIVERY_CONST::BOTH])
+						->where("SD.`is_for_branch`", 1);
+
+				if (($to_branch) && $to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
+					$this->db->where("SH.`to_branchid`", $to_branch);
+
+				break;
+			
+			case \Constants\DELIVERY_CONST::FOR_CUSTOMER:
+				$this->db->where_in("SH.`delivery_type`", [\Constants\DELIVERY_CONST::SALES, \Constants\DELIVERY_CONST::BOTH])
+						->where("SD.`is_for_branch`", 0);
+
+				break;
+		}
+
+		if (!empty($date_from))
+			$this->db->where("SH.`$date_type` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("SH.`$date_type` <=", $date_to." 23:59:59");
+
+		if ($from_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
+			$this->db->where("SH.`branch_id`", (int)$from_branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('SD',SH.`reference_number`,' ',SH.`memo`)", $search_string, "both");
+
+		$this->db->group_by("SH.`id`");
+
+		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION)
+			$this->db->having("status_code", $status); 
+
+		return $this->db->count_all_results();
 	}
 
 	public function get_receive_details($receive_type)

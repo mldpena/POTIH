@@ -80,10 +80,10 @@
 										{ deleteHeadName : 'delete_branch',
 										  notFoundMessage : 'No branch found!' });
 
-    tableHelper.headContent.bindSearchEvent(getSearchFilter);
+    tableHelper.headContent.bindSearchEvent(triggerSearchRequest);
     tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
 
-    getSearchFilter();
+    triggerSearchRequest();
 
     $('#save').click(function(){
     	if (flag == 1) 
@@ -196,7 +196,7 @@
         global_row_index 	= 0;
     });
 
-    function getSearchFilter()
+    function triggerSearchRequest()
 	{
 		var search_val 	= $('#search_string').val();
 		var order_val 	= $('#orderby').val();
@@ -212,7 +212,7 @@
 
 	function actionAfterDelete()
 	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		triggerSearchRequest();
 		build_message_box('messagebox_1','Branch successfully deleted!','success');
 	}
 </script>

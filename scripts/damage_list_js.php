@@ -101,22 +101,22 @@
 										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) }
 										});
 
-	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : triggerSearchRequest, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	triggerSearchRequest();
 	
 	$('#export').click(function () {
-		var arr = getSearchFilter();
+		var filterValues = getSearchFilterValues();
 
-		arr.fnc = "damage_transaction";
+		filterValues.fnc = "damage_transaction";
 
-		var queryString = $.objectToQueryString(arr);
+		var queryString = $.objectToQueryString(filterValues);
 
 		window.open("<?= base_url() ?>export?" + queryString);
 	});
 	
-	function getSearchFilter()
+	function getSearchFilterValues()
 	{
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
@@ -125,22 +125,46 @@
 		var date_to_val 	= $('#date_to').val();
 		var branch_val 		= $('#branch_list').val();
 
-		var arr = 	{ 
-						fnc 	 		: 'search_damage_list', 
-						search_string 	: search_val,
-						order_by  		: order_val,
-						order_type 		: orde_type_val,
-						date_from		: date_from_val,
-						date_to 		: date_to_val,
-						branch 			: branch_val
-					};
+		var filterValues = 	{ 
+								fnc 	 		: 'search_damage_list', 
+								search_string 	: search_val,
+								order_by  		: order_val,
+								order_type 		: orde_type_val,
+								date_from		: date_from_val,
+								date_to 		: date_to_val,
+								branch 			: branch_val
+							};
 
-		return arr;
+		return filterValues;
 	}
 
+	function triggerSearchRequest(rowStart, rowEnd)
+	{
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
+
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+		var paginationRowValues =	{
+										filter_reset : filterResetValue,
+										row_start : rowStartValue,
+										row_end : rowEndValue
+									}
+
+		var filterValues = getSearchFilterValues();
+
+		$.extend(filterValues, paginationRowValues);
+
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues);
+	}
+	
 	function actionAfterDelete()
 	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		triggerSearchRequest();
 		build_message_box('messagebox_1','Damage entry successfully deleted!','success');
 	}
 

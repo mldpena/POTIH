@@ -174,7 +174,7 @@ Copyright (c) 2011 by Harvest
     AbstractChosen.prototype.input_blur = function(evt) {
       var _this = this;
       if (!this.mouse_on_container) {
-        //this.active_field = false;
+        this.active_field = false;
         return setTimeout((function() {
           return _this.blur_test();
         }), 100);
@@ -479,19 +479,19 @@ Copyright (c) 2011 by Harvest
     };
 
     Chosen.prototype.close_field = function() {
-      //$(document).unbind("click", this.click_test_action);
-      //this.active_field = false;
+      $(document).unbind("click", this.click_test_action);
+      this.active_field = false;
       this.results_hide();
       this.container.removeClass("chzn-container-active");
-      //this.winnow_results_clear();
-      //this.clear_backstroke();
-      //this.show_search_field_default();
-      //return this.search_field_scale();
+      this.winnow_results_clear();
+      this.clear_backstroke();
+      this.show_search_field_default();
+      return this.search_field_scale();
     };
 
     Chosen.prototype.activate_field = function() {
       this.container.addClass("chzn-container-active");
-      //this.active_field = true;
+      this.active_field = true;
       this.search_field.val(this.search_field.val());
       return this.search_field.focus();
     };

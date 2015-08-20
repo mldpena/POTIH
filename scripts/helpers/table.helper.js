@@ -655,7 +655,7 @@ var TableHelper = function(tableOptions,options) {
 			});
 		},*/
 
-		refreshTableWithLimit : function(objectValues)
+		refreshTableWithLimit : function(filterValues)
 		{
 			if (self._flag == 1)
 				return;
@@ -667,10 +667,10 @@ var TableHelper = function(tableOptions,options) {
 			$.ajax({
 				type: "POST",
 				dataType : 'JSON',
-				data: 'data=' + JSON.stringify(objectValues) + token,
+				data: 'data=' + JSON.stringify(filterValues) + token,
 				success: function(response) {
 					
-					if((typeof objectValues.row_start === 'undefined') && (typeof objectValues.row_end === 'undefined'))
+					if((typeof filterValues.row_start === 'undefined') && (typeof filterValues.row_end === 'undefined'))
 						self._jsTable.clear_table();
 					else
 						self._jsTable.clean_table();

@@ -209,11 +209,9 @@ class PurchaseOrder_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_purchaseorder_list($param)
+	public function search_purchaseorder_list($param, $with_limit = TRUE)
 	{
 		extract($param);
-
-		$limit = $row_end - $row_start + 1;
 
 		$response['rowcnt'] = 0;
 
@@ -292,8 +290,12 @@ class PurchaseOrder_Model extends CI_Model {
 		if ($status != \Constants\PURCHASE_CONST::ALL_OPTION)
 			$this->db->having("status_code", $status); 
 
-		$this->db->limit((int)$limit, (int)$row_start);
-
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
+		
 		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 

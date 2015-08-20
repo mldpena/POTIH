@@ -191,42 +191,29 @@ class Damage_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_damage_list($param)
+	public function search_damage_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-
-		$response 	= array();
-		$query_data = array();
-
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select(" D.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('DD',D.`reference_number`) AS 'reference_number',
+					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(D.`is_used` = 0, 'Unused', D.`memo`) AS 'memo'")
+				->from("damage_head AS D")
+				->join("branch AS B", "B.`id` = D.`branch_id` AND B.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE, "left")
+				->where("D.`is_show`", \Constants\DAMAGE_CONST::ACTIVE);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND D.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("D.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND D.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("D.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($branch != \Constants\DAMAGE_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND D.`branch_id` = ?";
-			array_push($query_data,$branch);
-		}
+			$this->db->where("D.`branch_id`", (int)$branch);
 
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('DD',D.`reference_number`,' ',D.`memo`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('DD',D.`reference_number`,' ',D.`memo`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -243,15 +230,15 @@ class Damage_Model extends CI_Model {
 				break;
 		}
 
+		$this->db->order_by($order_field, $order_type);
 
-		$query = "SELECT D.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('DD',D.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(D.`is_used` = 0, 'Unused', D.`memo`) AS 'memo'
-					FROM damage_head AS D
-					LEFT JOIN branch AS B ON B.`id` = D.`branch_id` AND B.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
-					WHERE D.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE." $conditions
-					ORDER BY $order_field $order_type";
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
 
-		$result = $this->db->query($query,$query_data);
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
@@ -272,6 +259,28 @@ class Damage_Model extends CI_Model {
 		}
 
 		return $response;
+	}
+
+	public function get_damage_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("damage_head AS D")
+				->where("D.`is_show`", \Constants\DAMAGE_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("D.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("D.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($branch != \Constants\DAMAGE_CONST::ALL_OPTION) 
+			$this->db->where("D.`branch_id`", (int)$branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('DD',D.`reference_number`,' ',D.`memo`)", $search_string, "both");
+
+		return $this->db->count_all_results();
 	}
 
 	public function delete_damage_head($param)

@@ -109,21 +109,21 @@
 										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) }
 										});
 
-	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter } );
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : triggerSearchRequest } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	triggerSearchRequest();
 
 	$('#export').click(function () {
-		var arr = getSearchFilter();
+		var filterValues = getSearchFilterValues();
 
-		arr.fnc = "delivery_receive_transaction";
+		filterValues.fnc = "delivery_receive_transaction";
 
-		var queryString = $.objectToQueryString(arr);
+		var queryString = $.objectToQueryString(filterValues);
 
 		window.open("<?= base_url() ?>export?" + queryString);
 	});
 	
-	function getSearchFilter()
+	function getSearchFilterValues()
 	{
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
@@ -134,18 +134,42 @@
 		var to_branch_val 	= $('#to_branch').val();
 		var status_val 		= $('#status').val();
 
-		var arr = 	{ 
-						fnc 	 		: 'search_stock_receive_list', 
-						search_string 	: search_val,
-						order_by  		: order_val,
-						order_type 		: orde_type_val,
-						date_from		: date_from_val,
-						date_to 		: date_to_val,
-						from_branch 	: from_branch_val,
-						to_branch 		: to_branch_val,
-						status 			: status_val
-					};
+		var filterValues = 	{ 
+								fnc 	 		: 'search_stock_receive_list', 
+								search_string 	: search_val,
+								order_by  		: order_val,
+								order_type 		: orde_type_val,
+								date_from		: date_from_val,
+								date_to 		: date_to_val,
+								from_branch 	: from_branch_val,
+								to_branch 		: to_branch_val,
+								status 			: status_val
+							};
 
-		return arr;
+		return filterValues;
+	}
+
+	function triggerSearchRequest(rowStart, rowEnd)
+	{
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
+
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+		var paginationRowValues =	{
+										filter_reset : filterResetValue,
+										row_start : rowStartValue,
+										row_end : rowEndValue
+									}
+
+		var filterValues = getSearchFilterValues();
+
+		$.extend(filterValues, paginationRowValues);
+
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues);
 	}
 </script>

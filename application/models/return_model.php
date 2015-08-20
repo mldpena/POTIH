@@ -202,42 +202,31 @@ class Return_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_return_list($param)
+	public function search_return_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-
-		$response 	= array();
-		$query_data = array();
-
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select("RD.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('RD',RD.`reference_number`) AS 'reference_number',
+							COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RD.`is_used` = 0, 'Unused', RD.`memo`) AS 'memo', 
+							RD.`customer`, RD.`received_by`")
+				->from("return_head AS RD")
+				->join("branch AS B", "B.`id` = RD.`branch_id` AND B.`is_show` = ".\Constants\RETURN_CONST::ACTIVE, "left")
+				->where("RD.`is_show`", \Constants\RETURN_CONST::ACTIVE);
+
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND RD.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("RD.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND RD.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("RD.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($branch != \Constants\RETURN_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND RD.`branch_id` = ?";
-			array_push($query_data,$branch);
-		}
+			$this->db->where("RD.`branch_id`", (int)$branch);
 
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('RD',RD.`reference_number`,' ',RD.`memo`,' ',RD.`customer`,' ',RD.`received_by`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('RD',RD.`reference_number`,' ',RD.`memo`,' ',RD.`customer`,' ',RD.`received_by`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -254,21 +243,20 @@ class Return_Model extends CI_Model {
 				break;
 		}
 
+		$this->db->order_by($order_field, $order_type);
 
-		$query = "SELECT RD.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('RD',RD.`reference_number`) AS 'reference_number',
-					COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RD.`is_used` = 0, 'Unused', RD.`memo`) AS 'memo', 
-					RD.`customer`, RD.`received_by`
-					FROM return_head AS RD
-					LEFT JOIN branch AS B ON B.`id` = RD.`branch_id` AND B.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
-					WHERE RD.`is_show` = ".\Constants\RETURN_CONST::ACTIVE." $conditions
-					ORDER BY $order_field $order_type";
-
-		$result = $this->db->query($query,$query_data);
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
+		
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_return_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -288,6 +276,28 @@ class Return_Model extends CI_Model {
 		$result->free_result();
 		
 		return $response;
+	}
+
+	public function get_return_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("return_head AS RD")
+				->where("RD.`is_show`", \Constants\RETURN_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("RD.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("RD.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($branch != \Constants\RETURN_CONST::ALL_OPTION) 
+			$this->db->where("RD.`branch_id`", (int)$branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('RD',RD.`reference_number`,' ',RD.`memo`,' ',RD.`customer`,' ',RD.`received_by`)", $search_string, "both");
+		
+		return $this->db->count_all_results();
 	}
 
 	public function delete_return_head($param)

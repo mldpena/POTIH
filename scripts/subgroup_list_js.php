@@ -80,10 +80,10 @@
 										{ deleteHeadName : 'delete_subgroup', 
 										  notFoundMessage : 'No sub group found!'});
 
-    tableHelper.headContent.bindSearchEvent(getSearchFilter);
+    tableHelper.headContent.bindSearchEvent(triggerSearchRequest);
     tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
 
-    getSearchFilter();
+    triggerSearchRequest();
 	
 	<?php if($permission_list['allow_to_edit']) : ?>
 
@@ -202,7 +202,7 @@
 		$(this).val($(this).val().toUpperCase());
 	});
 
-	function getSearchFilter()
+	function triggerSearchRequest()
 	{
 		var search_val 	= $('#search_string').val();
 		var order_val 	= $('#orderby').val();
@@ -218,7 +218,7 @@
 
 	function actionAfterDelete()
 	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		triggerSearchRequest();
 		build_message_box('messagebox_1','Sub Group successfully deleted!','success');
 	}
 </script>

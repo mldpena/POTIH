@@ -106,12 +106,12 @@
 										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
 										});
 
-	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : triggerSearchRequest, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	getSearchFilter();
+	triggerSearchRequest();
 
-    function getSearchFilter()
+    function triggerSearchRequest()
 	{
 		var search_string_val = $('#search_string').val();
 		var order_by_val 	= $('#order_by').val();
@@ -131,7 +131,7 @@
 
 	function actionAfterDelete()
 	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		triggerSearchRequest();
 		build_message_box('messagebox_1','Material successfully deleted!','success');
 	}
 </script>

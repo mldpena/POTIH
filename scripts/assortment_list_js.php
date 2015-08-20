@@ -126,22 +126,12 @@
 										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
 										});
 
-	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : triggerSearchRequest, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	tableHelper.contentHelper.refreshTable(getSearchFilter);
+	triggerSearchRequest();
 
-	/*$('#export').click(function () {
-		var arr = getSearchFilter();
-
-		arr.fnc = "purchase_transaction";
-
-		var queryString = $.objectToQueryString(arr);
-
-		window.open("<?= base_url() ?>export?" + queryString);
-	});*/
-	
-	function getSearchFilter()
+	function triggerSearchRequest()
 	{
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
@@ -151,23 +141,35 @@
 		var branch_val 		= $('#branch_list').val();
 		var status_val 		= $('#status').val();
 
-		var arr = 	{ 
-						fnc 	 		: 'search_assortment_list', 
-						search_string 	: search_val,
-						order_by  		: order_val,
-						order_type 		: orde_type_val,
-						date_from		: date_from_val,
-						date_to 		: date_to_val,
-						branch 			: branch_val,
-						status 			: status_val
-					};
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
 
-		return arr;
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+		var filterValues = 	{ 
+								fnc 	 		: 'search_assortment_list', 
+								search_string 	: search_val,
+								order_by  		: order_val,
+								order_type 		: orde_type_val,
+								date_from		: date_from_val,
+								date_to 		: date_to_val,
+								branch 			: branch_val,
+								status 			: status_val,
+								filter_reset 	: filterResetValue,
+								row_start 		: rowStartValue,
+								row_end 		: rowEndValue
+							};
+
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues);
 	}
 
 	function actionAfterDelete()
 	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		triggerSearchRequest();
 		build_message_box('messagebox_1','Pick-Up Assortment entry successfully deleted!','success');
 	}
 

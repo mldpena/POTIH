@@ -108,12 +108,11 @@ class Product_Model extends CI_Model {
 		return $this->db->affected_rows();
 	}
 
-	public function get_product_list_by_filter($param)
+	public function get_product_list_by_filter($param, $with_limit = TRUE)
 	{
 		extract($param);
 
 		$product_branch_inventory_condition = "";
-		$limit = $row_end - $row_start + 1;
 
 		$this->db->select("P.`id`, P.`material_code`, P.`description`,
 							CASE 
@@ -201,8 +200,14 @@ class Product_Model extends CI_Model {
 				break;
 		}
 
-		$this->db->order_by($order_field,"DESC")
-					->limit($limit, $row_start);
+		$this->db->order_by($order_field,"DESC");
+
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit($limit, $row_start);
+		}
+					
 
 		$result = $this->db->get();
 

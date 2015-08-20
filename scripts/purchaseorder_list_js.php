@@ -142,23 +142,23 @@
 										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
 										});
 
-	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : getSearchFilter, 
+	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : triggerSearchRequest, 
 											deleteEventsAfterCallback : actionAfterDelete } );
 
-	getSearchFilter();
+	triggerSearchRequest();
 	
 
 	$('#export').click(function () {
-		var arr = getSearchFilter();
+		var filterValues = getSearchFilterValues();
 
-		arr.fnc = "purchase_transaction";
+		filterValues.fnc = "purchase_transaction";
 
-		var queryString = $.objectToQueryString(arr);
+		var queryString = $.objectToQueryString(filterValues);
 
 		window.open("<?= base_url() ?>export?" + queryString);
 	});
-	
-	function getSearchFilter(rowStart, rowEnd)
+		
+	function getSearchFilterValues()
 	{
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
@@ -170,16 +170,7 @@
 		var type_val 		= $('#type').val();
 		var for_branch_val  = $('#for_branch').val();
 
-		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
-			myjstbl.clear_table();
-		else
-			myjstbl.clean_table();
-
-		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
-		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
-		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
-
-		var objectValues = 	{ 
+		var filterValues = 	{ 
 								fnc 	 		: 'search_purchaseorder_list', 
 								search_string 	: search_val,
 								order_by  		: order_val,
@@ -189,18 +180,39 @@
 								branch 			: branch_val,
 								for_branch 		: for_branch_val,
 								status 			: status_val,
-								type 			: type_val	,
-								filter_reset : filterResetValue,
-								row_start : rowStartValue,
-								row_end : rowEndValue
+								type 			: type_val
 							};
 
-		tableHelper.contentHelper.refreshTableWithLimit(objectValues);
+		return filterValues;
+	}
+
+	function triggerSearchRequest(rowStart, rowEnd)
+	{
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
+
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+		var paginationRowValues = 	{ 
+										filter_reset : filterResetValue,
+										row_start : rowStartValue,
+										row_end : rowEndValue
+									};
+
+		var filterValues = getSearchFilterValues();
+
+		$.extend(filterValues, paginationRowValues);
+
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues);
 	}
 
 	function actionAfterDelete()
 	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		triggerSearchRequest();
 		build_message_box('messagebox_1','Purchase Order entry successfully deleted!','success');
 	}
 

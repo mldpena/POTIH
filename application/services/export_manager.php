@@ -20,7 +20,7 @@ class Export_Manager
 
 		$response['rowcnt'] = 0;
 
-		$result = $this->_CI->product_model->get_product_list_by_filter($param);
+		$result = $this->_CI->product_model->get_product_list_by_filter($param, FALSE);
 
 		if ($result->num_rows() > 0) 
 		{

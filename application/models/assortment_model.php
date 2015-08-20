@@ -203,42 +203,48 @@ class Assortment_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_assortment_list($param)
+	public function search_assortment_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-		$having 		= "";
-
-		$response 	= array();
-		$query_data = array();
-
 		$response['rowcnt'] = 0;
-		
+
+		$this->db->select("PH.`id`, COALESCE(B.`name`,'') AS 'location',
+							CONCAT('PA',PH.`reference_number`) AS 'reference_number', PH.`customer`,
+							COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
+							COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
+							IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(PD.`qty_released`,0)) = 0 THEN 'No Received'
+									WHEN SUM(IF(PD.`quantity` - PD.`qty_released` < 0, 0, PD.`quantity` - PD.`qty_released`)) > 0 THEN 'Incomplete'
+									WHEN SUM(PD.`quantity`) - SUM(PD.`qty_released`) = 0 THEN 'Complete'
+									ELSE 'Excess'
+								END,'') 
+							, '') AS 'status',
+							IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(PD.`qty_released`,0)) = 0 THEN ".\Constants\ASSORTMENT_CONST::NO_RECEIVED."
+									WHEN SUM(IF(PD.`quantity` - PD.`qty_released` < 0, 0, PD.`quantity` - PD.`qty_released`)) > 0 THEN ".\Constants\ASSORTMENT_CONST::INCOMPLETE."
+									WHEN SUM(PD.`quantity`) - SUM(PD.`qty_released`) = 0 THEN ".\Constants\ASSORTMENT_CONST::COMPLETE."
+									ELSE ".\Constants\ASSORTMENT_CONST::EXCESS."
+								END,'') 
+							, 0) AS 'status_code'")
+				->from("release_order_head AS PH")
+				->join("release_order_detail AS PD", "PD.`headid` = PH.`id`", "left")
+				->join("branch AS B", "B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE, "left")
+				->where("PH.`is_show`", \Constants\ASSORTMENT_CONST::ACTIVE);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND PH.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("PH.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND PH.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("PH.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($branch != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND PH.`branch_id` = ?";
-			array_push($query_data,$branch);
-		}
-	
+			$this->db->where("PH.`branch_id`", (int)$branch);
+
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('PA',PH.`reference_number`,' ',PH.`memo`,' ',PH.`customer`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('PA',PH.`reference_number`,' ',PH.`memo`,' ',PH.`customer`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -259,41 +265,19 @@ class Assortment_Model extends CI_Model {
 				break;
 		}
 
+		$this->db->group_by("PH.`id`")
+				->order_by($order_field, $order_type);
+
 		if ($status != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
+			$this->db->having("status_code", $status); 
+
+		if ($with_limit) 
 		{
-			$having = "HAVING status_code = ?";
-			array_push($query_data,$status);
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
 		}
 
-		$query = "SELECT PH.`id`, COALESCE(B.`name`,'') AS 'location',
-					CONCAT('PA',PH.`reference_number`) AS 'reference_number', PH.`customer`,
-					COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-					COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
-					IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
-						COALESCE(CASE 
-							WHEN SUM(COALESCE(PD.`qty_released`,0)) = 0 THEN 'No Received'
-							WHEN SUM(IF(PD.`quantity` - PD.`qty_released` < 0, 0, PD.`quantity` - PD.`qty_released`)) > 0 THEN 'Incomplete'
-							WHEN SUM(PD.`quantity`) - SUM(PD.`qty_released`) = 0 THEN 'Complete'
-							ELSE 'Excess'
-						END,'') 
-					, '') AS 'status',
-					IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
-						COALESCE(CASE 
-							WHEN SUM(COALESCE(PD.`qty_released`,0)) = 0 THEN ".\Constants\ASSORTMENT_CONST::NO_RECEIVED."
-							WHEN SUM(IF(PD.`quantity` - PD.`qty_released` < 0, 0, PD.`quantity` - PD.`qty_released`)) > 0 THEN ".\Constants\ASSORTMENT_CONST::INCOMPLETE."
-							WHEN SUM(PD.`quantity`) - SUM(PD.`qty_released`) = 0 THEN ".\Constants\ASSORTMENT_CONST::COMPLETE."
-							ELSE ".\Constants\ASSORTMENT_CONST::EXCESS."
-						END,'') 
-					, 0) AS 'status_code'
-					FROM release_order_head AS PH
-					LEFT JOIN release_order_detail AS PD ON PD.`headid` = PH.`id`
-					LEFT JOIN branch AS B ON B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
-					WHERE PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE." $conditions
-					GROUP BY PH.`id`
-					$having
-					ORDER BY $order_field $order_type";
-
-		$result = $this->db->query($query,$query_data);
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
@@ -321,6 +305,42 @@ class Assortment_Model extends CI_Model {
 		return $response;
 	}
 	
+	public function get_assortment_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->select("IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
+								COALESCE(CASE 
+									WHEN SUM(COALESCE(PD.`qty_released`,0)) = 0 THEN ".\Constants\ASSORTMENT_CONST::NO_RECEIVED."
+									WHEN SUM(IF(PD.`quantity` - PD.`qty_released` < 0, 0, PD.`quantity` - PD.`qty_released`)) > 0 THEN ".\Constants\ASSORTMENT_CONST::INCOMPLETE."
+									WHEN SUM(PD.`quantity`) - SUM(PD.`qty_released`) = 0 THEN ".\Constants\ASSORTMENT_CONST::COMPLETE."
+									ELSE ".\Constants\ASSORTMENT_CONST::EXCESS."
+								END,'') 
+							, 0) AS 'status_code'")
+				->from("release_order_head AS PH")
+				->join("release_order_detail AS PD", "PD.`headid` = PH.`id`", "left")
+				->where("PH.`is_show`", \Constants\ASSORTMENT_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("PH.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("PH.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($branch != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
+			$this->db->where("PH.`branch_id`", (int)$branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('PA',PH.`reference_number`,' ',PH.`memo`,' ',PH.`customer`)", $search_string, "both");
+
+		$this->db->group_by("PH.`id`");
+
+		if ($status != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
+			$this->db->having("status_code", $status); 
+
+		return $this->db->count_all_results();
+	}
+
 	public function delete_assortment_head($param)
 	{
 		extract($param);
