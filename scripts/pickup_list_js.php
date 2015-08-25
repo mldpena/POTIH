@@ -77,9 +77,11 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ notFoundMessage : 'No pick-up summary entry found!' });
 
-	tableHelper.headContent.bindSearchEvent(getSearchFilter, lockEntriesForPreviousDays);
+	tableHelper.headContent.bindSearchEvent(triggerSearchRequest);
+
 	tableHelper.headContent.bindDeleteEvents(actionAfterDelete);
-	tableHelper.contentHelper.refreshTable(getSearchFilter, lockEntriesForPreviousDays);
+
+	triggerSearchRequest();
 
 	$('#create_summary').click(function(){
 
@@ -93,12 +95,13 @@
             	if(response.error != '') 
 					alert(response.error);
 				else
-                	tableHelper.contentHelper.refreshTable(getSearchFilter, lockEntriesForPreviousDays);
+                	triggerSearchRequest();
             }
         });
 	});
 
 	$('.column_click').live('click', function(){
+
 		var rowIndex = $(this).parent().index();
 		var rowId = tableHelper.contentProvider.getData(rowIndex, 'id');
 
@@ -133,23 +136,23 @@
 		};
 	}
 
-	function getSearchFilter()
+	function triggerSearchRequest()
 	{
 		var search_val 		= $('#search_string').val();
 		var branch_val 		= $('#branch_list').val();
 
-		var arr = 	{ 
-						fnc 	 		: 'get_pickup_summary', 
-						search_string 	: search_val,
-						branch 			: branch_val
-					};
+		var filterValues = 	{ 
+								fnc 	 		: 'get_pickup_summary', 
+								search_string 	: search_val,
+								branch 			: branch_val
+							};
 
-		return arr;
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues, lockEntriesForPreviousDays);
 	}
 
 	function actionAfterDelete()
 	{
-		tableHelper.contentHelper.refreshTable(getSearchFilter);
+		triggerSearchRequest();
 		build_message_box('messagebox_1','Summary successfully deleted!','success');
 	}
 </script>

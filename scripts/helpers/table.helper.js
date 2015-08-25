@@ -655,7 +655,7 @@ var TableHelper = function(tableOptions,options) {
 			});
 		},*/
 
-		refreshTableWithLimit : function(filterValues)
+		refreshTableWithLimit : function(filterValues, callbackAfterRequest)
 		{
 			if (self._flag == 1)
 				return;
@@ -694,6 +694,9 @@ var TableHelper = function(tableOptions,options) {
 						$('#' + self._settings.tableID).show();
 					}
 
+					if (callbackAfterRequest) 
+						callbackAfterRequest(response);
+					
 					$('#' + self._settings.loadingImgId).hide();
 					
 					self._flag = 0;

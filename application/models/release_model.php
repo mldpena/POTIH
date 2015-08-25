@@ -296,42 +296,35 @@ class Release_Model extends CI_Model {
 		return $response;
 	}
 
-	public function search_release_list($param)
+	public function search_release_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-
-		$response 	= array();
-		$query_data = array();
-
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select("PRH.`id`, COALESCE(B.`name`,'') AS 'location', 
+							CONCAT('WR',PRH.`reference_number`) AS 'reference_number', 
+							COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PA',PH.`reference_number`)),'') AS 'panumbers',
+						    COALESCE(DATE(PRH.`entry_date`),'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
+						    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'")
+				->from("release_head AS PRH")
+				->join("release_detail AS PRD", "PRD.`headid` = PRH.`id`", "left")
+				->join("release_order_detail AS PD", "PD.`id` = PRD.`release_order_detail_id`", "left")
+				->join("release_order_head AS PH", "PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::USED, "left")
+				->join("branch AS B", "B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE, "left")
+				->where("PRH.`is_show`", \Constants\RELEASE_CONST::ACTIVE);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND PRH.`entry_date` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("PRH.`entry_date` >=", $date_from." 00:00:00");
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND PRH.`entry_date` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
+			$this->db->where("PRH.`entry_date` <=", $date_to." 23:59:59");
 
 		if ($branch != \Constants\RELEASE_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND PRH.`branch_id` = ?";
-			array_push($query_data,$branch);
-		}
-	
+			$this->db->where("PRH.`branch_id`", (int)$branch);
+
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT('WR',PRH.`reference_number`,' ',PRH.`memo`,' ','PA',PH.`reference_number`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT('WR',PRH.`reference_number`,' ',PRH.`memo`,' ','PA',PH.`reference_number`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -348,29 +341,21 @@ class Release_Model extends CI_Model {
 				break;
 		}
 
+		$this->db->order_by($order_field, $order_type);
 
-		$query = "SELECT 
-						PRH.`id`, COALESCE(B.`name`,'') AS 'location', 
-						CONCAT('WR',PRH.`reference_number`) AS 'reference_number', 
-						COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PA',PH.`reference_number`)),'') AS 'panumbers',
-					    COALESCE(DATE(PRH.`entry_date`),'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
-					    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'
-					FROM
-						release_head AS PRH
-					    LEFT JOIN release_detail AS PRD ON PRD.`headid` = PRH.`id`
-					    LEFT JOIN release_order_detail AS PD ON PD.`id` = PRD.`release_order_detail_id`
-					    LEFT JOIN release_order_head AS PH ON PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::USED."
-					    LEFT JOIN branch AS B ON B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE."
-					WHERE PRH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." $conditions
-					GROUP BY PRH.`id`
-					ORDER BY $order_field $order_type";
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
 
-		$result = $this->db->query($query,$query_data);
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+
+			$response['rowcnt'] = $this->get_release_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -390,6 +375,31 @@ class Release_Model extends CI_Model {
 		$result->free_result();
 		
 		return $response;
+	}
+
+	public function get_release_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("release_head AS PRH")
+				->join("release_detail AS PRD", "PRD.`headid` = PRH.`id`", "left")
+				->join("release_order_detail AS PD", "PD.`id` = PRD.`release_order_detail_id`", "left")
+				->join("release_order_head AS PH", "PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::USED, "left")
+				->where("PRH.`is_show`", \Constants\RELEASE_CONST::ACTIVE);
+
+		if (!empty($date_from))
+			$this->db->where("PRH.`entry_date` >=", $date_from." 00:00:00");
+
+		if (!empty($date_to))
+			$this->db->where("PRH.`entry_date` <=", $date_to." 23:59:59");
+
+		if ($branch != \Constants\RELEASE_CONST::ALL_OPTION) 
+			$this->db->where("PRH.`branch_id`", (int)$branch);
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT('WR',PRH.`reference_number`,' ',PRH.`memo`,' ','PA',PH.`reference_number`)", $search_string, "both");
+
+		return $this->db->count_all_results();
 	}
 
 	public function delete_release_head($param)

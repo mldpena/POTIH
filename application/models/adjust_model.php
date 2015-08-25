@@ -115,6 +115,14 @@ class Adjust_Model extends CI_Model {
 				break;
 		}
 
+		$this->db->select("P.`id`, P.`material_code`, P.`description`,
+							CASE 
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+							END AS 'type',
+							COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
+							COALESCE(PBI.`inventory`,0) AS 'inventory', COALESCE(IA.`id`,0) AS 'adjust_id', 
+							COALESCE(IA.`new_inventory`,0) AS 'requested_new_inventory'")
 		$query = "SELECT P.`id`, P.`material_code`, P.`description`,
 						CASE 
 							WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
