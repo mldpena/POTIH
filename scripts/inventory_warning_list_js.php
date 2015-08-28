@@ -106,6 +106,9 @@
     root.appendChild(myjstbl.tab);
     root.appendChild(myjstbl.mypage.pagingtable);
 
+    myjstbl.mypage.set_mysql_interval(100);
+    myjstbl.mypage.isOldPaging = true;
+    myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 
     $('#tbl').hide();
 
@@ -113,20 +116,22 @@
     $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
 
     var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray });
-    tableHelper.headContent.bindSearchEvent(getSearchFilter);
-    tableHelper.contentHelper.refreshTable(getSearchFilter);
+    
+    tableHelper.headContent.bindSearchEvent(triggerSearchRequest);
+    
+    triggerSearchRequest();
 
     $('#export').click(function () {
-        var arr = getSearchFilter();
+        var filterValues = getSearchFilterValues();
 
-        arr.fnc = "inventory_warning";
+        filterValues.fnc = "inventory_warning";
 
-        var queryString = $.objectToQueryString(arr);
+        var queryString = $.objectToQueryString(filterValues);
 
         window.open("<?= base_url() ?>export?" + queryString);
     });
 
-    function getSearchFilter()
+    function getSearchFilterValues()
     {
         var itemcode_val    = $('#itemcode').val();
         var product_val     = $('#product').val();
@@ -139,19 +144,43 @@
         var orderby_val     = $('#orderby').val();
 
 
-        var arr =   { 
-                        fnc      : 'get_inventory_warning_list', 
-                        code     : itemcode_val,
-                        product  : product_val,
-                        subgroup : subgroup_val,
-                        type     : type_val,
-                        material : material_val,
-                        datefrom : datefrom_val,
-                        dateto   : dateto_val,
-                        branch   : branch_val,
-                        orderby  : orderby_val
-                    };
+        var filterValues =  { 
+                                fnc      : 'get_inventory_warning_list', 
+                                code     : itemcode_val,
+                                product  : product_val,
+                                subgroup : subgroup_val,
+                                type     : type_val,
+                                material : material_val,
+                                datefrom : datefrom_val,
+                                dateto   : dateto_val,
+                                branch   : branch_val,
+                                orderby  : orderby_val
+                            };
 
-        return arr;
+        return filterValues;
+    }
+
+    function triggerSearchRequest(rowStart, rowEnd)
+    {
+        if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+            myjstbl.clear_table();
+        else
+            myjstbl.clean_table();
+
+        var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+        var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+        var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
+        var paginationRowValues =   {
+                                        filter_reset : filterResetValue,
+                                        row_start : rowStartValue,
+                                        row_end : rowEndValue
+                                    }
+
+        var filterValues = getSearchFilterValues();
+
+        $.extend(filterValues, paginationRowValues);
+
+        tableHelper.contentHelper.refreshTableWithLimit(filterValues);
     }
 </script>

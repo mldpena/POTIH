@@ -101,6 +101,10 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
+	myjstbl.mypage.set_mysql_interval(100);
+	myjstbl.mypage.isOldPaging = true;
+	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
+
 	$('#tbl').hide();
 	$('#new_inventory').binder('setRule','numeric');
 
@@ -235,8 +239,17 @@
 		clear_message_box();
 	});
 
-    function getSearchFilterValues()
+	function triggerSearchRequest(rowStart, rowEnd)
 	{
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
+
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
 		var itemcode_val 	= $('#itemcode').val();
 		var product_val 	= $('#product').val();
 		var subgroup_val 	= $('#subgroup').val();
@@ -257,32 +270,11 @@
 								datefrom : datefrom_val,
 								dateto 	 : dateto_val,
 								invstat  : inv_val,
-								orderby  : orderby_val
+								orderby  : orderby_val,
+								filter_reset : filterResetValue,
+								row_start : rowStartValue,
+								row_end : rowEndValue
 							};
-
-		return filterValues;
-	}
-
-	function triggerSearchRequest(rowStart, rowEnd)
-	{
-		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
-			myjstbl.clear_table();
-		else
-			myjstbl.clean_table();
-
-		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
-		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
-		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
-
-		var paginationRowValues =	{
-										filter_reset : filterResetValue,
-										row_start : rowStartValue,
-										row_end : rowEndValue
-									}
-
-		var filterValues = getSearchFilterValues();
-
-		$.extend(filterValues, paginationRowValues);
 
 		tableHelper.contentHelper.refreshTableWithLimit(filterValues);
 	}

@@ -34,6 +34,8 @@ class Product_Manager
 	 */
 	public function get_product_list_info($param)
 	{
+		$row_start = (int)$param['row_start'];
+		
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -45,8 +47,6 @@ class Product_Manager
 			$i = 0;
 			
 			$response['rowcnt'] = $this->_CI->product_model->get_product_list_count_by_filter($param);
-
-			extract($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -290,6 +290,8 @@ class Product_Manager
 
 	public function get_product_warning_list_info($param)
 	{
+		$row_start = (int)$param['row_start'];
+
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -299,12 +301,12 @@ class Product_Manager
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->_CI->product_model->get_product_warning_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
 				$response['data'][$i][] = array($row->type);
@@ -325,6 +327,8 @@ class Product_Manager
 
 	public function get_product_transaction_list_info($param)
 	{
+		$row_start = (int)$param['row_start'];
+		
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -334,11 +338,11 @@ class Product_Manager
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->_CI->product_model->get_transaction_summary_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				
 				foreach ($row as $key => $value)
       				$response['data'][$i][] = array($value);
@@ -358,6 +362,8 @@ class Product_Manager
 
 	public function get_branch_inventory_list_info($param)
 	{
+		$row_start = (int)$param['row_start'];
+
 		$this->_CI->load->model('branch_model');
 
 		$branch_column_list = "";
@@ -383,11 +389,11 @@ class Product_Manager
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->_CI->product_model->get_product_branch_inventory_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 
 				foreach ($row as $key => $value)
       				$response['data'][$i][] = array($value);

@@ -63,7 +63,8 @@ class StockDelivery extends CI_Controller {
 					$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE);
 					$allow_user = $this->permission_checker->check_permission(\Permission\StockDelivery_Code::VIEW_STOCK_DELIVERY);
 					$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY),
-										'allow_to_add' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::ADD_STOCK_DELIVERY));
+										'allow_to_add' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::ADD_STOCK_DELIVERY),
+										'allow_to_edit_incomplete' => $this->permission_checker->check_permission(\Permission\StockDelivery_Code::EDIT_INCOMPLETE_TRANSACTION));
 					break;
 
 				default:

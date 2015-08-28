@@ -19,107 +19,117 @@
 	tab.id = "tableid";
 	tab.setAttribute("style","border-collapse:collapse;");
 	tab.setAttribute("class","border-collapse:collapse;");
-    
-    var colarray = [];
+	
+	var colarray = [];
 	
 	var spnid = document.createElement('span');
 	colarray['id'] = { 
-        header_title: "",
-        edit: [spnid],
-        disp: [spnid],
-        td_class: "tablerow tdid",
+		header_title: "",
+		edit: [spnid],
+		disp: [spnid],
+		td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
-    };
+	};
 
-    var chkchecktransfer = document.createElement('input');
-    chkchecktransfer.setAttribute('type','checkbox');
-    chkchecktransfer.setAttribute('class','chktransfer');
-    var chkchecktransferdisabled = document.createElement('input');
-    chkchecktransferdisabled.setAttribute('type','checkbox');
-    chkchecktransferdisabled.setAttribute('disabled','disabled');
-    chkchecktransferdisabled.setAttribute('class','chktransfer');
+	var chkchecktransfer = document.createElement('input');
+	chkchecktransfer.setAttribute('type','checkbox');
+	chkchecktransfer.setAttribute('class','chktransfer');
+	var chkchecktransferdisabled = document.createElement('input');
+	chkchecktransferdisabled.setAttribute('type','checkbox');
+	chkchecktransferdisabled.setAttribute('disabled','disabled');
+	chkchecktransferdisabled.setAttribute('class','chktransfer');
 	colarray['istransfer'] = { 
-        header_title: "FT",
-        edit: [chkchecktransfer],
-        disp: [chkchecktransferdisabled],
-        td_class: "tablerow tdistransfer",
+		header_title: "FT",
+		edit: [chkchecktransfer],
+		disp: [chkchecktransferdisabled],
+		td_class: "tablerow tdistransfer",
 		headertd_class : "tdistransfer"
-    };
+	};
 
-    var spnnumber = document.createElement('span');
+	var spnnumber = document.createElement('span');
 	colarray['number'] = { 
-        header_title: "",
-        edit: [spnnumber],
-        disp: [spnnumber],
-        td_class: "tablerow tdnumber"
-    };
+		header_title: "",
+		edit: [spnnumber],
+		disp: [spnnumber],
+		td_class: "tablerow tdnumber"
+	};
 
-    var spnproduct = document.createElement('span');
-    var spnproductid = document.createElement('span');
-    var txtproduct = document.createElement('input');
-    txtproduct.setAttribute('class','form-control txtproduct');
-    spnproductid.setAttribute('style','display:none;');
+	var spnproduct = document.createElement('span');
+	var spnproductid = document.createElement('span');
+	var txtproduct = document.createElement('input');
+	txtproduct.setAttribute('class','form-control txtproduct');
+	spnproductid.setAttribute('style','display:none;');
 
-    var description = document.createElement('textarea');
-    description.setAttribute('class','nonStackDescription form-control desc-margin');
-    description.setAttribute('placeholder', 'Description')
-    description.setAttribute('style','display:none;');
+	var description = document.createElement('textarea');
+	description.setAttribute('class','nonStackDescription form-control desc-margin');
+	description.setAttribute('placeholder', 'Description')
+	description.setAttribute('style','display:none;');
 
-    var disabledDescription = document.createElement('textarea');
-    disabledDescription.setAttribute('class','nonStackDescription form-control');
-    disabledDescription.setAttribute('style','display:none;');
-    disabledDescription.setAttribute('disabled','disabled');
+	var disabledDescription = document.createElement('textarea');
+	disabledDescription.setAttribute('class','nonStackDescription form-control');
+	disabledDescription.setAttribute('style','display:none;');
+	disabledDescription.setAttribute('disabled','disabled');
 
-    var productType = document.createElement('span');
-    productType.setAttribute('style','display:none;');
+	var productType = document.createElement('span');
+	productType.setAttribute('style','display:none;');
 
-    var newline = document.createElement('span');
+	var newline = document.createElement('span');
 
 	colarray['product'] = { 
-        header_title: "Product",
-        edit: [txtproduct,spnproductid,productType,newline,description],
-        disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
-        td_class: "tablerow column_click column_hover tdproduct"
-    };
+		header_title: "Product",
+		edit: [txtproduct,spnproductid,productType,newline,description],
+		disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		td_class: "tablerow column_click column_hover tdproduct"
+	};
 
 	var spnmaterialcode = document.createElement('span');
 	colarray['code'] = { 
-        header_title: "Material Code",
-        edit: [spnmaterialcode],
-        disp: [spnmaterialcode],
-        td_class: "tablerow column_click column_hover tdcode"
-    };
-   	
-   	var spnqty = document.createElement('span');
-   	var txtqty = document.createElement('input');
-    txtqty.setAttribute('class','form-control txtqty');
+		header_title: "Material Code",
+		edit: [spnmaterialcode],
+		disp: [spnmaterialcode],
+		td_class: "tablerow column_click column_hover tdcode"
+	};
+	
+	var spnqty = document.createElement('span');
+	var txtqty = document.createElement('input');
+	txtqty.setAttribute('class','form-control txtqty');
 	colarray['qty'] = { 
-        header_title: "Qty",
-        edit: [txtqty],
-        disp: [spnqty],
-        td_class: "tablerow column_click column_hover tdqty"
-    };
+		header_title: "Qty",
+		edit: [txtqty],
+		disp: [spnqty],
+		td_class: "tablerow column_click column_hover tdqty"
+	};
 
-    var spnreceive = document.createElement('span');
+	var spnreceive = document.createElement('span');
 	colarray['receive'] = { 
-        header_title: "Received Qty",
-        edit: [spnreceive],
-        disp: [spnreceive],
-        td_class: "tablerow column_click column_hover tdreceive",
-        headertd_class : "tdreceive"
-    };
+		header_title: "Received Qty",
+		edit: [spnreceive],
+		disp: [spnreceive],
+		td_class: "tablerow column_click column_hover tdreceive",
+		headertd_class : "tdreceive"
+	};
 
-    var spnmemo = document.createElement('span');
-    var txtmemo = document.createElement('input');
-    txtmemo.setAttribute('class','form-control txtmemo');
+	var spninvoice = document.createElement('span');
+	var txtinvoice = document.createElement('input');
+	txtinvoice.setAttribute('class','form-control txtinvoice');
+	colarray['invoice'] = { 
+		header_title: "Invoice",
+		edit: [txtinvoice],
+		disp: [spninvoice],
+		td_class: "tablerow column_click column_hover tdinvoice"
+	};
+
+	var spnmemo = document.createElement('span');
+	var txtmemo = document.createElement('input');
+	txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
-        header_title: "Remarks",
-        edit: [txtmemo],
-        disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tdmemo"
-    };
-
-    var imgUpdate = document.createElement('i');
+		header_title: "Remarks",
+		edit: [txtmemo],
+		disp: [spnmemo],
+		td_class: "tablerow column_click column_hover tdmemo"
+	};
+	
+	var imgUpdate = document.createElement('i');
 	imgUpdate.setAttribute("class","imgupdate fa fa-check");
 	var imgEdit = document.createElement('i');
 	imgEdit.setAttribute("class","imgedit fa fa-pencil");
@@ -131,7 +141,7 @@
 		headertd_class: "tdupdate"
 	};
 
-    var imgDelete = document.createElement('i');
+	var imgDelete = document.createElement('i');
 	imgDelete.setAttribute("class","imgdel fa fa-trash");
 	colarray['coldelete'] = { 
 		header_title: "",
@@ -140,7 +150,6 @@
 		td_class: "tablerow column_hover tddelete",
 		headertd_class: "tddelete"
 	};
-
 
 	var myjstbl;
 
@@ -159,15 +168,15 @@
 										{ baseURL : "<?= base_url() ?>", controller : 'delivery' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											 	updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
-											 	addInventoryChecker : true,
-											 	saveEventsAfterCallback : goToPrintOut } );
+												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+												addInventoryChecker : true,
+												saveEventsAfterCallback : goToPrintOut } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date').datepicker("setDate", new Date());
+		$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
+		$('#date').datepicker("setDate", new Date());
 
 		var arr = { fnc : 'get_stock_delivery_details' };
 		
@@ -211,6 +220,12 @@
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save').hide();
+
+					if (response.is_saved && response.is_incomplete && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_edit_incomplete']?>) == true))
+					{
+						$('input, textarea, select').not('#print').removeAttr('disabled');
+						$('.tdupdate, #save').show();
+					}
 				}
 				else
 					tableHelper.contentProvider.addRow();
@@ -254,14 +269,16 @@
 		else if ($(this).val() == DeliveryType.Both)
 		{
 			for (var i = 1; i < myjstbl.get_row_count(); i++) 
-					myjstbl.edit_row(i);
+			{
+				myjstbl.edit_row(i);
+				tableHelper.contentHelper.descriptionAccessibilty(i);
+			}
 
 			$('#delivery_to_list').show();
 			$('.tdistransfer').show();
 			$('.chktransfer').removeAttr('checked');
 			$('#dynamic-css').html('');
 			hideTransferAndReceived();
-
 
 		}
 	});
@@ -283,19 +300,19 @@
 					}
 
 		$.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(response) {
-            	if(response.error != '') 
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				if(response.error != '') 
 					alert(response.error);
 				else
 				{
 					$('#print').show();
-                	window.open('<?= base_url() ?>printout/delivery/Delivery');
+					window.open('<?= base_url() ?>printout/delivery/Delivery');
 				}
-            }
-        });
+			}
+		});
 	}
 
 	function getHeadDetailsBeforeSubmit()
@@ -334,7 +351,8 @@
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId 		= tableHelper.contentProvider.getData(rowIndex,'product',1);
 		var qty 			= tableHelper.contentProvider.getData(rowIndex,'qty');
-		var memo 			= tableHelper.contentProvider.getData(rowIndex,'memo');
+		var memo 			= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'memo'));
+		var invoice 		= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'invoice'));
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
 		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',4);
@@ -350,10 +368,11 @@
 						fnc 	 	: actionFunction, 
 						product_id 	: productId,
 						qty     	: qty,
-			     		memo 		: memo,
-			     		detail_id 	: rowId,
-			     		istransfer 	: isTransfer,
-			     		description : description
+						memo 		: memo,
+						detail_id 	: rowId,
+						istransfer 	: isTransfer,
+						description : description,
+						invoice 	: invoice
 					};
 
 		return arr;

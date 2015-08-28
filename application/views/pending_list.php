@@ -21,8 +21,8 @@
 								<option value="2">Non - Stock</option>
 							</select>
 						</td>
-						<td>Branch:</td>
-						<td>
+						<td class="hide-elem">Branch:</td>
+						<td class="hide-elem">
 							<select class="form-control" id="branch"><?= $branch_list ?></select>
 						</td>
 					</tr>

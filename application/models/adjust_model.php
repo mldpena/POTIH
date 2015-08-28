@@ -23,52 +23,44 @@ class Adjust_Model extends CI_Model {
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
-	public function get_product_adjust_list($param)
+	public function get_product_adjust_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$response 	= array();
 		$response['rowcnt'] = 0;
 
-		$conditions 		= "";
-		$order_field 		= "";
-		$query_data = array($this->_current_branch_id,$this->_current_branch_id);
+		$this->db->select("P.`id`, P.`material_code`, P.`description`,
+							CASE 
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+							END AS 'type',
+							COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
+							COALESCE(PBI.`inventory`,0) AS 'inventory', COALESCE(IA.`id`,0) AS 'adjust_id', 
+							COALESCE(IA.`new_inventory`,0) AS 'requested_new_inventory'")
+				->from("product AS P")
+				->join("material_type AS M", "M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->join("subgroup AS S", "S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->_current_branch_id, "left")
+				->join("inventory_adjust AS IA", "IA.`product_id` = P.`id` AND IA.`branch_id` = ".$this->_current_branch_id." AND IA.`status` = ".\Constants\ADJUST_CONST::PENDING, "left")
+				->where("P.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
 
 		if (!empty($code)) 
-		{
-			$conditions .= " AND P.`material_code` LIKE ?";
-			array_push($query_data,'%'.$code.'%');
-		}
+			$this->db->like("P.`material_code`", $code, "both");
 
 		if (!empty($product)) 
-		{
-			$conditions .= " AND P.`description` LIKE ?";
-			array_push($query_data,'%'.$product.'%');
-		}
+			$this->db->like("P.`description`", $product, "both");
 
 		if ($subgroup != \Constants\ADJUST_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND P.`subgroup_id` = ?";
-			array_push($query_data,$subgroup);
-		}
+			$this->db->where("P.`subgroup_id`", $subgroup);
 
 		if ($material != \Constants\ADJUST_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND P.`material_type_id` = ?";
-			array_push($query_data,$material);
-		}
+			$this->db->where("P.`material_type_id`", $material);
 
 		if (!empty($datefrom))
-		{
-			$conditions .= " AND P.`date_created` >= ?";
-			array_push($query_data,$datefrom.' 00:00:00');
-		}
+			$this->db->where("P.`date_created` >=", $datefrom.' 00:00:00');
 
 		if (!empty($dateto))
-		{
-			$conditions .= " AND P.`date_created` <= ?";
-			array_push($query_data,$datefrom.' 23:59:59');
-		}
+			$this->db->where("P.`date_created` <=", $dateto.' 23:59:59');
 
 		if ($type != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
@@ -83,25 +75,7 @@ class Adjust_Model extends CI_Model {
 					break;
 			}
 
-			$conditions .= " AND P.`type` = ?";
-			array_push($query_data,$type);
-		}
-
-		if ($invstat != \Constants\ADJUST_CONST::ALL_OPTION) 
-		{
-			switch ($invstat) {
-				case \Constants\ADJUST_CONST::POSITIVE_INV:
-					$conditions .= " AND PBI.`inventory` > 0";
-					break;
-				
-				case \Constants\ADJUST_CONST::NEGATIVE_INV:
-					$conditions .= " AND PBI.`inventory` < 0";
-					break;
-
-				case \Constants\ADJUST_CONST::ZERO_INV:
-					$conditions .= " AND PBI.`inventory` = 0";
-					break;
-			}
+			$this->db->where("P.`type`",$type);
 		}
 
 		switch ($orderby) 
@@ -115,43 +89,27 @@ class Adjust_Model extends CI_Model {
 				break;
 		}
 
-		$this->db->select("P.`id`, P.`material_code`, P.`description`,
-							CASE 
-								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
-								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
-							END AS 'type',
-							COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
-							COALESCE(PBI.`inventory`,0) AS 'inventory', COALESCE(IA.`id`,0) AS 'adjust_id', 
-							COALESCE(IA.`new_inventory`,0) AS 'requested_new_inventory'")
-		$query = "SELECT P.`id`, P.`material_code`, P.`description`,
-						CASE 
-							WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
-							WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
-						END AS 'type',
-						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
-						COALESCE(PBI.`inventory`,0) AS 'inventory', COALESCE(IA.`id`,0) AS 'adjust_id', 
-						COALESCE(IA.`new_inventory`,0) AS 'requested_new_inventory'
-						FROM product AS P
-						LEFT JOIN material_type AS M ON M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
-						LEFT JOIN subgroup AS S ON S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
-						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = ?
-						LEFT JOIN inventory_adjust AS IA ON IA.`product_id` = P.`id` AND IA.`branch_id` = ? AND IA.`status` = ".\Constants\ADJUST_CONST::PENDING."
-						WHERE P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE." $conditions
-						ORDER BY $order_field";
+		$this->db->order_by($order_field,"DESC");
 
-		$result = $this->db->query($query,$query_data);
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit($limit, $row_start);
+		}
+		
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_product_adjust_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
 				$adjust_id = $row->adjust_id == 0 ? 0 : $this->encrypt->encode($row->adjust_id);
 				
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
 				$response['data'][$i][] = array($row->type);
@@ -166,6 +124,50 @@ class Adjust_Model extends CI_Model {
 		$result->free_result();
 
 		return $response;
+	}
+
+	public function get_product_adjust_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("product AS P")
+				->where("P.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
+
+		if (!empty($code)) 
+			$this->db->like("P.`material_code`", $code, "both");
+
+		if (!empty($product)) 
+			$this->db->like("P.`description`", $product, "both");
+
+		if ($subgroup != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("P.`subgroup_id`", $subgroup);
+
+		if ($material != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("P.`material_type_id`", $material);
+
+		if (!empty($datefrom))
+			$this->db->where("P.`date_created` >=", $datefrom.' 00:00:00');
+
+		if (!empty($dateto))
+			$this->db->where("P.`date_created` <=", $dateto.' 23:59:59');
+
+		if ($type != \Constants\ADJUST_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type = \Constants\ADJUST_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type = \Constants\ADJUST_CONST::NON_STOCK;
+					break;
+			}
+
+			$this->db->where("P.`type`",$type);
+		}
+
+		return $this->db->count_all_results();
 	}
 
 	public function get_adjust_details($param)
@@ -294,58 +296,51 @@ class Adjust_Model extends CI_Model {
 		return $response;
 	}
 
-	public function get_pending_adjust_list($param)
+	public function get_pending_adjust_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$response 	= array();
 		$response['rowcnt'] = 0;
 
-		$conditions 		= "";
-		$order_field 		= "";
-		$query_data = array();
+		$this->db->select("IA.`id`, P.`material_code`, P.`description`,
+							CASE 
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
+								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+							END AS 'type',
+							CASE 
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::APPROVED." THEN 'Approved'
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
+							END AS 'status', IA.`memo`,
+							COALESCE(PBI.`inventory`,0) AS 'current_inventory', 
+							IA.`old_inventory`, IA.`new_inventory` AS 'requested_new_inventory',
+							DATE(IA.`date_created`) AS 'date_created', COALESCE(B.`name`,'') AS 'from_branch'")
+				->from("inventory_adjust AS IA")
+				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = IA.`branch_id`", "left")
+				->join("branch AS B", "B.`id` = IA.`branch_id` AND B.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
 
 		if (!empty($code)) 
-		{
-			$conditions .= " AND P.`material_code` LIKE ?";
-			array_push($query_data,'%'.$code.'%');
-		}
+			$this->db->like("P.`material_code`", $code, "both");
 
 		if (!empty($product)) 
-		{
-			$conditions .= " AND P.`description` LIKE ?";
-			array_push($query_data,'%'.$product.'%');
-		}
+			$this->db->like("P.`description`", $product, "both");
 
 		if ($subgroup != \Constants\ADJUST_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND P.`subgroup_id` = ?";
-			array_push($query_data,$subgroup);
-		}
+			$this->db->where("P.`subgroup_id`", $subgroup);
 
 		if ($material != \Constants\ADJUST_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND P.`material_type_id` = ?";
-			array_push($query_data,$material);
-		}
+			$this->db->where("P.`material_type_id`", $material);
 
 		if (!empty($datefrom))
-		{
-			$conditions .= " AND IA.`date_created` >= ?";
-			array_push($query_data,$datefrom.' 00:00:00');
-		}
+			$this->db->where("IA.`date_created` >=", $datefrom.' 00:00:00');
 
 		if (!empty($dateto))
-		{
-			$conditions .= " AND IA.`date_created` <= ?";
-			array_push($query_data,$dateto.' 23:59:59');
-		}
-
+			$this->db->where("IA.`date_created` <=", $dateto.' 23:59:59');
+		
 		if ($branch != \Constants\ADJUST_CONST::ALL_OPTION) 
-		{
-			$conditions .= " AND IA.`branch_id` <= ?";
-			array_push($query_data,$branch);
-		}
+			$this->db->where("IA.`branch_id`", $branch);
 
 		if ($type != \Constants\ADJUST_CONST::ALL_OPTION) 
 		{
@@ -360,26 +355,11 @@ class Adjust_Model extends CI_Model {
 					break;
 			}
 
-			$conditions .= " AND P.`type` = ?";
-			array_push($query_data,$type);
+			$this->db->where("P.`type`",$type);
 		}
 
 		if ($status != \Constants\ADJUST_CONST::ALL_OPTION) 
-		{
-			switch ($status) {
-				case \Constants\ADJUST_CONST::PENDING:
-					$conditions .= " AND IA.`status` = ".\Constants\ADJUST_CONST::PENDING;
-					break;
-				
-				case \Constants\ADJUST_CONST::APPROVED:
-					$conditions .= " AND IA.`status` = ".\Constants\ADJUST_CONST::APPROVED;
-					break;
-
-				case \Constants\ADJUST_CONST::DECLINED:
-					$conditions .= " AND IA.`status` = ".\Constants\ADJUST_CONST::DECLINED;
-					break;
-			}
-		}
+			$this->db->where("IA.`status`", $status);
 
 		switch ($orderby) 
 		{
@@ -392,38 +372,26 @@ class Adjust_Model extends CI_Model {
 				break;
 		}
 
-		$query = "SELECT IA.`id`, P.`material_code`, P.`description`,
-						CASE 
-							WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
-							WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
-						END AS 'type',
-						CASE 
-							WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
-							WHEN IA.`status` = ".\Constants\ADJUST_CONST::APPROVED." THEN 'Approved'
-							WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
-						END AS 'status', IA.`memo`,
-						COALESCE(PBI.`inventory`,0) AS 'current_inventory', 
-						IA.`old_inventory`, IA.`new_inventory` AS 'requested_new_inventory',
-						DATE(IA.`date_created`) AS 'date_created', COALESCE(B.`name`,'') AS 'from_branch'
-						FROM inventory_adjust AS IA
-						LEFT JOIN product AS P ON P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
-						LEFT JOIN product_branch_inventory AS PBI ON PBI.`product_id` = P.`id` AND PBI.`branch_id` = IA.`branch_id`
-						LEFT JOIN branch AS B ON B.`id` = IA.`branch_id` AND B.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE."
-						WHERE IA.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE." $conditions
-						ORDER BY $order_field";
+		$this->db->order_by($order_field,"DESC");
 
-		$result = $this->db->query($query,$query_data);
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit($limit, $row_start);
+		}
+
+		$result = $this->db->get();
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_pending_adjust_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{	
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
 				$response['data'][$i][] = array($row->type);
@@ -441,6 +409,57 @@ class Adjust_Model extends CI_Model {
 		$result->free_result();
 
 		return $response;
+	}
+
+	public function get_pending_adjust_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("inventory_adjust AS IA")
+				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
+
+		if (!empty($code)) 
+			$this->db->like("P.`material_code`", $code, "both");
+
+		if (!empty($product)) 
+			$this->db->like("P.`description`", $product, "both");
+
+		if ($subgroup != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("P.`subgroup_id`", $subgroup);
+
+		if ($material != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("P.`material_type_id`", $material);
+
+		if (!empty($datefrom))
+			$this->db->where("IA.`date_created` >=", $datefrom.' 00:00:00');
+
+		if (!empty($dateto))
+			$this->db->where("IA.`date_created` <=", $dateto.' 23:59:59');
+		
+		if ($branch != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("IA.`branch_id`", $branch);
+
+		if ($type != \Constants\ADJUST_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type = \Constants\ADJUST_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type = \Constants\ADJUST_CONST::NON_STOCK;
+					break;
+			}
+
+			$this->db->where("P.`type`",$type);
+		}
+
+		if ($status != \Constants\ADJUST_CONST::ALL_OPTION) 
+			$this->db->where("IA.`status`", $status);
+
+		return $this->db->count_all_results();
 	}
 
 	public function update_request_status($param)
@@ -484,37 +503,33 @@ class Adjust_Model extends CI_Model {
 		return $response;
 	}
 
-	public function get_adjust_express_list($param)
+	public function get_adjust_express_list($param, $with_limit = TRUE)
 	{
 		extract($param);
 
-		$conditions		= "";
-		$order_field 	= "";
-		$having 		= "";
-
-		$response 	= array();
-		$query_data = array($this->_current_branch_id);
-
 		$response['rowcnt'] = 0;
-		
-		
+
+		$this->db->select("IA.`id`, COALESCE(P.`description`,'') AS 'description', 
+							COALESCE(P.`id`,0) AS 'product_id', P.`material_code`,
+							IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
+							CASE 
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::APPROVED." THEN 'Approved'
+								WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
+							END AS 'status'")
+				->from("inventory_adjust AS IA")
+				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE)
+				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
+				->where("IA.`branch_id`", $this->_current_branch_id);
+
 		if (!empty($date_from))
-		{
-			$conditions .= " AND IA.`date_created` >= ?";
-			array_push($query_data,$date_from.' 00:00:00');
-		}
+			$this->db->where("IA.`date_created` >=", $date_from.' 00:00:00');
 
 		if (!empty($date_to))
-		{
-			$conditions .= " AND IA.`date_created` <= ?";
-			array_push($query_data,$date_to.' 23:59:59');
-		}
-	
+			$this->db->where("IA.`date_created` <=", $date_to.' 23:59:59');
+
 		if (!empty($search_string)) 
-		{
-			$conditions .= " AND CONCAT(P.`description`,' ',IA.`memo`,' ',P.`material_code`) LIKE ?";
-			array_push($query_data,'%'.$search_string.'%');
-		}
+			$this->db->like("CONCAT(P.`description`,' ',IA.`memo`,' ',P.`material_code`)", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -527,30 +542,26 @@ class Adjust_Model extends CI_Model {
 				break;
 		}
 
-		$query = "SELECT IA.`id`, COALESCE(P.`description`,'') AS 'description', 
-					COALESCE(P.`id`,0) AS 'product_id', P.`material_code`,
-					IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
-					CASE 
-						WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
-						WHEN IA.`status` = ".\Constants\ADJUST_CONST::APPROVED." THEN 'Approved'
-						WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
-					END AS 'status'
-					FROM inventory_adjust AS IA
-					LEFT JOIN product AS P ON P.`id` = IA.`product_id` AND P.`is_show` = 1
-					WHERE IA.`is_show` = 1 AND IA.`branch_id` = ? $conditions
-					ORDER BY $order_field $order_type";
+		$this->db->order_by($order_field, $order_type);
 
-		$result = $this->db->query($query,$query_data);
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
+
+		$result = $this->db->get();
 		
 		if ($result->num_rows() > 0) 
 		{
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_adjust_express_list_count_by_filter($param);
+
 			$i = 0;
 
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->description,$this->encrypt->encode($row->product_id));
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->old_inventory);
@@ -564,6 +575,27 @@ class Adjust_Model extends CI_Model {
 		}
 
 		return $response;
+	}
+
+	public function get_adjust_express_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("inventory_adjust AS IA")
+				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE)
+				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
+				->where("IA.`branch_id`", $this->_current_branch_id);
+
+		if (!empty($date_from))
+			$this->db->where("IA.`date_created` >=", $date_from.' 00:00:00');
+
+		if (!empty($date_to))
+			$this->db->where("IA.`date_created` <=", $date_to.' 23:59:59');
+
+		if (!empty($search_string)) 
+			$this->db->like("CONCAT(P.`description`,' ',IA.`memo`,' ',P.`material_code`)", $search_string, "both");
+
+		return $this->db->count_all_results();
 	}
 
 	public function delete_inventory_request($param)

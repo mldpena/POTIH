@@ -360,7 +360,7 @@ class Release_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->panumbers);

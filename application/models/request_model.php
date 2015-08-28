@@ -310,7 +310,7 @@ class Request_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->from_branch);
 				$response['data'][$i][] = array($row->to_branch);

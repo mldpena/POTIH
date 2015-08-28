@@ -20,8 +20,8 @@ class Pickup_Model extends CI_Model {
 
 		$this->load->constant('pickup_const');
 		
-		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
-		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
+		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
@@ -97,7 +97,7 @@ class Pickup_Model extends CI_Model {
 		$query_data = array($summary_head_id, date("Y-m-d", strtotime($this->_current_date)));
 
 		$query = "INSERT INTO pickup_summary_detail(`headid`, `release_head_id`)
-					SELECT ?, `id` FROM release_head WHERE DATE(`entry_date`) = ? AND `is_show` = ".\Constants\PICKUP_CONST::ACTIVE;
+					SELECT ?, `id` FROM release_head WHERE DATE(`entry_date`) = ? AND `branch_id` = ".$this->_current_branch_id." AND `is_show` = ".\Constants\PICKUP_CONST::ACTIVE;
 
 		$result = $this->sql->execute_query($query,$query_data);
 

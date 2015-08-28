@@ -338,7 +338,7 @@ class Product_Model extends CI_Model {
 	}
 
 
-	public function get_product_warning_list_by_filter($param)
+	public function get_product_warning_list_by_filter($param, $with_limit = TRUE)
 	{
 		extract($param);
 
@@ -422,12 +422,78 @@ class Product_Model extends CI_Model {
 
 		$this->db->order_by($order_field,"DESC");
 
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
+
 		$result = $this->db->get();
 
 		return $result;
 	}
 
-	public function get_product_branch_inventory_list_by_filter($param, $branch_column)
+	public function get_product_warning_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("product AS P")
+				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = $branch", "left")
+				->group_start()
+					->group_start()
+						->where("PBI.`inventory` > PBI.`max_inv`")
+						->where("PBI.`max_inv` <>", 0)
+					->group_end()
+					->or_group_start()
+						->where("PBI.`inventory` < PBI.`min_inv`")
+						->where("PBI.`min_inv` <>", 0)
+						->where("PBI.`inventory` >", 0)
+					->group_end()
+					->or_group_start()
+						->where("PBI.`inventory` <", 0)
+						->where("PBI.`min_inv` <>", 0)
+					->group_end()
+				->group_end()
+				->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
+
+		if (!empty($code)) 
+			$this->db->like("P.`material_code`", $code, "both");
+
+		if (!empty($product)) 
+			$this->db->like("P.`description`", $product, "both");
+
+		if ($subgroup != \Constants\PRODUCT_CONST::ALL_OPTION) 
+			$this->db->where("P.`subgroup_id`", $subgroup);
+
+		if ($material != \Constants\PRODUCT_CONST::ALL_OPTION) 
+			$this->db->where("P.`material_type_id`", $material);
+
+		if (!empty($datefrom))
+			$this->db->where("P.`date_created` >=", $datefrom.' 00:00:00');
+
+		if (!empty($dateto))
+			$this->db->where("P.`date_created` <=", $dateto.' 23:59:59');
+
+		if ($type != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type = \Constants\PRODUCT_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type = \Constants\PRODUCT_CONST::NON_STOCK;
+					break;
+			}
+
+			$this->db->where("P.`type`",$type);
+		}
+
+		return $this->db->count_all_results();
+	}
+
+	public function get_product_branch_inventory_list_by_filter($param, $branch_column, $with_limit = TRUE)
 	{
 		extract($param);
 
@@ -491,12 +557,62 @@ class Product_Model extends CI_Model {
 
 		$this->db->order_by($order_field,"DESC");
 
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
+
 		$result = $this->db->get();
 
 		return $result;
 	}
 
-	public function get_transaction_summary_by_filter($param)
+	public function get_product_branch_inventory_list_count_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->from("product AS P")
+				->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
+
+		if (!empty($code)) 
+			$this->db->like("P.`material_code`", $code, "both");
+
+		if (!empty($product)) 
+			$this->db->like("P.`description`", $product, "both");
+
+		if ($subgroup != \Constants\PRODUCT_CONST::ALL_OPTION) 
+			$this->db->where("P.`subgroup_id`", $subgroup);
+
+		if ($material != \Constants\PRODUCT_CONST::ALL_OPTION) 
+			$this->db->where("P.`material_type_id`", $material);
+
+		if (!empty($datefrom))
+			$this->db->where("P.`date_created` >=", $datefrom.' 00:00:00');
+
+		if (!empty($dateto))
+			$this->db->where("P.`date_created` <=", $dateto.' 23:59:59');
+
+		if ($type != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type = \Constants\PRODUCT_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type = \Constants\PRODUCT_CONST::NON_STOCK;
+					break;
+			}
+
+			$this->db->where("P.`type`",$type);
+		}
+
+		return $this->db->count_all_results();
+	}
+	
+	public function get_transaction_summary_by_filter($param, $with_limit = TRUE)
 	{
 		extract($param);
 
@@ -682,9 +798,210 @@ class Product_Model extends CI_Model {
 				$having
 				ORDER BY $order_field";
 
+		if ($with_limit) 
+		{
+			$limit = $row_end - $row_start + 1;
+			$this->db->limit((int)$limit, (int)$row_start);
+		}
+
 		$result = $this->db->query($query,$query_data);
 
 		return $result;
+	}
+
+	public function get_transaction_summary_count_by_filter($param)
+	{
+		extract($param);
+
+		$conditions 	= "";
+		$date_condition = "";
+		$branch_condition = "";
+		$order_field 	= "";
+		$having 		= "";
+		$temp_table 	= "";
+		$temp_beginning = "0 AS 'beginv', ";
+		$query_data 	= array();
+      	
+
+      	if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
+      	{
+      		$branch_condition = " AND TS.`branch_id` = ?";
+      		array_push($query_data,$branch);
+      	}
+
+      	if ($is_include_date)
+      	{
+      		if (!empty($date_from)) 
+      		{
+      			$date_condition .= " AND TS.`date` >= ?";
+				array_push($query_data,$date_from);
+
+				$temp_beginning = "COALESCE(TEMP.`beginning_inventory`,0) AS 'beginv',";
+				$temp_table = "LEFT JOIN temp_beginning_transaction AS TEMP ON TEMP.`product_id` = P.`id`";
+
+				$query_temp = "CREATE TEMPORARY TABLE temp_beginning_transaction
+								(
+									product_id BIGINT NOT NULL DEFAULT 0,
+								    beginning_inventory INT NOT NULL DEFAULT 0,
+									INDEX idx_productid (product_id)
+								)
+								SELECT P.`id` AS 'product_id', COALESCE(SUM(`purchase_receive` + `customer_return` + `stock_receive` + `adjust_increase` 
+												- `damage` - `purchase_return` - `stock_delivery` - `customer_delivery` 
+												- `adjust_decrease` - `warehouse_release`),0) AS 'beginning_inventory'
+								FROM product AS P
+								LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition AND TS.`date` < ?
+								WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE."
+								GROUP BY P.`id`";
+
+				$result_temp = $this->sql->execute_query($query_temp,$query_data);
+
+				if ($result_temp['error'])
+					throw new Exception($this->_error_message['UNABLE_TO_GET_TRANSACTION']);
+      		}
+
+      		if (!empty($date_to)) 
+      		{
+      			$date_condition .= " AND TS.`date` <= ?";
+				array_push($query_data,$date_to);
+      		}
+      	}
+
+		if (!empty($code)) 
+		{
+			$conditions .= " AND P.`material_code` LIKE ?";
+			array_push($query_data,'%'.$code.'%');
+		}
+
+		if (!empty($product)) 
+		{
+			$conditions .= " AND P.`description` LIKE ?";
+			array_push($query_data,'%'.$product.'%');
+		}
+
+		if ($subgroup != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			$conditions .= " AND P.`subgroup_id` = ?";
+			array_push($query_data,$subgroup);
+		}
+
+		if ($material !=  \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			$conditions .= " AND P.`material_type_id` = ?";
+			array_push($query_data,$material);
+		}
+
+		if ($type !=  \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($type) 
+			{
+				case 1:
+					$type =  \Constants\PRODUCT_CONST::STOCK;
+					break;
+				
+				case 2:
+					$type =  \Constants\PRODUCT_CONST::NON_STOCK;
+					break;
+			}
+
+			$conditions .= " AND P.`type` = ?";
+			array_push($query_data,$type);
+		}
+
+		switch ($orderby) 
+		{
+			case  \Constants\PRODUCT_CONST::ORDER_BY_NAME:
+				$order_field = "P.`description`";
+				break;
+			
+			case  \Constants\PRODUCT_CONST::ORDER_BY_CODE:
+				$order_field = "P.`material_code`";
+				break;
+		}
+
+		if ($purchase_receive == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `purchase_receive` > 0";
+		else if ($purchase_receive == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `purchase_receive` = 0";
+
+		if ($customer_return == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `customer_return` > 0";
+		else if ($customer_return == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `customer_return` = 0";
+
+		if ($stock_receive == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `stock_receive` > 0";
+		else if ($stock_receive == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `stock_receive` = 0";
+
+		if ($adjust_increase == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `adjust_increase` > 0";
+		else if ($adjust_increase == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `adjust_increase` = 0";
+
+		if ($damage == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `damage` > 0";
+		else if ($damage == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `damage` = 0";
+
+		if ($purchase_return == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `purchase_return` > 0";
+		else if ($purchase_return == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `purchase_return` = 0";
+
+		if ($stock_delivery == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `stock_delivery` > 0";
+		else if ($stock_delivery == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `stock_delivery` = 0";
+
+		if ($customer_delivery == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `customer_delivery` > 0";
+		else if ($customer_delivery == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `customer_delivery` = 0";
+
+		if ($adjust_decrease == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `adjust_decrease` > 0";
+		else if ($adjust_decrease == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `adjust_decrease` = 0";
+
+		if ($release == \Constants\PRODUCT_CONST::WITH_TRANSACTION)
+			$having .= " OR `release` > 0";
+		else if ($release == \Constants\PRODUCT_CONST::WITHOUT_TRANSACTION)
+			$having .= " OR `release` = 0";
+
+		if (!empty($having)) 
+			$having = "HAVING (".substr($having, 4).")";
+
+		$query = "SELECT COUNT(*) AS 'rowcnt' FROM
+				(
+					SELECT P.`material_code`, P.`description` AS 'product', 
+							CASE 
+								WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non-Stock'
+								WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
+							END AS 'type',
+							$temp_beginning
+							COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
+							COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
+							COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',
+							COALESCE(SUM(TS.`adjust_increase`),0) AS 'adjust_increase',
+							COALESCE(SUM(TS.`damage`),0) AS 'damage',
+							COALESCE(SUM(TS.`purchase_return`),0) AS 'purchase_return',
+							COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
+							COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
+							COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
+							COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+					FROM product AS P
+					$temp_table
+					LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
+					WHERE P.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE." $conditions
+					GROUP BY P.`id`
+					$having
+				)A";
+		
+		$result = $this->db->query($query, $query_data);
+
+		$row = $result->row();
+
+		return $row->rowcnt;
 	}
 
 	public function get_product_name()

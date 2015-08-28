@@ -655,7 +655,7 @@ function js_fire_tab_when_entered(evt, elem) {
 }
 
 function next_focus(elem) {
-    var fields = document.querySelectorAll('button, input, textarea, select');
+    var fields = document.querySelectorAll('#' + this.tab.id + ' button,#' + this.tab.id + ' input,#' + this.tab.id + ' textarea,#' + this.tab.id + ' select');
     var fields = Array.prototype.slice.call( fields );
     
     var index = fields.indexOf(elem); 

@@ -41,6 +41,7 @@
 	$page_number = 0;
 	$is_finished = FALSE;
 	$product_count = 0;
+	$description_count = 0;
 	$print_description = FALSE;
 
 	$pdf->SetFont($font,'B',$font_size,'','','');
@@ -150,36 +151,54 @@ EOD;
 
 			if (!empty($detail[$i]['description']))
 			{
-				$html = "
-					$style
-					<table>
-						<tr>
-							<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
-							<td colspan = \"4\" style=\"width:1035px;\" class=\"table-data\">".$detail[$i]["description"]."</td>
-						</tr>
-					</table>";
-					
-				$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
+				$description_strings = explode("\n", $detail[$i]['description']);
 
-				$y = $pdf->GetY();
+				for ($z=$description_count; $z < count($description_strings); $z++) 
+				{ 
+					$detail_description = str_replace(array("<br/>","<br>","<br />"), "", $description_strings[$z]);
 
-				$print_description = FALSE;
+					$html = "
+						$style
+						<table>
+							<tr>
+								<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
+								<td colspan = \"5\" style=\"width:1035px;\" class=\"table-data\">".$detail_description."</td>
+							</tr>
+						</table>";
 
-				if($y >= 200)
-				{
-					$product_count = $i;
+					$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
 
-					if (empty($detail[$i]['description'])) 
-						$product_count++;
-					else
-						$print_description = TRUE;
+					$y = $pdf->GetY();
 
-					set_footer($pdf,$y);
+					$print_description = FALSE;
 
-					break;
+					if($y >= 180)
+					{
+						$product_count = $i;
+
+						if (empty($detail[$i]['description'])) 
+							$product_count++;
+						else
+						{
+							if (($z + 1) == count($description_strings))
+							{
+								$description_count = 0;
+								$product_count++;
+							}
+							else
+							{
+								$description_count = $z;
+								$print_description = TRUE;
+							}
+						}
+
+						set_footer($pdf,$y);
+
+						break;
+					}
+
+					$y = $pdf->GetY();
 				}
-
-				$y = $pdf->GetY();
 			}
 
 			if($i+1 >= count($detail) && !$print_description)

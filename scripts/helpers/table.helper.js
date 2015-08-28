@@ -513,7 +513,7 @@ var TableHelper = function(tableOptions,options) {
 		bindAllEvents : function(callbackOptions)
 		{
 			self.headContent.bindDeleteEvents(callbackOptions.deleteEventsAfterCallback);
-			self.headContent.bindSearchEvent(callbackOptions.searchEventsBeforeCallback, callbackOptions.searchEventsAfterCallback);
+			self.headContent.bindSearchEvent(callbackOptions.searchEventsBeforeCallback);
 			self.headContent.bindViewEvent();
 			self.headContent.bindCreateReferenceEvent();
 		}

@@ -48,6 +48,7 @@
 	$is_finished = FALSE;
 	$page_number = 0;
 	$product_count = 0;
+	$description_count = 0;
 	$print_description = FALSE;
 
 	$pdf->SetFont($font,'B',$font_size,'','','');
@@ -158,7 +159,7 @@ EOD;
 
 				$y = $pdf->GetY();
 
-				if($y+40 >= $half_page_y && $page_number % 2 != 0 )
+				if($y+35 >= $half_page_y && $page_number % 2 != 0 )
 				{
 		            $product_count = $i;
 
@@ -188,35 +189,72 @@ EOD;
 
 			if (!empty($detail[$i]['description']))
 			{
-				$html = "
-					$style
-					<table>
-						<tr>
-							<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
-							<td colspan = \"3\" style=\"width:645px;\" class=\"table-data\">".$detail[$i]["description"]."</td>
-						</tr>
-					</table>";
-					
-				$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
+				$description_strings = explode("\n", $detail[$i]['description']);
 
-				$y = $pdf->GetY();
+				for ($z=$description_count; $z < count($description_strings); $z++) 
+				{ 
+					$detail_description = str_replace(array("<br/>","<br>","<br />"), "", $description_strings[$z]);
 
-				$print_description = FALSE;
+					$html = "
+						$style
+						<table>
+							<tr>
+								<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
+								<td colspan = \"3\" style=\"width:645px;\" class=\"table-data\">".$detail_description."</td>
+							</tr>
+						</table>";
 
-				if($y+40 >= $half_page_y && $page_number % 2 != 0 )
-				{
-		            $product_count = $i+1;
-					set_footer($pdf,$y);
-		            break;
-		        }
-		        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
-		        {
-		            $product_count = $i+1;
-		            set_footer($pdf,$y);
-		            break;
-		        }
+					$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
 
-				$y = $pdf->GetY();
+					$y = $pdf->GetY();
+
+					$print_description = FALSE;
+
+					if($y+35 >= $half_page_y && $page_number % 2 != 0 )
+					{
+						$product_count = $i;
+
+						if (($z + 1) == count($description_strings))
+						{
+							$description_count = 0;
+							$product_count++;
+						}
+						else
+						{
+							$description_count = $z;
+							$print_description = TRUE;
+						}
+
+						set_footer($pdf,$y);
+			            break;
+			        }
+			        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
+			        {
+			            $product_count = $i;
+
+						if (($z + 1) == count($description_strings))
+						{
+							$description_count = 0;
+							$product_count++;
+						}
+						else
+						{
+							$description_count = $z;
+							$print_description = TRUE;
+						}
+						
+			            set_footer($pdf,$y);
+			            break;
+			        }
+
+			        if (($z + 1) == count($description_strings))
+					{
+						$description_count = 0;
+						$product_count++;
+					}
+
+					$y = $pdf->GetY();
+				}
 			}
 
 			if($i+1 >= count($detail) && !$print_description)

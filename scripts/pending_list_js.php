@@ -136,6 +136,10 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
+	myjstbl.mypage.set_mysql_interval(100);
+	myjstbl.mypage.isOldPaging = true;
+	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
+
 	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray});
 
 	$('#tbl, #action-button').hide();
@@ -151,8 +155,9 @@
 										  controller : 'pending',
 										  notFoundMessage : 'No inventory adjustment found!' });
 
-	tableHelper.headContent.bindSearchEvent(getSearchFilter,isShowButtonActions);
-	tableHelper.contentHelper.refreshTable(getSearchFilter,isShowButtonActions);
+	tableHelper.headContent.bindSearchEvent(triggerSearchRequest);
+	
+	triggerSearchRequest();
 
     $('#approve, #decline').click(function(){
     	if (flag == 1) 
@@ -215,8 +220,17 @@
 		window.open("<?= base_url() ?>export?" + queryString);
 	});
 
-	function getSearchFilter()
+	function triggerSearchRequest()
 	{
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
+
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+
 		var itemcode_val 	= $('#itemcode').val();
 		var product_val 	= $('#product').val();
 		var subgroup_val 	= $('#subgroup').val();
@@ -228,21 +242,24 @@
 		var orderby_val		= $('#orderby').val();
 		var status_val		= $('#status').val();
 
-		var arr = 	{ 
-						fnc 	 : 'get_pending_adjust_list', 
-						code 	 : itemcode_val,
-						product  : product_val,
-						subgroup : subgroup_val,
-						type 	 : type_val,
-						material : material_val,
-						datefrom : datefrom_val,
-						dateto 	 : dateto_val,
-						branch 	 : branch_val,
-						orderby  : orderby_val,
-						status 	 : status_val
-					};
+		var filterValues = 	{ 
+								fnc 	 : 'get_pending_adjust_list', 
+								code 	 : itemcode_val,
+								product  : product_val,
+								subgroup : subgroup_val,
+								type 	 : type_val,
+								material : material_val,
+								datefrom : datefrom_val,
+								dateto 	 : dateto_val,
+								branch 	 : branch_val,
+								orderby  : orderby_val,
+								status 	 : status_val,
+								filter_reset : filterResetValue,
+								row_start : rowStartValue,
+								row_end : rowEndValue
+							};
 
-		return arr;
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues, isShowButtonActions);
 	}
 
 	function isShowButtonActions(response)

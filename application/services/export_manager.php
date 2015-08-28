@@ -25,7 +25,7 @@ class Export_Manager
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->_CI->product_model->get_product_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -338,7 +338,7 @@ class Export_Manager
 
 		$response['rowcnt'] = 0;
 
-		$result = $this->_CI->product_model->get_product_warning_list_by_filter($param);
+		$result = $this->_CI->product_model->get_product_warning_list_by_filter($param, FALSE);
 
 		if ($result->num_rows() > 0) 
 		{
@@ -402,14 +402,14 @@ class Export_Manager
 		$response['width'] = array();
 		$response['count'] = 4;
 
-		$result = $this->_CI->product_model->get_product_branch_inventory_list_by_filter($param, $branch_column_list);
+		$result = $this->_CI->product_model->get_product_branch_inventory_list_by_filter($param, $branch_column_list, FALSE);
 
 		$header_flag = FALSE;
 
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->_CI->product_model->get_product_branch_inventory_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -470,7 +470,7 @@ class Export_Manager
 
 		$response['rowcnt'] = 0;
 
-		$result = $this->_CI->product_model->get_transaction_summary_by_filter($param);
+		$result = $this->_CI->product_model->get_transaction_summary_by_filter($param, FALSE);
 
 		if ($result->num_rows() > 0) 
 		{

@@ -66,7 +66,8 @@ class Assortment_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`,
+						SUM(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
 					FROM `release_order_detail` AS PD
 					LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
@@ -88,6 +89,7 @@ class Assortment_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->qty_released);
+				$response['detail'][$i][] = array($row->qty_remaining);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -287,7 +289,7 @@ class Assortment_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->entry_date);

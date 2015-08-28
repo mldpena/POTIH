@@ -103,6 +103,10 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);	
 
+	myjstbl.mypage.set_mysql_interval(100);
+	myjstbl.mypage.isOldPaging = true;
+	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
+	
 	$('#tbl').hide();
 	$('#branch_list').chosen();
 	$('#date_from, #date_to').datepicker();

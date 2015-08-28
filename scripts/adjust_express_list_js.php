@@ -139,6 +139,10 @@
 	root.appendChild(myjstbl.tab);
 	root.appendChild(myjstbl.mypage.pagingtable);
 
+	myjstbl.mypage.set_mysql_interval(100);
+	myjstbl.mypage.isOldPaging = true;
+	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
+
 	$('#tbl').hide();
 
 	$('#date_from, #date_to').datepicker();
@@ -153,16 +157,15 @@
 	tableHelper.detailContent.bindAutoComplete(onAfterProductSelect);
 
 	bind_asc_desc('order_type');
-    refreshTable();
+    
+	triggerSearchRequest();
 
     $('.imgedit').live('click',function(){
         var rowIndex = $(this).parent().parent().index();
         myjstbl.edit_row(rowIndex);
     });
 
-    $('#search').click(function(){
-    	refreshTable();
-    });
+    $('#search').click(triggerSearchRequest);
 
     $('#search_string').keypress(function(e){
     	if (e.keyCode == 13) 
@@ -185,7 +188,6 @@
 			tableHelper.contentProvider.setData(global_row_index,'oldinventory',['']);
 			tableHelper.contentProvider.setData(global_row_index,'newinventory',['']);
 			tableHelper.contentProvider.setData(global_row_index,'memo',['']);
-
 		}
 	});
 
@@ -229,12 +231,16 @@
 		});
 	});
 
-	function refreshTable()
+	function triggerSearchRequest()
 	{
-		if (flag == 1)
-			return;
+		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
+			myjstbl.clear_table();
+		else
+			myjstbl.clean_table();
 
-		flag = 1;
+		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
+		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
+		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
 
 		var dateFrom	= $('#date_from').val();
 		var dateTo		= $('#date_to').val();
@@ -242,58 +248,39 @@
 		var orderBy 	= $('#order_by').val();
 		var orderType 	= $('#order_type').val();
 
-		var arr = 	{ 
-						fnc 	 : 'get_adjust_express_list', 
-						search_string 	: searchString,
-						order_by  		: orderBy,
-						order_type 		: orderType,
-						date_from		: dateFrom,
-						date_to 		: dateTo
-					};
+		var filterValues = 	{ 
+								fnc 	 : 'get_adjust_express_list', 
+								search_string 	: searchString,
+								order_by  		: orderBy,
+								order_type 		: orderType,
+								date_from		: dateFrom,
+								date_to 		: dateTo,
+								filter_reset : filterResetValue,
+								row_start : rowStartValue,
+								row_end : rowEndValue
+							};
 
-		$('#tbl').hide();
-		$('#loadingimg').show();
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues, hideDeleteAfterLoading);
+	}
 
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				myjstbl.clear_table();
-				clear_message_box();
+	function hideDeleteAfterLoading()
+	{
+		for (var i = 1; i < myjstbl.get_row_count(); i++) {
+			var requestStatus = tableHelper.contentProvider.getData(i,'status');
+			if (requestStatus != state.Pending.name)
+			{
+				var updateElement = tableHelper.contentProvider.getElement(i,'update');
+				var deleteElement = tableHelper.contentProvider.getElement(i,'delete');
 
-				if (response.rowcnt == 0) 
-					build_message_box('messagebox_1','No inventory adjust found!','info');
-				else
-				{
-					if(response.rowcnt <= 10)
-						myjstbl.mypage.set_last_page(1);
-					else
-						myjstbl.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(myjstbl.mypage.filter_number)));
+				$(updateElement).hide();
+				$(deleteElement).hide();
+			}
+		};
 
-					myjstbl.insert_multiplerow_with_value(1,response.data);
-				}
-
-				for (var i = 1; i < myjstbl.get_row_count(); i++) {
-					var requestStatus = tableHelper.contentProvider.getData(i,'status');
-					if (requestStatus != state.Pending.name)
-					{
-						var updateElement = tableHelper.contentProvider.getElement(i,'update');
-						var deleteElement = tableHelper.contentProvider.getElement(i,'delete');
-
-						$(updateElement).hide();
-						$(deleteElement).hide();
-					}
-				};
-
-				if (Boolean(<?= $permission_list['allow_to_add']?>) != false)
-					tableHelper.contentProvider.addRow();
-
-				$('#loadingimg').hide();
-				$('#tbl').show();
-				flag = 0;
-			}       
-		});
+		$('#tbl').show();
+		
+		if (Boolean(<?= $permission_list['allow_to_add']?>) != false)
+			tableHelper.contentProvider.addRow();
 	}
 
 	function getRowDetailsBeforeSubmit(element)

@@ -41,7 +41,8 @@ class Delivery_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SUM(SD.`recv_quantity`) AS 'total_qty', SH.`delivery_type`, SH.`is_used`
+					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SUM(SD.`recv_quantity`) AS 'total_qty', SH.`delivery_type`, SH.`is_used`,
+					SUM(IF(SD.`quantity` - SD.`recv_quantity` < 0, 0, SD.`quantity` - SD.`recv_quantity`)) AS 'remaining_qty'
 					FROM `stock_delivery_head` AS SH
 					LEFT JOIN stock_delivery_detail AS SD ON SD.`headid` = SH.`id`
 					WHERE SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SH.`id` = ?
@@ -63,12 +64,14 @@ class Delivery_Model extends CI_Model {
 			$response['is_editable'] 		= ($row->total_qty == 0 && $row->branch_id == $this->_current_branch_id) ? TRUE : FALSE;
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 			$response['own_branch'] 		= $this->_current_branch_id;
+			$response['transaction_branch'] = $row->branch_id;
+			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->total_qty > 0 ? TRUE : FALSE;
 		}
 
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`
+						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`, SD.`invoice`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -91,6 +94,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->receiveqty);
+				$response['detail'][$i][] = array($row->invoice);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array('');
@@ -111,7 +115,7 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 	= array($this->_delivery_head_id, $qty, $product_id, $memo, $istransfer, $description);
+		$query_data 	= array($this->_delivery_head_id, $qty, $product_id, $memo, $istransfer, $description, $invoice);
 
 		$query = "INSERT INTO `stock_delivery_detail`
 					(`headid`,
@@ -119,9 +123,10 @@ class Delivery_Model extends CI_Model {
 					`product_id`,
 					`memo`,
 					`is_for_branch`,
-					`description`)
+					`description`,
+					`invoice`)
 					VALUES
-					(?,?,?,?,?,?);";
+					(?,?,?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -160,7 +165,7 @@ class Delivery_Model extends CI_Model {
 			
 		$old_delivery_detail_result->free_result();
 
-		$query_data 	= array($qty, $product_id, $memo, $istransfer, $description, $request_detail_id, $delivery_detail_id);
+		$query_data 	= array($qty, $product_id, $memo, $istransfer, $description, $invoice, $request_detail_id, $delivery_detail_id);
 
 		$query = "UPDATE `stock_delivery_detail`
 					SET
@@ -169,6 +174,7 @@ class Delivery_Model extends CI_Model {
 					`memo` = ?,
 					`is_for_branch` = ?,
 					`description` = ?,
+					`invoice` = ?,
 					`request_detail_id` = ?
 					WHERE `id` = ?;";
 
@@ -305,7 +311,6 @@ class Delivery_Model extends CI_Model {
 		if ($type != \Constants\DELIVERY_CONST::ALL_OPTION) 
 			$this->db->where("SH.`delivery_type`", (int)$type);
 
-
 		switch ($order_by) 
 		{
 			case \Constants\DELIVERY_CONST::ORDER_BY_REFERENCE:
@@ -339,7 +344,7 @@ class Delivery_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->from_branch);
 				$response['data'][$i][] = array($row->to_branch);
@@ -539,7 +544,7 @@ class Delivery_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->encrypt->encode($row->id));
-				$response['data'][$i][] = array($i+1);
+				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->from_branch);
 
@@ -1237,6 +1242,7 @@ class Delivery_Model extends CI_Model {
 				->from("stock_delivery_head AS SH")
 				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
 				->where("SH.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
+				->where("SH.`is_used`", \Constants\ADJUST_CONST::ACTIVE)
 				->where("SH.`to_branchid`", $this->_current_branch_id)
 				->group_by("SH.`id`")
 				->having("qty_delivered", 0);

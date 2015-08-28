@@ -116,20 +116,20 @@
 					</tr>
 					<tr>
 						<td>User</td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::VIEW_USER ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::VIEW_USER_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::ADD_USER ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::EDIT_USER ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\User_Code::DELETE_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::VIEW_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::VIEW_USER_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::ADD_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::EDIT_USER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\User_Code::DELETE_USER ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
 						<td>Branch</td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::VIEW_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::VIEW_BRANCH ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::ADD_BRANCH ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::EDIT_BRANCH ?>"></td>
-						<td><input type="checkbox" class="check-detail data-detail encoder-preset" value="<?= \Permission\Branch_Code::DELETE_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::ADD_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::EDIT_BRANCH ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::DELETE_BRANCH ?>"></td>
 						<td></td>
 					</tr>
 				</table>
@@ -157,7 +157,7 @@
 						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::ADD_PURCHASE ?>"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::EDIT_PURCHASE ?>"></td>
 						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::DELETE_PURCHASE ?>"></td>
-						<td><input type="checkbox" class="check-detail purchase-detail" value="<?= \Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO ?>"> Edit and Transfer Incomplete PO</td>
+						<td><input type="checkbox" class="check-detail purchase-detail encoder-preset" value="<?= \Permission\Purchase_Code::TRANSFER_INCOMPLETE_PO ?>"> Edit and Transfer Incomplete PO</td>
 					</tr>
 					<tr>
 						<td>Purchase Receive</td>
@@ -202,7 +202,7 @@
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::ADD_STOCKREQUEST ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::EDIT_STOCKREQUEST ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::DELETE_STOCKREQUEST ?>"></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\StockRequestTo_Code::EDIT_INCOMPLETE_TRANSACTION ?>"> Edit Incomplete Transaction</td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockRequestTo_Code::EDIT_INCOMPLETE_TRANSACTION ?>"> Edit Incomplete Transaction</td>
 					</tr>
 					<tr>
 						<td>Item Requested by Other Branches</td>
@@ -220,7 +220,7 @@
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::ADD_STOCK_DELIVERY ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::EDIT_STOCK_DELIVERY ?>"></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::DELETE_STOCK_DELIVERY ?>"></td>
-						<td></td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\StockDelivery_Code::EDIT_INCOMPLETE_TRANSACTION ?>"> Edit Incomplete Transaction</td>
 					</tr>
 					<tr>
 						<td>Item Receive</td>
@@ -238,7 +238,7 @@
 						<td></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::EDIT_CUSTOMER_RECEIVE ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail transfer-detail" value="<?= \Permission\CustomerReceive_Code::TRANSFER_TO_RETURN ?>"> Transfer Remaining to Customer Return</td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::TRANSFER_TO_RETURN ?>"> Transfer Remaining to Customer Return</td>
 					</tr>
 					<tr>
 						<td>Customer Return</td>
@@ -301,7 +301,7 @@
 						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::ADD_ASSORTMENT ?>"></td>
 						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::EDIT_ASSORTMENT ?>"></td>
 						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::DELETE_ASSORTMENT ?>"></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\Assortment_Code::EDIT_INCOMPLETE_TRANSACTION ?>"> Edit Incomplete Transaction</td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\Assortment_Code::EDIT_INCOMPLETE_TRANSACTION ?>"> Edit Incomplete Transaction</td>
 					</tr>
 					<tr>
 						<td>Warehouse Release</td>
@@ -316,10 +316,10 @@
 						<td>Pick-Up Summary</td>
 						<td></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\PickUp_Code::GENERATE_SUMMARY ?>"></td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\PickUp_Code::GENERATE_SUMMARY ?>"></td>
 						<td></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail pickup-detail" value="<?= \Permission\PickUp_Code::PRINT_SUMMARY ?>"> Print Summary</td>
+						<td><input type="checkbox" class="check-detail pickup-detail encoder-preset" value="<?= \Permission\PickUp_Code::PRINT_SUMMARY ?>"> Print Summary</td>
 					</tr>
 				</table>
 			</div>
@@ -389,7 +389,7 @@
 					</tr>
 					<tr>
 						<td>Product Branch Inventory</td>
-						<td><input type="checkbox" class="check-detail reports-detail" value="<?= \Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY ?>"></td>
+						<td><input type="checkbox" class="check-detail reports-detail encoder-preset" value="<?= \Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY ?>"></td>
 						<td></td>
 						<td></td>
 						<td></td>
