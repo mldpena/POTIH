@@ -73,7 +73,7 @@ class Product_Model extends CI_Model {
 	{
 		$this->db->select("P.`material_code`, P.`description`, P.`type`,
 						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup',
-						P.`material_type_id`, P.`subgroup_id`")
+						P.`material_type_id`, P.`subgroup_id`, P.`uom`")
 				->from("product AS P")
 				->join("material_type AS M", "M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
 				->join("subgroup AS S", "S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
@@ -286,7 +286,7 @@ class Product_Model extends CI_Model {
 
 	public function get_product_by_term($term, $branch_id, $with_inventory)
 	{
-		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`");
+		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`, P.`uom`");
 
 		if ($with_inventory)
 			$this->db->select("COALESCE(PBI.`inventory`,0) AS 'inventory'");

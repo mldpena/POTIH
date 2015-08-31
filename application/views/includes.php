@@ -24,5 +24,6 @@
 <script type="text/javascript" src="<?= base_url().JS ?>jquery.extend.js"></script>   
 <script type="text/javascript" src="<?= base_url().JS ?>jquery.binder.js"></script>   
 <script type="text/javascript" src="<?= base_url().JS ?>notification.js"></script>   
+<script type="text/javascript" src="<?= base_url().JS ?>moment.js"></script>   
 
 

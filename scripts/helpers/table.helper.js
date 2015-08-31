@@ -261,6 +261,7 @@ var TableHelper = function(tableOptions,options) {
 							self.contentProvider.setData(rowIndex,'code',['']);
 							self.contentProvider.setData(rowIndex,'qty',['']);
 							self.contentProvider.setData(rowIndex,'memo',['']);
+							self.contentProvider.setData(rowIndex,'uom',['']);
 							
 							if (self._jsTableArray.hasOwnProperty("receivedby")) 
 								self.contentProvider.setData(rowIndex,'receivedby',['']);
@@ -280,6 +281,7 @@ var TableHelper = function(tableOptions,options) {
 
 							self.contentProvider.setData(rowIndex,'product',[ret_datas[1],ret_datas[0],ret_datas[3],newLine,'']);
 							self.contentProvider.setData(rowIndex,'code',[ret_datas[2]]);
+							self.contentProvider.setData(rowIndex,'uom',[ret_datas[4]]);
 						}
 					}
 					
@@ -538,7 +540,7 @@ var TableHelper = function(tableOptions,options) {
 			{
 				var productId       = self.contentProvider.getData(rowIndex,'product',1);
 				var qty             = self.contentProvider.getData(rowIndex,'qty');
-				var memo            = self.contentProvider.getData(rowIndex,'memo');
+				var memo            = encodeURIComponent(self.contentProvider.getData(rowIndex,'memo'));
 				var rowUniqueId     = self.contentProvider.getData(rowIndex,'id');
 				var nonStackDescription  = self.contentProvider.getData(rowIndex,'product',4);
 				var actionFunction  = rowUniqueId != 0 ? self._settings.updateDetailName : self._settings.insertDetailName;

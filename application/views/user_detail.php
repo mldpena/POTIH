@@ -238,7 +238,7 @@
 						<td></td>
 						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::EDIT_CUSTOMER_RECEIVE ?>"></td>
 						<td></td>
-						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::TRANSFER_TO_RETURN ?>"> Transfer Remaining to Customer Return</td>
+						<td><input type="checkbox" class="check-detail transfer-detail encoder-preset" value="<?= \Permission\CustomerReceive_Code::TRANSFER_TO_RETURN ?>"> Transfer to Customer Return</td>
 					</tr>
 					<tr>
 						<td>Customer Return</td>

@@ -55,6 +55,14 @@
         td_class: "tablerow column_click column_hover tdmaterial"
     };
 
+    var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+
     var spninventory = document.createElement('span');
 	colarray['oldinventory'] = { 
         header_title: "Old Inventory",
@@ -146,7 +154,7 @@
 	$('#tbl').hide();
 
 	$('#date_from, #date_to').datepicker();
-    $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
+    $('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
     $('#date_from, #date_to').datepicker("setDate",new Date());
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
@@ -185,6 +193,7 @@
 		{
 			tableHelper.contentProvider.setData(global_row_index,'product',['','']);
 			tableHelper.contentProvider.setData(global_row_index,'material_code',['']);
+			tableHelper.contentProvider.setData(global_row_index,'uom',['']);
 			tableHelper.contentProvider.setData(global_row_index,'oldinventory',['']);
 			tableHelper.contentProvider.setData(global_row_index,'newinventory',['']);
 			tableHelper.contentProvider.setData(global_row_index,'memo',['']);
@@ -242,8 +251,8 @@
 		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
 		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
 
-		var dateFrom	= $('#date_from').val();
-		var dateTo		= $('#date_to').val();
+		var dateFrom	= moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var dateTo		= moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var searchString = $('#search_string').val();
 		var orderBy 	= $('#order_by').val();
 		var orderType 	= $('#order_type').val();
@@ -289,7 +298,7 @@
 		var productId 	= tableHelper.contentProvider.getData(rowIndex,'product',1);
 		var newInventory = tableHelper.contentProvider.getData(rowIndex,'newinventory');
 		var oldInventory = tableHelper.contentProvider.getData(rowIndex,'oldinventory');
-		var memo 		= tableHelper.contentProvider.getData(rowIndex,'memo');
+		var memo 		= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'memo'));
 		var adjustId 	= tableHelper.contentProvider.getData(rowIndex,'id');
 		var status 		= $.getEnumValue(state,tableHelper.contentProvider.getData(rowIndex,'status'));
 		var fnc 		= adjustId != 0 ? "update_inventory_adjust" : "insert_inventory_adjust"; 
@@ -333,6 +342,7 @@
 		{
             tableHelper.contentProvider.setData(rowIndex,'product',['',0]);
             tableHelper.contentProvider.setData(rowIndex,'material_code',['']);
+            tableHelper.contentProvider.setData(rowIndex,'uom',['']);
             tableHelper.contentProvider.setData(rowIndex,'oldinventory',['']);
             tableHelper.contentProvider.setData(rowIndex,'newinventory',['']);
             tableHelper.contentProvider.setData(rowIndex,'memo',['']);
@@ -342,6 +352,7 @@
             tableHelper.contentProvider.setData(rowIndex,'product',[response[1],response[0]]);
             tableHelper.contentProvider.setData(rowIndex,'material_code',[response[2]]);
             tableHelper.contentProvider.setData(rowIndex,'oldinventory',[response[3]]);
+            tableHelper.contentProvider.setData(rowIndex,'uom',[response[4]]);
         }
 	}
 

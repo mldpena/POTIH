@@ -75,6 +75,14 @@
         td_class: "tablerow column_click column_hover tdcode"
     };
    	
+   	var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+	
    	var spnqty = document.createElement('span');
    	var txtqty = document.createElement('input');
     txtqty.setAttribute('class','form-control txtqty');
@@ -150,7 +158,7 @@
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
+    	$('#date').datepicker("option","dateFormat", "mm-dd-yy");
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
@@ -251,7 +259,7 @@
 
 	function getHeadDetailsBeforeSubmit()
 	{
-		var date_val	= $('#date').val();
+		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 	= $('#memo').val();
 		var to_branch 	= $('#to_branch').val();
 

@@ -18,6 +18,23 @@
 		headertd_class : "tdheader_id"
     };
 
+    var chkchecktransfer = document.createElement('input');
+	chkchecktransfer.setAttribute('type','checkbox');
+	chkchecktransfer.setAttribute('class','chktransfer');
+
+	var chktransferall = document.createElement('input');
+	chktransferall.setAttribute('type','checkbox');
+	chktransferall.setAttribute('id','chktransferall');
+
+	colarray['istransfer'] = { 
+		header_title: chktransferall,
+		edit: [chkchecktransfer],
+		disp: [chkchecktransfer],
+		td_class: "tablerow tdistransfer",
+		headertd_class : "tdistransfer",
+		header_elem: chktransferall
+	};
+
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
         header_title: "",
@@ -54,6 +71,14 @@
         td_class: "tablerow column_click column_hover tdcode"
     };
    	
+   	var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+	
    	var spnqty = document.createElement('span');
 	colarray['qty'] = { 
         header_title: "Qty",
@@ -137,7 +162,7 @@
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date, #receive_date').datepicker();
-    	$('#date, #receive_date').datepicker("option","dateFormat", "yy-mm-dd" );
+    	$('#date, #receive_date').datepicker("option","dateFormat", "mm-dd-yy");
     	$('#date, #receive_date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
@@ -182,7 +207,8 @@
 					};
 				}
 
-				if ((response.is_incomplete) && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_transfer_remaining']?>) == true))
+				//if ((response.is_incomplete) && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_transfer_remaining']?>) == true))
+				if ((response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_transfer_remaining']?>) == true))
 					$('#transfer').show();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
@@ -218,13 +244,47 @@
 		});
 	});
 
+	$('#chktransferall').live('click', function(){
+		if ($(this).is(':checked')) 
+			$('.chktransfer').attr('checked','checked');
+		else
+			$('.chktransfer').removeAttr('checked');
+	});
+
+	$('.chktransfer').live('click', function(){
+		if ($(this).is(':checked'))
+		{
+			if ($('.chktransfer').length == $('.chktransfer:checked').length) 
+				$('#chktransferall').attr('checked','checked');
+		} 
+		else
+			$('#chktransferall').removeAttr('checked');
+	});
+
 	$('#print').click(function(){
 		goToPrintOut(true);
 	});
 
 	$('#transfer').click(function(){
 
-		var arr = { fnc : 'transfer_remaining_to_return' }
+		var selectedDetailId = [];
+
+		$('.chktransfer:checked').each(function(index, element){
+			var rowIndex = $(element).parent().parent().index();
+			var currentId = tableHelper.contentProvider.getData(rowIndex, 'id');
+			selectedDetailId.push(currentId);
+		});
+
+		if (selectedDetailId.length == 0 )
+		{
+			alert('Please select at least one product!');
+			return;
+		}
+
+		var arr = 	{ 
+						fnc : 'transfer_to_return',
+						selected_detail_id : selectedDetailId 
+					}
 
 		$.ajax({
 			type: "POST",
@@ -299,7 +359,7 @@
 
 	function getHeadDetailsBeforeSubmit()
 	{
-		var receiveDate	= $('#receive_date').val();
+		var receiveDate	= moment($('#receive_date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 
 		var arr = 	{ 
 						fnc 	 		: 'update_customer_receive_head', 

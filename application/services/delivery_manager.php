@@ -19,7 +19,7 @@ class Delivery_Manager
 									'HAS_RECEIVED' => 'Item Delivery can only be deleted if delivery status is no received!',
 									'NOT_OWN_BRANCH' => 'Cannot delete item delivery entry of other branches!',
 									'NO_ITEMS_TO_PRINT' => 'No items to print!',
-									'NO_REMAINING_RECEIVE_FOUND' => 'No customer receive details with remaining found!');
+									'NO_RECEIVE_FOUND' => 'No customer receive details found!');
 
 	public function __construct()
 	{
@@ -32,23 +32,26 @@ class Delivery_Manager
 		$this->_current_date 		= date("Y-m-d h:i:s");
 	}
 
-	public function transfer_remaining_to_new_return()
+	public function transfer_to_new_customer_return($param)
 	{
+		extract($param);
 		$response = array();
 
 		$response['error'] = '';
 
-		$customer_return_detail = array();
+		$selected_customer_receive_detail_id = $this->_CI->encrypt->decode_array($selected_detail_id);
+
 		$customer_receive_detail = array();
-		$return_customer_return_ids = array();
 
 		$current_customer_name = '';
 		$new_customer_return_head_id = 0;
-
-		$result_customer_receive_details = $this->_CI->delivery_model->get_customer_receive_with_remaining($this->_delivery_head_id);
+		$return_customer_return_ids = [];
+		$customer_return_detail = [];
+		
+		$result_customer_receive_details = $this->_CI->delivery_model->get_customer_receive_detail($selected_customer_receive_detail_id);
 
 		if ($result_customer_receive_details->num_rows() == 0) 
-			throw new \Exception($this->_error_message['NO_REMAINING_RECEIVE_FOUND']);
+			throw new \Exception($this->_error_message['NO_RECEIVE_FOUND']);
 
 		$result_delivery_head_info = $this->_CI->delivery_model->get_stock_delivery_head_info($this->_delivery_head_id);
 
@@ -79,12 +82,9 @@ class Delivery_Manager
 			
 
 			array_push($customer_return_detail, array('headid' => $new_customer_return_head_id,
-													'quantity' => $row->quantity - $row->recv_quantity,
+													'quantity' => 1,
 													'product_id' => $row->product_id,
 													'description' => $row->description));
-
-			$customer_receive_detail[$i]['id'] = $row->id;
-			$customer_receive_detail[$i]['detail'] = array('quantity' => $row->recv_quantity);
 
 			$current_customer_name = $row->customer_name;
 			$i++;
@@ -93,7 +93,7 @@ class Delivery_Manager
 		$result_customer_receive_details->free_result();
 		$result_delivery_head_info->free_result();
 
-		$this->_CI->delivery_model->transfer_remaining_details_to_new_return($customer_receive_detail, $customer_return_detail);
+		$this->_CI->delivery_model->transfer_details_to_new_return($customer_return_detail);
 
 		$response['id'] = $return_customer_return_ids;
 

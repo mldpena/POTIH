@@ -55,6 +55,14 @@
 		td_class: "tablerow column_click column_hover tdcode"
 	};
 	
+	var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+	
 	var spnqty = document.createElement('span');
 	colarray['qty'] = { 
 		header_title: "Qty",
@@ -158,7 +166,7 @@
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date, #receive_date').datepicker();
-		$('#date, #receive_date').datepicker("option","dateFormat", "yy-mm-dd" );
+		$('#date, #receive_date').datepicker("option","dateFormat", "mm-dd-yy");
 		$('#date, #receive_date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
@@ -286,7 +294,7 @@
 
 	function getHeadDetailsBeforeSubmit()
 	{
-		var receiveDate	= $('#receive_date').val();
+		var receiveDate	= moment($('#receive_date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 
 		var arr = 	{ 
 						fnc 	 		: 'update_delivery_receive_head', 
@@ -301,8 +309,8 @@
 		var rowIndex 		= $(element).parent().parent().index();
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var receivedQty 	= tableHelper.contentProvider.getData(rowIndex,'receiveqty');
-		var receivedBy 		= tableHelper.contentProvider.getData(rowIndex,'receivedby');
-		var note 			= tableHelper.contentProvider.getData(rowIndex,'note');
+		var receivedBy 		= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
+		var note 			= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'note'));
 
 		var errorList = $.dataValidation([{
 											value : receivedQty,

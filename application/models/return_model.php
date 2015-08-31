@@ -53,7 +53,7 @@ class Return_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 			$response['customer_name'] 		= $row->customer;
 			$response['received_by'] 		= $row->received_by;
@@ -62,7 +62,7 @@ class Return_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
+						COALESCE(P.`description`,'') AS 'product', P.`uom`, RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
 					FROM `return_detail` AS RD
 					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
@@ -82,6 +82,7 @@ class Return_Model extends CI_Model {
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->received_by);
 				$response['detail'][$i][] = array($row->memo);
@@ -264,7 +265,7 @@ class Return_Model extends CI_Model {
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->customer);
 				$response['data'][$i][] = array($row->received_by);
 				$response['data'][$i][] = array($row->memo);

@@ -268,8 +268,8 @@ class StockDelivery extends CI_Controller {
 					$response['is_incomplete'] = $this->delivery_model->check_if_transaction_is_incomplete();
 					break;
 
-				case 'transfer_remaining_to_return':
-					$response = $this->_delivery_manager->transfer_remaining_to_new_return();
+				case 'transfer_to_return':
+					$response = $this->_delivery_manager->transfer_to_new_customer_return($post_data);
 					break;
 
 				case 'check_notifications':

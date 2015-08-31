@@ -81,6 +81,14 @@
         td_class: "tablerow column_click column_hover tdcode"
     };
    	
+   	var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+	
    	var spnqty = document.createElement('span');
    	var txtqty = document.createElement('input');
     txtqty.setAttribute('class','form-control txtqty');
@@ -150,13 +158,10 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", controller : 'requestfrom' });
 
-	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											 	addInventoryChecker : false} );
-
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
+    	$('#date').datepicker("option","dateFormat", "mm-dd-yy");
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ 
@@ -198,11 +203,6 @@
 					$('input, textarea, select').not('#print, input[type=checkbox]').attr('disabled','disabled');
 					$('.tdupdate, .tddelete, #save').hide();
 				}
-				else
-					tableHelper.contentProvider.addRow();
-				
-				if (!response.is_saved) 
-					hideDeliveredQuantity();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductTypeDescription();
@@ -213,35 +213,6 @@
 	}
 	else
 		$('input, textarea').attr('disabled','disabled');
-
-	/*$('.print').click(function(){
-		goToPrintOut($(this));
-	});
-
-	function goToPrintOut(element)
-	{
-		var printType = "both";
-
-		if (element) 
-			printType = $(element).attr('id');
-
-		var arr = 	{ 
-						fnc : 'set_session_delivery',
-						print_type : printType 
-					}
-
-		$.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(response) {
-            	if(response.error != '') 
-					alert(response.error);
-				else
-                	window.open('<?= base_url() ?>printout/delivery/Delivery');
-            }
-        });
-	}*/
 
 	$('#chktransferall').live('click', function(){
 		if ($(this).is(':checked')) 
@@ -297,26 +268,4 @@
             }
         });
 	});
-
-	function getHeadDetailsBeforeSubmit()
-	{
-		var date_val	= $('#date').val();
-		var memo_val 	= $('#memo').val();
-		var to_branch 	= $('#to_branch').val();
-
-		var arr = 	{ 
-						fnc 	 	: 'save_request_head', 
-						entry_date 	: date_val,
-						memo 		: memo_val,
-						to_branch 	: to_branch
-					};
-
-		return arr;
-	}
-
-	function hideDeliveredQuantity()
-	{
-		$('#dynamic-css').html('');
-		$('#dynamic-css').html('<style> .tddelivered { display: none; }</style>');
-	}
 </script>

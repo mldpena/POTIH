@@ -54,7 +54,7 @@ class Release_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 			$response['branch_id'] 			= $row->branch_id;
 			$response['is_editable'] 		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
@@ -100,7 +100,7 @@ class Release_Model extends CI_Model {
 				$response['release_order_lists'][$i][] = array($row->is_received);
 				$response['release_order_lists'][$i][] = array($row->pa_number);
 				$response['release_order_lists'][$i][] = array($row->customer);
-				$response['release_order_lists'][$i][] = array($row->po_date);
+				$response['release_order_lists'][$i][] = array(date('m-d-Y', strtotime($row->po_date)));
 				$response['release_order_lists'][$i][] = array($row->total_qty);
 				
 				/*if ($row->is_received == 1 && !in_array($row->id,$po_head_ids)) 
@@ -120,7 +120,7 @@ class Release_Model extends CI_Model {
 		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`release_order_detail_id`,
 						COALESCE(CONCAT('PA',PH.`reference_number`),'') AS 'po_number',
 						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', P.`type`,
-						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
+						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', P.`uom`,
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
 						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`qty_released`,0)) AS 'qty_remaining',
 						PRD.`quantity` AS 'qty_released', 
@@ -149,6 +149,7 @@ class Release_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->po_number);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining, $row->qty_remaining);
@@ -190,7 +191,7 @@ class Release_Model extends CI_Model {
 
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'release_order_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
+						COALESCE(P.`description`,'') AS 'product', P.`uom`, PD.`quantity`, PD.`memo`, 
 						CONCAT('PA',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
 						COALESCE(PRD.`quantity`,0) AS 'qty_released', (PD.`quantity` - PD.`qty_released`) AS 'qty_remaining',
 						IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`qty_released`) <= 0, 1, 0) AS 'is_removed'
@@ -222,6 +223,7 @@ class Release_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->po_number);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining, $row->qty_remaining);
@@ -364,7 +366,7 @@ class Release_Model extends CI_Model {
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->panumbers);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
 				$response['data'][$i][] = array('');
@@ -556,58 +558,4 @@ class Release_Model extends CI_Model {
 
 		return $result;
 	}
-
-	/*public function get_purchase_receive_by_transaction($param)
-	{
-		extract($param);
-
-		$this->db->select("PRH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'for_branch',
-						CONCAT('PR',PRH.`reference_number`) AS 'reference_number', 
-						COALESCE(GROUP_CONCAT(DISTINCT CONCAT('PO',PH.`reference_number`)),'') AS 'po_numbers',
-					    COALESCE(DATE(PRH.`entry_date`),'') AS 'entry_date', IF(PRH.`is_used` = 0, 'Unused',PRH.`memo`) AS 'memo', 
-					    COALESCE(SUM(PRD.`quantity`),'') AS 'total_qty'")
-				->from("purchase_receive_head AS PRH")
-				->join("purchase_receive_detail AS PRD", "PRD.`headid` = PRH.`id`", "left")
-				->join("purchase_detail AS PD", "PD.`id` = PRD.`purchase_detail_id`", "left")
-				->join("purchase_head AS PH", "PH.`id` = PD.`headid` AND PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::USED, "left")
-				->join("branch AS B", "B.`id` = PRH.`branch_id` AND B.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE, "left")
-				->join("branch AS B2", "B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE, "left")
-				->where("PRH.`is_show`",\Constants\RELEASE_CONST::ACTIVE)
-				->where("PRH.`is_used`",\Constants\RELEASE_CONST::USED);
-
-		if (!empty($date_from))
-			$this->db->where("PRH.`entry_date` >=", $date_from.' 00:00:00');
-
-		if (!empty($date_to))
-			$this->db->where("PRH.`entry_date` <=", $date_to.' 23:59:59');
-
-		if ($branch != \Constants\RELEASE_CONST::ALL_OPTION) 
-			$this->db->where("PRH.`branch_id`", $branch);
-
-		if (!empty($search_string)) 
-			$this->db->like("CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`)", $search_string, "both");
-
-		$this->db->group_by("PRH.`id`");
-
-		switch ($order_by) 
-		{
-			case \Constants\RELEASE_CONST::ORDER_BY_REFERENCE:
-				$order_field = "PRH.`reference_number`";
-				break;
-			
-			case \Constants\RELEASE_CONST::ORDER_BY_LOCATION:
-				$order_field = "B.`name`";
-				break;
-
-			case \Constants\RELEASE_CONST::ORDER_BY_DATE:
-				$order_field = "PRH.`entry_date`";
-				break;
-		}
-
-		$this->db->order_by($order_field, $order_type);
-
-		$result = $this->db->get();
-
-		return $result;
-	}*/
 }

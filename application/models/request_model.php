@@ -58,7 +58,7 @@ class Request_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 			$response['to_branchid'] 		= $row->request_to_branchid;
 			$response['is_editable'] 		= ($row->qty_delivered == 0 && $row->branch_id == $this->_current_branch_id) ? TRUE : FALSE;
@@ -70,7 +70,7 @@ class Request_Model extends CI_Model {
 
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`,
+						COALESCE(P.`description`,'') AS 'product', P.`uom`, SD.`quantity`, SD.`memo`,
 						SD.`qty_delivered` AS 'qty_delivered', SD.`description`, P.`type`
 					FROM `stock_request_detail` AS SD
 					LEFT JOIN `stock_request_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."
@@ -92,6 +92,7 @@ class Request_Model extends CI_Model {
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->qty_delivered);
 				$response['detail'][$i][] = array($row->memo);
@@ -314,7 +315,7 @@ class Request_Model extends CI_Model {
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->from_branch);
 				$response['data'][$i][] = array($row->to_branch);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
 				$response['data'][$i][] = array($row->status);
@@ -350,8 +351,8 @@ class Request_Model extends CI_Model {
 		if (!empty($date_to))
 			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
 
-		if ($branch != \Constants\REQUEST_CONST::ALL_OPTION) 
-			$this->db->where("SH.`branch_id`", (int)$branch);
+		if ($from_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
+			$this->db->where("SH.`branch_id`", (int)$from_branch);
 
 		if ($to_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
 			$this->db->where("SH.`request_to_branchid`", (int)$to_branch);

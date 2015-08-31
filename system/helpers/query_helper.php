@@ -97,7 +97,7 @@ if (!function_exists('get_product_list_autocomplete'))
 		{
 			$response[$i]['label'] = $row->description;
 			$response[$i]['value'] = $row->id;
-			$response[$i]['ret_datas'] = ($with_inventory) ? array($row->id,$row->description,$row->material_code,$row->inventory) : array($row->id,$row->description,$row->material_code, $row->type);
+			$response[$i]['ret_datas'] = ($with_inventory) ? array($row->id,$row->description,$row->material_code,$row->inventory,$row->uom) : array($row->id,$row->description,$row->material_code, $row->type, $row->uom);
 			$i++;			
 		}
 

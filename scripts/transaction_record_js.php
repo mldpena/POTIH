@@ -88,7 +88,7 @@
 
     $('#tbl, #tbl_breakdown').hide();
     $('#date_from, #date_to').datepicker();
-    $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
+    $('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
 
     var tableHelper = new TableHelper(  { tableObject : myjstbl, tableArray : colarray},
                                         { baseURL : "<?= base_url() ?>", controller : 'product' });
@@ -126,8 +126,8 @@
         if (flag == 1)
             return;
 
-        var date_from_val   = $('#date_from').val();
-        var date_to_val     = $('#date_to').val();
+        var date_from_val   = moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+        var date_to_val     = moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
         var branch_val      = $('#branch').val();
         var product_id_val  = $('#product_id').val();
         var module_val      = $(this).attr('id');
@@ -184,8 +184,8 @@
         if (flag == 1)
             return;
         
-        var date_from_val   = $('#date_from').val();
-        var date_to_val     = $('#date_to').val();
+        var date_from_val   = moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+        var date_to_val     = moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
         var branch_val      = $('#branch').val();
         var product_id_val  = $('#product_id').val();
 

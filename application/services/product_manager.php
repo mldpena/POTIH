@@ -150,6 +150,7 @@ class Product_Manager
 
 		$product_field_data = array('material_code' => $code,
 									'description' => $product,
+									'uom' => $uom,
 									'type' => $is_nonstack,
 									'material_type_id' => $material,
 									'subgroup_id' => $subgroup,
@@ -176,7 +177,7 @@ class Product_Manager
 	}
 
 	/**
-	 * Get product details and minimum and maximum inventory per branch based on product id using transaction
+	 * Get product details and minimum and maximum inventory per branch based on product id
 	 * @param  array $param [contains product id]
 	 * @return array $response [list of product details, min and max values]
 	 */
@@ -203,6 +204,7 @@ class Product_Manager
 			$response['data']['material_id'] 	= $row->material_type_id;
 			$response['data']['subgroup'] 		= $row->subgroup;
 			$response['data']['subgroup_id'] 	= $row->subgroup_id;
+			$response['data']['uom'] 			= $row->uom;
 
 			$branch_inventory_result = $this->_CI->product_model->get_product_min_max_by_product_id($product_id);
 
@@ -246,6 +248,7 @@ class Product_Manager
 
 		$product_field_data = array('material_code' => $code,
 									'description' => $product,
+									'uom' => $uom,
 									'type' => $is_nonstack,
 									'material_type_id' => $material,
 									'subgroup_id' => $subgroup,

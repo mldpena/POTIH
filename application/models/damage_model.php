@@ -49,14 +49,14 @@ class Damage_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 			$response['is_editable']		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
+						COALESCE(P.`description`,'') AS 'product', P.`uom`, DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
 					FROM `damage_detail` AS DD
 					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
@@ -76,6 +76,7 @@ class Damage_Model extends CI_Model {
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
@@ -251,7 +252,7 @@ class Damage_Model extends CI_Model {
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array('');
 				$i++;

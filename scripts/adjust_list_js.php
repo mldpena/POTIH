@@ -47,6 +47,14 @@
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
+    var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+	
 	var spntype = document.createElement('span');
 	colarray['type'] = { 
         header_title: "Type",
@@ -175,7 +183,7 @@
 		var fnc_val 			= global_adjust_id == 0 ? 'insert_inventory_adjust' : 'update_inventory_adjust';
 		var new_inventory_val 	= $('#new_inventory').val();
 		var old_inventory_val 	= $('#old_inventory').html();
-		var memo_val 			= $('#memo').val();
+		var memo_val 			= encodeURIComponent($('#memo').val());
 
 		var errorList = $.dataValidation([{
 	                                        value : new_inventory_val,

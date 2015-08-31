@@ -57,7 +57,7 @@ class Delivery_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 			$response['to_branchid'] 		= $row->to_branchid;
 			$response['delivery_type'] 		= $row->delivery_type;
@@ -70,7 +70,7 @@ class Delivery_Model extends CI_Model {
 
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
+						COALESCE(P.`description`,'') AS 'product', P.`uom`, SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
 						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`, SD.`invoice`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -92,6 +92,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->receiveqty);
 				$response['detail'][$i][] = array($row->invoice);
@@ -348,7 +349,7 @@ class Delivery_Model extends CI_Model {
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->from_branch);
 				$response['data'][$i][] = array($row->to_branch);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->delivery_type);
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
@@ -551,7 +552,7 @@ class Delivery_Model extends CI_Model {
 				if ($search_type == \Constants\DELIVERY_CONST::FOR_TRANSFER)
 					$response['data'][$i][] = array($row->to_branch);
 				
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
 				$response['data'][$i][] = array($row->status);
@@ -661,7 +662,7 @@ class Delivery_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 
 			if ($receive_type == \Constants\DELIVERY_CONST::FOR_TRANSFER)
@@ -673,14 +674,14 @@ class Delivery_Model extends CI_Model {
 				$response['is_editable'] 	= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
 				
 			$response['delivery_type'] 		= $row->delivery_type;
-			$response['receive_date'] 		= $row->receive_date;
+			$response['receive_date'] 		= date('m-d-Y', strtotime($row->receive_date));
 			$response['own_branch'] 		= $this->_current_branch_id;
 			$response['transaction_branch'] = $row->branch_id;
 			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->recv_quantity > 0 ? TRUE : FALSE;
 		}
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
+						COALESCE(P.`description`,'') AS 'product', P.`uom`, SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
 						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`,
 						IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
 					FROM `stock_delivery_detail` AS SD
@@ -699,9 +700,14 @@ class Delivery_Model extends CI_Model {
 			{
 				$break_line = $row->type == \Constants\DELIVERY_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
+
+				if ($receive_type == \Constants\DELIVERY_CONST::FOR_CUSTOMER)
+					$response['detail'][$i][] = array('');
+				
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line,$row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 
@@ -1184,15 +1190,11 @@ class Delivery_Model extends CI_Model {
 		return $result;
 	}
 
-	public function get_customer_receive_with_remaining($delivery_head_id)
+	public function get_customer_receive_detail($customer_receive_detail_id)
 	{
-		$this->db->select("`id`, `quantity`, `product_id`, `description`, `memo` AS 'customer_name', `recv_quantity`")
+		$this->db->select("`id`, `quantity`, `product_id`, `description`, `memo` AS 'customer_name'")
 				->from("stock_delivery_detail")
-				->where("`recv_quantity` < `quantity`")
-				->where("`recv_quantity` <> 0")
-				->where("`headid`", $delivery_head_id)
-				->where("`is_for_branch`", 0)
-				->where("`memo` <> ''")
+				->where_in("`id`", $customer_receive_detail_id)
 				->order_by("`memo`", "ASC");
 
 		$result = $this->db->get();
@@ -1200,14 +1202,8 @@ class Delivery_Model extends CI_Model {
 		return $result;
 	}
 
-	public function transfer_remaining_details_to_new_return($customer_receive_detail, $customer_return_detail)
+	public function transfer_details_to_new_return($customer_return_detail)
 	{
-		for ($i=0; $i < count($customer_receive_detail); $i++) 
-		{
-			$this->db->where("`id`", $customer_receive_detail[$i]['id']);
-			$this->db->update("stock_delivery_detail", $customer_receive_detail[$i]['detail']);
-		}
-
 		$this->db->insert_batch("return_detail", $customer_return_detail);
 	}
 

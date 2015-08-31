@@ -60,6 +60,14 @@
         td_class: "tablerow column_click column_hover tdproduct"
     };
 
+    var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+	
 	var spntype = document.createElement('span');
 	colarray['type'] = { 
         header_title: "Type",
@@ -147,7 +155,7 @@
 	
 
 	$('#date_from, #date_to').datepicker();
-    $('#date_from, #date_to').datepicker("option","dateFormat", "yy-mm-dd" );
+    $('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
     $('#date_from, #date_to').datepicker("setDate", new Date());
 
     var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
@@ -236,8 +244,8 @@
 		var subgroup_val 	= $('#subgroup').val();
 		var type_val 		= $('#type').val();
 		var material_val	= $('#material').val();
-		var datefrom_val	= $('#date_from').val();
-		var dateto_val		= $('#date_to').val();
+		var datefrom_val	= moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var dateto_val		= moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var branch_val		= $('#branch').val();
 		var orderby_val		= $('#orderby').val();
 		var status_val		= $('#status').val();

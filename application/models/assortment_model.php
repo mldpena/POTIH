@@ -55,7 +55,7 @@ class Assortment_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 			$response['customer_name'] 		= $row->customer;
 			$response['is_editable'] 		= $row->qty_released == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
@@ -66,14 +66,14 @@ class Assortment_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`,
-						SUM(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
+						COALESCE(P.`description`,'') AS 'product', P.`uom`, PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`,
+						(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
 					FROM `release_order_detail` AS PD
 					LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
 					WHERE PD.`headid` = ?";
 
-		$result_detail = $this->db->query($query_detail,$this->_assortment_head_id);
+		$result_detail = $this->db->query($query_detail,(int)$this->_assortment_head_id);
 
 		if ($result_detail->num_rows() == 0) 
 			$response['detail_error'] = $this->_error_message['UNABLE_TO_SELECT_DETAILS'];
@@ -87,6 +87,7 @@ class Assortment_Model extends CI_Model {
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->qty_released);
 				$response['detail'][$i][] = array($row->qty_remaining);
@@ -292,7 +293,7 @@ class Assortment_Model extends CI_Model {
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->customer);
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
@@ -457,90 +458,4 @@ class Assortment_Model extends CI_Model {
 
 		return $result;
 	}
-
-	/*public function get_purchase_by_transaction($param)
-	{
-		extract($param);
-
-		$this->db->select("PH.`id`, COALESCE(B.`name`,'') AS 'location', COALESCE(B2.`name`,'') AS 'forbranch', 
-							CONCAT('PO',PH.`reference_number`) AS 'reference_number', PH.`supplier`,
-							COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
-							COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
-							IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
-								COALESCE(CASE 
-									WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN 'No Received'
-									WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN 'Incomplete'
-									WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN 'Complete'
-									ELSE 'Excess'
-								END,'') 
-							, '') AS 'status',
-							IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
-								COALESCE(CASE 
-									WHEN SUM(COALESCE(PD.`recv_quantity`,0)) = 0 THEN ".\Constants\ASSORTMENT_CONST::NO_RECEIVED."
-									WHEN SUM(IF(PD.`quantity` - PD.`recv_quantity` < 0, 0, PD.`quantity` - PD.`recv_quantity`)) > 0 THEN ".\Constants\ASSORTMENT_CONST::INCOMPLETE."
-									WHEN SUM(PD.`quantity`) - SUM(PD.`recv_quantity`) = 0 THEN ".\Constants\ASSORTMENT_CONST::COMPLETE."
-									ELSE ".\Constants\ASSORTMENT_CONST::EXCESS."
-								END,'') 
-							, 0) AS 'status_code',
-							CASE 
-								WHEN PH.`is_imported` = ".\Constants\ASSORTMENT_CONST::IMPORTED." THEN 'Imported'
-								WHEN PH.`is_imported` = ".\Constants\ASSORTMENT_CONST::LOCAL." THEN 'Local'
-								ELSE ''
-							END AS 'type'")
-				->from("purchase_head AS PH")
-				->join("purchase_detail AS PD", "PD.`headid` = PH.`id`", "left")
-				->join("branch AS B", "B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE, "left")
-				->join("branch AS B2", "B2.`id` = PH.`for_branchid` AND B2.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE, "left")
-				->where("PH.`is_show`", \Constants\ASSORTMENT_CONST::ACTIVE)
-				->where("PH.`is_used`", \Constants\ASSORTMENT_CONST::USED);
-
-
-		if (!empty($date_from))
-			$this->db->where("PH.`entry_date` >=", $date_from.' 00:00:00');
-
-		if (!empty($date_to))
-			$this->db->where("PH.`entry_date` <=", $date_to.' 23:59:59');
-
-		if ($branch != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
-			$this->db->where("PH.`branch_id`", $branch);
-
-		if ($for_branch != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
-			$this->db->where("PH.`for_branchid`", $for_branch);
-	
-		if (!empty($search_string)) 
-			$this->db->like("CONCAT('PO',PH.`reference_number`,' ',PH.`memo`,' ',PH.`supplier`)", $search_string, "both");
-
-		if ($type != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
-			$this->db->where("PH.`is_imported`", \Constants\ASSORTMENT_CONST::IMPORTED);
-
-		$this->db->group_by("PH.`id`");
-
-		if ($status != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
-			$this->db->having("status_code", $status);
-
-		switch ($order_by) 
-		{
-			case \Constants\ASSORTMENT_CONST::ORDER_BY_REFERENCE:
-				$order_field = "PH.`reference_number`";
-				break;
-			
-			case \Constants\ASSORTMENT_CONST::ORDER_BY_LOCATION:
-				$order_field = "B.`name`";
-				break;
-
-			case \Constants\ASSORTMENT_CONST::ORDER_BY_DATE:
-				$order_field = "PH.`entry_date`";
-				break;
-
-			case \Constants\ASSORTMENT_CONST::ORDER_BY_SUPPLIER:
-				$order_field = "PH.`supplier`";
-				break;
-		}
-
-		$this->db->order_by($order_field, $order_type);
-		
-		$result = $this->db->get();
-
-		return $result;
-	}*/
 }

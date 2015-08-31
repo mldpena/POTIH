@@ -54,7 +54,7 @@ class PurchaseReceive_Model extends CI_Model {
 			$row = $result_head->row();
 
 			$response['reference_number'] 	= $row->reference_number;
-			$response['entry_date'] 		= $row->entry_date;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
 			$response['memo'] 				= $row->memo;
 			$response['branch_id'] 			= $row->branch_id;
 			$response['is_editable'] 		= $row->branch_id == $this->_current_branch_id ? TRUE : FALSE;
@@ -99,7 +99,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['po_lists'][$i][] = array($this->encrypt->encode($row->id));
 				$response['po_lists'][$i][] = array($row->is_received);
 				$response['po_lists'][$i][] = array($row->po_number);
-				$response['po_lists'][$i][] = array($row->po_date);
+				$response['po_lists'][$i][] = array(date('m-d-Y', strtotime($row->po_date)));
 				$response['po_lists'][$i][] = array($row->total_qty);
 
 				$i++;
@@ -111,7 +111,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`purchase_detail_id`,
 						COALESCE(CONCAT('PO',PH.`reference_number`),'') AS 'po_number',
 						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', P.`type`,
-						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
+						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', P.`uom`,
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
 						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`recv_quantity`,0)) AS 'qty_remaining',
 						PRD.`received_by`, PRD.`receive_memo`, PRD.`quantity` AS 'qty_receive',
@@ -139,6 +139,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->po_number);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining, $row->qty_remaining);
@@ -181,8 +182,8 @@ class PurchaseReceive_Model extends CI_Model {
 		}
 
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
-						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
+						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code',
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, P.`uom`,
 						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
 						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining',
 						COALESCE(PRD.`receive_memo`,'') AS 'receive_memo', COALESCE(PRD.`received_by`,'') AS 'received_by',
@@ -215,6 +216,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->po_number);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
 				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array($row->qty_remaining, $row->qty_remaining);
@@ -359,7 +361,7 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['data'][$i][] = array($row->for_branch);
 				$response['data'][$i][] = array($row->reference_number);
 				$response['data'][$i][] = array($row->po_numbers);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
 				$response['data'][$i][] = array('');

@@ -68,7 +68,7 @@ class Pickup_Model extends CI_Model {
 				$response['data'][$i][] = array($i+1);
 				$response['data'][$i][] = array($row->location);
 				$response['data'][$i][] = array($row->reference_number);
-				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
 				$response['data'][$i][] = array('');
 				$i++;
 			}

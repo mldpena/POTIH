@@ -104,8 +104,16 @@
 					</div>
 				</div>
 				<div class="form-group">
-					Material Code:
-					<input type="text" class="form-control modal-fields" id="new_itemcode" maxlength="8">
+					<div class="row">
+						<div class="col-xs-6">
+							Material Code:
+							<input type="text" class="form-control modal-fields" id="new_itemcode" maxlength="8">
+						</div>
+						<div class="col-xs-6">
+							Unit of Measurement
+							<input type="text" class="form-control modal-fields" id="new_uom" maxlength="8" value="PCS">
+						</div>
+					</div>
 				</div>
 				<div class="form-group">
 					Material Name:

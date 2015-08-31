@@ -298,6 +298,7 @@
 					$('#new_max').val(response.data['max_inv']);
 					$('#material_id').val(response.data['material_id']);
 					$('#subgroup_id').val(response.data['subgroup_id']);
+					$('#new_uom').val(response.data['uom']);
 
 					if (response.data['type'] == 0) 
 						$('#new_nonstack').attr('checked','checked');
@@ -395,6 +396,7 @@
 		var product_id_val 	= global_product_id;
 		var itemcode_val 	= $('#new_itemcode').val();
 		var product_val 	= $('#new_product').val();
+		var uom_val 		= $('#new_uom').val();
 		var min_inv_val 	= $('#new_min').val();
 		var max_inv_val 	= $('#new_max').val();
 		var material_val	= $('#material_id').val() == '' ? 0 : $('#material_id').val();
@@ -450,6 +452,7 @@
 						fnc 	 : fnc_val, 
 						code 	 : itemcode_val,
 						product  : product_val,
+						uom 	 : uom_val,
 						subgroup : subgroup_val,
 						material : material_val,
 						min_inv  : min_inv_val,

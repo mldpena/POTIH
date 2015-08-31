@@ -59,7 +59,7 @@
 			</div>
 			<div class="max-row">
 				<div class="pull-left">
-					<button class="btn btn-info hide-elem" id="transfer">Transfer Incomplete Details to New Customer Return</button>	
+					<button class="btn btn-info hide-elem" id="transfer">Transfer to New Customer Return</button>	
 				</div>
 				<div class="pull-right">
 					<input type="button" class="btn btn-primary" value="Print" id="print">

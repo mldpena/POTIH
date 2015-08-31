@@ -29,7 +29,7 @@ class Adjust_Model extends CI_Model {
 
 		$response['rowcnt'] = 0;
 
-		$this->db->select("P.`id`, P.`material_code`, P.`description`,
+		$this->db->select("P.`id`, P.`material_code`, P.`description`, P.`uom`,
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
@@ -112,6 +112,7 @@ class Adjust_Model extends CI_Model {
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
+				$response['data'][$i][] = array($row->uom);
 				$response['data'][$i][] = array($row->type);
 				$response['data'][$i][] = array($row->material_type);
 				$response['data'][$i][] = array($row->subgroup);
@@ -302,7 +303,7 @@ class Adjust_Model extends CI_Model {
 
 		$response['rowcnt'] = 0;
 
-		$this->db->select("IA.`id`, P.`material_code`, P.`description`,
+		$this->db->select("IA.`id`, P.`material_code`, P.`description`, P.`uom`,
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
@@ -394,9 +395,10 @@ class Adjust_Model extends CI_Model {
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
+				$response['data'][$i][] = array($row->uom);
 				$response['data'][$i][] = array($row->type);
 				$response['data'][$i][] = array($row->from_branch);
-				$response['data'][$i][] = array($row->date_created);
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->date_created)));
 				$response['data'][$i][] = array($row->old_inventory);
 				$response['data'][$i][] = array($row->current_inventory);
 				$response['data'][$i][] = array($row->requested_new_inventory);
@@ -510,7 +512,7 @@ class Adjust_Model extends CI_Model {
 		$response['rowcnt'] = 0;
 
 		$this->db->select("IA.`id`, COALESCE(P.`description`,'') AS 'description', 
-							COALESCE(P.`id`,0) AS 'product_id', P.`material_code`,
+							COALESCE(P.`id`,0) AS 'product_id', P.`material_code`, P.`uom`,
 							IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
 							CASE 
 								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
@@ -564,6 +566,7 @@ class Adjust_Model extends CI_Model {
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->description,$this->encrypt->encode($row->product_id));
 				$response['data'][$i][] = array($row->material_code);
+				$response['data'][$i][] = array($row->uom);
 				$response['data'][$i][] = array($row->old_inventory);
 				$response['data'][$i][] = array($row->new_inventory);
 				$response['data'][$i][] = array($row->memo);

@@ -62,6 +62,14 @@
         td_class: "tablerow column_click column_hover tdcode"
     };
    	
+   	var spnuom = document.createElement('span');
+	colarray['uom'] = { 
+		header_title: "UOM",
+		edit: [spnuom],
+		disp: [spnuom],
+		td_class: "tablerow column_click column_hover tduom"
+	};
+
    	var spnqty = document.createElement('span');
    	var txtqty = document.createElement('input');
     txtqty.setAttribute('class','form-control txtqty');
@@ -138,8 +146,7 @@
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
 		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
-    	$('#date').datepicker("option","dateFormat", "yy-mm-dd" );
+    	$('#date').datepicker("option","dateFormat", "mm-dd-yy");
     	$('#date').datepicker("setDate", new Date());
 
 		var arr = 	{ fnc : 'get_return_details' };
@@ -220,7 +227,7 @@
 
 	function getHeadDetailsBeforeSubmit()
 	{
-		var date_val	= $('#date').val();
+		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 	= $('#memo').val();
 		var customer_name_val = $('#customer_name').val();
 		var received_by_val = $('#received_by').val();
@@ -247,10 +254,10 @@
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId       = tableHelper.contentProvider.getData(rowIndex,'product',1);
 	    var qty             = tableHelper.contentProvider.getData(rowIndex,'qty');
-	    var memo            = tableHelper.contentProvider.getData(rowIndex,'memo');
+	    var memo            = encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'memo'));
 	    var rowUniqueId     = tableHelper.contentProvider.getData(rowIndex,'id');
 	    var nonStackDescription  = tableHelper.contentProvider.getData(rowIndex,'product',4);
-	    var receivedBy 		= tableHelper.contentProvider.getData(rowIndex,'receivedby');
+	    var receivedBy 		= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
 	    var actionFunction  = rowUniqueId != 0 ? tableHelper._settings.updateDetailName : tableHelper._settings.insertDetailName;
 
 	    var errorList = $.dataValidation([  {   
