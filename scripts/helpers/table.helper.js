@@ -540,7 +540,7 @@ var TableHelper = function(tableOptions,options) {
 			{
 				var productId       = self.contentProvider.getData(rowIndex,'product',1);
 				var qty             = self.contentProvider.getData(rowIndex,'qty');
-				var memo            = encodeURIComponent(self.contentProvider.getData(rowIndex,'memo'));
+				var memo            = $.sanitize(self.contentProvider.getData(rowIndex,'memo'));
 				var rowUniqueId     = self.contentProvider.getData(rowIndex,'id');
 				var nonStackDescription  = self.contentProvider.getData(rowIndex,'product',4);
 				var actionFunction  = rowUniqueId != 0 ? self._settings.updateDetailName : self._settings.insertDetailName;

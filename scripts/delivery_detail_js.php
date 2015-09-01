@@ -359,8 +359,8 @@
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId 		= tableHelper.contentProvider.getData(rowIndex,'product',1);
 		var qty 			= tableHelper.contentProvider.getData(rowIndex,'qty');
-		var memo 			= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'memo'));
-		var invoice 		= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'invoice'));
+		var memo 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'memo'));
+		var invoice 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'invoice'));
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
 		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',4);

@@ -309,8 +309,8 @@
 		var rowIndex 		= $(element).parent().parent().index();
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var receivedQty 	= tableHelper.contentProvider.getData(rowIndex,'receiveqty');
-		var receivedBy 		= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
-		var note 			= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'note'));
+		var receivedBy 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
+		var note 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'note'));
 
 		var errorList = $.dataValidation([{
 											value : receivedQty,

@@ -298,7 +298,7 @@
 		var productId 	= tableHelper.contentProvider.getData(rowIndex,'product',1);
 		var newInventory = tableHelper.contentProvider.getData(rowIndex,'newinventory');
 		var oldInventory = tableHelper.contentProvider.getData(rowIndex,'oldinventory');
-		var memo 		= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'memo'));
+		var memo 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'memo'));
 		var adjustId 	= tableHelper.contentProvider.getData(rowIndex,'id');
 		var status 		= $.getEnumValue(state,tableHelper.contentProvider.getData(rowIndex,'status'));
 		var fnc 		= adjustId != 0 ? "update_inventory_adjust" : "insert_inventory_adjust"; 

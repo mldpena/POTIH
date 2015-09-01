@@ -624,8 +624,8 @@
 		var purchaseDetailId 	= tableHelper.contentProvider.getData(rowIndex,'podetailid');
 		var receivedQty 		= tableHelper.contentProvider.getData(rowIndex,'qtyrecv');
 		var productId 			= tableHelper.contentProvider.getData(rowIndex,'product',1);
-		var receivedBy 			= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
-		var note 				= encodeURIComponent(tableHelper.contentProvider.getData(rowIndex,'note'));
+		var receivedBy 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
+		var note 				= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'note'));
 		var actionFunction 		= receiveDetailId == 0 ? 'insert_receive_detail' : 'update_receive_detail';
 
 		var errorList = $.dataValidation(	[{

@@ -65,6 +65,11 @@
         return queryString.substring(1);
     };
 
+    $.sanitize = function(string)
+    {
+        return encodeURIComponent(string.replace(/\\/g, "\\\\").replace("\"", '\\\"'));
+    };
+
     $.dataValidation = function(data){
         var numericReg = /[^0-9-]/;
         var alphaNumericCharReg = /[^A-Za-z0-9 '".\/]/;
