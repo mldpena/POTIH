@@ -1252,6 +1252,7 @@ class Delivery_Model extends CI_Model {
 				->where("SH.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
 				->where("SH.`is_used`", \Constants\ADJUST_CONST::ACTIVE)
 				->where("SH.`to_branchid`", $this->_current_branch_id)
+				->where("SD.`is_for_branch`", \Constants\ADJUST_CONST::ACTIVE)
 				->group_by("SH.`id`")
 				->having("qty_delivered", 0);
 		
