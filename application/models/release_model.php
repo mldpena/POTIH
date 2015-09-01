@@ -102,9 +102,6 @@ class Release_Model extends CI_Model {
 				$response['release_order_lists'][$i][] = array($row->customer);
 				$response['release_order_lists'][$i][] = array(date('m-d-Y', strtotime($row->po_date)));
 				$response['release_order_lists'][$i][] = array($row->total_qty);
-				
-				/*if ($row->is_received == 1 && !in_array($row->id,$po_head_ids)) 
-					array_push($po_head_ids,$row->id);*/
 
 				$i++;
 			}
@@ -112,15 +109,15 @@ class Release_Model extends CI_Model {
 
 		$result_po_list->free_result();
 
-		/*if (count($po_head_ids) > 0) {
-			$param['po_head_id'] = $po_head_ids;
-			$response = $this->get_po_details($param,$response);
-		}*/
-		
 		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`release_order_detail_id`,
 						COALESCE(CONCAT('PA',PH.`reference_number`),'') AS 'po_number',
 						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', P.`type`,
-						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', P.`uom`,
+						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
+						CASE
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom',
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
 						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`qty_released`,0)) AS 'qty_remaining',
 						PRD.`quantity` AS 'qty_released', 
@@ -191,7 +188,13 @@ class Release_Model extends CI_Model {
 
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'release_order_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, PD.`quantity`, PD.`memo`, 
+						COALESCE(P.`description`,'') AS 'product', 
+						CASE
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom',
+						PD.`quantity`, PD.`memo`, 
 						CONCAT('PA',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
 						COALESCE(PRD.`quantity`,0) AS 'qty_released', (PD.`quantity` - PD.`qty_released`) AS 'qty_remaining',
 						IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`qty_released`) <= 0, 1, 0) AS 'is_removed'

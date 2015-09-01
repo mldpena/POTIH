@@ -66,7 +66,13 @@ class Assortment_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`,
+						COALESCE(P.`description`,'') AS 'product', 
+						CASE
+							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom', 
+						PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`,
 						(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
 					FROM `release_order_detail` AS PD
 					LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."

@@ -111,7 +111,12 @@ class PurchaseReceive_Model extends CI_Model {
 		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`purchase_detail_id`,
 						COALESCE(CONCAT('PO',PH.`reference_number`),'') AS 'po_number',
 						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', P.`type`,
-						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', P.`uom`,
+						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description',
+						CASE
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom',
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
 						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`recv_quantity`,0)) AS 'qty_remaining',
 						PRD.`received_by`, PRD.`receive_memo`, PRD.`quantity` AS 'qty_receive',
@@ -183,7 +188,12 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code',
-						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, P.`uom`,
+						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
+						CASE
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom',
 						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
 						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining',
 						COALESCE(PRD.`receive_memo`,'') AS 'receive_memo', COALESCE(PRD.`received_by`,'') AS 'received_by',

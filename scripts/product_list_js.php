@@ -396,11 +396,11 @@
 		var product_id_val 	= global_product_id;
 		var itemcode_val 	= $('#new_itemcode').val();
 		var product_val 	= $('#new_product').val();
-		var uom_val 		= $('#new_uom').val();
+		var uom_val 		= parseInt($('#new_uom').val());
 		var min_inv_val 	= $('#new_min').val();
 		var max_inv_val 	= $('#new_max').val();
-		var material_val	= $('#material_id').val() == '' ? 0 : $('#material_id').val();
-		var subgroup_val	= $('#subgroup_id').val() == '' ? 0 : $('#subgroup_id').val();
+		var material_val	= $('#material_id').val() == '' ? 0 : parseInt($('#material_id').val());
+		var subgroup_val	= $('#subgroup_id').val() == '' ? 0 : parseInt($('#subgroup_id').val());
 		var material_text 	= $('#material_text').html();
 		var subgroup_text 	= $('#subgroup_text').html();
 		var is_nonstack_val = $('#new_nonstack').is(':checked') ? 0 : 1;

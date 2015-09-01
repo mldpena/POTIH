@@ -62,7 +62,13 @@ class Return_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
+						COALESCE(P.`description`,'') AS 'product',
+						CASE
+							WHEN P.`uom` = ".\Constants\RETURN_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\RETURN_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\RETURN_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom', 
+						RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
 					FROM `return_detail` AS RD
 					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."

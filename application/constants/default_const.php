@@ -23,4 +23,8 @@
 
 		const MIN_CHECKER = 0;
 		const MAX_CHECKER = 1;
+
+		const PCS = 1;
+		const KG = 2;
+		const ROLL = 3;
 	}

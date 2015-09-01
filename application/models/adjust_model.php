@@ -29,7 +29,12 @@ class Adjust_Model extends CI_Model {
 
 		$response['rowcnt'] = 0;
 
-		$this->db->select("P.`id`, P.`material_code`, P.`description`, P.`uom`,
+		$this->db->select("P.`id`, P.`material_code`, P.`description`, 
+							CASE
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KG'
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+							END AS 'uom',
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
@@ -303,7 +308,12 @@ class Adjust_Model extends CI_Model {
 
 		$response['rowcnt'] = 0;
 
-		$this->db->select("IA.`id`, P.`material_code`, P.`description`, P.`uom`,
+		$this->db->select("IA.`id`, P.`material_code`, P.`description`, 
+							CASE
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KG'
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+							END AS 'uom',
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
@@ -512,7 +522,12 @@ class Adjust_Model extends CI_Model {
 		$response['rowcnt'] = 0;
 
 		$this->db->select("IA.`id`, COALESCE(P.`description`,'') AS 'description', 
-							COALESCE(P.`id`,0) AS 'product_id', P.`material_code`, P.`uom`,
+							COALESCE(P.`id`,0) AS 'product_id', P.`material_code`,
+							CASE
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KG'
+								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+							END AS 'uom',
 							IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
 							CASE 
 								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'

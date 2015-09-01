@@ -70,7 +70,13 @@ class Delivery_Model extends CI_Model {
 
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
+						COALESCE(P.`description`,'') AS 'product', 
+						CASE
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom', 
+						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
 						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`, SD.`invoice`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -681,7 +687,13 @@ class Delivery_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
+						COALESCE(P.`description`,'') AS 'product', 
+						CASE
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom', 
+						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
 						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`,
 						IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
 					FROM `stock_delivery_detail` AS SD

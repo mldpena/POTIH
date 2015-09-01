@@ -69,7 +69,13 @@ class PurchaseOrder_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`recv_quantity`
+						COALESCE(P.`description`,'') AS 'product',
+						CASE
+							WHEN P.`uom` = ".\Constants\PURCHASE_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\PURCHASE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\PURCHASE_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom', 
+						PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`recv_quantity`
 					FROM `purchase_detail` AS PD
 					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."

@@ -70,7 +70,13 @@ class Request_Model extends CI_Model {
 
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, SD.`quantity`, SD.`memo`,
+						COALESCE(P.`description`,'') AS 'product', 
+						CASE
+							WHEN P.`uom` = ".\Constants\REQUEST_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\REQUEST_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\REQUEST_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom', 
+						SD.`quantity`, SD.`memo`,
 						SD.`qty_delivered` AS 'qty_delivered', SD.`description`, P.`type`
 					FROM `stock_request_detail` AS SD
 					LEFT JOIN `stock_request_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."

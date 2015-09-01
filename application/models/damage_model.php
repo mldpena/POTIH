@@ -56,7 +56,13 @@ class Damage_Model extends CI_Model {
 		}
 
 		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', P.`uom`, DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
+						COALESCE(P.`description`,'') AS 'product',
+						CASE
+							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::ROLL." THEN 'ROLL'
+						END AS 'uom', 
+						DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
 					FROM `damage_detail` AS DD
 					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."

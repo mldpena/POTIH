@@ -98,20 +98,28 @@
 				<h4 class="modal-title" id="myModalLabel">Create New Product</h4>
 			</div>
 			<div class="modal-body">
-				<div class="form-group">
-					<div class="checkbox pull-right" id="new_check_nonstack">
-						<input type="checkbox" class="modal-fields" value="" id="new_nonstack">Non-stock Item
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<div class="checkbox pull-right" id="new_check_nonstack">
+								<input type="checkbox" class="modal-fields" value="" id="new_nonstack">Non-stock Item
+							</div>
+						</div>
 					</div>
 				</div>
-				<div class="form-group">
-					<div class="row">
+				<div class="row">
+					<div class="form-group">
 						<div class="col-xs-6">
 							Material Code:
 							<input type="text" class="form-control modal-fields" id="new_itemcode" maxlength="8">
 						</div>
 						<div class="col-xs-6">
 							Unit of Measurement
-							<input type="text" class="form-control modal-fields" id="new_uom" maxlength="8" value="PCS">
+							<select id="new_uom" class="form-control">
+								<option value="1">PCS</option>
+								<option value="2">KG</option>
+								<option value="3">ROLL</option>
+							</select>
 						</div>
 					</div>
 				</div>
