@@ -346,7 +346,8 @@ class Release_Model extends CI_Model {
 				break;
 		}
 
-		$this->db->order_by($order_field, $order_type);
+		$this->db->group_by("PRH.`id`")
+				->order_by($order_field, $order_type);
 
 		if ($with_limit) 
 		{
@@ -521,7 +522,12 @@ class Release_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
-							COALESCE(PD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', PD.`memo`
+							COALESCE(PD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', PD.`memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KG'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM release_head AS H
 							LEFT JOIN release_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
@@ -545,6 +551,8 @@ class Release_Model extends CI_Model {
 			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
 
 		$result_detail->free_result();
+
+		$response['page_title'] = 'WAREHOUSE RELEASE SLIP';
 
 		return $response;
 	}

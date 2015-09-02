@@ -370,7 +370,12 @@ class Return_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`memo` AS 'receive_memo'
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`memo` AS 'receive_memo',
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KG'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM return_head AS H
 							LEFT JOIN return_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`

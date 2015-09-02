@@ -353,7 +353,12 @@ class Damage_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KG'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM damage_head AS H
 							LEFT JOIN damage_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
