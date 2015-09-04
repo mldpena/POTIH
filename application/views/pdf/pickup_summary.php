@@ -73,7 +73,7 @@
 		</style>
 	";
 
-	$column_width = array("60px","435px","95px","135px","125px","245px");
+	$column_width = array("60px","405px","95px","135px","125px","215px","60px");
 
 	while ($is_finished == FALSE) 
 	{
@@ -94,7 +94,7 @@
 		$pdf->SetFont($font,'B',$font_size,'','','');
 
 		$pdf->writeHTMLCell('', '', $x, $y - 6,'Page : '.$page_number, 0, 1, 0, true, 'R', true);
-		$pdf->writeHTMLCell('', '', $x, $y,'Date : '.$entry_date, 0, 1, 0, true, 'R', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'Date : '.date('m-d-Y', strtotime($entry_date)), 0, 1, 0, true, 'R', true);
 
 		$y+= $linegap * 2;
 
@@ -105,9 +105,10 @@
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
 						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
-						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
-						<td style="width:$column_width[4];" class="tdcenter header-border">WR #</td>
+						<td style="width:$column_width[6];" class="tdcenter header-border">UOM</td>
 						<td style="width:$column_width[5];" class="tdcenter header-border">Customer Name</td>
+						<td style="width:$column_width[4];" class="tdcenter header-border">WR #</td>
+						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
 					</tr>
 				</table>
 EOD;
@@ -126,9 +127,10 @@ EOD;
 							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
-							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["memo"]."</td>
-							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["reference_number"]."</td>
+							<td style=\"width:".$column_width[6].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[5].";\" class=\"tdcenter table-data\">".substr($detail[$i]["customer"],0,29)."</td>
+							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["reference_number"]."</td>
+							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["memo"]."</td>
 						</tr>
 					</table>";
 
@@ -164,7 +166,7 @@ EOD;
 						<table>
 							<tr>
 								<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
-								<td colspan = \"5\" style=\"width:1035px;\" class=\"table-data\">".$detail_description."</td>
+								<td colspan = \"6\" style=\"width:1035px;\" class=\"table-data\">".$detail_description."</td>
 							</tr>
 						</table>";
 

@@ -76,7 +76,7 @@
 		</style>
 	";
 
-	$column_width = array("55px","330px","95px","220px");
+	$column_width = array("55px","330px","95px","160px","60px");
 
 	while ($is_finished == FALSE) 
 	{
@@ -118,6 +118,7 @@
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
 						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
+						<td style="width:$column_width[4];" class="tdcenter header-border">UOM</td>
 						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
 					</tr>
 				</table>
@@ -137,6 +138,7 @@ EOD;
 							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
+							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdleft table-data\">".$detail[$i]["memo"]."</td>
 						</tr>
 					</table>";
@@ -185,7 +187,7 @@ EOD;
 						<table>
 							<tr>
 								<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
-								<td colspan = \"3\" style=\"width:645px;\" class=\"table-data\">".$detail_description."</td>
+								<td colspan = \"4\" style=\"width:645px;\" class=\"table-data\">".$detail_description."</td>
 							</tr>
 						</table>";
 

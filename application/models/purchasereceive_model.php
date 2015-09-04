@@ -524,7 +524,12 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$query_detail = "SELECT D.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
 							COALESCE(PD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', 
-							D.`received_by`, D.`receive_memo`
+							D.`received_by`, D.`receive_memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KG'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM purchase_receive_head AS H
 							LEFT JOIN purchase_receive_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
