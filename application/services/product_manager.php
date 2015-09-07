@@ -285,7 +285,7 @@ class Product_Manager
 										'last_modified_date' => $this->_current_date,
 										'last_modified_by' => $this->_current_user);
 
-		$affected_rows = $this->_CI->product_model->delete_product_by_id($updated_product_fields,$product_id);
+		$affected_rows = $this->_CI->product_model->update_product_by_id($updated_product_fields,$product_id);
 
 		if ($affected_rows == 0)
 			throw new \Exception($this->_error_message['UNABLE_TO_DELETE']);
@@ -702,6 +702,55 @@ class Product_Manager
 			$response['error'] = 'Invalid file type!';
 		
 		return $response;
+
+		/*$exploded_name 	= explode(".", $_FILES["file"]["name"]);
+		$extension 		= end($exploded_name);
+
+		$response = array();
+
+		$response['error'] = '';
+
+		$i = 0;
+
+		if ($_FILES['file']['type'] == 'application/vnd.ms-excel' && $extension == 'csv')
+		{
+			$product_csv_file = $_FILES['file']['tmp_name'];
+			$handle = fopen($product_csv_file,"r");
+
+			while (($product_csv_data = fgetcsv($handle,10000))!==FALSE) 
+			{
+				$i++;
+
+				$product_name = strtolower(trim($product_csv_data[0]));
+				$new_material_code = trim($product_csv_data[1]);
+
+				$product_id_result = $this->_CI->product_model->check_if_field_data_exists(array("LOWER(`description`)" => $product_name));
+				
+				if ($product_id_result->num_rows() == 0) 
+				{
+					$response['logs'][] = 'Row #'.$i." : Unable to find product!";
+					continue;
+				}
+
+				$row = $product_id_result->row();
+				$product_id = $row->id;
+				$product_id_result->free_result();
+
+				$product_details = ['material_code' => $new_material_code,
+									'subgroup_id' => 19];
+
+				$affected_rows = $this->_CI->product_model->update_product_by_id($product_details, $product_id);
+
+				if ($affected_rows == 1)
+					$response['logs'][] = 'Row #'.$i." : Material Code Successfully updated!";
+				else
+					$response['logs'][] = 'Row #'.$i." : Unable to update material code!";
+			}
+		}
+		else
+			$response['error'] = 'Invalid file type!';
+
+		return $response;*/
 	}
 
 	/**

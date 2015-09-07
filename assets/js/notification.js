@@ -61,7 +61,7 @@ $(function(){
 																	notificationSubject : 'New Item Receive',
 																	notificationMessage : 'You have ({0}) item receive from other branches!',
 																	notificationIcon 	: 'pendinginventoryadjust-new.png',
-																	notificationLink 	: 'delreceive/list'
+																	notificationLink 	: 'delreceive/list/1'
 																},
 																{
 																	notificationSection : 'minInventory',

@@ -115,7 +115,7 @@ class Release_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
 						CASE
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom',
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
@@ -191,7 +191,7 @@ class Release_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', 
 						CASE
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom',
 						PD.`quantity`, PD.`memo`, 
@@ -346,7 +346,8 @@ class Release_Model extends CI_Model {
 				break;
 		}
 
-		$this->db->order_by($order_field, $order_type);
+		$this->db->group_by("PRH.`id`")
+				->order_by($order_field, $order_type);
 
 		if ($with_limit) 
 		{
@@ -521,7 +522,12 @@ class Release_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
-							COALESCE(PD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', PD.`memo`
+							COALESCE(PD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', PD.`memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM release_head AS H
 							LEFT JOIN release_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
@@ -545,6 +551,8 @@ class Release_Model extends CI_Model {
 			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
 
 		$result_detail->free_result();
+
+		$response['page_title'] = 'WAREHOUSE RELEASE SLIP';
 
 		return $response;
 	}

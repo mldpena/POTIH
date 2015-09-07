@@ -59,7 +59,7 @@ class Damage_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product',
 						CASE
 							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom', 
 						DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
@@ -250,7 +250,7 @@ class Damage_Model extends CI_Model {
 		if ($result->num_rows() > 0) 
 		{
 			$i = 0;
-			$response['rowcnt'] = $result->num_rows();
+			$response['rowcnt'] = $this->get_damage_list_count_by_filter($param);
 
 			foreach ($result->result() as $row) 
 			{
@@ -353,7 +353,12 @@ class Damage_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM damage_head AS H
 							LEFT JOIN damage_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`

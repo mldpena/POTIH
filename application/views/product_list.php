@@ -117,7 +117,7 @@
 							Unit of Measurement
 							<select id="new_uom" class="form-control">
 								<option value="1">PCS</option>
-								<option value="2">KG</option>
+								<option value="2">KGS</option>
 								<option value="3">ROLL</option>
 							</select>
 						</div>

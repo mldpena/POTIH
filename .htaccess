@@ -12,3 +12,7 @@ AcceptPathInfo On
     Header set Access-Control-Allow-Origin "*"
   </IfModule>
 </FilesMatch>
+RewriteCond %{HTTP_HOST} ^internal\.hitop\-mdsg\.com$ [OR]
+RewriteCond %{HTTP_HOST} ^www\.internal\.hitop\-mdsg\.com$
+RewriteRule ^/?$ "http\:\/\/hitop\-mdsg\.com\/internal\/" [R=301,L]
+

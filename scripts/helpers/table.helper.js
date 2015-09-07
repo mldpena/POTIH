@@ -291,6 +291,29 @@ var TableHelper = function(tableOptions,options) {
 						{ width : ["100px","auto"] });
 				}
 			});
+			
+			$('.' + self._settings.productClass).live('keydown',function(e){
+			
+				if (e.altKey&& e.keyCode == 87)
+				{
+					var rowIndex = $(this).parent().parent().index();
+					
+					var productId = self.contentProvider.getData(rowIndex,'product',1);
+					var productType = self.contentProvider.getData(rowIndex,'product',2);
+					var productName = self.contentProvider.getData(rowIndex,'product');
+					
+					var productElement = self.contentProvider.getElement(rowIndex,'product');
+					var descriptionElement = $(productElement).parent().find('.' + self._settings.nonStackClass);
+					var withBreakLine = "";
+					
+					if(!$(descriptionElement).is(":visible"))
+						withBreakLine = "<br/>";
+
+					self.contentProvider.setData(rowIndex,'product',[productName, productId, productType, withBreakLine, ""]);
+					
+					$(descriptionElement).toggle();
+				}
+			});
 		},
 
 		bindRecentNameAutoComplete : function ()
@@ -716,13 +739,14 @@ var TableHelper = function(tableOptions,options) {
 		{
 			var productType = Number(self.contentProvider.getData(rowIndex,'product',2));
 			var productId   = Number(self.contentProvider.getData(rowIndex,'product',1));
-
+			var productDescription   = (self.contentProvider.getData(rowIndex,'product',4));
+			
 			var productElement = self.contentProvider.getElement(rowIndex,'product');
 			var descriptionElement = $(productElement).parent().find('.' + self._settings.nonStackClass);
 
 			if (productId != 0) 
 			{
-				if (productType == ProductType.NonStock)
+				if (productType == ProductType.NonStock || productDescription != "") 
 					$(descriptionElement).show();
 				else
 				   $(descriptionElement).hide();  

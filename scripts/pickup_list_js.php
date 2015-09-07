@@ -129,7 +129,7 @@
 		{
 			var deleteIconElement = tableHelper.contentProvider.getElement(i,'coldelete');
 			var rowEntryDate = tableHelper.contentProvider.getData(i,'date');
-			var dateToday = $.datepicker.formatDate('yy-mm-dd', new Date());
+			var dateToday = $.datepicker.formatDate('mm-dd-yy', new Date());
 
 			if (dateToday != rowEntryDate) 
 				$(deleteIconElement).hide();

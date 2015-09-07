@@ -33,7 +33,7 @@
 
 	$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
 	
-	$font = 'arialbd';
+	$font = 'arial';
 	$font_size = 12;
 
 	$margin_left = 10;
@@ -51,7 +51,7 @@
 	$description_count = 0;
 	$print_description = FALSE;
 
-	$pdf->SetFont($font,'B',$font_size,'','','');
+	$pdf->SetFont($font,'',$font_size,'','','');
 
 	$style = "
 		<style type='text/css'>
@@ -80,10 +80,11 @@
 		</style>
 	";
 
-	$column_width = array("55px","430px","95px","120px");
+	$column_width = array("55px","370px","95px","120px","60px");
 
 	while ($is_finished == FALSE) 
 	{
+		$footer_printed = FALSE;
 		$page_number++;
 
 		$x = $margin_left;
@@ -96,15 +97,15 @@
 			$y = $margin_top;
 		}
 
-		$pdf->SetFont($font,'B',16,'','','');
+		$pdf->SetFont($font,'',16,'','','');
 
-		$pdf->writeHTMLCell('', '', $x, $y,'WAREHOUSE RELEASE SLIP', 0, 1, 0, true, 'C', true);
+		$pdf->writeHTMLCell('', '', $x, $y, $page_title, 0, 1, 0, true, 'C', true);
 
 		$y+= $linegap * 2;
 
 		$pdf->writeHTMLCell('', '', $x, $y,'No. # '.$reference_number, 0, 1, 0, true, 'L', true);
 
-		$pdf->SetFont($font,'B',$font_size,'','','');
+		$pdf->SetFont($font,'',$font_size,'','','');
 
 		$pdf->writeHTMLCell('', '', $x, $y - 6,'Page : '.$page_number, 0, 1, 0, true, 'R', true);
 		$pdf->writeHTMLCell('', '', $x, $y,'Date : '.date("M d, Y",strtotime($entry_date)), 0, 1, 0, true, 'R', true);
@@ -131,6 +132,7 @@
 				<table>
 					<tr>
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
+						<td style="width:$column_width[4];" class="tdcenter header-border">Unit</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
 						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
 						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
@@ -150,6 +152,7 @@ EOD;
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
+							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["memo"]."</td>
@@ -167,10 +170,12 @@ EOD;
 		            	$product_count++;
 		            else
 		            	$print_description = TRUE;
-
-		           	set_footer($pdf,$y);
-
-		            break;
+					
+					if(!$footer_printed)
+					{
+						set_footer($pdf,$y);
+						$footer_printed = TRUE;
+					}
 		        }
 		        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
 		        {
@@ -180,12 +185,17 @@ EOD;
 		            	$product_count++;
 		            else
 		            	$print_description = TRUE;
-
-		           	set_footer($pdf,$y);
-
-		            break;
+					
+					if(!$footer_printed)
+					{
+						set_footer($pdf,$y);
+						$footer_printed = TRUE;
+					}
 		        }
 			}
+
+			if ($footer_printed)
+				break;
 
 			if (!empty($detail[$i]['description']))
 			{
@@ -199,8 +209,8 @@ EOD;
 						$style
 						<table>
 							<tr>
-								<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
-								<td colspan = \"3\" style=\"width:645px;\" class=\"table-data\">".$detail_description."</td>
+								<td colspan = \"2\" style=\"width:115px;\" class=\"table-data\"></td>
+								<td colspan = \"3\" style=\"width:585px;\" class=\"table-data\">".$detail_description."</td>
 							</tr>
 						</table>";
 
@@ -221,12 +231,15 @@ EOD;
 						}
 						else
 						{
-							$description_count = $z;
+							$description_count = $z + 1;
 							$print_description = TRUE;
 						}
 
-						set_footer($pdf,$y);
-			            break;
+						if(!$footer_printed)
+						{
+							set_footer($pdf,$y);
+							$footer_printed = TRUE;
+						}
 			        }
 			        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
 			        {
@@ -239,12 +252,16 @@ EOD;
 						}
 						else
 						{
-							$description_count = $z;
+							$description_count = $z + 1;
 							$print_description = TRUE;
 						}
 						
-			            set_footer($pdf,$y);
-			            break;
+						if(!$footer_printed)
+						{
+							set_footer($pdf,$y);
+							$footer_printed = TRUE;
+						}
+
 			        }
 
 			        if (($z + 1) == count($description_strings))
@@ -253,6 +270,9 @@ EOD;
 						$product_count++;
 					}
 
+					if ($footer_printed)
+						break;
+					
 					$y = $pdf->GetY();
 				}
 			}

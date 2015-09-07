@@ -73,7 +73,7 @@ class Request_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', 
 						CASE
 							WHEN P.`uom` = ".\Constants\REQUEST_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\REQUEST_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\REQUEST_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\REQUEST_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom', 
 						SD.`quantity`, SD.`memo`,
@@ -371,7 +371,17 @@ class Request_Model extends CI_Model {
 		if ($status != \Constants\REQUEST_CONST::ALL_OPTION)
 			$this->db->having("status_code", $status); 
 
-		return $this->db->count_all_results();
+		$inner_query = $this->db->get_compiled_select();
+
+		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+
+		$result = $this->db->query($query_count);
+		$row 	= $result->row();
+		$count 	= $row->rowCount;
+
+		$result->free_result();
+
+		return $count;
 	}
 
 	public function delete_stock_request_head($param)
@@ -468,9 +478,13 @@ class Request_Model extends CI_Model {
 				->group_by("SH.`id`")
 				->having("qty_delivered", 0);
 		
-		$result = $this->db->get();
+		$inner_query = $this->db->get_compiled_select();
 
-		$count = $result->num_rows();
+		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+
+		$result = $this->db->query($query_count);
+		$row 	= $result->row();
+		$count 	= $row->rowCount;
 
 		$result->free_result();
 

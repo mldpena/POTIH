@@ -26,9 +26,7 @@ class Return_Model extends CI_Model {
 		$this->_return_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
-
-		
+		$this->_current_date 		= date("Y-m-d h:i:s");		
 	}
 
 	public function get_return_details()
@@ -65,7 +63,7 @@ class Return_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product',
 						CASE
 							WHEN P.`uom` = ".\Constants\RETURN_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\RETURN_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\RETURN_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\RETURN_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom', 
 						RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
@@ -370,7 +368,12 @@ class Return_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`memo` AS 'receive_memo'
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`memo` AS 'receive_memo',
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM return_head AS H
 							LEFT JOIN return_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`

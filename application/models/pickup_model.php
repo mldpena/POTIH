@@ -22,7 +22,7 @@ class Pickup_Model extends CI_Model {
 		
 		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date('Y-m-d h:i:s');
 	}
 
 	public function get_pickup_summary_list($param)
@@ -91,7 +91,7 @@ class Pickup_Model extends CI_Model {
 			
 		$result_summary_for_today->free_result();
 
-		$result_reference_number = get_next_number('pickup_summary_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+		$result_reference_number = get_next_number('pickup_summary_head','reference_number',array('entry_date' => $this->_current_date));
 		$summary_head_id = $this->encrypt->decode($result_reference_number['id']);
 
 		$query_data = array($summary_head_id, date("Y-m-d", strtotime($this->_current_date)));
@@ -182,7 +182,12 @@ class Pickup_Model extends CI_Model {
 		$query_detail = "SELECT RD.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
 							COALESCE(ROD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', 
 							COALESCE(ROD.`memo`,'') AS 'memo', COALESCE(ROH.`customer`, '') AS 'customer', 
-							COALESCE(CONCAT('WR',RH.`reference_number`), '') AS 'reference_number'
+							COALESCE(CONCAT('WR',RH.`reference_number`), '') AS 'reference_number',
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM pickup_summary_head AS PH
 							LEFT JOIN pickup_summary_detail AS PD ON PD.`headid` = PH.`id`
 							LEFT JOIN release_head AS RH ON RH.`id` = PD.`release_head_id`

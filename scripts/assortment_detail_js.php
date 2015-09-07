@@ -153,8 +153,7 @@
 										  recentNameElementId : 'customer' } );
 
 	tableHelper.detailContent.bindAllEvents( { saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											   addInventoryChecker : false,
-											   saveEventsAfterCallback : goToPrintOut } );
+											   addInventoryChecker : false} );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{

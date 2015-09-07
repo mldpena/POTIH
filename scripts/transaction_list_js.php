@@ -112,8 +112,8 @@
 		var branch_val      = $('#branch').val();
 		var orderby_val     = $('#orderby').val();
 		var is_include_date = $('#is_include_date').is(':checked') ? true : false;
-		var date_from_val 	= moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
-		var date_to_val 	= moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var date_from_val 	= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
+		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var purchase_receive_val 	= $('.purchase-receive-transaction:checked').val() === undefined ? 0 : $('.purchase-receive-transaction:checked').val();
 		var customer_return_val 	= $('.customer-return-transaction:checked').val() === undefined ? 0 : $('.customer-return-transaction:checked').val();
 		var stock_receive_val 		= $('.stock-receive-transaction:checked').val() === undefined ? 0 : $('.stock-receive-transaction:checked').val();

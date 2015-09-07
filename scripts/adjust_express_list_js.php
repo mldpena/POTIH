@@ -240,7 +240,7 @@
 		});
 	});
 
-	function triggerSearchRequest()
+	function triggerSearchRequest(rowStart, rowEnd)
 	{
 		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
 			myjstbl.clear_table();
@@ -251,11 +251,11 @@
 		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
 		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
 
-		var dateFrom	= moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
-		var dateTo		= moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
-		var searchString = $('#search_string').val();
-		var orderBy 	= $('#order_by').val();
-		var orderType 	= $('#order_type').val();
+		var dateFrom		= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
+		var dateTo			= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
+		var searchString 	= $('#search_string').val();
+		var orderBy 		= $('#order_by').val();
+		var orderType 		= $('#order_type').val();
 
 		var filterValues = 	{ 
 								fnc 	 : 'get_adjust_express_list', 

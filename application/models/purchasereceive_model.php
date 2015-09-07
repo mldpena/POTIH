@@ -114,7 +114,7 @@ class PurchaseReceive_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description',
 						CASE
 							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom',
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
@@ -191,7 +191,7 @@ class PurchaseReceive_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', PD.`quantity`, PD.`memo`, 
 						CASE
 							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom',
 						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
@@ -406,7 +406,6 @@ class PurchaseReceive_Model extends CI_Model {
 		if (!empty($search_string)) 
 			$this->db->like("CONCAT('PR',PRH.`reference_number`,' ',PRH.`memo`)", $search_string, "both");
 
-
 		$this->db->group_by("PRH.`id`");
 
 		return $this->db->count_all_results();
@@ -524,7 +523,12 @@ class PurchaseReceive_Model extends CI_Model {
 
 		$query_detail = "SELECT D.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
 							COALESCE(PD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', 
-							D.`received_by`, D.`receive_memo`
+							D.`received_by`, D.`receive_memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM purchase_receive_head AS H
 							LEFT JOIN purchase_receive_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`

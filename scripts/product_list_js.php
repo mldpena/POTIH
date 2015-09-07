@@ -36,7 +36,7 @@
 		header_title: "Material Code",
 		edit: [spnmaterialcode],
 		disp: [spnmaterialcode],
-		td_class: "tablerow column_click column_hover tdmaterial"
+		td_class: "tablerow column_hover tdmaterial"
 	};
 
 	var spnproduct = document.createElement('span');

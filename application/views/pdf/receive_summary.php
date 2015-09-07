@@ -73,10 +73,11 @@
 		</style>
 	";
 
-	$column_width = array("60px","435px","95px","105px","400px");
+	$column_width = array("60px","405px","95px","105px","370px","60px");
 
 	while ($is_finished == FALSE) 
 	{
+		$footer_printed = FALSE;
 		$page_number++;
 		$x = $margin_left;
 		$y = $margin_top;
@@ -103,6 +104,7 @@
 				<table>
 					<tr>
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
+						<td style="width:$column_width[5];" class="tdcenter header-border">Unit</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
 						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
 						<td style="width:$column_width[3];" class="tdcenter header-border">Received By</td>
@@ -123,6 +125,7 @@ EOD;
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[0].";\" class=\"tdleft table-data\">".$detail[$i]["quantity"]."</td>
+							<td style=\"width:".$column_width[5].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["received_by"]."</td>
@@ -134,7 +137,7 @@ EOD;
 
 				$y = $pdf->GetY();
 
-				if($y >= 200)
+				if($y >= 180)
 				{
 					$product_count = $i;
 
@@ -142,13 +145,18 @@ EOD;
 						$product_count++;
 					else
 						$print_description = TRUE;
-
-					set_footer($pdf,$y);
-
-					break;
+					
+					if(!$footer_printed)
+					{
+						set_footer($pdf,$y);
+						$footer_printed = TRUE;
+					}
 				}
 			}
-
+			
+			if($footer_printed && !($i+1 >= count($detail) && !$print_description))
+				break;
+				
 			if (!empty($detail[$i]['description']))
 			{
 				$description_strings = explode("\n", $detail[$i]['description']);
@@ -161,8 +169,8 @@ EOD;
 						$style
 						<table>
 							<tr>
-								<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
-								<td colspan = \"5\" style=\"width:1035px;\" class=\"table-data\">".$detail_description."</td>
+								<td colspan = \"2\" style=\"width:120px;\" class=\"table-data\"></td>
+								<td colspan = \"4\" style=\"width:975px;\" class=\"table-data\">".$detail_description."</td>
 							</tr>
 						</table>";
 
@@ -187,16 +195,21 @@ EOD;
 							}
 							else
 							{
-								$description_count = $z;
+								$description_count = $z + 1;
 								$print_description = TRUE;
 							}
 						}
-
-						set_footer($pdf,$y);
-
-						break;
+						
+						if(!$footer_printed)
+						{
+							set_footer($pdf,$y);
+							$footer_printed = TRUE;
+						}
 					}
-
+					
+					if($footer_printed)
+						break;
+						
 					$y = $pdf->GetY();
 				}
 			}

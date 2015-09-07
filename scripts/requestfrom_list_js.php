@@ -139,8 +139,8 @@
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
 		var orde_type_val 	= $('#order_type').val();
-		var date_from_val 	= moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
-		var date_to_val 	= moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var date_from_val 	= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
+		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var from_branch_val = $('#from_branch').val();
 		var to_branch_val 	= $('#to_branch').val();
 		var status_val 		= $('#status').val();

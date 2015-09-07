@@ -74,6 +74,8 @@ $route['requestto/view/(:any)'] = 'stockrequest';
 $route['requestfrom/(:any)'] = 'stockrequest';
 $route['requestfrom/view/(:any)'] = 'stockrequest';
 
+$route['delreceive/list/(:any)'] = 'stockdelivery';
+
 $route['404_override'] = '';
 
 

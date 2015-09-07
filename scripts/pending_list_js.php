@@ -228,7 +228,7 @@
 		window.open("<?= base_url() ?>export?" + queryString);
 	});
 
-	function triggerSearchRequest()
+	function triggerSearchRequest(rowStart, rowEnd)
 	{
 		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
 			myjstbl.clear_table();
@@ -244,8 +244,8 @@
 		var subgroup_val 	= $('#subgroup').val();
 		var type_val 		= $('#type').val();
 		var material_val	= $('#material').val();
-		var datefrom_val	= moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
-		var dateto_val		= moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var datefrom_val	= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
+		var dateto_val		= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var branch_val		= $('#branch').val();
 		var orderby_val		= $('#orderby').val();
 		var status_val		= $('#status').val();

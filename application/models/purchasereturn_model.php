@@ -65,7 +65,7 @@ class PurchaseReturn_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', 
 						CASE
 							WHEN P.`uom` = ".\Constants\PURCHASE_RETURN_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\PURCHASE_RETURN_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\PURCHASE_RETURN_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\PURCHASE_RETURN_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom',
 						PD.`quantity`, PD.`memo`, PD.`description`, P.`type`
@@ -372,7 +372,12 @@ class PurchaseReturn_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom'
 							FROM purchase_return_head AS H
 							LEFT JOIN purchase_return_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`

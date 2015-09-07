@@ -99,7 +99,7 @@ class Product_Model extends CI_Model {
 		return $result;
 	}
 
-	public function delete_product_by_id($product_fields, $product_id)
+	public function update_product_by_id($product_fields, $product_id)
 	{
 		$this->db->where("`id`", $product_id);
 
@@ -289,7 +289,7 @@ class Product_Model extends CI_Model {
 		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`, 
 							CASE
 								WHEN P.`uom` = 1 THEN 'PCS'
-								WHEN P.`uom` = 2 THEN 'KG'
+								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
 							END AS 'uom'");
 

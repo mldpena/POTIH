@@ -506,7 +506,7 @@
 				if (response.error != '') 
 					build_message_box('messagebox_1',response.error,'danger');
 				else
-					goToPrintOut();
+					window.location = "<?= base_url() ?>release/list";
 
 				flag = 0;
 			}       

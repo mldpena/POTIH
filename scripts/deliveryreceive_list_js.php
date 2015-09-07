@@ -1,5 +1,6 @@
 <script type="text/javascript">
 	var token = '<?= $token ?>';
+	var alertFromNotication = Boolean('<?= $this->uri->segment(3) ?>');
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -105,6 +106,12 @@
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 	bind_asc_desc('order_type');
 
+	if (alertFromNotication)
+	{
+		$('#date_from').val('');
+		$('#status').val(3);
+	}
+
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'delreceive',
@@ -131,8 +138,8 @@
 		var search_val 		= $('#search_string').val();
 		var order_val 		= $('#order_by').val();
 		var orde_type_val 	= $('#order_type').val();
-		var date_from_val 	= moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
-		var date_to_val 	= moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var date_from_val 	= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
+		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var from_branch_val = $('#from_branch').val();
 		var to_branch_val 	= $('#to_branch').val();
 		var status_val 		= $('#status').val();

@@ -73,7 +73,7 @@ class Delivery_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', 
 						CASE
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom', 
 						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
@@ -409,7 +409,17 @@ class Delivery_Model extends CI_Model {
 		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION)
 			$this->db->having("status_code", $status);
 
-		return $this->db->count_all_results();
+		$inner_query = $this->db->get_compiled_select();
+
+		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+
+		$result = $this->db->query($query_count);
+		$row 	= $result->row();
+		$count 	= $row->rowCount;
+
+		$result->free_result();
+
+		return $count;
 	}
 
 	public function delete_stock_delivery_head($param)
@@ -495,7 +505,7 @@ class Delivery_Model extends CI_Model {
 						->where("SD.`is_for_branch`", 1);
 
 				if (($to_branch) && $to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
-					$this->db->where("SH.`to_branchid`", $to_branch);
+					$this->db->where("SH.`to_branchid`", (int)$to_branch);
 
 				break;
 			
@@ -533,7 +543,7 @@ class Delivery_Model extends CI_Model {
 				->order_by($order_field, $order_type);
 
 		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION)
-			$this->db->having("status_code", $status); 
+			$this->db->having("status_code", (int)$status); 
 
 		if ($with_limit) 
 		{
@@ -597,7 +607,7 @@ class Delivery_Model extends CI_Model {
 						->where("SD.`is_for_branch`", 1);
 
 				if (($to_branch) && $to_branch != \Constants\DELIVERY_CONST::ALL_OPTION) 
-					$this->db->where("SH.`to_branchid`", $to_branch);
+					$this->db->where("SH.`to_branchid`", (int)$to_branch);
 
 				break;
 			
@@ -623,9 +633,19 @@ class Delivery_Model extends CI_Model {
 		$this->db->group_by("SH.`id`");
 
 		if ($status != \Constants\DELIVERY_CONST::ALL_OPTION)
-			$this->db->having("status_code", $status); 
+			$this->db->having("status_code", (int)$status); 
 
-		return $this->db->count_all_results();
+		$inner_query = $this->db->get_compiled_select();
+
+		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+
+		$result = $this->db->query($query_count);
+		$row 	= $result->row();
+		$count 	= $row->rowCount;
+
+		$result->free_result();
+
+		return $count;
 	}
 
 	public function get_receive_details($receive_type)
@@ -690,7 +710,7 @@ class Delivery_Model extends CI_Model {
 						COALESCE(P.`description`,'') AS 'product', 
 						CASE
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KG'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
 						END AS 'uom', 
 						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
@@ -840,7 +860,13 @@ class Delivery_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`recv_quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`receive_memo`
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`received_by`, D.`receive_memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom',
+							D.`invoice`
 							FROM stock_delivery_head AS H
 							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
@@ -913,7 +939,13 @@ class Delivery_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom',
+							D.`invoice`
 							FROM stock_delivery_head AS H
 							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
@@ -968,7 +1000,13 @@ class Delivery_Model extends CI_Model {
 		$result_head->free_result();
 
 		$query_detail = "SELECT D.`recv_quantity` AS 'quantity', COALESCE(P.`description`,'-') AS 'product', 
-							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`
+							D.`description`, COALESCE(P.`material_code`,'-') AS 'item_code', D.`memo`,
+							CASE
+								WHEN P.`uom` = 1 THEN 'PCS'
+								WHEN P.`uom` = 2 THEN 'KGS'
+								WHEN P.`uom` = 3 THEN 'ROLL'
+							END AS 'uom',
+							D.`invoice`
 							FROM stock_delivery_head AS H
 							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
@@ -1256,9 +1294,13 @@ class Delivery_Model extends CI_Model {
 				->group_by("SH.`id`")
 				->having("qty_delivered", 0);
 		
-		$result = $this->db->get();
+		$inner_query = $this->db->get_compiled_select();
 
-		$count = $result->num_rows();
+		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+
+		$result = $this->db->query($query_count);
+		$row 	= $result->row();
+		$count 	= $row->rowCount;
 
 		$result->free_result();
 

@@ -76,10 +76,11 @@
 		</style>
 	";
 
-	$column_width = array("55px","330px","95px","220px");
+	$column_width = array("55px","300px","95px","120px","60px","70px");
 
 	while ($is_finished == FALSE) 
 	{
+		$footer_printed = FALSE;
 		$page_number++;
 
 		$x = $margin_left;
@@ -116,9 +117,11 @@
 				<table>
 					<tr>
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
+						<td style="width:$column_width[4];" class="tdcenter header-border">Unit</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
 						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
 						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
+						<td style="width:$column_width[5];" class="tdcenter header-border">Invoice</td>
 					</tr>
 				</table>
 EOD;
@@ -135,43 +138,37 @@ EOD;
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
+							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdleft table-data\">".$detail[$i]["memo"]."</td>
+							<td style=\"width:".$column_width[5].";\" class=\"tdcenter table-data\">".$detail[$i]["invoice"]."</td>
 						</tr>
 					</table>";
 				$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
 
 				$y = $pdf->GetY();
 
-				if($y+40 >= $half_page_y && $page_number % 2 != 0 )
+				if(($y+40 >= $half_page_y && $page_number % 2 != 0) || ($y+35 >= $whole_page_y && $page_number % 2 == 0 ))
 				{
-		            $product_count = $i;
+					$product_count = $i;
 
-		            if (empty($detail[$i]['description'])) 
-		            	$product_count++;
-		            else
-		            	$print_description = TRUE;
-
-		           	set_footer($pdf,$y);
-
-		            break;
-		        }
-		        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
-		        {
-		            $product_count = $i;
-
-		            if (empty($detail[$i]['description'])) 
-		            	$product_count++;
-		            else
-		            	$print_description = TRUE;
-
-		           	set_footer($pdf,$y);
-
-		            break;
-		        }
+					if (empty($detail[$i]['description'])) 
+						$product_count++;
+					else
+						$print_description = TRUE;
+				
+					if(!$footer_printed)
+					{
+						set_footer($pdf,$y);
+						$footer_printed = TRUE;
+					} 
+				}
 			}
-
+			
+			if($footer_printed && !($i+1 >= count($detail) && !$print_description))
+				break;
+				
 			if (!empty($detail[$i]['description']))
 			{
 				$description_strings = explode("\n", $detail[$i]['description']);
@@ -184,8 +181,8 @@ EOD;
 						$style
 						<table>
 							<tr>
-								<td style=\"width:".$column_width[0].";\" class=\"table-data\"></td>
-								<td colspan = \"3\" style=\"width:645px;\" class=\"table-data\">".$detail_description."</td>
+								<td colspan = \"2\" style=\"width:115px;\" class=\"table-data\"></td>
+								<td colspan = \"4\" style=\"width:585px;\" class=\"table-data\">".$detail_description."</td>
 							</tr>
 						</table>";
 
@@ -195,49 +192,37 @@ EOD;
 
 					$print_description = FALSE;
 
-					if($y+40 >= $half_page_y && $page_number % 2 != 0 )
+					if(($y+40 >= $half_page_y && $page_number % 2 != 0) || ($y+35 >= $whole_page_y && $page_number % 2 == 0 ))
 					{
-						$product_count = $i;
+						if(!$footer_printed)
+						{
+							set_footer($pdf,$y);
+							$footer_printed = TRUE;
+						}
+					}
 
-						if (($z + 1) == count($description_strings))
-						{
-							$description_count = 0;
-							$product_count++;
-						}
-						else
-						{
-							$description_count = $z;
-							$print_description = TRUE;
-						}
+					$product_count = $i;
 
-						set_footer($pdf,$y);
-			            break;
-			        }
-			        else if($y+35 >= $whole_page_y && $page_number % 2 == 0 )
-			        {
-			            $product_count = $i;
-
-						if (($z + 1) == count($description_strings))
-						{
-							$description_count = 0;
-							$product_count++;
-						}
-						else
-						{
-							$description_count = $z;
-							$print_description = TRUE;
-						}
-						
-			            set_footer($pdf,$y);
-			            break;
-			        }
+					if (($z + 1) == count($description_strings))
+					{
+						$description_count = 0;
+						$product_count++;
+					}
+					else
+					{
+						$description_count = $z + 1;
+						$print_description = TRUE;
+					}
 
 					$y = $pdf->GetY();
+					
+					if($footer_printed)
+						break;
 				}
 			}
 
 			if($i+1 >= count($detail) && !$print_description)
-	            $is_finished = TRUE;
+				$is_finished = TRUE;
 		}
 	}
 

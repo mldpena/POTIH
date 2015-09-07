@@ -177,8 +177,7 @@
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
-												addInventoryChecker : true,
-												saveEventsAfterCallback : goToPrintOut } );
+												addInventoryChecker : true} );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -240,7 +239,7 @@
 
 				var isHideTransfer = false;
 
-				if (response.delivery_type == DeliveryType.Transfer) 
+				if (response.delivery_type != DeliveryType.Both) 
 					isHideTransfer = true;
 				
 				hideTransferAndReceived(isHideTransfer);
@@ -363,7 +362,7 @@
 		var invoice 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'invoice'));
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
-		var description 	= tableHelper.contentProvider.getData(rowIndex,'product',4);
+		var description 	= (tableHelper.contentProvider.getData(rowIndex,'product',4));
 		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
 		if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && memo == '') || (type_val == DeliveryType.Sales && memo == '')) 
