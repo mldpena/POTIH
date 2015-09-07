@@ -205,7 +205,7 @@ EOD;
 						$print_description = TRUE;
 					}
 					
-					if($footer_printed)
+					if($footer_printed && !($i+1 >= count($detail) && !$print_description))
 						break;
 						
 					$y = $pdf->GetY();
