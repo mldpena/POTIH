@@ -153,7 +153,7 @@ class Product_Model extends CI_Model {
 		if (!empty($dateto))
 			$this->db->where("P.`date_created` <=", $dateto.' 23:59:59');
 
-		if ($invstat != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		if ($invstat != \Constants\PRODUCT_CONST::ALL_OPTION && $branch != \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			switch ($invstat) {
 				case \Constants\PRODUCT_CONST::POSITIVE_INV:
@@ -202,6 +202,27 @@ class Product_Model extends CI_Model {
 
 		$this->db->order_by($order_field,"DESC");
 
+		if ($invstat != \Constants\PRODUCT_CONST::ALL_OPTION && $branch == \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			$comparison_operator = '';
+
+			switch ($invstat) {
+				case \Constants\PRODUCT_CONST::POSITIVE_INV:
+					$comparison_operator = '>';
+					break;
+				
+				case \Constants\PRODUCT_CONST::NEGATIVE_INV:
+					$comparison_operator = '<';
+					break;
+
+				case \Constants\PRODUCT_CONST::ZERO_INV:
+					$comparison_operator = '=';
+					break;
+			}
+
+			$this->db->having("inventory $comparison_operator",0);
+		}
+
 		if ($with_limit) 
 		{
 			$limit = $row_end - $row_start + 1;
@@ -221,7 +242,12 @@ class Product_Model extends CI_Model {
 		$product_branch_inventory_condition = "";
 
 		if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
+		{
 			$product_branch_inventory_condition = " AND PBI.`branch_id` = ".$this->db->escape($branch);
+			$this->db->select("COALESCE(PBI.`inventory`) AS 'inventory'");
+		} 
+		else
+			$this->db->select("COALESCE(SUM(PBI.`inventory`)) AS 'inventory'");
 
 		$this->db->from("product AS P")
 				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` $product_branch_inventory_condition", "left")
@@ -245,7 +271,7 @@ class Product_Model extends CI_Model {
 		if (!empty($dateto))
 			$this->db->where("P.`date_created` <=", $dateto.' 23:59:59');
 
-		if ($invstat != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		if ($invstat != \Constants\PRODUCT_CONST::ALL_OPTION && $branch != \Constants\PRODUCT_CONST::ALL_OPTION) 
 		{
 			switch ($invstat) {
 				case \Constants\PRODUCT_CONST::POSITIVE_INV:
@@ -281,7 +307,38 @@ class Product_Model extends CI_Model {
 		if ($branch == \Constants\PRODUCT_CONST::ALL_OPTION)
 			$this->db->group_by("P.`id`");
 
-		return $this->db->count_all_results();
+		if ($invstat != \Constants\PRODUCT_CONST::ALL_OPTION && $branch == \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			$comparison_operator = '';
+
+			switch ($invstat) {
+				case \Constants\PRODUCT_CONST::POSITIVE_INV:
+					$comparison_operator = '>';
+					break;
+				
+				case \Constants\PRODUCT_CONST::NEGATIVE_INV:
+					$comparison_operator = '<';
+					break;
+
+				case \Constants\PRODUCT_CONST::ZERO_INV:
+					$comparison_operator = '=';
+					break;
+			}
+
+			$this->db->having("inventory $comparison_operator",0);
+		}
+
+		$inner_query = $this->db->get_compiled_select();
+
+		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+
+		$result = $this->db->query($query_count);
+		$row 	= $result->row();
+		$count 	= $row->rowCount;
+
+		$result->free_result();
+
+		return $count;
 	}
 
 	public function get_product_by_term($term, $branch_id, $with_inventory)
