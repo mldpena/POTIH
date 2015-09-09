@@ -243,7 +243,7 @@
 	{
 		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 	= $('#memo').val();
-		var customer_name_val = $('#customer').val();
+		var customer_name_val = $.sanitize($('#customer').val());
 
 		if (customer_name_val == '') 
 		{
