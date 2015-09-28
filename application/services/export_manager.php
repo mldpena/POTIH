@@ -34,7 +34,7 @@ class Export_Manager
 				$response['data'][$i][] = $row->type;
 				$response['data'][$i][] = $row->material_type;
 				$response['data'][$i][] = $row->subgroup;
-				$response['data'][$i][] = number_format($row->inventory,0);
+				$response['data'][$i][] = $row->inventory;
 				$i++;
 			}
 		}
@@ -354,7 +354,7 @@ class Export_Manager
 				$response['data'][$i][] = $row->subgroup;
 				$response['data'][$i][] = $row->min_inv;
 				$response['data'][$i][] = $row->max_inv;
-				$response['data'][$i][] = number_format($row->inventory,0);
+				$response['data'][$i][] = $row->inventory;
 				$response['data'][$i][] = $row->status;
 				$i++;
 			}

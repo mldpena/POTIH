@@ -578,8 +578,8 @@ var TableHelper = function(tableOptions,options) {
 														value : qty,
 														fieldName : 'Quantity',
 														required : true,
-														rules : 'numeric'
-														//isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
+														rules : 'numeric',
+														isNotEqual : { value : 0, errorMessage : 'Quantity must be greater than 0!'}
 													}
 													]);
 

@@ -220,7 +220,7 @@ class Product_Model extends CI_Model {
 					break;
 			}
 
-			$this->db->having("inventory $comparison_operator",0);
+			$this->db->having("inventory $comparison_operator", 0);
 		}
 
 		if ($with_limit) 

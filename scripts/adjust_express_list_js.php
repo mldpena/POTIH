@@ -163,6 +163,7 @@
 
 	tableHelper.detailContent.bindUpdateEvents(getRowDetailsBeforeSubmit,false,onAfterAdjustInsert);
 	tableHelper.detailContent.bindAutoComplete(onAfterProductSelect);
+	tableHelper.headContent.bindSearchEvent(triggerSearchRequest);
 
 	bind_asc_desc('order_type');
     
@@ -171,16 +172,6 @@
     $('.imgedit').live('click',function(){
         var rowIndex = $(this).parent().parent().index();
         myjstbl.edit_row(rowIndex);
-    });
-
-    $('#search').click(triggerSearchRequest);
-
-    $('#search_string').keypress(function(e){
-    	if (e.keyCode == 13) 
-    	{
-    		e.preventDefault();
-    		refreshTable();
-    	}
     });
 
     $('.imgdel').live('click',function(){
@@ -240,7 +231,7 @@
 		});
 	});
 
-	function triggerSearchRequest(rowStart, rowEnd)
+    function triggerSearchRequest(rowStart, rowEnd)
 	{
 		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
 			myjstbl.clear_table();
