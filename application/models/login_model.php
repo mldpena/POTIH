@@ -2,70 +2,98 @@
 
 class Login_Model extends CI_Model {
 
-	// public function __construct() {
-	// 	$this->load->library('encrypt');
-	// 	$this->load->library('myfunction');
-	// 	parent::__construct();
-	// }
+	/**
+	 * Load constants
+	 */
+	public function __construct() {
+		parent::__construct();
 
-	// public function checkUserCredential($param)
-	// {
-	// 	$data['error'] = '';
-	// 	$pass = $this->myfunction->encryptDataMD5($param['pass']);
+		$this->load->constant('login_const');
+	}
 
-	// 	$query = " SELECT `id`, `username`, `password`, `fullname`
-	// 					FROM `user` WHERE `show` = 1 AND `username` = ? AND `password` = ?";
+	/**
+	 * Check user name and password in database for verification
+	 * @param  array $param
+	 * @return result set 
+	 */
+	public function check_user_credential($username, $password)
+	{
+		$this->db->select("`id`,`is_active`, `is_first_login`, `password`, `full_name`, `username`")
+				->from("`user`")
+				->where("`username`", $username)
+				->where("`password`", $password);
 
-	// 	$result = $this->db->query($query, array($param['user'], $pass));
+		$result = $this->db->get();
 
-	// 	if ($result->num_rows() != 1) {
-	// 		$data['error'] = "Invalid Username / Password!";
-	// 	}
-	// 	else
-	// 	{
-	// 		$row = $result->row();
-	// 		$data['userid'] = $this->encrypt->encode($row->id);
-	// 	}
+		return $result;
+	}
 
-	// 	$result->free_result();
+	/**
+	 * Get branch list of the verified user
+	 * @param  int $user_id 
+	 * @return result set 
+	 */
+	public function get_user_branch_list($user_id)
+	{
+		$this->db->select("U.`user_branch_id` AS 'branch_id', B.`name` AS 'branch_name'")
+				->from("`user_branch` AS U, `branch` AS B FORCE INDEX(idx_id_show)")
+				->where("B.`is_show`", \Constants\LOGIN_CONST::ACTIVE)
+				->where("B.id = U.`user_branch_id`")
+				->where("U.`user_id`", (int)$user_id);
 
-	// 	return $data;
-	// }
+		$result = $this->db->get();
 
-	// public function finalVerifyUser($param)
-	// {
-	// 	$data['error'] = '';
-	// 	$pass = $this->myfunction->encryptDataMD5($param['pass']);
+		return $result;
+	}
 
-	// 	$query = "SELECT `id`, `username`, `password`, `fullname`
-	// 				FROM `user` AS U 
-	// 				WHERE U.`show` = 1 AND U.`username` = ? AND U.`password` = ?";
+	/**
+	 * Get permission codes of the verified user
+	 * @param  $param [array]
+	 * @return result set 
+	 */
+	
+	public function get_permission_list_by_userid($user_id)
+	{
+		$this->db->select("`permission_code`")
+				->from("`user_permission`")
+				->where("`user_id`", (int)$user_id);
 
-	// 	$result = $this->db->query($query, array($param['user'], $pass));
+		$result = $this->db->get();
 
-	// 	if ($result->num_rows() != 1) {
-	// 		$data['error'] = "Invalid Username / Password!";
-	// 	}
-	// 	else
-	// 	{
-	// 		$row 				= $result->row();
-	// 		$permissions 		= array();
-	// 		$query 				= "SELECT `permissioncode` FROM userbranchpermission WHERE `userid` = ? AND `branchid` = ?";
-	// 		$result_permission 	= $this->db->query($query, array($row->id,$param['branchid']));
+		return $result;
+	}
 
-	// 		foreach ($result_permission->result() as $row_p) {
-	// 			array_push($permissions,$row_p->permissioncode);
-	// 		}
+	/**
+	 * Check if the user data set in the cookies exists in DB
+	 * @param  string $username
+	 * @param  string $fullname 
+	 * @param  int $user_id 
+	 * @return result set
+	 */
+	public function check_session_user_credential_exists($username, $fullname, $user_id)
+	{
+		$this->db->select("`id`, `username`, `password`, `full_name`")
+				->from("`user`")
+				->where("`is_show`", \Constants\LOGIN_CONST::ACTIVE)
+				->where("`username`", $username)
+				->where("`full_name`", $fullname)
+				->where("`id`", (int)$user_id);
 
-	// 		$this->myfunction->setCookie('username',$this->encrypt->encode($row->username));
-	// 		$this->myfunction->setCookie('fullname',$this->encrypt->encode($row->fullname));
-	// 		$this->myfunction->setCookie('temp',$this->encrypt->encode($row->id));
-	// 		$this->myfunction->setCookie('branch',$this->encrypt->encode($param['branchid']));
-	// 		$this->myfunction->setCookie('permissions',json_encode($permissions));
-	// 	}
+		$result = $this->db->get();
 
-	// 	$result->free_result();
+		return $result;
+	}
 
-	// 	return $data;
-	// }
-}
+	/**
+	 * Update first login status upon first login
+	 * @param  int $id
+	 */
+	public function update_first_login_status($id)
+	{
+		$update_fields = array("is_first_login" => \Constants\LOGIN_CONST::ACTIVE);
+
+		$this->db->where('id', (int)$id);
+		$this->db->update("`user`", $update_fields);
+	}
+
+}	

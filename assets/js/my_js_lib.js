@@ -1,3 +1,4 @@
+
 // JavaScript Document
 
 
@@ -90,9 +91,14 @@ function my_autocomplete(sel, url, func)
 	
 }
 var request;
-function my_autocomplete_add(sel, url_ac, options ){
+function my_autocomplete_add(token_val,sel, url_ac, options, customFunctionName ){
 	//fnc_callback(this,label, value, ret_datas, error)
 	//error = "not selected" or customized error
+	var fnc_val = 'autocomplete_product';
+
+	if (customFunctionName) 
+		fnc_val = customFunctionName;
+
 	var enable_add = typeof options.enable_add !== 'undefined' ? options.enable_add : false;
 	var adding_style = typeof options.adding_style !== 'undefined' ? options.adding_style : "immediate";
 	var adding_popup_id = typeof options.adding_popup_id !== 'undefined' ? options.adding_popup_id : "";
@@ -101,19 +107,21 @@ function my_autocomplete_add(sel, url_ac, options ){
 	var fnc_callback = typeof options.fnc_callback !== 'undefined' ? options.fnc_callback : "";
 	var fnc_render = typeof options.fnc_render !== 'undefined' ? options.fnc_render : "";
 
-	$(sel).unbind( "autocomplete" );
 	$(sel).live("focus", function (event) {
 		$(this).autocomplete({
             autoFocus: true,
             delay: 0,
 			source: function(req, add){
 
-				var arr = 	{ fnc : 'autocomplete', term : req.term }
-				if (request) { request.abort(); };
+				var arr = { fnc : fnc_val, term : req.term }
+
+				if (request) 
+					request.abort();
+
 				request = $.ajax({
 		            type: "POST",
 		            dataType : 'JSON',
-		            data: 'data=' + JSON.stringify(arr),
+		            data: 'data=' + JSON.stringify(arr) + token_val,
 		            success: function(data) {
 		            	var suggestions = [];
 						$.each(data, function(i, val){ suggestions.push(val); });
@@ -647,7 +655,7 @@ function js_fire_tab_when_entered(evt, elem) {
 }
 
 function next_focus(elem) {
-    var fields = document.querySelectorAll('button, input, textarea, select');
+    var fields = document.querySelectorAll('#' + this.tab.id + ' button,#' + this.tab.id + ' input,#' + this.tab.id + ' textarea,#' + this.tab.id + ' select');
     var fields = Array.prototype.slice.call( fields );
     
     var index = fields.indexOf(elem); 

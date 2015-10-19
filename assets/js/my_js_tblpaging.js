@@ -238,55 +238,59 @@ function my_js_tblpaging(table_id_var){
 			
 		}
 	});
-	var oldpaging="";
-$("#"+this.txtpagenumber_id).live("focus",function(){
 
-oldpaging=$(this).val();
+	var oldpaging ="";
+	var oldRowPerPage ="";
 
-});
-$("#"+this.txtpagenumber_id).live("change",function(){
-var page = $.trim($("#"+this_var.txtpagenumber_id).val());
-			var re = $.isNumeric(Number(page));
+	$("#"+this.txtpagenumber_id).live("focus",function(){
+		oldpaging=$(this).val();
+	});
+
+	$("#"+this.txtpagenumber_id).live("change",function(){
+		var page = $.trim($("#"+this_var.txtpagenumber_id).val());
+		var re = $.isNumeric(Number(page));
+		
+		if(page>(Number($("#"+this_var.divlastpage_id).html()))|| page<=0 || page == "" || !re ){
 			
-			if(page>(Number($("#"+this_var.divlastpage_id).html()))|| page<=0 || page == "" || !re ){
-				
-				this_var.page_number = Number(oldpaging);
-					this_var.assignScroll_val(); 
-				this_var.hideRows();			
-				this_var.filterPage();
-				this_var.useScroll_val();
-				this.value=Number(oldpaging);
+			this_var.page_number = Number(oldpaging);
+			this_var.assignScroll_val(); 
+			this_var.hideRows();			
+			this_var.filterPage();
+			this_var.useScroll_val();
+			this.value=Number(oldpaging);
+		}
+		else{
+			
+			//if in same range, don't refresh_page_filter
+			var cur_range = this_var.get_row_range(this_var.temp_var_for_page); 
+			var checked_range = this_var.get_row_range(Number($("#"+this_var.txtpagenumber_id).val())); 
+			
+			if(cur_range[0] != checked_range[0] || cur_range[1] != checked_range[1]){
+				if(this_var.isOldPaging){
+					this_var.refresh_filter_page_caller(checked_range[0],checked_range[1]);
+				}
+			}
+			
+			if(this_var.isOldPaging){
+				this_var.page_number = (page%Math.ceil(this_var.mysql_interval/this_var.filter_number) == 0)?
+								Math.ceil(this_var.mysql_interval/this_var.filter_number):
+								page%Math.ceil(this_var.mysql_interval/this_var.filter_number);
 			}
 			else{
-				
-				//if in same range, don't refresh_page_filter
-				var cur_range = this_var.get_row_range(this_var.temp_var_for_page); 
-				var checked_range = this_var.get_row_range(Number($("#"+this_var.txtpagenumber_id).val())); 
-				
-				if(cur_range[0] != checked_range[0] || cur_range[1] != checked_range[1]){
-					if(this_var.isOldPaging){
-						this_var.refresh_filter_page_caller(checked_range[0],checked_range[1]);
-					}
-				}
-				
-				if(this_var.isOldPaging){
-					this_var.page_number = (page%Math.ceil(this_var.mysql_interval/this_var.filter_number) == 0)?
-									Math.ceil(this_var.mysql_interval/this_var.filter_number):
-									page%Math.ceil(this_var.mysql_interval/this_var.filter_number);
-				}
-				else{
-					this_var.page_number = $(this).val();
-				}
-				this_var.assignScroll_val(); 
-				this_var.hideRows();			
-				this_var.filterPage();
-				this_var.useScroll_val();
-				this_var.temp_var_for_page = Number($("#"+this_var.txtpagenumber_id).val());
+				this_var.page_number = $(this).val();
 			}
-		
+			this_var.assignScroll_val(); 
+			this_var.hideRows();			
+			this_var.filterPage();
+			this_var.useScroll_val();
+			this_var.temp_var_for_page = Number($("#"+this_var.txtpagenumber_id).val());
+		}
+	});
+	
+	$("#"+this.txtfilternumber_id).live("focus",function(){
+		oldRowPerPage = $(this).val();
+	});
 
-
-});
 	$("#"+this.txtfilternumber_id).live("keypress",function(e){
 	
 		if(e.keyCode == 13){
@@ -312,6 +316,27 @@ var page = $.trim($("#"+this_var.txtpagenumber_id).val());
 		}
 	});
 	
+	$("#"+this.txtfilternumber_id).live("change",function(){
+		var row = $.trim($("#"+this_var.txtfilternumber_id).val());
+		var re = $.isNumeric(Number(row));
+		
+		if((row<=0) || (!re || row == "")){
+			row = oldRowPerPage;
+			this.value=Number(oldRowPerPage);
+		}
+
+		this_var.filter_number = Number(row);
+		if(this_var.isOldPaging){
+			this_var.mysql_interval = this_var.base_mysql_interval;
+			while(this_var.mysql_interval%page!=0){
+				this_var.mysql_interval++;
+			}
+			//var range = this_var.get_row_range(1);
+			this_var.refresh_filter_page_caller();//range[0],range[1]
+		}
+		this_var.resetPageFilter();	
+	});
+
 }
 
 function set_mysql_interval_func(val){

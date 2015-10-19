@@ -39,6 +39,46 @@
 */
 
 $route['default_controller'] = "login";
+
+$route['return/(:any)'] = 'productreturn';
+$route['return/view/(:any)'] = 'productreturn';
+
+$route['purchase/(:any)'] = 'purchaseorder';
+$route['purchase/view/(:any)'] = 'purchaseorder';
+
+
+$route['poreceive/(:any)'] = 'purchasereceive';
+$route['poreceive/view/(:any)'] = 'purchasereceive';
+
+$route['purchaseret/(:any)'] = 'purchasereturn';
+$route['purchaseret/view/(:any)'] = 'purchasereturn';
+
+$route['delivery/(:any)'] = 'stockdelivery';
+$route['delivery/view/(:any)'] = 'stockdelivery';
+
+$route['delreceive/(:any)'] = 'stockdelivery';
+$route['delreceive/view/(:any)'] = 'stockdelivery';
+
+$route['custreceive/(:any)'] = 'stockdelivery';
+$route['custreceive/view/(:any)'] = 'stockdelivery';
+
+$route['adjust/(:any)'] = 'inventoryadjust';
+$route['pending/(:any)'] = 'inventoryadjust';
+
+$route['assort/(:any)'] = 'assortment';
+$route['assort/view/(:any)'] = 'assortment';
+
+$route['requestto/(:any)'] = 'stockrequest';
+$route['requestto/view/(:any)'] = 'stockrequest';
+
+$route['requestfrom/(:any)'] = 'stockrequest';
+$route['requestfrom/view/(:any)'] = 'stockrequest';
+
+//For notification
+$route['delreceive/list/(:any)'] = 'stockdelivery';
+$route['requestfrom/list/(:any)'] = 'stockrequest';
+$route['pending/list/(:any)'] = 'inventoryadjust';
+
 $route['404_override'] = '';
 
 

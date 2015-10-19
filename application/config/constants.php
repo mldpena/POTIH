@@ -37,13 +37,17 @@ define('FOPEN_WRITE_CREATE_STRICT',				'xb');
 define('FOPEN_READ_WRITE_CREATE_STRICT',		'x+b');
 
 define('SCRIPTS','scripts/');
-define('SERVICES','scripts/');
+define('SERVICES',APPPATH.'services/');
 define('CSS','assets/css/');
 define('FONTS','assets/fonts/');
 define('IMG','assets/img/');
 define('JS','assets/js/');
 define('BOWER','assets/bower_components/');
+define('CONSTANTS',APPPATH.'constants/');
 
+/* ENCRYPTION AND DECRYPTION*/
+define('SALT', 'T!S!D!T_33_HELLO_WORLD');
+define('KEY', 'TSDT_THE_BEST');
 
 /* End of file constants.php */
 /* Location: ./application/config/constants.php */

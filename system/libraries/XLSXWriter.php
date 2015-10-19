@@ -5,7 +5,7 @@
 
 //if (!class_exists('ZipArchive')) { throw new Exception('ZipArchive not found'); }
 
-class XLSXWriter
+class CI_XLSXWriter
 {
 	//------------------------------------------------------------------
 	//http://office.microsoft.com/en-us/excel-help/excel-specifications-and-limits-HP010073849.aspx
@@ -166,6 +166,7 @@ class XLSXWriter
 		$ci->zip->add_data("[Content_Types].xml"     , self::buildContentTypesXML() );
 		$ci->zip->add_dir("xl/_rels");
 		$ci->zip->add_data("xl/_rels/workbook.xml.rels", self::buildWorkbookRelsXML() );
+		
 		if ($type == 0) {
 			$ci->zip->download($this->filename,'excel');
 		}else{
@@ -194,7 +195,7 @@ class XLSXWriter
 		);
 		$sheet = &$this->sheets[$sheet_name];
 		$tabselected = count($this->sheets) == 1 ? 'true' : 'false';//only first sheet is selected
-		$max_cell=XLSXWriter::xlsCell(self::EXCEL_2007_MAX_ROW, self::EXCEL_2007_MAX_COL);//XFE1048577
+		$max_cell=CI_XLSXWriter::xlsCell(self::EXCEL_2007_MAX_ROW, self::EXCEL_2007_MAX_COL);//XFE1048577
 		$sheet->file_writer->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>' . "\n");
 		$sheet->file_writer->write('<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">');
 		$sheet->file_writer->write(  '<sheetPr filterMode="false">');
