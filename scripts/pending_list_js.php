@@ -1,6 +1,7 @@
 <script type="text/javascript">
 	var flag = 0;
 	var token = '<?= $token ?>';
+	var alertFromNotication = Boolean('<?= $this->uri->segment(3) ?>');
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -157,6 +158,9 @@
 	$('#date_from, #date_to').datepicker();
     $('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
     $('#date_from, #date_to').datepicker("setDate", new Date());
+
+    if (alertFromNotication)
+		$('#date_from').val('');
 
     var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 

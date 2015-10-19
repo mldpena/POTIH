@@ -47,14 +47,14 @@ $(function(){
 																	notificationSubject : 'New Pending Inventory Adjustment',
 																	notificationMessage : 'You have ({0}) new pending inventory adjust!',
 																	notificationIcon 	: 'pendinginventoryadjust-new.png',
-																	notificationLink 	: 'pending/list'
+																	notificationLink 	: 'pending/list/1'
 																},
 																{
 																	notificationSection : 'itemRequest',
 																	notificationSubject : 'New Item Request',
 																	notificationMessage : 'You have ({0}) requested by other branches!',
 																	notificationIcon 	: 'itemreceive-new.png',
-																	notificationLink 	: 'requestfrom/list'
+																	notificationLink 	: 'requestfrom/list/1'
 																},
 																{
 																	notificationSection : 'itemReceive',
