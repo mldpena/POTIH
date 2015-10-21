@@ -348,7 +348,7 @@ class Adjust_Model extends CI_Model {
 							IA.`old_inventory`, IA.`new_inventory` AS 'requested_new_inventory',
 							DATE(IA.`date_created`) AS 'date_created', COALESCE(B.`name`,'') AS 'from_branch'")
 				->from("inventory_adjust AS IA")
-				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "inner")
 				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = IA.`branch_id`", "left")
 				->join("branch AS B", "B.`id` = IA.`branch_id` AND B.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
 				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
