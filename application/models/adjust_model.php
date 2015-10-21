@@ -46,7 +46,7 @@ class Adjust_Model extends CI_Model {
 				->join("material_type AS M", "M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
 				->join("subgroup AS S", "S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
 				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = ".$this->_current_branch_id, "left")
-				->join("inventory_adjust AS IA", "IA.`product_id` = P.`id` AND IA.`branch_id` = ".$this->_current_branch_id." AND IA.`status` = ".\Constants\ADJUST_CONST::PENDING, "left")
+				->join("inventory_adjust AS IA", "IA.`product_id` = P.`id` AND IA.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE." AND IA.`branch_id` = ".$this->_current_branch_id." AND IA.`status` = ".\Constants\ADJUST_CONST::PENDING, "left")
 				->where("P.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
 
 		if (!empty($code)) 
@@ -81,6 +81,27 @@ class Adjust_Model extends CI_Model {
 			}
 
 			$this->db->where("P.`type`",$type);
+		}
+
+		if ($invstat != \Constants\ADJUST_CONST::ALL_OPTION) 
+		{
+			$comparison_operator = '';
+
+			switch ($invstat) {
+				case \Constants\ADJUST_CONST::POSITIVE_INV:
+					$comparison_operator = '>';
+					break;
+				
+				case \Constants\ADJUST_CONST::NEGATIVE_INV:
+					$comparison_operator = '<';
+					break;
+
+				case \Constants\ADJUST_CONST::ZERO_INV:
+					$comparison_operator = '=';
+					break;
+			}
+
+			$this->db->where("PBI.`inventory` $comparison_operator", 0);
 		}
 
 		switch ($orderby) 
@@ -638,7 +659,7 @@ class Adjust_Model extends CI_Model {
 			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 		else if ($this->db->affected_rows() != 1)
 			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
-
+		
 		return $response;
 	}
 
