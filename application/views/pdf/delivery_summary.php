@@ -107,17 +107,19 @@
 		$y += 2;
 
 		$pdf->writeHTMLCell('', '', $x, $y,'Truck Plate # _______________', 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', $x, $y + 6,'From : '.$from_branch, 0, 1, 0, true, 'L', true);
 
 		$x += 80;
 
 		$pdf->writeHTMLCell('', '', $x, $y,'Delivery Team ____________________________________', 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', $x, $y + 6,'To : ________________________________', 0, 1, 0, true, 'L', true);
 
 		$x = $margin_left;
 
 		$pdf->writeHTMLCell('', '', $x, $y - 6,'Page : '.$page_number, 0, 1, 0, true, 'R', true);
-		$pdf->writeHTMLCell('', '', $x, $y,'Date : '.date("M d, Y",strtotime($entry_date)), 0, 1, 0, true, 'R', true);
+		$pdf->writeHTMLCell('', '', $x, $y + 6,'Date : '.date("M d, Y",strtotime($entry_date)), 0, 1, 0, true, 'R', true);
 		
-		$y+= $linegap * 2;
+		$y+= $linegap * 3;
 
 		$html = <<<EOD
 				$style
