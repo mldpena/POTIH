@@ -71,13 +71,14 @@ class Delivery_Model extends CI_Model {
 
 		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(P.`description`,'') AS 'product', 
+						COALESCE(
 						CASE
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
-						END AS 'uom', 
+						END, '') AS 'uom', 
 						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`, SD.`invoice`
+						SD.`recv_quantity` AS 'receiveqty', SD.`description`, COALESCE(P.`type`, 1) AS 'type', SD.`invoice`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -919,10 +920,12 @@ class Delivery_Model extends CI_Model {
 			}
 		}
 
-		$query_head = "SELECT CONCAT('SD',`reference_number`) AS 'reference_number', 
-						DATE(`entry_date`) AS 'entry_date'
-					FROM stock_delivery_head
-					WHERE `id` = ?";
+		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', 
+						DATE(SH.`entry_date`) AS 'entry_date', COALESCE(B.`name`, '') AS 'from_branch'
+					FROM stock_delivery_head AS SH
+					LEFT JOIN
+						branch AS B ON B.`id` = SH.`branch_id` AND B.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					WHERE SH.`id` = ?";
 
 		$result_head = $this->db->query($query_head,$delivery_id);
 		
