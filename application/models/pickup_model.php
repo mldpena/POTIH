@@ -9,7 +9,7 @@ class Pickup_Model extends CI_Model {
 									'UNABLE_TO_DELETE' => 'Unable to delete summary!',
 									'UNABLE_TO_SELECT_HEAD' => 'Unable to get summary head details!',
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get summary details!',
-									'SUMMARY_FOR_TODAY_EXISTS' => 'Summary for today already exists!');
+									'SUMMARY_FOR_TODAY_EXISTS' => 'Summary for the selected date already exists!');
 
 	/**
 	 * Load Encrypt Class for encryption, cookie and constants
@@ -22,7 +22,7 @@ class Pickup_Model extends CI_Model {
 		
 		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date('Y-m-d h:i:s');
+		$this->_current_date 		= date('Y-m-d H:i:s');
 	}
 
 	public function get_pickup_summary_list($param)
@@ -36,6 +36,17 @@ class Pickup_Model extends CI_Model {
 
 		$conditions = "";
 		
+		if (!empty($date_from)) 
+		{
+			$conditions .= " AND PS.`entry_date` >= ?";
+			array_push($query_data, $date_from.' 00:00:00');
+		}
+
+		if (!empty($date_to)) 
+		{
+			$conditions .= " AND PS.`entry_date` <= ?";
+			array_push($query_data, $date_to.' 23:59:59');
+		}
 
 		if ($branch != \Constants\PICKUP_CONST::ALL_OPTION) 
 		{
@@ -53,9 +64,10 @@ class Pickup_Model extends CI_Model {
 					CONCAT('PS',PS.`reference_number`) AS 'reference_number', DATE(PS.`entry_date`) AS 'entry_date'
 					FROM pickup_summary_head AS PS
 					LEFT JOIN branch AS B ON B.`id` = PS.`branch_id` AND B.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE."
-					WHERE PS.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." $conditions";
+					WHERE PS.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." $conditions
+					ORDER BY PS.`entry_date`";
 
-		$result = $this->db->query($query,$query_data);
+		$result = $this->db->query($query, $query_data);
 
 		if ($result->num_rows() > 0) 
 		{
@@ -79,22 +91,26 @@ class Pickup_Model extends CI_Model {
 		return $response;
 	}
 
-	public function generate_pickup_summary()
+	public function generate_pickup_summary($params)
 	{
+		extract($params);
+
 		$response = array();
 		$response['error'] = '';
+		
+		$result_summary_for_today = $this->_check_if_summary_exist_today($date_created);
 
-		$result_summary_for_today = $this->_check_if_summary_exist_today();
+		$date_created = $date_created.' '.date('H:i:s');
 
 		if ($result_summary_for_today->num_rows() > 0)
 			throw new Exception($this->_error_message['SUMMARY_FOR_TODAY_EXISTS']);
 			
 		$result_summary_for_today->free_result();
 
-		$result_reference_number = get_next_number('pickup_summary_head','reference_number',array('entry_date' => $this->_current_date));
+		$result_reference_number = get_next_number('pickup_summary_head','reference_number', array('entry_date' => $date_created));
 		$summary_head_id = $this->encrypt->decode($result_reference_number['id']);
 
-		$query_data = array($summary_head_id, date("Y-m-d", strtotime($this->_current_date)));
+		$query_data = array($summary_head_id, date("Y-m-d", strtotime($date_created)));
 
 		$query = "INSERT INTO pickup_summary_detail(`headid`, `release_head_id`)
 					SELECT ?, `id` FROM release_head WHERE DATE(`entry_date`) = ? AND `branch_id` = ".$this->_current_branch_id." AND `is_show` = ".\Constants\PICKUP_CONST::ACTIVE;
@@ -219,12 +235,13 @@ class Pickup_Model extends CI_Model {
 		return $response;
 	}
 
-	private function _check_if_summary_exist_today()
+	private function _check_if_summary_exist_today($date_created)
 	{
 		$this->db->select("*")
 				->from("pickup_summary_head")
-				->where("DATE(entry_date)", $this->_current_date)
-				->where("`is_show`", \Constants\PICKUP_CONST::ACTIVE);
+				->where("DATE(`entry_date`)", $date_created)
+				->where("`is_show`", \Constants\PICKUP_CONST::ACTIVE)
+				->where("`branch_id`", $this->_current_branch_id);
 
 		$result = $this->db->get();
 
