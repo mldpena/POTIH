@@ -29,7 +29,7 @@ class Request_Model extends CI_Model {
 		$this->_request_head_id 	= (int)$this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	public function get_stock_request_details()
@@ -214,7 +214,7 @@ class Request_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] 	= '';
-		$entry_date 		= $entry_date.' '.date('h:i:s');
+		$entry_date 		= $entry_date.' '.date('H:i:s');
 
 		$query_data 		= array();
 		$query 				= array();

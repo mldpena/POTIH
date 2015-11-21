@@ -20,7 +20,7 @@ class Adjust_Model extends CI_Model {
 
 		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	public function get_product_adjust_list($param, $with_limit = TRUE)

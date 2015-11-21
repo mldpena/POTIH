@@ -24,7 +24,7 @@ class Product_Manager
 
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	/**

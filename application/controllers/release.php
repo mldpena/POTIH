@@ -126,7 +126,7 @@ class Release extends CI_Controller {
 					break;
 
 				case 'create_reference_number':
-					$response = get_next_number('release_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+					$response = get_next_number('release_head','reference_number',array('entry_date' => date("Y-m-d H:i:s")));
 					break;
 
 				case 'get_release_details':

@@ -30,7 +30,7 @@ class User_Model extends CI_Model {
 		$this->_user_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	/**
@@ -124,7 +124,7 @@ class User_Model extends CI_Model {
 	{
 		extract($param);
 
-		$this->_current_date = date('Y-m-d h:i:s');
+		$this->_current_date = date('Y-m-d H:i:s');
 		$user_id 	= $this->encrypt->decode($head_id);
 
 		$response = array();
