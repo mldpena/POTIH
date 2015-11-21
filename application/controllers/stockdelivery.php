@@ -182,9 +182,9 @@ class StockDelivery extends CI_Controller {
 			switch ($fnc) 
 			{
 				case 'create_reference_number':
-					$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d h:i:s"),
-																								'delivery_receive_date' => date("Y-m-d h:i:s"),
-																								'customer_receive_date' => date("Y-m-d h:i:s")));
+					$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d H:i:s"),
+																								'delivery_receive_date' => date("Y-m-d H:i:s"),
+																								'customer_receive_date' => date("Y-m-d H:i:s")));
 					break;
 
 				case 'get_stock_delivery_details':

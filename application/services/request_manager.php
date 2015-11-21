@@ -21,7 +21,7 @@ class Request_Manager
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
 		$this->_request_head_id 	= $this->_CI->encrypt->decode($this->_CI->uri->segment(3));
 
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	public function create_stock_delivery_from_selected_request_detail($param)
@@ -53,10 +53,10 @@ class Request_Manager
 
 		if ($result_stock_delivery_details->num_rows() > 0) 
 		{
-			$new_stock_delivery_head_result = get_next_number('stock_delivery_head','reference_number',array('entry_date' => date("Y-m-d h:i:s"), 
+			$new_stock_delivery_head_result = get_next_number('stock_delivery_head','reference_number',array('entry_date' => date("Y-m-d H:i:s"), 
 																											'to_branchid' => $to_branch_id,
-																											'delivery_receive_date' => date("Y-m-d h:i:s"),
-																											'customer_receive_date' => date("Y-m-d h:i:s"),
+																											'delivery_receive_date' => date("Y-m-d H:i:s"),
+																											'customer_receive_date' => date("Y-m-d H:i:s"),
 																											'delivery_type' => 3));
 			if ($new_stock_delivery_head_result['error'] != '')
 				throw new \Exception($this->_error_message['UNABLE_TO_GENERATE_REFERENCE']);
