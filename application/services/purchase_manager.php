@@ -29,7 +29,7 @@ class Purchase_Manager
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
 		$this->_purchase_head_id 	= $this->_CI->encrypt->decode($this->_CI->uri->segment(3));
 
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	public function transfer_remaining_po_to_new($param)
@@ -49,7 +49,7 @@ class Purchase_Manager
 
 		if ($result_old_purchase_details->num_rows() > 0) 
 		{
-			$new_purchase_head_result = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d h:i:s")));
+			$new_purchase_head_result = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d H:i:s")));
 
 			if ($new_purchase_head_result['error'] != '')
 				throw new \Exception($this->_error_message['UNABLE_TO_GENERATE_REFERENCE']);

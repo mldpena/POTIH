@@ -29,7 +29,7 @@ class Delivery_Manager
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
 		$this->_delivery_head_id 	= $this->_CI->encrypt->decode($this->_CI->uri->segment(3));
 
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	public function transfer_to_new_customer_return($param)
@@ -68,7 +68,7 @@ class Delivery_Manager
 			{
 				$current_customer_name = $row->customer_name;
 				
-				$result_new_customer_return = get_next_number('return_head','reference_number',array('entry_date' => date("Y-m-d h:i:s"),
+				$result_new_customer_return = get_next_number('return_head','reference_number',array('entry_date' => date("Y-m-d H:i:s"),
 																									'customer' => $current_customer_name,
 																									'memo' => 'SD'.$delivery_head_info_row->reference_number,
 																									'is_used' => 1));

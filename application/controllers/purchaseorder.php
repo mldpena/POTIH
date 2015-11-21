@@ -126,7 +126,7 @@ class PurchaseOrder extends CI_Controller {
 			switch ($fnc) 
 			{
 				case 'create_reference_number':
-					$response = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d h:i:s"),
+					$response = get_next_number('purchase_head','reference_number',array('entry_date' => date("Y-m-d H:i:s"),
 																						'for_branchid' => $this->encrypt->decode(get_cookie('branch'))));
 					break;
 

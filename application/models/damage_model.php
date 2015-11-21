@@ -25,7 +25,7 @@ class Damage_Model extends CI_Model {
 		$this->_damage_head_id 		= $this->encrypt->decode($this->uri->segment(3));
 		$this->_current_branch_id 	= $this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->encrypt->decode(get_cookie('temp'));
-		$this->_current_date 		= date("Y-m-d h:i:s");
+		$this->_current_date 		= date("Y-m-d H:i:s");
 	}
 
 	public function get_damage_details()
@@ -178,7 +178,7 @@ class Damage_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] 	= '';
-		$entry_date 		= $entry_date.' '.date('h:i:s');
+		$entry_date 		= $entry_date.' '.date('H:i:s');
 		$query_data 		= array($entry_date,$memo,$this->_current_user,$this->_current_date,$this->_damage_head_id);
 
 		$query = "UPDATE `damage_head`
