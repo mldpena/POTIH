@@ -6,9 +6,9 @@
 	</head>
 	<body>
 		<div class="main-wrapper">
-			<div class="container-fluid">
-				<div class="row">
-					<div class="header-nav">
+			<div class="header-nav">
+				<div class="container container-wrap">
+					<div class="row">
 						<div class="version pull-left">
 							Hi-Top - Version 1.0 <?= isset($branch) ? ' | Branch : '.$branch : '' ?>
 						</div>
