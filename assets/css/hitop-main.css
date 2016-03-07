@@ -25,10 +25,10 @@ body{
 	width: auto;
 }
 .main-wrapper{
-	width: 1349px;
+	/*width: 1349px;*/
 }
 .container-wrap{
-	/*width: 1349px;*/
+	width: 1349px;
 }
 /*Notifications*/
 .user-creds .notifications-icon{
@@ -153,19 +153,19 @@ body{
 	float: left;
 	background: #e74c3c;
 }
-.header-nav > .version{
+.header-nav .version{
 	font-family: R-Regular;
 	font-size: 14.5px;
 	padding: 8px;
 	text-transform: uppercase;
 	color: #fff;
 }
-.header-nav > .user-creds{
+.header-nav .user-creds{
 	font-family: R-Regular;
 	font-size: 14.5px;
 	color: #fff;
 }
-.header-nav > .user-creds .user-btn{
+.header-nav .user-creds .user-btn{
 	border-radius: 0px !important;
 	border: none !important;
 	padding: 8px;
@@ -175,17 +175,17 @@ body{
 	color: #fff;
 	background: #e74c3c;
 }
-.header-nav > .user-creds .dropdown-menu li a{
+.header-nav .user-creds .dropdown-menu li a{
 	font-size: 14.5px;
 }
-.header-nav > .user-creds > a .ez-menu{
+.header-nav .user-creds > a .ez-menu{
 	float: left;
 	padding: 8px;
 	text-transform: uppercase;
 	color: #fff;
 	font-size: 14.5px;
 }
-.header-nav > .user-creds > a .ez-menu:hover,
+.header-nav .user-creds > a .ez-menu:hover,
 .header-nav .user-creds .user-btn:active,
 .header-nav .user-creds .user-btn:focus{
 	background: #bf1e18;
