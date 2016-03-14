@@ -82,7 +82,7 @@
 		</style>
 	";
 
-	$column_width = array("60px","390px","180px","270px","60px","125px");
+	$column_width = array("60px","390px","225px","270px","60px","80px");
 
 	while ($is_finished == FALSE) 
 	{
