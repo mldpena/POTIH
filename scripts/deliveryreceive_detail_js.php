@@ -42,8 +42,8 @@
 
 	colarray['product'] = { 
 		header_title: "Product",
-		edit: [spnproduct,spnproductid,productType,newline,disabledDescription],
-		disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		edit: [spnproduct,spnproductid,productType,newline,disabledDescription,spnproductid],
+		disp: [spnproduct,spnproductid,productType,newline,disabledDescription,spnproductid],
 		td_class: "tablerow column_click column_hover tdproduct"
 	};
 
@@ -216,7 +216,7 @@
 				}
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.checkProductTypeDescription();
+				tableHelper.contentHelper.checkProductInfo();
 
 				$('#tbl').show();
 			}       

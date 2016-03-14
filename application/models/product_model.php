@@ -71,9 +71,10 @@ class Product_Model extends CI_Model {
 
 	public function get_product_details_by_id($product_id)
 	{
-		$this->db->select("P.`material_code`, P.`description`, P.`type`,
+		$this->db->select("P.`material_code`, P.`description`,
+						COALESCE(P.`type`, '') AS 'type',
 						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup',
-						P.`material_type_id`, P.`subgroup_id`, P.`uom`")
+						P.`material_type_id`, P.`subgroup_id`, COALESCE(P.`uom`, '') AS 'uom'")
 				->from("product AS P")
 				->join("material_type AS M", "M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
 				->join("subgroup AS S", "S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
@@ -118,6 +119,7 @@ class Product_Model extends CI_Model {
 							CASE 
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup'");
 
@@ -348,6 +350,7 @@ class Product_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom'");
 
 		if ($with_inventory)
@@ -411,6 +414,7 @@ class Product_Model extends CI_Model {
 							CASE 
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							COALESCE(M.`name`,'') AS 'material_type',
 							COALESCE(S.`name`,'') AS 'subgroup', 
@@ -574,7 +578,8 @@ class Product_Model extends CI_Model {
 		$this->db->select("P.`material_code`, P.`description`,
 						CASE 
 							WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
-							WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock' 
+							WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
+							ELSE ''
 						END AS 'type'
 						$branch_column
 						,SUM(`inventory`) AS 'total_inventory'")
@@ -852,6 +857,7 @@ class Product_Model extends CI_Model {
 						CASE 
 							WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non-Stock'
 							WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
+							ELSE ''
 						END AS 'type',
 						$temp_beginning
 						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
@@ -1051,6 +1057,7 @@ class Product_Model extends CI_Model {
 							CASE 
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non-Stock'
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							$temp_beginning
 							COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',

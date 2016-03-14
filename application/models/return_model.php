@@ -59,18 +59,23 @@ class Return_Model extends CI_Model {
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
-		$query_detail = "SELECT RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product',
-						CASE
-							WHEN P.`uom` = ".\Constants\RETURN_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\RETURN_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\RETURN_CONST::ROLL." THEN 'ROLL'
-						END AS 'uom', 
-						RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
-					FROM `return_detail` AS RD
-					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
-					WHERE RD.`headid` = ?";
+		$query_detail = "SELECT 
+							RD.`id`, RD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							CASE
+								WHEN P.`uom` = ".\Constants\RETURN_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\RETURN_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\RETURN_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom', 
+							RD.`quantity`, RD.`memo`, RD.`description`, 
+							COALESCE(P.`type`, '') AS 'type', 
+							RD.`received_by`
+						FROM `return_detail` AS RD
+						LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
+						LEFT JOIN `product` AS P ON P.`id` = RD.`product_id`
+						WHERE RD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_return_head_id);
 
@@ -84,7 +89,7 @@ class Return_Model extends CI_Model {
 				$break_line = $row->type == \Constants\RETURN_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
@@ -373,6 +378,7 @@ class Return_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom'
 							FROM return_head AS H
 							LEFT JOIN return_detail AS D ON D.`headid` = H.`id`

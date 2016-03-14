@@ -70,21 +70,24 @@ class Delivery_Model extends CI_Model {
 			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->total_qty > 0 ? TRUE : FALSE;
 		}
 
-
-		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', 
-						COALESCE(
-						CASE
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
-						END, '') AS 'uom', 
-						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity` AS 'receiveqty', SD.`description`, COALESCE(P.`type`, 1) AS 'type', SD.`invoice`
-					FROM `stock_delivery_detail` AS SD
-					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					WHERE SD.`headid` = ?";
+		$query_detail = "SELECT 
+							SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							CASE
+								WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom', 
+							SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
+							SD.`recv_quantity` AS 'receiveqty', SD.`description`, 
+							COALESCE(P.`type`, '') AS 'type', 
+							SD.`invoice`
+						FROM `stock_delivery_detail` AS SD
+						LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+						LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
+						WHERE SD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
 
@@ -99,7 +102,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($row->is_for_branch);
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
@@ -709,20 +712,25 @@ class Delivery_Model extends CI_Model {
 			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->recv_quantity > 0 ? TRUE : FALSE;
 		}
 
-		$query_detail = "SELECT SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', 
-						CASE
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
-						END AS 'uom', 
-						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`,
-						IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
-					FROM `stock_delivery_detail` AS SD
-					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					WHERE SD.`headid` = ? AND SD.`is_for_branch` = $is_transfer";
+		$query_detail = "SELECT 
+							SD.`id`, SD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')), '') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							CASE
+								WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom', 
+							SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
+							SD.`recv_quantity`, SD.`description`, 
+							COALESCE(P.`type`, '') AS 'type', 
+							SD.`receive_memo`, SD.`received_by`,
+							IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
+						FROM `stock_delivery_detail` AS SD
+						LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+						LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
+						WHERE SD.`headid` = ? AND SD.`is_for_branch` = $is_transfer";
 
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
 
@@ -740,7 +748,7 @@ class Delivery_Model extends CI_Model {
 					$response['detail'][$i][] = array('');
 				
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line,$row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
@@ -868,6 +876,7 @@ class Delivery_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							D.`invoice`
 							FROM stock_delivery_head AS H
@@ -949,6 +958,7 @@ class Delivery_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							D.`invoice`
 							FROM stock_delivery_head AS H
@@ -1010,6 +1020,7 @@ class Delivery_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							D.`invoice`
 							FROM stock_delivery_head AS H

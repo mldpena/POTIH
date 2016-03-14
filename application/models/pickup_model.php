@@ -208,7 +208,7 @@ class Pickup_Model extends CI_Model {
 							LEFT JOIN pickup_summary_detail AS PD ON PD.`headid` = PH.`id`
 							LEFT JOIN release_head AS RH ON RH.`id` = PD.`release_head_id`
 							LEFT JOIN release_detail AS RD ON RD.`headid` = RH.`id`
-							LEFT JOIN product AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE."
+							LEFT JOIN product AS P ON P.`id` = RD.`product_id`
 							LEFT JOIN release_order_detail AS ROD ON ROD.`id` = RD.`release_order_detail_id`
 							LEFT JOIN release_order_head AS ROH ON ROH.`id` = ROD.`headid`
 							WHERE PH.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." AND PH.`id` = ? 
