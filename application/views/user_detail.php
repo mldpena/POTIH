@@ -124,6 +124,15 @@
 						<td></td>
 					</tr>
 					<tr>
+						<td>Customer</td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Customer_Code::VIEW_CUSTOMER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Customer_Code::VIEW_CUSTOMER_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Customer_Code::ADD_CUSTOMER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Customer_Code::EDIT_CUSTOMER ?>"></td>
+						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Customer_Code::DELETE_CUSTOMER ?>"></td>
+						<td></td>
+					</tr>
+					<tr>
 						<td>Branch</td>
 						<td><input type="checkbox" class="check-detail data-detail" value="<?= \Permission\Branch_Code::VIEW_BRANCH ?>"></td>
 						<td></td>

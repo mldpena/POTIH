@@ -190,4 +190,12 @@
 		const VIEW_STOCKREQUEST_DETAIL = 240;
 	}
 
+	class Customer_Code
+	{
+		const VIEW_CUSTOMER = 250;
+		const VIEW_CUSTOMER_DETAIL = 251;
+		const ADD_CUSTOMER = 252;
+		const EDIT_CUSTOMER = 253;
+		const DELETE_CUSTOMER = 254;
+	}
 ?>
