@@ -191,11 +191,11 @@ class Release_Model extends CI_Model {
 			array_push($query_data,$po_head_ids);
 		}
 
-		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
+		$query = "SELECT 
+						COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'release_order_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
 						COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
-COALESCE(P.`is_show`, 0) AS 'is_deleted',
- 
+						COALESCE(P.`is_show`, 0) AS 'is_deleted',
 						CASE
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
@@ -233,8 +233,7 @@ COALESCE(P.`is_show`, 0) AS 'is_deleted',
 				$response['detail'][$i][] = array($this->encrypt->encode($row->release_order_detail_id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->po_number);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted
-);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);

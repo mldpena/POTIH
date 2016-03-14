@@ -101,7 +101,6 @@ class PurchaseReceive_Model extends CI_Model {
 				$response['po_lists'][$i][] = array($row->po_number);
 				$response['po_lists'][$i][] = array(date('m-d-Y', strtotime($row->po_date)));
 				$response['po_lists'][$i][] = array($row->total_qty);
-
 				$i++;
 			}
 		}
@@ -191,33 +190,34 @@ class PurchaseReceive_Model extends CI_Model {
 			array_push($query_data,$po_head_ids);
 		}
 
-		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
-						PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code',
-						COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
-COALESCE(P.`is_show`, 0) AS 'is_deleted',
- PD.`quantity`, PD.`memo`, 
-						CASE
-							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::ROLL." THEN 'ROLL'
-							ELSE ''
-						END AS 'uom',
-						CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, 
-						COALESCE(P.`type`, '') AS 'type',
-						COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining',
-						COALESCE(PRD.`receive_memo`,'') AS 'receive_memo', COALESCE(PRD.`received_by`,'') AS 'received_by',
-						IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`recv_quantity`) <= 0, 1, 0) AS 'is_removed'
-					FROM `purchase_head` AS PH
-					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id` 
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
-					LEFT JOIN (
-								SELECT PRD.`purchase_detail_id`, PRD.`quantity`, PRD.`id`, PRD.`receive_memo`, PRD.`received_by`
-						        FROM purchase_receive_head AS PRH
-						        LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
-						        WHERE PRH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
-					)AS PRD ON PRD.`purchase_detail_id` = PD.`id`
-					WHERE PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED." AND PH.`id` $condition
-					HAVING is_removed = 0";
+		$query = "SELECT 
+					COALESCE(PRD.`id`,0) AS 'receive_detail_id',
+					PD.`id` AS 'po_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code',
+					COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+					COALESCE(P.`is_show`, 0) AS 'is_deleted',
+					PD.`quantity`, PD.`memo`, 
+					CASE
+						WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::PCS." THEN 'PCS'
+						WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::KG." THEN 'KGS'
+						WHEN P.`uom` = ".\Constants\PURCHASE_RECEIVE_CONST::ROLL." THEN 'ROLL'
+						ELSE ''
+					END AS 'uom',
+					CONCAT('PO',PH.`reference_number`) AS 'po_number', PD.`description`, 
+					COALESCE(P.`type`, '') AS 'type',
+					COALESCE(PRD.`quantity`,0) AS 'qty_receive', (PD.`quantity` - PD.`recv_quantity`) AS 'qty_remaining',
+					COALESCE(PRD.`receive_memo`,'') AS 'receive_memo', COALESCE(PRD.`received_by`,'') AS 'received_by',
+					IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`recv_quantity`) <= 0, 1, 0) AS 'is_removed'
+				FROM `purchase_head` AS PH
+				LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id` 
+				LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
+				LEFT JOIN (
+							SELECT PRD.`purchase_detail_id`, PRD.`quantity`, PRD.`id`, PRD.`receive_memo`, PRD.`received_by`
+					        FROM purchase_receive_head AS PRH
+					        LEFT JOIN purchase_receive_detail AS PRD ON PRD.`headid` = PRH.`id`
+					        WHERE PRH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PRH.`id` = ?
+				)AS PRD ON PRD.`purchase_detail_id` = PD.`id`
+				WHERE PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::USED." AND PH.`id` $condition
+				HAVING is_removed = 0";
 
 		$result = $this->db->query($query,$query_data);
 

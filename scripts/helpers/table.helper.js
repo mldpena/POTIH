@@ -768,7 +768,7 @@ var TableHelper = function(tableOptions,options) {
 			if (isProductDeleted == 0)
 			{
 				$(parentRow).find('input').attr('disabled', 'disabled');
-				$(parentRow).css('background-color', '#FF3333');
+				$(parentRow).css('background-color', '#ff9999');
 				$(parentRow).find('i, input[type=checkbox]').hide();
 			}
 		},
@@ -800,7 +800,8 @@ var TableHelper = function(tableOptions,options) {
 												}
 												]);
 
-			if (errorList.length > 0) {
+			if (errorList.length > 0) 
+			{
 				clear_message_box();
 				build_message_box('messagebox_1',build_error_message(errorList),'danger');
 				return;
