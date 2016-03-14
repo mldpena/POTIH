@@ -729,10 +729,13 @@ var TableHelper = function(tableOptions,options) {
 			});
 		},
 
-		checkProductTypeDescription : function()
+		checkProductInfo : function()
 		{
-			for (var i = 1; i < self._jsTable.get_row_count(); i++) 
+			for (var i = 1; i < self._jsTable.get_row_count(); i++)
+			{
 				self.contentHelper.descriptionAccessibilty(i);
+				self.contentHelper.changeRowAccessiblity(i);
+			}
 		},
 
 		descriptionAccessibilty : function(rowIndex ,isForceHide)
@@ -754,6 +757,24 @@ var TableHelper = function(tableOptions,options) {
 			
 			if (isForceHide)
 				$(descriptionElement).hide();  
+		},
+
+		changeRowAccessiblity : function(rowIndex)
+		{
+			var isProductDeleted 	= Number(self.contentProvider.getData(rowIndex,'product', 5));
+			var productElement 		= self.contentProvider.getElement(rowIndex,'product');
+			var parentRow 			= $(productElement).parent().parent();
+
+			if (isProductDeleted == 0)
+			{
+				$(parentRow).find('input').attr('disabled', 'disabled');
+				$(parentRow).css('background-color', '#ef4543');
+				$(parentRow).find('td').css({
+					'color'  : 'white',
+					'border' : 'none'
+				});
+				$(parentRow).find('i, input[type=checkbox]').hide();
+			}
 		},
 
 		checkCurrentInventory : function(element,onBeforeSubmit,onAfterSubmit)
@@ -783,7 +804,8 @@ var TableHelper = function(tableOptions,options) {
 												}
 												]);
 
-			if (errorList.length > 0) {
+			if (errorList.length > 0) 
+			{
 				clear_message_box();
 				build_message_box('messagebox_1',build_error_message(errorList),'danger');
 				return;

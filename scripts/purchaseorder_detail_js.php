@@ -71,8 +71,8 @@
 
 	colarray['product'] = { 
 		header_title: "Product",
-		edit: [txtproduct,spnproductid,productType,newline,description],
-		disp: [spnproduct,spnproductid,productType,newline,disabledDescription],
+		edit: [txtproduct,spnproductid,productType,newline,description,spnproductid],
+		disp: [spnproduct,spnproductid,productType,newline,disabledDescription,spnproductid],
 		td_class: "tablerow column_click column_hover tdproduct"
 	};
 
@@ -227,7 +227,7 @@
 					
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.checkProductTypeDescription();
+				tableHelper.contentHelper.checkProductInfo();
 
 			}       
 		});

@@ -34,10 +34,12 @@ class Adjust_Model extends CI_Model {
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KGS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
 							COALESCE(PBI.`inventory`,0) AS 'inventory', COALESCE(IA.`id`,0) AS 'adjust_id', 
@@ -334,10 +336,12 @@ class Adjust_Model extends CI_Model {
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KGS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							CASE 
 								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
@@ -348,7 +352,7 @@ class Adjust_Model extends CI_Model {
 							IA.`old_inventory`, IA.`new_inventory` AS 'requested_new_inventory',
 							DATE(IA.`date_created`) AS 'date_created', COALESCE(B.`name`,'') AS 'from_branch'")
 				->from("inventory_adjust AS IA")
-				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "inner")
+				->join("product AS P", "P.`id` = IA.`product_id`", "inner")
 				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = IA.`branch_id`", "left")
 				->join("branch AS B", "B.`id` = IA.`branch_id` AND B.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
 				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
@@ -449,7 +453,7 @@ class Adjust_Model extends CI_Model {
 		extract($param);
 
 		$this->db->from("inventory_adjust AS IA")
-				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->join("product AS P", "P.`id` = IA.`product_id`", "left")
 				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
 
 		if (!empty($code)) 
@@ -548,6 +552,7 @@ class Adjust_Model extends CI_Model {
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KGS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
 							CASE 
@@ -556,7 +561,7 @@ class Adjust_Model extends CI_Model {
 								WHEN IA.`status` = ".\Constants\ADJUST_CONST::DECLINED." THEN 'Declined'
 							END AS 'status'")
 				->from("inventory_adjust AS IA")
-				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE)
+				->join("product AS P", "P.`id` = IA.`product_id`")
 				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
 				->where("IA.`branch_id`", $this->_current_branch_id);
 
@@ -621,7 +626,7 @@ class Adjust_Model extends CI_Model {
 		extract($param);
 
 		$this->db->from("inventory_adjust AS IA")
-				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE)
+				->join("product AS P", "P.`id` = IA.`product_id`")
 				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
 				->where("IA.`branch_id`", $this->_current_branch_id);
 
@@ -676,6 +681,7 @@ class Adjust_Model extends CI_Model {
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							CASE 
 								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
@@ -686,7 +692,7 @@ class Adjust_Model extends CI_Model {
 							IA.`old_inventory`, IA.`new_inventory` AS 'requested_new_inventory',
 							DATE(IA.`date_created`) AS 'date_created', COALESCE(B.`name`,'') AS 'from_branch'")
 				->from("inventory_adjust AS IA")
-				->join("product AS P", "P.`id` = IA.`product_id` AND P.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
+				->join("product AS P", "P.`id` = IA.`product_id`", "left")
 				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = IA.`branch_id`", "left")
 				->join("branch AS B", "B.`id` = IA.`branch_id` AND B.`is_show` = ".\Constants\ADJUST_CONST::ACTIVE, "left")
 				->where("IA.`is_show`", \Constants\ADJUST_CONST::ACTIVE);
