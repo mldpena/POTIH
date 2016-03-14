@@ -82,7 +82,7 @@
 		</style>
 	";
 
-	$column_width = array("60px","400px","95px","350px","60px","120px");
+	$column_width = array("60px","390px","225px","270px","60px","80px");
 
 	while ($is_finished == FALSE) 
 	{
@@ -128,7 +128,7 @@
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
 						<td style="width:$column_width[4];" class="tdcenter header-border">Unit</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
-						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
+						<td style="width:$column_width[2];" class="tdcenter header-border">Special Size</td>
 						<td style="width:$column_width[5];" class="tdcenter header-border">Invoice</td>
 						<td style="width:$column_width[3];" class="tdcenter header-border">Note</td>
 					</tr>
@@ -149,7 +149,7 @@ EOD;
 							<td style=\"width:".$column_width[0].";\" class=\"tdleft table-data\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
-							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
+							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["description"]."</td>
 							<td style=\"width:".$column_width[5].";\" class=\"tdcenter table-data\">".$detail[$i]["invoice"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdleft table-data\">".$detail[$i]["memo"]."</td>
 						</tr>
@@ -165,8 +165,6 @@ EOD;
 
 					if (empty($detail[$i]['description'])) 
 						$product_count++;
-					else
-						$print_description = TRUE;
 					
 					if(!$footer_printed)
 					{
@@ -178,58 +176,6 @@ EOD;
 			
 			if($footer_printed && !($i+1 >= count($detail) && !$print_description))
 				break;
-				
-			if (!empty($detail[$i]['description']))
-			{
-				$description_strings = explode("\n", $detail[$i]['description']);
-
-				for ($z=$description_count; $z < count($description_strings); $z++) 
-				{ 
-					$detail_description = str_replace(array("<br/>","<br>","<br />"), "", $description_strings[$z]);
-
-					$html = "
-						$style
-						<table>
-							<tr>
-								<td colspan = \"2\" style=\"width:120px;\" class=\"table-data\"></td>
-								<td colspan = \"4\" style=\"width:965px;\" class=\"table-data\">".$detail_description."</td>
-							</tr>
-						</table>";
-
-					$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'L', true);
-
-					$y = $pdf->GetY();
-
-					$print_description = FALSE;
-
-					if($y >= 170)
-					{
-						if(!$footer_printed)
-						{
-							set_footer($pdf,$y + 6);
-							$footer_printed = TRUE;
-						}
-					}
-					
-					$product_count = $i;
-
-					if (($z + 1) == count($description_strings))
-					{
-						$description_count = 0;
-						$product_count++;
-					}
-					else
-					{
-						$description_count = $z + 1;
-						$print_description = TRUE;
-					}
-
-					if($footer_printed && !($i+1 >= count($detail) && !$print_description))
-						break;
-						
-					$y = $pdf->GetY();
-				}
-			}
 
 			if($i+1 >= count($detail) && !$print_description)
 				$is_finished = TRUE;

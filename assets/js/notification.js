@@ -88,14 +88,14 @@ $(function(){
 																	notificationSection : 'dueIncompleteRequest',
 																	notificationSubject : 'Incomplete Item Request Due Warning',
 																	notificationMessage : 'You have ({0}) incomplete request with incomplete delivery!',
-																	notificationIcon 	: 'itemreceive-new.png',
+																	notificationIcon 	: 'incomplete-warning.png',
 																	notificationLink 	: 'requestto/list/1'
 																},
 																{
 																	notificationSection : 'noDeliveryRequest',
 																	notificationSubject : 'No Delivery Item Request Due Warning',
 																	notificationMessage : 'You have ({0}) request with no delivery!',
-																	notificationIcon 	: 'itemreceive-new.png',
+																	notificationIcon 	: 'no-delivery.png',
 																	notificationLink 	: 'requestto/list/2'
 																}
 															];

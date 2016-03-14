@@ -3,8 +3,12 @@
 
 	function set_footer($pdf,$y)
 	{
+		global $font, $font_size;
+
 		$y += 6;
 		$x = 10;
+
+		$pdf->SetFont($font,'', $font_size,'','','');
 
 		$pdf->writeHTMLCell('', '', $x, $y,'Release Slip Done by : ____________________', 0, 1, 0, true, 'L', true);
 
@@ -14,12 +18,12 @@
 
 		$x = 115;
 
-		$pdf->writeHTMLCell('', '', $x, $y,'Counter Checker : ____________________', 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', $x, $y,'Counter Checker : __________________', 0, 1, 0, true, 'L', true);
 	}
 
 	//ob_start();
 
-	$pdf = new CI_TCPDF('P', PDF_UNIT, 'FOLIO', true, 'UTF-8', false);
+	$pdf = new CI_TCPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 	$pdf->setFontSubsetting(false);
@@ -40,8 +44,8 @@
 	$margin_right = 120;
 	$margin_top = 5;
 
-	$half_page_y = 164;
-	$whole_page_y = 329;
+	$half_page_y = 147;
+	$whole_page_y = 278;
 
 	$linegap = 6;
 
@@ -80,7 +84,7 @@
 		</style>
 	";
 
-	$column_width = array("55px","370px","95px","120px","60px");
+	$column_width = array("55px","370px","95px","215px","60px");
 
 	while ($is_finished == FALSE) 
 	{
@@ -134,14 +138,16 @@
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
 						<td style="width:$column_width[4];" class="tdcenter header-border">Unit</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
-						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
 						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
 					</tr>
 				</table>
 EOD;
+		
+		$pdf->SetFont($font,'',$font_size + 1,'','','');
+
 		$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'C', true);
 
-		$y+= 5;
+		$y = $pdf->GetY();
 
 		for ($i = $product_count; $i < count($detail); $i++) 
 		{ 
@@ -154,7 +160,6 @@ EOD;
 							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
-							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["memo"]."</td>
 						</tr>
 					</table>";
@@ -210,7 +215,7 @@ EOD;
 						<table>
 							<tr>
 								<td colspan = \"2\" style=\"width:115px;\" class=\"table-data\"></td>
-								<td colspan = \"3\" style=\"width:585px;\" class=\"table-data\">".$detail_description."</td>
+								<td colspan = \"2\" style=\"width:585px;\" class=\"table-data\">".$detail_description."</td>
 							</tr>
 						</table>";
 
@@ -282,6 +287,8 @@ EOD;
 		}
 	}
 
+	$pdf->SetFont($font,'', $font_size,'','','');
+
 	$y += $linegap;
 
 	$pdf->writeHTMLCell('', '', $x, $y,'Release Slip Done by : ____________________', 0, 1, 0, true, 'L', true);
@@ -292,7 +299,7 @@ EOD;
 
 	$x = 115;
 
-	$pdf->writeHTMLCell('', '', $x, $y,'Counter Checker : ____________________', 0, 1, 0, true, 'L', true);
+	$pdf->writeHTMLCell('', '', $x, $y,'Counter Checker : __________________', 0, 1, 0, true, 'L', true);
 
 	//ob_end_clean();
 
