@@ -206,7 +206,7 @@ class StockRequest extends CI_Controller {
 				case 'check_notifications':
 					$response = $this->_notification_manager->get_header_notifications();
 					break;
-					
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
@@ -222,8 +222,6 @@ class StockRequest extends CI_Controller {
 
 	private function set_session_data()
 	{
-		extract($param);
-
 		$response['error'] = '';
 
 		$result = $this->request_model->check_if_transaction_has_product();
