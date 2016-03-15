@@ -8,7 +8,7 @@
 <?php require_once('internal_css.php'); ?>
 
 <script type="text/javascript"> 
-	var currentURL = "<?= base_url().$this->uri->segment(1).'/' ?><?= (in_array($this->uri->segment(2),array('view','express','record'))) ? 'list' : $this->uri->segment(2)?>";
+	var currentURL = "<?= base_url().$this->uri->segment(1).'/' ?><?= (in_array($this->uri->segment(2),array('view','express','record','add'))) ? 'list' : $this->uri->segment(2)?>";
 	var notificationToken = "<?= $token ?>";
 	var baseURL = "<?= base_url() ?>";
 </script>
