@@ -768,7 +768,11 @@ var TableHelper = function(tableOptions,options) {
 			if (isProductDeleted == 0)
 			{
 				$(parentRow).find('input').attr('disabled', 'disabled');
-				$(parentRow).css('background-color', '#ff9999');
+				$(parentRow).css('background-color', '#ef4543');
+				$(parentRow).find('td').css({
+					'color'  : 'white',
+					'border' : 'none'
+				});
 				$(parentRow).find('i, input[type=checkbox]').hide();
 			}
 		},
