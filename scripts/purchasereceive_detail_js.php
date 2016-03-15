@@ -320,7 +320,7 @@
 					$('#print').hide();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.checkProductTypeDescription();
+				tableHelper.contentHelper.checkProductInfo();
 			}       
 		});
 	}
@@ -360,7 +360,7 @@
 					{
 						myjstbl.insert_multiplerow_with_value(1,response.detail);
 						tableHelper.contentProvider.recomputeTotalQuantity();
-						tableHelper.contentHelper.checkProductTypeDescription();
+						tableHelper.contentHelper.checkProductInfo();
 						checkReceivedDetails();
 					}
 

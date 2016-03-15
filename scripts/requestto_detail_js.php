@@ -216,7 +216,7 @@
 				} 
 					
 				tableHelper.contentProvider.recomputeTotalQuantity();
-				tableHelper.contentHelper.checkProductTypeDescription();
+				tableHelper.contentHelper.checkProductInfo();
 
 				$('#tbl').show();
 			}       

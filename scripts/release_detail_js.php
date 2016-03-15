@@ -316,7 +316,7 @@
 				if (!response.is_saved)
 					$('#print').hide();
 				
-				tableHelper.contentHelper.checkProductTypeDescription();
+				tableHelper.contentHelper.checkProductInfo();
 			}       
 		});
 	}
@@ -355,7 +355,7 @@
 					else
 					{
 						myjstbl.insert_multiplerow_with_value(1,response.detail);
-						tableHelper.contentHelper.checkProductTypeDescription();
+						tableHelper.contentHelper.checkProductInfo();
 						checkReceivedDetails();
 						recomputeTotalItem();
 					}

@@ -729,10 +729,13 @@ var TableHelper = function(tableOptions,options) {
 			});
 		},
 
-		checkProductTypeDescription : function()
+		checkProductInfo : function()
 		{
-			for (var i = 1; i < self._jsTable.get_row_count(); i++) 
+			for (var i = 1; i < self._jsTable.get_row_count(); i++)
+			{
 				self.contentHelper.descriptionAccessibilty(i);
+				self.contentHelper.changeRowAccessiblity(i);
+			}
 		},
 
 		descriptionAccessibilty : function(rowIndex ,isForceHide)
@@ -754,6 +757,20 @@ var TableHelper = function(tableOptions,options) {
 			
 			if (isForceHide)
 				$(descriptionElement).hide();  
+		},
+
+		changeRowAccessiblity : function(rowIndex)
+		{
+			var isProductDeleted 	= Number(self.contentProvider.getData(rowIndex,'product', 5));
+			var productElement 		= self.contentProvider.getElement(rowIndex,'product');
+			var parentRow 			= $(productElement).parent().parent();
+
+			if (isProductDeleted == 0)
+			{
+				$(parentRow).find('input').attr('disabled', 'disabled');
+				$(parentRow).css('background-color', '#FF3333');
+				$(parentRow).find('i, input[type=checkbox]').hide();
+			}
 		},
 
 		checkCurrentInventory : function(element,onBeforeSubmit,onAfterSubmit)

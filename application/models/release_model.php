@@ -109,27 +109,30 @@ class Release_Model extends CI_Model {
 
 		$result_po_list->free_result();
 
-		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`release_order_detail_id`,
-						COALESCE(CONCAT('PA',PH.`reference_number`),'') AS 'po_number',
-						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`type`, '') AS 'type',
-						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
-						CASE
-							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
-							ELSE ''
-						END AS 'uom',
-						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
-						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`qty_released`,0)) AS 'qty_remaining',
-						PRD.`quantity` AS 'qty_released', 
-						IF(PRD.`quantity` >= COALESCE(PD.`quantity`,0), 1, 0) AS 'is_checked'
-					FROM `release_detail` AS PRD
-					LEFT JOIN `release_head` AS PRH ON PRH.`id` = PRD.`headid` 
-					LEFT JOIN `release_order_detail` AS PD ON PD.`id` = PRD.`release_order_detail_id`
-					LEFT JOIN `release_order_head` AS PH ON PH.`id` = PD.`headid`
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
-					WHERE PRD.`headid` = ? AND PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::ACTIVE;
+		$query_detail = "SELECT 
+							PRD.`id` AS 'receive_detail_id', PRD.`release_order_detail_id`,
+							COALESCE(CONCAT('PA',PH.`reference_number`),'') AS 'po_number',
+							PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+							COALESCE(P.`type`, '') AS 'type',
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							COALESCE(PD.`description`,'') AS 'description', 
+							CASE
+								WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom',
+							COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
+							(COALESCE(PD.`quantity`,0) - COALESCE(PD.`qty_released`,0)) AS 'qty_remaining',
+							PRD.`quantity` AS 'qty_released', 
+							IF(PRD.`quantity` >= COALESCE(PD.`quantity`,0), 1, 0) AS 'is_checked'
+						FROM `release_detail` AS PRD
+						LEFT JOIN `release_head` AS PRH ON PRH.`id` = PRD.`headid` 
+						LEFT JOIN `release_order_detail` AS PD ON PD.`id` = PRD.`release_order_detail_id`
+						LEFT JOIN `release_order_head` AS PH ON PH.`id` = PD.`headid`
+						LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
+						WHERE PRD.`headid` = ? AND PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::ACTIVE;
 
 		$result_detail = $this->db->query($query_detail,$this->_release_head_id);
 
@@ -146,7 +149,7 @@ class Release_Model extends CI_Model {
 				$response['detail'][$i][] = array($this->encrypt->encode($row->release_order_detail_id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->po_number);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
@@ -190,7 +193,9 @@ class Release_Model extends CI_Model {
 
 		$query = "SELECT COALESCE(PRD.`id`,0) AS 'receive_detail_id',
 						PD.`id` AS 'release_order_detail_id', PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', 
+						COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+COALESCE(P.`is_show`, 0) AS 'is_deleted',
+ 
 						CASE
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
@@ -228,7 +233,8 @@ class Release_Model extends CI_Model {
 				$response['detail'][$i][] = array($this->encrypt->encode($row->release_order_detail_id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->po_number);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted
+);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);

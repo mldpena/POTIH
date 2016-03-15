@@ -55,20 +55,22 @@ class Damage_Model extends CI_Model {
 			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
 		}
 
-		$query_detail = "SELECT DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product',
-						CASE
-							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::ROLL." THEN 'ROLL'
-							ELSE ''
-						END AS 'uom', 
-						DD.`quantity`, DD.`memo`, DD.`description`, 
-						COALESCE(P.`type`, '') AS 'type'
-					FROM `damage_detail` AS DD
-					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id`
-					WHERE DD.`headid` = ?";
+		$query_detail = "SELECT 
+							DD.`id`, DD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							CASE
+								WHEN P.`uom` = ".\Constants\DAMAGE_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\DAMAGE_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\DAMAGE_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom', 
+							DD.`quantity`, DD.`memo`, DD.`description`, 
+							COALESCE(P.`type`, '') AS 'type'
+						FROM `damage_detail` AS DD
+						LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
+						LEFT JOIN `product` AS P ON P.`id` = DD.`product_id`
+						WHERE DD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_damage_head_id);
 		
@@ -82,7 +84,7 @@ class Damage_Model extends CI_Model {
 				$break_line = $row->type == \Constants\DAMAGE_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);

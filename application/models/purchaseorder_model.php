@@ -68,21 +68,23 @@ class PurchaseOrder_Model extends CI_Model {
 			$response['own_branch'] 		= $this->_current_branch_id;
 		}
 
-		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product',
-						CASE
-							WHEN P.`uom` = ".\Constants\PURCHASE_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\PURCHASE_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\PURCHASE_CONST::ROLL." THEN 'ROLL'
-							ELSE ''
-						END AS 'uom', 
-						PD.`quantity`, PD.`memo`, PD.`description`, 
-						COALESCE(P.`type`, '') AS 'type', 
-						PD.`recv_quantity`
-					FROM `purchase_detail` AS PD
-					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
-					WHERE PD.`headid` = ?";
+		$query_detail = "SELECT 
+							PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							CASE
+								WHEN P.`uom` = ".\Constants\PURCHASE_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\PURCHASE_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\PURCHASE_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom', 
+							PD.`quantity`, PD.`memo`, PD.`description`, 
+							COALESCE(P.`type`, '') AS 'type', 
+							PD.`recv_quantity`
+						FROM `purchase_detail` AS PD
+						LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
+						LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
+						WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_purchase_head_id);
 
@@ -97,7 +99,7 @@ class PurchaseOrder_Model extends CI_Model {
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);

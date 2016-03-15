@@ -65,22 +65,24 @@ class Assortment_Model extends CI_Model {
 			$response['transaction_branch'] = $row->branch_id;
 		}
 
-		$query_detail = "SELECT PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
-						COALESCE(P.`description`,'') AS 'product', 
-						CASE
-							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::PCS." THEN 'PCS'
-							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::KG." THEN 'KGS'
-							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::ROLL." THEN 'ROLL'
-							ELSE ''
-						END AS 'uom', 
-						PD.`quantity`, PD.`memo`, PD.`description`, 
-						COALESCE(P.`type`, '') AS 'type', 
-						PD.`qty_released`,
-						(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
-					FROM `release_order_detail` AS PD
-					LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
-					WHERE PD.`headid` = ?";
+		$query_detail = "SELECT 
+							PD.`id`, PD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							CASE
+								WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom', 
+							PD.`quantity`, PD.`memo`, PD.`description`, 
+							COALESCE(P.`type`, '') AS 'type', 
+							PD.`qty_released`,
+							(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
+						FROM `release_order_detail` AS PD
+						LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
+						LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
+						WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,(int)$this->_assortment_head_id);
 
@@ -94,7 +96,7 @@ class Assortment_Model extends CI_Model {
 				$break_line = $row->type == \Constants\ASSORTMENT_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
-				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
