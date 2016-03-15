@@ -21,6 +21,10 @@
 						<td><input type="text" class="form-control" id="date"></td>
 					</tr>
 					<tr>
+						<td>Due Date:</td>
+						<td><input type="text" class="form-control" id="due-date"></td>
+					</tr>
+					<tr>
 						<td>Request To:</td>
 						<td colspan="1">
 							<select class="form-control" id="to_branch" ><?= $branch_list ?></select>

@@ -10,7 +10,7 @@
 				<div class="container container-wrap">
 					<div class="row">
 						<div class="version pull-left">
-							Hi-Top - Version 1.0 <?= isset($branch) ? ' | Branch : '.$branch : '' ?>
+							Hi-Top - Version <?= isset($branch) ? VERSION.' | Branch : '.$branch : VERSION ?>
 						</div>
 						<?php if ($page != 'login') : ?>
 							<div class="user-creds">
