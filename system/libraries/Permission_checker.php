@@ -70,7 +70,7 @@ class CI_Permission_checker
 
 			case 'sales':
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
-											\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON
+											\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON,
 											\Permission\Sales_Code::VIEW_SALES);
 				break;
 		}
