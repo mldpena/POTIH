@@ -198,4 +198,13 @@
 		const EDIT_CUSTOMER = 253;
 		const DELETE_CUSTOMER = 254;
 	}
+
+	class SalesReservation_Code
+	{
+		const VIEW_SALES_RESERVATON = 260;
+		const VIEW_SALES_RESERVATON_DETAIL = 261;
+		const ADD_SALES_RESERVATON = 262;
+		const EDIT_SALES_RESERVATON = 263;
+		const DELETE_SALES_RESERVATON= 264;
+	}
 ?>

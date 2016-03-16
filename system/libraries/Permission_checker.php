@@ -67,6 +67,11 @@ class CI_Permission_checker
 											\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY,
 											\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY);
 				break;
+
+			case 'sales':
+				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
+											\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON);
+				break;
 		}
 
 		return $this->_check_permission_exists($permission_needed);
@@ -109,7 +114,8 @@ class CI_Permission_checker
 					'damage' => $this->check_section_permission('damage'),
 					'pickup' => $this->check_section_permission('pickup'),
 					'adjust' => $this->check_section_permission('adjust'),
-					'reports' => $this->check_section_permission('reports'));
+					'reports' => $this->check_section_permission('reports'),
+					'sales' => $this->check_section_permission('sales'));
 	}
 
 	public function get_page_permissions()
@@ -121,6 +127,7 @@ class CI_Permission_checker
 						'branch' => $this->check_permission(\Permission\Branch_Code::VIEW_BRANCH),
 						'purchase' => $this->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE),
 						'purchase_receive' => $this->check_permission(\Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE),
+						'sales_reservation' => $this->check_permission(\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON),
 						'customer_return' => $this->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN),
 						'damage' => $this->check_permission(\Permission\Damage_Code::VIEW_DAMAGE),
 						'purchase_return' => $this->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN),
