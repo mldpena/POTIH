@@ -132,6 +132,6 @@
 	function actionAfterDelete()
 	{
 		triggerSearchRequest();
-		build_message_box('messagebox_1','Material successfully deleted!','success');
+		build_message_box('messagebox_1','User successfully deleted!','success');
 	}
 </script>
