@@ -61,7 +61,7 @@
 
 				<a href="<?= base_url() ?>customer/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>user.png">
+						<img src="<?= base_url().IMG ?>customer.png">
 						<div>Customer</div>
 					</div>
 				</a>

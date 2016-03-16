@@ -58,7 +58,7 @@
 
 			<a href="<?= base_url() ?>customer/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>user.png">
+					<img src="<?= base_url().IMG ?>customer.png">
 					<div class="btn-title">Customer</div>
 				</div>
 			</a>
