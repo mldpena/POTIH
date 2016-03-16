@@ -141,9 +141,12 @@ class CI_Permission_checker
 
 	public function check_page_permission_for_notification()
 	{
-		return array('pending_adjustment' => $this->check_permission(\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST),
-					'stock_request' => $this->check_permission(\Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST),
-					'stock_receive' => $this->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE),
-					'warning' => $this->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING));
+		return array(
+						'pending_adjustment' => $this->check_permission(\Permission\PendingAdjust_Code::VIEW_PENDING_ADJUST),
+						'stock_request_from' => $this->check_permission(\Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST),
+						'stock_request_to' => $this->check_permission(\Permission\StockRequestTo_Code::VIEW_STOCKREQUEST),
+						'stock_receive' => $this->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE),
+						'warning' => $this->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING)
+					);
 	}
 }
