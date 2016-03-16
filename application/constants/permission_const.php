@@ -207,4 +207,13 @@
 		const EDIT_SALES_RESERVATON = 263;
 		const DELETE_SALES_RESERVATON= 264;
 	}
+
+	class Sales_Code
+	{
+		const VIEW_SALES = 270;
+		const VIEW_SALES_DETAIL = 271;
+		const ADD_SALES = 272;
+		const EDIT_SALES = 273;
+		const DELETE_SALES= 274;
+	}
 ?>

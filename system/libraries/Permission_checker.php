@@ -70,7 +70,8 @@ class CI_Permission_checker
 
 			case 'sales':
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
-											\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON);
+											\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON
+											\Permission\Sales_Code::VIEW_SALES);
 				break;
 		}
 
@@ -128,6 +129,7 @@ class CI_Permission_checker
 						'purchase' => $this->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE),
 						'purchase_receive' => $this->check_permission(\Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE),
 						'sales_reservation' => $this->check_permission(\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON),
+						'sales' => $this->check_permission(\Permission\Sales_Code::VIEW_SALES),
 						'customer_return' => $this->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN),
 						'damage' => $this->check_permission(\Permission\Damage_Code::VIEW_DAMAGE),
 						'purchase_return' => $this->check_permission(\Permission\PurchaseReturn_Code::VIEW_PURCHASE_RETURN),
