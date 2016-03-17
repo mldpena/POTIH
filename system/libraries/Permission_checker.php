@@ -23,6 +23,7 @@ class CI_Permission_checker
 											\Permission\Material_Code::VIEW_MATERIAL,
 											\Permission\SubGroup_Code::VIEW_SUBGROUP,
 											\Permission\User_Code::VIEW_USER,
+											\Permission\Customer_Code::VIEW_CUSTOMER,
 											\Permission\Branch_Code::VIEW_BRANCH);
 				break;
 
@@ -125,6 +126,7 @@ class CI_Permission_checker
 						'material' => $this->check_permission(\Permission\Material_Code::VIEW_MATERIAL),
 						'subgroup' => $this->check_permission(\Permission\SubGroup_Code::VIEW_SUBGROUP),
 						'user' => $this->check_permission(\Permission\User_Code::VIEW_USER),
+						'customer' => $this->check_permission(\Permission\Customer_Code::VIEW_CUSTOMER),
 						'branch' => $this->check_permission(\Permission\Branch_Code::VIEW_BRANCH),
 						'purchase' => $this->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE),
 						'purchase_receive' => $this->check_permission(\Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE),
