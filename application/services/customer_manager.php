@@ -90,13 +90,13 @@ class Customer_Manager
 		return $response;
 	}
 
-	public function get_customer_details()
+	public function get_customer_details($customer_id)
 	{
 		$response = [];
 
 		$response['error'] = '';
 
-		$result = $this->_CI->customer_model->get_customer_details_by_id();
+		$result = $this->_CI->customer_model->get_customer_details_by_id($customer_id);
 
 		if ($result->num_rows() == 1) 
 		{
