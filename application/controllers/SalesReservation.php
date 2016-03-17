@@ -7,6 +7,7 @@ class SalesReservation extends CI_Controller {
 	private $_sales_reservation_manager;
 	private $_notification_manager;
 	private $_product_manager;
+	private $_customer_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -121,11 +122,13 @@ class SalesReservation extends CI_Controller {
 		$this->load->service('salesreservation_manager');
 		$this->load->service('notification_manager');
 		$this->load->service('product_manager');
+		$this->load->service('customer_manager');
 
 		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
 		$this->_sales_reservation_manager = new Services\SalesReservation_Manager();
 		$this->_product_manager = new Services\Product_Manager();
+		$this->_customer_manager = new Services\Customer_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -183,10 +186,14 @@ class SalesReservation extends CI_Controller {
 					$response = $this->_product_manager->get_product_autocomplete($post_data);
 					break;
 
+				case 'get_customer_details':
+					$response = $this->_customer_manager->get_customer_details($post_data['customer_id']);
+					break;
+
 				case 'check_notifications':
 					$response = $this->_notification_manager->get_header_notifications();
 					break;
-					
+						
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

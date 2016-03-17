@@ -246,12 +246,12 @@
 		});
 	}
 
-	/*$('#customer').change(function(){
+	$('#customer').change(function(){
 
 		var customer_id = $(this).val();
 
 		var arr = 	{ 
-						fnc : 'get_sales_reservation_details',
+						fnc : 'get_customer_details',
 						customer_id : customer_id
 					};
 
@@ -261,15 +261,15 @@
 			data: 'data=' + JSON.stringify(arr) + notificationToken,
 			success: function(response) 
 			{
-				$('#address').val(response.address);
+				$('#address').val(response.office_address);
 			}
 		});
-	});*/
+	});
 
 	function getHeadDetailsBeforeSubmit()
 	{
-		var customer_type = $('input[name=customer-type]:selected').val();
-		var customer_id_val = customer_type == CustomerType.Regular ? customer_type : 0;
+		var customer_type = $("input[name='customer-type']:checked").val();
+		var customer_id_val = customer_type == CustomerType.Regular ? $('#customer').val() : 0;
 		var walkin_customer_name_val = customer_type == CustomerType.Regular ? '' : $('#walkin-customer').val();
 		var address_val = customer_type == CustomerType.Regular ? '' : $('#address').val();
 		var salesman_val = $('#salesman').val();
@@ -280,7 +280,7 @@
 
 		if (
 				(customer_type == CustomerType.Regular && customer_id_val == 0) ||
-				(customer_type == CustomerType.Walkin && walkin_customer_name == '')
+				(customer_type == CustomerType.Walkin && walkin_customer_name_val == '')
 			) 
 		{
 			alert('Customer should not be empty!');

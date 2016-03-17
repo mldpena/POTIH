@@ -137,7 +137,7 @@
 			
 			<a href="<?= base_url() ?>reservation/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<img src="<?= base_url().IMG ?>sales-reservation.png">
 					<div class="btn-title">Sales Reservation</div>
 				</div>
 			</a>
