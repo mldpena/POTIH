@@ -1177,6 +1177,7 @@ class Product_Model extends CI_Model {
 
 		$query = "SELECT 
 						$temp_beginning
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation',
 						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
 						COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
 						COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',
@@ -1340,6 +1341,14 @@ class Product_Model extends CI_Model {
 					$reference_character = "WR";
 					$link_location 	= "release";
 					break;
+
+				case 'reservation':
+					$head_table 	= "sales_reservation_head";
+					$detail_table 	= "sales_reservation_detail";
+					$reference_character = "SO";
+					$branch_column = "H.`for_branch_id`";
+					$link_location 	= "sales_reservation";
+					break;
 			}
 
 	      	if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
@@ -1435,5 +1444,14 @@ class Product_Model extends CI_Model {
 		}
 
 		return $this->db->count_all_results();
+	}
+
+	public function get_product_qty_transaction($row_id, $table_name)
+	{
+		$this->db->select("`quantity`")
+				->from($table_name)
+				->where("`id`", $row_id);
+
+		return $this->db->get();
 	}
 }

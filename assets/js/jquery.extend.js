@@ -153,4 +153,19 @@
 
         return error;
     };
+
+    $.toggleOption = function(name, optionSelection)
+    {
+        $("input[name='" + name + "']").click(function(){
+            var value = $(this).val();
+
+            for (var i = 0; i < optionSelection.length; i++) 
+            {
+                if (value == optionSelection[i].optionValue)
+                    $('#' + optionSelection[i].elementId).show();
+                else
+                    $('#' + optionSelection[i].elementId).hide();
+            }
+        });
+    }
 })(jQuery);

@@ -4,6 +4,7 @@ class InventoryAdjust extends CI_Controller {
 	
 	private $_authentication_manager;
 	private $_notification_manager;
+	private $_product_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -122,10 +123,13 @@ class InventoryAdjust extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('adjust_model');
+		$this->load->model('product_model');
 		$this->load->service('notification_manager');
-		
-		$this->_notification_manager = new Services\Notification_Manager();
+		$this->load->service('product_manager');
 
+		$this->_notification_manager = new Services\Notification_Manager();
+		$this->_product_manager = new Services\Product_Manager();
+		
 		$post_data 	= array();
 		$fnc 		= '';
 
@@ -170,7 +174,7 @@ class InventoryAdjust extends CI_Controller {
 					break;
 
 				case 'autocomplete_product':
-					$response = get_product_list_autocomplete($post_data,TRUE);
+					$response = $this->_product_manager->get_product_autocomplete($post_data, TRUE);
 					break;
 				
 				case 'check_notifications':

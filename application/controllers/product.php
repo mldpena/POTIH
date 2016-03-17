@@ -17,7 +17,6 @@ class Product extends CI_Controller {
 
 		$this->load->service('authentication_manager');
 		$this->load->library('permission_checker');
-		$this->load->service('product_manager');
 		
 		$this->_authentication_manager = new Services\Authentication_Manager();
 	}
@@ -154,6 +153,7 @@ class Product extends CI_Controller {
 		$this->load->constant('product_const');
 		$this->load->model('product_model');
 		$this->load->service('notification_manager');
+		$this->load->service('product_manager');
 		
 		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_product_manager = new Services\Product_Manager();
@@ -219,7 +219,7 @@ class Product extends CI_Controller {
 					break;
 
 				case 'autocomplete_product':
-					$response = get_product_list_autocomplete($post_data);
+					$response = $this->_product_manager->get_product_autocomplete($post_data);
 					break;
 
 				case 'get_transaction_record':

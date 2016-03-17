@@ -115,6 +115,39 @@
 
 	<?php endif; ?>
 
+	<?php if($section_permissions['sales']) : ?>
+
+	<div class="content-form">
+		<div class="form-header">
+			Sales
+		</div>
+		<div class="form-body default">
+			<?php if($page_permissions['sales_reservation']) : ?>
+			
+			<a href="<?= base_url() ?>reservation/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchaseorder.png">
+					<div class="btn-title">Sales Reservation</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+
+			<?php if($page_permissions['sales']) : ?>
+			
+			<a href="<?= base_url() ?>sales/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>purchasereceive.png">
+					<div class="btn-title">Sales Invoice</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+		</div>
+	</div>
+
+	<?php endif; ?>
+
 	<?php if($section_permissions['delivery']) : ?>
 
 	<div class="content-form">

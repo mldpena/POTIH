@@ -11,6 +11,7 @@
     var colarray = [];
 
     var tableColumns = [{ headerName : 'Beg Inv.', className : 'beginv' },
+                        { headerName : 'Sales Reservation', className : 'reservation' },
                         { headerName : 'Purchase Receive', className : 'purchasereceive' },
                         { headerName : 'Customer Return', className : 'customereturn' },
                         { headerName : 'Item Receive', className : 'stockreceive' },
