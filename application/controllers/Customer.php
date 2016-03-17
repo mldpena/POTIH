@@ -144,7 +144,7 @@ class Customer extends CI_Controller {
 					break;
 
 				case 'get_customer_details':
-					$response = $this->_customer_manager->get_customer_details();
+					$response = $this->_customer_manager->get_customer_details($this->encrypt->decode($this->uri->segment(3)));
 					break;
 
 				case 'check_notifications':

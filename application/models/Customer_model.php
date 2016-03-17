@@ -134,11 +134,11 @@ class Customer_Model extends CI_Model {
 		return $response;
 	}
 
-	public function get_customer_details_by_id()
+	public function get_customer_details_by_id($customer_id)
 	{
 		$this->db->from("customer")
 				->where("`is_show`", \Constants\CUSTOMER_CONST::ACTIVE)
-				->where("`id`", $this->_customer_id);
+				->where("`id`", $customer_id);
 
 		$result = $this->db->get();
 
