@@ -355,4 +355,15 @@ class SalesReservation_Model extends CI_Model {
 
 		return $this->db->get();
 	}
+
+	public function get_transaction_total_sold_quantity($sales_head_id)
+	{
+		$this->db->select("SUM(SRD.`sold_qty`) AS 'sold_qty', SRH.`branch_id`")
+				->from("sales_reservation_head AS SRH")
+				->join("sales_reservation_detail AS SRD", "SRD.`headid` = SRH.`id`", "left")
+				->where("SRH.`id`", $sales_head_id)
+				->where("SRH.`is_show`", \Constants\SALESRESERVATION_CONST::ACTIVE);
+
+		return $this->db->get();
+	}
 }

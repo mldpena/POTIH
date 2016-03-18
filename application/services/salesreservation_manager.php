@@ -16,7 +16,7 @@ class SalesReservation_Manager
 									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get sales reservation details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete sales reservation detail!',
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete sales reservation head!',
-									'HAS_RECEIVED' => 'Sales Reservation can only be deleted if sales reservation status is no received!',
+									'HAS_SOLD' => 'Sales Reservation can only be deleted if sales reservation status is no sold!',
 									'NOT_OWN_BRANCH' => 'Cannot delete sales reservation entry of other branches!',
 									'UNABLE_TO_GENERATE_REFERENCE' => 'Unablet to generate new reference number!');
 
@@ -216,6 +216,18 @@ class SalesReservation_Manager
 		extract($param);
 
 		$sales_reservation_head_id = $this->_CI->encrypt->decode($head_id);
+
+		$result = $this->_CI->salesreservation_model->get_transaction_total_sold_quantity($sales_reservation_head_id);
+
+		$row 	= $result->row();
+
+		if ($row->sold_qty > 0)
+			throw new \Exception($this->_error_message['HAS_SOLD']);
+
+		if ($row->branch_id != $this->_current_branch_id)
+			throw new \Exception($this->_error_message['NOT_OWN_BRANCH']);
+
+		$result->free_result();
 
 		$update_sales_reservation_data = [
 											'is_show' => \Constants\SALESRESERVATION_CONST::DELETED,
