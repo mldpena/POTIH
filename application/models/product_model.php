@@ -860,6 +860,7 @@ class Product_Model extends CI_Model {
 							ELSE ''
 						END AS 'type',
 						$temp_beginning
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation',
 						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
 						COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
 						COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',

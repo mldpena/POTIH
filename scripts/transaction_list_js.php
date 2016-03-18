@@ -14,6 +14,7 @@
 						{ headerName : 'Product', className : 'name' },
 						{ headerName : 'Type', className : 'type' },
 						{ headerName : 'Beginning Inventory', className : 'beginv' },
+						{ headerName : 'Sales Reservation', className : 'reservation' },
 						{ headerName : 'Purchase Receive', className : 'purchasereceive' },
 						{ headerName : 'Customer Return', className : 'customereturn' },
 						{ headerName : 'Item Receive', className : 'stockreceive' },
