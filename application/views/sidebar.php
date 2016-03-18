@@ -152,7 +152,7 @@
 
 				<a href="<?= base_url() ?>sales/list">
 					<div class="link">
-						<img src="<?= base_url().IMG ?>purchasereceive.png">
+						<img src="<?= base_url().IMG ?>sales.png">
 						<div>Sales Invoice</div>
 					</div>
 				</a>

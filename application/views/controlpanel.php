@@ -148,7 +148,7 @@
 			
 			<a href="<?= base_url() ?>sales/list">
 				<div class="each-btn" align="center">
-					<img src="<?= base_url().IMG ?>purchasereceive.png">
+					<img src="<?= base_url().IMG ?>sales.png">
 					<div class="btn-title">Sales Invoice</div>
 				</div>
 			</a>

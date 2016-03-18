@@ -102,7 +102,7 @@ $(function(){
 																	notificationSection : 'dueReservation',
 																	notificationSubject : 'Sales Reservation Due Warning',
 																	notificationMessage : 'You have ({0}) sales reservation!',
-																	notificationIcon 	: 'no-delivery.png',
+																	notificationIcon 	: 'sales-reservation-due-warning.png',
 																	notificationLink 	: 'reservation/list/1'
 																}
 															];

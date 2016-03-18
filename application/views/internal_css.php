@@ -1,5 +1,6 @@
 <?php
-	switch ($page) {
+	switch ($page) 
+	{
 		case 'login':
 ?>
 		<style type="text/css">
@@ -26,7 +27,7 @@
 			}
 		</style>
 <?php
-		break;
+			break;
 		case 'controlpanel':
 ?>
 		<style type="text/css">
@@ -41,7 +42,18 @@
 			}
 		</style>
 <?php
-		break;
+
+			break;
+
+		default:
+?>
+		<style type="text/css">
+			.tdprice{
+				width: 120px;
+			}
+		</style>
+<?php
+			break;
 	}
 ?>
 	

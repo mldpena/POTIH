@@ -1,0 +1,264 @@
+<?php
+
+namespace Services;
+
+class Sales_Manager
+{
+	private $_CI;
+	private $_current_branch_id = 0;
+	private $_sales_head_id = 0;
+	private $_current_user = 0;
+	private $_current_date = '';
+	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert sales invoice detail!',
+									'UNABLE_TO_UPDATE' => 'Unable to update sales invoice detail!',
+									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update sales invoice head!',
+									'UNABLE_TO_SELECT_HEAD' => 'Unable to get sales invoice head details!',
+									'UNABLE_TO_SELECT_DETAILS' => 'Unable to get sales invoice details!',
+									'UNABLE_TO_DELETE' => 'Unable to delete sales invoice detail!',
+									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete sales invoice head!',
+									'HAS_DELIVERED' => 'Sales Invoice can only be deleted if sales invoice status is no delivery!',
+									'NOT_OWN_BRANCH' => 'Cannot delete sales invoice entry of other branches!',
+									'UNABLE_TO_GENERATE_REFERENCE' => 'Unablet to generate new reference number!');
+
+	public function __construct()
+	{
+		$this->_CI = $CI =& get_instance();
+
+		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
+		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
+		$this->_current_date 		= date("Y-m-d H:i:s");
+
+		$this->_sales_head_id = (int)$this->_CI->encrypt->decode($this->_CI->uri->segment(3));
+
+		$this->_CI->load->model('sales_model');
+	}
+
+	public function get_sales_details()
+	{
+		$response = [];
+
+		$response['error'] = '';
+		$response['detail_error'] = '';
+
+		$result_head = $this->_CI->sales_model->get_sales_head_info_by_id();
+
+		if ($result_head->num_rows() != 1) 
+			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+		else
+		{
+			$row = $result_head->row();
+
+			$response['reference_number'] 	= $row->reference_number;
+			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
+			$response['memo'] 				= $row->memo;
+			$response['customer_id'] 		= $row->customer_id;
+			$response['walkin_customer_name'] = $row->walkin_customer_name;
+			$response['address'] 			= $row->address;
+			$response['for_branch'] 		= $row->for_branch_id;
+			$response['salesman_id'] 		= $row->salesman_id;
+			$response['is_vatable'] 		= $row->is_vatable;
+			$response['is_vatable'] 		= $row->is_vatable;
+			$response['ponumber'] 			= $row->ponumber;
+			$response['drnumber'] 			= $row->drnumber;
+			$response['is_editable'] 		= $row->qty_released == 0 ? (($row->branch_id == $this->_current_branch_id) ? TRUE : FALSE) : FALSE;
+			$response['is_saved'] 			= $row->is_used == 1 ? TRUE : FALSE;
+			$response['is_incomplete'] 		= $row->remaining_qty > 0 && $row->qty_released > 0 ? TRUE : FALSE;
+			$response['transaction_branch'] = $row->branch_id;
+			$response['own_branch'] 		= $this->_current_branch_id;
+		}
+
+		$result_head->free_result();
+
+		$result_detail = $this->_CI->sales_model->get_sales_detail_info_by_id();
+
+		if ($result_detail->num_rows() == 0) 
+			$response['detail_error'] = $this->_error_message['UNABLE_TO_SELECT_DETAILS'];
+		else
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				$break_line = $row->type == \Constants\SALES_CONST::STOCK ? '' : '<br/>';
+				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->id));
+				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->reservation_detail_id));
+				$response['detail'][$i][] = array($i+1);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
+				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
+				$response['detail'][$i][] = array($row->quantity);
+				$response['detail'][$i][] = array($row->price);
+				$response['detail'][$i][] = array($row->qty_released);
+				$response['detail'][$i][] = array($row->memo);
+				$response['detail'][$i][] = array($row->amount);
+				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array('');
+				$i++;
+			}
+		}
+
+		$result_detail->free_result();
+
+		return $response;
+	}
+
+	public function search_sales_list($param)
+	{
+		$row_start = (int)$param['row_start'];
+		
+		$response = [];
+
+		$response['rowcnt'] = 0;
+
+		$result = $this->_CI->sales_model->get_sales_list_by_filter($param);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			
+			$response['rowcnt'] = $this->_CI->sales_model->get_sales_list_count_by_filter($param);
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
+				$response['data'][$i][] = array($row_start + $i + 1);
+				$response['data'][$i][] = array($row->location);
+				$response['data'][$i][] = array($row->for_branch);
+				$response['data'][$i][] = array($row->reference_number);
+				$response['data'][$i][] = array($row->customer);
+				$response['data'][$i][] = array($row->salesman);
+				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array($row->memo);
+				$response['data'][$i][] = array($row->status);
+				$response['data'][$i][] = array('');
+				$i++;
+			}
+		}
+
+		$result->free_result();
+		
+		return $response;
+	}
+
+	public function insert_sales_detail($param)
+	{
+		extract($param);
+
+		$reservation_detail_id = $this->_CI->encrypt->decode($reservation_detail_id);
+
+		$sales_detail_data = [
+								'headid' => $this->_sales_head_id,
+								'quantity' => $qty,
+								'product_id' => $product_id,
+								'description' => $description,
+								'price' => $price,
+								'memo' => $memo,
+								'reservation_detail_id' => $reservation_detail_id
+							];
+
+		$response = $this->_CI->sales_model->insert_new_sales_detail($sales_detail_data);
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_INSERT']);
+			
+		return $response;
+	}
+
+	public function update_sales_detail($param)
+	{
+		extract($param);
+
+		$sales_detail_id = $this->_CI->encrypt->decode($detail_id);
+
+		$reservation_detail_id = $this->_CI->encrypt->decode($reservation_detail_id);
+
+		$sales_detail_data = [
+								'headid' => $this->_sales_head_id,
+								'quantity' => $qty,
+								'product_id' => $product_id,
+								'description' => $description,
+								'price' => $price,
+								'memo' => $memo,
+								'reservation_detail_id' => $reservation_detail_id
+							];
+
+		$response = $this->_CI->sales_model->update_sales_table($sales_detail_data, \Constants\SALES_CONST::TBL_SALES_DETAIL, $sales_detail_id);
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_UPDATE']);
+			
+		return $response;
+	}
+
+	public function delete_sales_detail($param)
+	{
+		extract($param);
+
+		$sales_detail_id = $this->_CI->encrypt->decode($detail_id);
+
+		$response = $this->_CI->sales_model->delete_sales_detail_by_id($sales_detail_id);
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_DELETE']);
+			
+		return $response;
+	}
+
+	public function update_sales_head($param)
+	{
+		extract($param);
+
+		$sales_head_data = [
+								'for_branch_id' => $orderfor,
+								'customer_id' => $customer_id,
+								'walkin_customer_name' => $walkin_customer_name,
+								'walkin_customer_address' => $address,
+								'entry_date' => $entry_date.' '.date('H:i:s'),
+								'memo' => $memo,
+								'salesman_id' => $salesman,
+								'ponumber' => $ponumber,
+								'drnumber' => $drnumber,
+								'is_vatable' => $is_vatable,
+								'is_used' => \Constants\SALES_CONST::USED
+							];
+
+		$response = $this->_CI->sales_model->update_sales_table($sales_head_data, \Constants\SALES_CONST::TBL_SALES_HEAD, $this->_sales_head_id);
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
+			
+		return $response;
+	}
+
+	public function delete_sales($param)
+	{
+		extract($param);
+
+		$sales_head_id = $this->_CI->encrypt->decode($head_id);
+
+		$result = $this->_CI->sales_model->get_transaction_total_delivered_quantity($sales_head_id);
+
+		$row 	= $result->row();
+
+		if ($row->qty_released > 0)
+			throw new \Exception($this->_error_message['HAS_DELIVERED']);
+
+		if ($row->branch_id != $this->_current_branch_id)
+			throw new \Exception($this->_error_message['NOT_OWN_BRANCH']);
+
+		$update_sales_data = [
+								'is_show' => \Constants\SALES_CONST::DELETED,
+								'last_modified_date' => $this->_current_date,
+								'last_modified_by' => $this->_current_user
+							];
+
+
+		$response = $this->_CI->sales_model->update_sales_table($update_sales_data, \Constants\SALES_CONST::TBL_SALES_HEAD, $sales_head_id);
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
+
+		return $response;
+	}
+}
+
+?>
