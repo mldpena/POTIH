@@ -210,11 +210,11 @@
 					</tr>
 					<tr>
 						<td>Sales Reservation</td>
-						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::VIEW_SALES_RESERVATON ?>"></td>
-						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::VIEW_SALES_RESERVATON_DETAIL ?>"></td>
-						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::ADD_SALES_RESERVATON ?>"></td>
-						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::EDIT_SALES_RESERVATON ?>"></td>
-						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::DELETE_SALES_RESERVATON ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::VIEW_SALES_RESERVATION ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::VIEW_SALES_RESERVATION_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::ADD_SALES_RESERVATION ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::EDIT_SALES_RESERVATION ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::DELETE_SALES_RESERVATION ?>"></td>
 						<td></td>
 					</tr>
 					<tr>
