@@ -62,18 +62,22 @@
 			<div class="max-row">
 				<div class="tbl-checkbtn">
 					<div class="pull-left">
-						<input type="checkbox" class="preset" id="admin-permission" value="<?= \Permission\SuperAdmin_Code::ADMIN ?>">
+						<input type="checkbox" class="preset" id="admin-permission" value="<?= \Permission\UserType_Code::ADMIN ?>">
 						<span>Admin</span>
 					</div>
 					<div class="pull-left margin-left5">
-						<input type="checkbox" class="preset" id="encoder-permission" value="<?= \Permission\SuperAdmin_Code::ADMIN ?>">
+						<input type="checkbox" class="preset" id="encoder-permission" value="<?= \Permission\UserType_Code::NORMAL_USER ?>">
 						<span>Encoder</span>
+					</div>
+					<div class="pull-left margin-left5">
+						<input type="checkbox" class="preset" id="salesman-permission" value="<?= \Permission\UserType_Code::SALESMAN ?>">
+						<span>Salesman</span>
 					</div>
 				</div>
 			</div>
 			<div class="sub-panel header-section">
 				<div align="left">
-					<input type="checkbox" class="permission-section encoder-preset-section" id="data-permission"> Data Section
+					<input type="checkbox" class="permission-section" id="data-permission"> Data Section
 				</div>
 			</div>
 			<div class="max-row tbl max user">
@@ -190,6 +194,42 @@
 			</div>
 			<div class="sub-panel header-section">
 				<div align="left">
+					<input type="checkbox" class="permission-section" id="sales-permission"> Sales Section
+				</div>
+			</div>
+			<div class="max-row tbl max user">
+				<table>
+					<tr class="tableheader">
+						<td style="width:345px;">Page</td>
+						<td style="width:130px;">View</td>
+						<td style="width:130px;">View Detail</td>
+						<td style="width:130px;">Add</td>
+						<td style="width:130px;">Edit</td>
+						<td style="width:130px;">Delete</td>
+						<td style="width:320px;">Others</td>
+					</tr>
+					<tr>
+						<td>Sales Reservation</td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::VIEW_SALES_RESERVATON ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::VIEW_SALES_RESERVATON_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::ADD_SALES_RESERVATON ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::EDIT_SALES_RESERVATON ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\SalesReservation_Code::DELETE_SALES_RESERVATON ?>"></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Sales Invoice</td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::VIEW_SALES ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::VIEW_SALES_DETAIL ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::ADD_SALES ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::EDIT_SALES ?>"></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::DELETE_SALES ?>"></td>
+						<td></td>
+					</tr>
+				</table>
+			</div>
+			<div class="sub-panel header-section">
+				<div align="left">
 					<input type="checkbox" class="permission-section" id="transfer-permission"> Item Transaferring Section
 				</div>
 			</div>
@@ -262,7 +302,7 @@
 			</div>
 			<div class="sub-panel header-section">
 				<div align="left">
-					<input type="checkbox" class="permission-section encoder-preset-section" id="return-permission"> Damage Section
+					<input type="checkbox" class="permission-section" id="return-permission"> Damage Section
 				</div>
 			</div>
 			<div class="max-row tbl max user">

@@ -53,7 +53,7 @@ class User_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$query_user_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user);
+		$query_user_data = array($user_code,$full_name,$user_name,$password,$contact,$status,$this->_current_date,$this->_current_date,$this->_current_user,$this->_current_user, $user_type);
  		$query_user = "INSERT INTO `user`
 					(`code`,
 					`full_name`,
@@ -64,9 +64,10 @@ class User_Model extends CI_Model {
 					`date_created`,
 					`last_modified_date`,
 					`created_by`,
-					`last_modified_by`)
+					`last_modified_by`,
+					`type`)
 					VALUES
-					(?,?,?,?,?,?,?,?,?,?);";
+					(?,?,?,?,?,?,?,?,?,?,?);";
 
 		array_push($query,$query_user,"SET @insert_id := LAST_INSERT_ID();");
 		array_push($query_data,$query_user_data,array());
@@ -160,7 +161,7 @@ class User_Model extends CI_Model {
 		$response['error'] = '';
 		$passwordField = '';
 
-		$query_user_data = array($user_code,$full_name,$user_name,$contact,$status,$this->_current_date,$this->_current_user,$this->_user_head_id);
+		$query_user_data = array($user_code,$full_name,$user_name,$contact,$status,$this->_current_date,$this->_current_user, $user_type, $this->_user_head_id);
 		
 		if ($password != \Constants\USER_CONST::DUMMY_PASSWORD) 
 		{
@@ -178,7 +179,8 @@ class User_Model extends CI_Model {
 						`contact_number` = ?,
 						`is_active` = ?,
 						`last_modified_date` = ?,
-						`last_modified_by` = ?
+						`last_modified_by` = ?,
+						`type` = ?
 						WHERE `id` = ?;";
 
 		array_push($query,$query_user,"DELETE FROM user_permission WHERE `user_id` = ?;");
@@ -290,7 +292,11 @@ class User_Model extends CI_Model {
 							WHEN `is_active` = ".\Constants\USER_CONST::INACTIVE." THEN 'Inactive'
 						END AS 'status'
 						FROM user
-						WHERE `is_show` = ".\Constants\USER_CONST::ACTIVE." AND `id` NOT IN(".$this->_current_user.", 1, 8) $conditions
+						WHERE 
+							`is_show` = ".\Constants\USER_CONST::ACTIVE." AND 
+							`id` <> ".$this->_current_user." AND
+							`type` <> ".\Permission\UserType_Code::SUPERADMIN."
+							$conditions
 						ORDER BY $order_field $order_type";
 
 		$result = $this->db->query($query,$query_data);

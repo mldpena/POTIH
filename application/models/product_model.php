@@ -860,7 +860,6 @@ class Product_Model extends CI_Model {
 							ELSE ''
 						END AS 'type',
 						$temp_beginning
-						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation',
 						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
 						COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
 						COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',
@@ -870,7 +869,8 @@ class Product_Model extends CI_Model {
 						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
 						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
 						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
-						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release',
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation'
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
@@ -1178,7 +1178,6 @@ class Product_Model extends CI_Model {
 
 		$query = "SELECT 
 						$temp_beginning
-						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation',
 						COALESCE(SUM(TS.`purchase_receive`),0) AS 'purchase_receive',
 						COALESCE(SUM(TS.`customer_return`),0) AS 'customer_return',
 						COALESCE(SUM(TS.`stock_receive`),0) AS 'stock_receive',
@@ -1188,7 +1187,8 @@ class Product_Model extends CI_Model {
 						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
 						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
 						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
-						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release',
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation'
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
@@ -1205,11 +1205,19 @@ class Product_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				foreach ($row as $key => $value)
-      				$response['data'][$i][] = array($value);
+				{
+					/**
+					 * Code to rearrange sales reservation data as the last column in view
+					 */
+					if ($key !== 'sales_reservation')
+      					$response['data'][$i][] = array($value);
+				}
 
       			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
       											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
       											- $row->adjust_decrease - $row->release);
+
+      			$response['data'][$i][] = array($row->sales_reservation);
 
 				$i++;
 			}
@@ -1348,7 +1356,7 @@ class Product_Model extends CI_Model {
 					$detail_table 	= "sales_reservation_detail";
 					$reference_character = "SO";
 					$branch_column = "H.`for_branch_id`";
-					$link_location 	= "sales_reservation";
+					$link_location 	= "reservation";
 					break;
 			}
 

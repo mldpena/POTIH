@@ -192,7 +192,7 @@
 					$('#walkin-customer').val(response.walkin_customer_name);
 					$('#salesman').val(response.salesman_id).trigger('liszt:updated');
 					$('#address').val(response.address);
-					$('#orderfor').val(response.for_branch_id);
+					$('#orderfor').val(response.for_branch);
 
 					if (response.customer_id == 0)
 					{

@@ -1,14 +1,19 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 if (!function_exists('get_name_list_from_table')) 
 {
-	function get_name_list_from_table($is_option = false, $table = '', $include_all = false, $default_value = 0, $field_name = "`name`")
+	function get_name_list_from_table($is_option = false, $table = '', $include_all = false, $default_value = 0, $field_name = "`name`", $optional_condition = "")
 	{
 		$CI =& get_instance();
 
 		$data_list = (!$is_option) ? array() : '';
 
-		$query = "SELECT CONCAT($field_name) AS 'name', `id`
-					FROM $table WHERE `is_show` = 1"; 
+		$query = "SELECT 
+					CONCAT($field_name) AS 'name', `id`
+					FROM 
+						$table 
+					WHERE 
+						`is_show` = 1
+						$optional_condition"; 
 
 		$result = $CI->db->query($query);
 
