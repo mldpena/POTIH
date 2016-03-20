@@ -1,6 +1,14 @@
 <?php
 	namespace Permission;
 
+	class UserType_Code
+	{
+		const SUPERADMIN = 1;
+		const ADMIN = 2;
+		const NORMAL_USER = 3;
+		const SALESMAN = 4;
+	}
+
 	class SuperAdmin_Code
 	{
 		const ADMIN = 100;
