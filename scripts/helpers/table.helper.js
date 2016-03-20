@@ -708,13 +708,11 @@ var TableHelper = function(tableOptions,options) {
 						build_message_box('messagebox_1',self._settings.notFoundMessage,'info');
 					}
 					else
-					{
-						if(response.rowcnt <= 10)
-							self._jsTable.mypage.set_last_page(1);
-						else
-							self._jsTable.mypage.set_last_page( Math.ceil(Number(response.rowcnt) / Number(self._jsTable.mypage.filter_number)));
+					{	
+						if (Number(filterValues.filter_reset) === 1) 
+							self._jsTable.mypage.set_last_page(Math.ceil(Number(response.rowcnt) / Number(self._jsTable.mypage.filter_number)));
 
-						self._jsTable.insert_multiplerow_with_value(1,response.data);
+						self._jsTable.insert_multiplerow_with_value(1, response.data);
 
 						$('#' + self._settings.tableID).show();
 					}
