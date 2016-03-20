@@ -348,12 +348,17 @@ class Product_Manager
 				$response['data'][$i][] = array($row_start + $i + 1);
 				
 				foreach ($row as $key => $value)
-      				$response['data'][$i][] = array($value);
+				{
+					if ($key !== 'sales_reservation')
+      					$response['data'][$i][] = array($value);
+				}
 
       			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
       											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
       											- $row->adjust_decrease - $row->release);
 
+      			$response['data'][$i][] = array($row->sales_reservation);
+      			
 				$i++;
 			}
 		}

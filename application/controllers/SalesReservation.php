@@ -63,7 +63,7 @@ class SalesReservation extends CI_Controller {
 				$page = 'salesreservation_detail';
 				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
 				$customer_list = get_name_list_from_table(TRUE, 'customer', FALSE, 0, "`code`, ' - ', `company_name`");
-				$salesman_list = get_name_list_from_table(TRUE, 'user', FALSE, $this->encrypt->decode(get_cookie('temp')), '`full_name`');
+				$salesman_list = get_name_list_from_table(TRUE, 'user', FALSE, $this->encrypt->decode(get_cookie('temp')), '`full_name`', " AND `type` = ".\Permission\UserType_Code::SALESMAN);
 				$allow_user = $this->permission_checker->check_permission(\Permission\SalesReservation_Code::VIEW_SALES_RESERVATION);
 				$permissions = array(
 										'allow_to_edit' => $this->permission_checker->check_permission(\Permission\SalesReservation_Code::EDIT_SALES_RESERVATION),

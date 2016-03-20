@@ -480,11 +480,16 @@ class Export_Manager
 			foreach ($result->result() as $row) 
 			{		
 				foreach ($row as $key => $value)
-      				$response['data'][$i][] = $value;
+				{
+					if ($key !== 'sales_reservation')
+      					$response['data'][$i][] = $value;
+				}
 
       			$response['data'][$i][] = $row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
       											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
       											- $row->adjust_decrease - $row->release;
+
+      			$response['data'][$i][] = $row->sales_reservation;
 
 				$i++;
 			}
