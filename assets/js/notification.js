@@ -97,6 +97,13 @@ $(function(){
 																	notificationMessage : 'You have ({0}) request with no delivery!',
 																	notificationIcon 	: 'no-delivery.png',
 																	notificationLink 	: 'requestto/list/2'
+																},
+																{
+																	notificationSection : 'dueReservation',
+																	notificationSubject : 'Sales Reservation Due Warning',
+																	notificationMessage : 'You have ({0}) sales reservation!',
+																	notificationIcon 	: 'sales-reservation-due-warning.png',
+																	notificationLink 	: 'reservation/list/1'
 																}
 															];
 

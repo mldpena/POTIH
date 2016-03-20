@@ -129,6 +129,40 @@
 
 		<?php endif; ?>
 
+		<?php if($section_permissions['sales']) : ?>
+
+		<div class="sidebar-group" id="sales-group">
+			<div class="header subgroup-toggle">
+				<div>Sales</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
+				<?php if($page_permissions['sales_reservation']) : ?>
+
+				<a href="<?= base_url() ?>reservation/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>sales-reservation.png">
+						<div>Sales Reservation</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+				<?php if($page_permissions['sales']) : ?>
+
+				<a href="<?= base_url() ?>sales/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>sales.png">
+						<div>Sales Invoice</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+			</div>
+		</div>
+
+		<?php endif; ?>
+
 		<?php if($section_permissions['delivery']) : ?>
 
 		<div class="sidebar-group" id="delivery-group">

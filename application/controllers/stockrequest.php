@@ -5,6 +5,7 @@ class StockRequest extends CI_Controller {
 	private $_authentication_manager;
 	private $_request_manager;
 	private $_notification_manager;
+	private $_product_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -141,11 +142,14 @@ class StockRequest extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('request_model');
+		$this->load->model('product_model');
 		$this->load->service('request_manager');
 		$this->load->service('notification_manager');
-		
+		$this->load->service('product_manager');
+
 		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_request_manager = new Services\Request_Manager();
+		$this->_product_manager = new Services\Product_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -188,7 +192,7 @@ class StockRequest extends CI_Controller {
 					break;
 
 				case 'autocomplete_product':
-					$response = get_product_list_autocomplete($post_data);
+					$response = $this->_product_manager->get_product_autocomplete($post_data);
 					break;
 
 				case 'delete_head':
@@ -205,6 +209,10 @@ class StockRequest extends CI_Controller {
 
 				case 'check_notifications':
 					$response = $this->_notification_manager->get_header_notifications();
+					break;
+
+				case 'check_product_inventory':
+					$response = $this->_product_manager->check_current_inventory($post_data, \Constants\REQUEST_CONST::MAX_CHECKER);
 					break;
 
 				default:

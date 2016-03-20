@@ -71,7 +71,7 @@ class CI_Permission_checker
 
 			case 'sales':
 				$permission_needed = array(\Permission\SuperAdmin_Code::ADMIN,
-											\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON,
+											\Permission\SalesReservation_Code::VIEW_SALES_RESERVATION,
 											\Permission\Sales_Code::VIEW_SALES);
 				break;
 		}
@@ -130,7 +130,7 @@ class CI_Permission_checker
 						'branch' => $this->check_permission(\Permission\Branch_Code::VIEW_BRANCH),
 						'purchase' => $this->check_permission(\Permission\Purchase_Code::VIEW_PURCHASE),
 						'purchase_receive' => $this->check_permission(\Permission\PurchaseReceive_Code::VIEW_PURCHASE_RECEIVE),
-						'sales_reservation' => $this->check_permission(\Permission\SalesReservation_Code::VIEW_SALES_RESERVATON),
+						'sales_reservation' => $this->check_permission(\Permission\SalesReservation_Code::VIEW_SALES_RESERVATION),
 						'sales' => $this->check_permission(\Permission\Sales_Code::VIEW_SALES),
 						'customer_return' => $this->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN),
 						'damage' => $this->check_permission(\Permission\Damage_Code::VIEW_DAMAGE),
@@ -157,7 +157,8 @@ class CI_Permission_checker
 						'stock_request_from' => $this->check_permission(\Permission\StockRequestFrom_Code::VIEW_STOCKREQUEST),
 						'stock_request_to' => $this->check_permission(\Permission\StockRequestTo_Code::VIEW_STOCKREQUEST),
 						'stock_receive' => $this->check_permission(\Permission\StockReceive_Code::VIEW_STOCK_RECEIVE),
-						'warning' => $this->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING)
+						'warning' => $this->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING),
+						'sales_reservation' => $this->check_permission(\Permission\SalesReservation_Code::VIEW_SALES_RESERVATION)
 					);
 	}
 }

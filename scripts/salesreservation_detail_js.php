@@ -1,10 +1,8 @@
 <script type="text/javascript">
-	var TransactionState = {
-		Saved : 1,
-		Unsaved : 0
-	}
-
-	var token = '<?= $token ?>';
+	var CustomerType = {
+		Regular : 1,
+		Walkin : 2
+	};
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -74,7 +72,7 @@
 		disp: [spnuom],
 		td_class: "tablerow column_click column_hover tduom"
 	};
-	
+
 	var spnqty = document.createElement('span');
 	var txtqty = document.createElement('input');
 	txtqty.setAttribute('class','form-control txtqty');
@@ -85,29 +83,20 @@
 		td_class: "tablerow column_click column_hover tdqty"
 	};
 
-	var spnreceive = document.createElement('span');
-	colarray['released'] = { 
-		header_title: "Released Qty",
-		edit: [spnreceive],
-		disp: [spnreceive],
-		td_class: "tablerow column_click column_hover tdreleased",
-		headertd_class : "tdreleased"
-	};
-
-	var spnqtyremaining = document.createElement('span');
-	colarray['remaining'] = { 
-		header_title: "Remaining Qty",
-		edit: [spnqtyremaining],
-		disp: [spnqtyremaining],
-		td_class: "tablerow column_click column_hover tdremaining",
-		headertd_class : "tdremaining"
+	var spnsoldqty = document.createElement('span');
+	colarray['sold'] = { 
+		header_title: "Sold Qty",
+		edit: [spnsoldqty],
+		disp: [spnsoldqty],
+		td_class: "tablerow column_click column_hover tdsold",
+		headertd_class : "tdsold"
 	};
 
 	var spnmemo = document.createElement('span');
 	var txtmemo = document.createElement('input');
 	txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
-		header_title: "Remarks",
+		header_title: "Memo",
 		edit: [txtmemo],
 		disp: [spnmemo],
 		td_class: "tablerow column_click column_hover tdmemo"
@@ -149,8 +138,9 @@
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
 										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'assort',
-										  recentNameElementId : 'customer' } );
+										  controller : 'reservation',
+										  token : notificationToken,
+										  recentNameElementId : 'supplier' } );
 
 	tableHelper.detailContent.bindAllEvents({ 
 												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
@@ -159,113 +149,162 @@
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
-		$('#date').datepicker();
-		$('#date').datepicker("option","dateFormat", "mm-dd-yy");
+		$.toggleOption('customer-type', [
+											{
+												optionValue : 1,
+												elementId : 'customer_chzn'
+											},
+											{
+												optionValue : 2,
+												elementId : 'walkin-customer'
+											}
+										]);
+
+		$('#customer, #salesman').chosen();
+		$('#date, #due-date').datepicker();
+		$('#date, #due-date').datepicker("option","dateFormat", "mm-dd-yy");
 		$('#date').datepicker("setDate", new Date());
+		$('#due-date').datepicker("option", "minDate", $('#date').val());
+
+    	$('#date').change(function(){
+    		$('#due-date').datepicker("option", "minDate", $('#date').val());
+    	});
 
 		var arr = 	{ 
-						fnc : 'get_assortment_details'
+						fnc : 'get_sales_reservation_details'
 					};
+
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
+			success: function(response) 
+			{
 				clear_message_box();
 
 				if (response.error != '') 
-					build_message_box('messagebox_1',response.error,'danger');
+					build_message_box('messagebox_1', response.error, 'danger');
 				else
 				{
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
-					$('#customer').val(response.customer_name);
+					$('#customer').val(response.customer_id).trigger('liszt:updated');
+					$('#walkin-customer').val(response.walkin_customer_name);
+					$('#salesman').val(response.salesman_id).trigger('liszt:updated');
+					$('#address').val(response.address);
+					$('#orderfor').val(response.for_branch);
 
-					if (response.entry_date != '') 
-						$('#date').val(response.entry_date);	
+					if (response.customer_id == 0)
+					{
+						$('#customer_chzn').hide();
+						$('#walkin-customer').show();
+						$('input[name=customer-type][value=' + CustomerType.Walkin + ']').attr('checked', 'checked');
+					}
+					else
+					{
+						$('#customer_chzn').show();
+						$('#walkin-customer').hide();
+						$('input[name=customer-type][value=' + CustomerType.Regular + ']').attr('checked', 'checked');
+					}
+						
+					if (response.entry_date != '')
+					{
+						$('#date').val(response.entry_date);
+						$('#due-date').datepicker("option", "minDate", $('#date').val());
+					}
+					
+					if (response.due_date != '') 
+						$('#due-date').val(response.due_date);
 
-					if (response.is_saved == TransactionState.Unsaved)
-						hideQuantityReleasedColumn();
+					if (!response.is_saved)
+					{
+						$('#print').hide();
+						toggleColumn();
+					}
 				}
 				
 				if (response.detail_error == '') 
-					myjstbl.insert_multiplerow_with_value(1,response.detail);
+					myjstbl.insert_multiplerow_with_value(1, response.detail);
 
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
-					$('.tdupdate, .tddelete, #save, #transfer').hide();
+					$('.tdupdate, .tddelete, #save').hide();
 
-					if (response.is_saved && response.is_incomplete && (response.own_branch == response.transaction_branch) && (Boolean(<?= $permission_list['allow_to_edit_incomplete']?>) == true))
+					if (response.is_saved && response.is_incomplete && (response.own_branch == response.transaction_branch))
 					{
 						$('input, textarea, select').not('#print').removeAttr('disabled');
-						$('.tdupdate, .tddelete, #save').show();
+						$('.tdupdate, #save').show();
 					}
 				}	
 				else
 					tableHelper.contentProvider.addRow();
 
-				if (!response.is_saved)
-					$('#print').hide();
-
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductInfo();
-
 			}       
 		});
 	}
-	else
-		$('input, textarea').attr('disabled','disabled');
 
-	$('#print').click(function(){
-		goToPrintOut();
-	});
+	$('#customer').change(function(){
 
-	function goToPrintOut()
-	{
-		var arr = { fnc : 'set_session' }
+		var customer_id = $(this).val();
+
+		var arr = 	{ 
+						fnc : 'get_customer_details',
+						customer_id : customer_id
+					};
 
 		$.ajax({
 			type: "POST",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
-			success: function(response) {
-				if(response.error != '') 
-					alert(response.error);
-				else
-				{
-					$('#print').show();
-					window.open('<?= base_url() ?>printout/assortment/Release');
-				}
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
+			success: function(response) 
+			{
+				$('#address').val(response.office_address);
 			}
 		});
-	}
+	});
 
 	function getHeadDetailsBeforeSubmit()
 	{
-		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var customer_type = $("input[name='customer-type']:checked").val();
+		var customer_id_val = customer_type == CustomerType.Regular ? $('#customer').val() : 0;
+		var walkin_customer_name_val = customer_type == CustomerType.Regular ? '' : $('#walkin-customer').val();
+		var address_val = customer_type == CustomerType.Regular ? '' : $('#address').val();
+		var salesman_val = $('#salesman').val();
+		var date_val	=  moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var due_date_val =  moment($('#due-date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 	= $('#memo').val();
-		var customer_name_val = $.sanitize($('#customer').val());
+		var for_branch_val 	= $('#orderfor').val();
 
-		if (customer_name_val == '') 
+		if (
+				(customer_type == CustomerType.Regular && customer_id_val == 0) ||
+				(customer_type == CustomerType.Walkin && walkin_customer_name_val == '')
+			) 
 		{
-			alert('Customer Name should not be empty!');
+			alert('Customer should not be empty!');
 			return false;
 		};
 		
 		var arr = 	{ 
-						fnc 	 	: 'save_assortment_head', 
+						fnc 	 	: 'save_sales_reservation_head', 
+						customer_id : customer_id_val,
+						walkin_customer_name : walkin_customer_name_val,
+						address 	: address_val,
+						salesman 	: salesman_val,
 						entry_date 	: date_val,
+						due_date 	: due_date_val,
 						memo 		: memo_val,
-						customer_name : customer_name_val
+						orderfor    : for_branch_val
 					};
 
 		return arr;
 	}
 
-	function hideQuantityReleasedColumn()
+	function toggleColumn()
 	{
 		$('#dynamic-css').html('');
-		$('#dynamic-css').html("<style> .tdreleased, .tdremaining{ display:none; } </style>");
+		$('#dynamic-css').html("<style> .tdsold{ display:none; } </style>");
 	}
 </script>

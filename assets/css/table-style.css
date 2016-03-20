@@ -116,7 +116,9 @@
 .tdid, .tdheader_id, .tdwaybillid, .tdwaybillheader_id, .tdhide, .hide-elem{
 	display: none;
 }
-
+.td-right{
+	text-align: right;
+}
 /*TABLE TD SIZES*/
 .tdqty,
 .tdmin,
@@ -139,4 +141,12 @@
 .tdmemo,
 .tdnote{
 	width: 230px;
+}
+
+/*TABLE SALES DETAIL*/
+.salestbl-detail{
+	width: 352px;
+	max-height: 189px;
+	overflow-y: auto;
+	overflow-x: hidden;  
 }

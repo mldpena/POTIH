@@ -869,7 +869,8 @@ class Product_Model extends CI_Model {
 						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
 						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
 						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
-						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release',
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation'
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
@@ -1186,7 +1187,8 @@ class Product_Model extends CI_Model {
 						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
 						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
 						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
-						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release',
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation'
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
@@ -1203,11 +1205,19 @@ class Product_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				foreach ($row as $key => $value)
-      				$response['data'][$i][] = array($value);
+				{
+					/**
+					 * Code to rearrange sales reservation data as the last column in view
+					 */
+					if ($key !== 'sales_reservation')
+      					$response['data'][$i][] = array($value);
+				}
 
       			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
       											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
       											- $row->adjust_decrease - $row->release);
+
+      			$response['data'][$i][] = array($row->sales_reservation);
 
 				$i++;
 			}
@@ -1340,6 +1350,14 @@ class Product_Model extends CI_Model {
 					$reference_character = "WR";
 					$link_location 	= "release";
 					break;
+
+				case 'reservation':
+					$head_table 	= "sales_reservation_head";
+					$detail_table 	= "sales_reservation_detail";
+					$reference_character = "SO";
+					$branch_column = "H.`for_branch_id`";
+					$link_location 	= "reservation";
+					break;
 			}
 
 	      	if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
@@ -1435,5 +1453,14 @@ class Product_Model extends CI_Model {
 		}
 
 		return $this->db->count_all_results();
+	}
+
+	public function get_product_qty_transaction($row_id, $table_name)
+	{
+		$this->db->select("`quantity`")
+				->from($table_name)
+				->where("`id`", $row_id);
+
+		return $this->db->get();
 	}
 }

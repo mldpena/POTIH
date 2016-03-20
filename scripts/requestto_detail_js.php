@@ -153,7 +153,7 @@
 										{ baseURL : "<?= base_url() ?>", controller : 'requestto' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											 	addInventoryChecker : false,
+											 	addInventoryChecker : true,
 											 	saveEventsAfterCallback : goToPrintOut } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
