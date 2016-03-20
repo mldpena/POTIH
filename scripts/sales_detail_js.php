@@ -322,7 +322,7 @@
 		removeImportedReservation();
 	});
 
-	$('.txtprice').live('change', function(){
+	$('.txtprice, .txtqty').live('change', function(){
 		var rowIndex = $(this).parent().parent().index();
 		var quantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,""));
 		var price 	 = Number(tableHelper.contentProvider.getData(rowIndex, 'price').replace(/\,/gi,""));

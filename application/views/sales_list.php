@@ -21,7 +21,7 @@
 						<td colspan="3">
 							<select class="form-control" id="customer">
 								<?= $customer_list ?>
-								<option value="-1">Walkin Customer</option>
+								<option value="-1">Walk-in Customer</option>
 							</select>
 						</td>
 					</tr>
