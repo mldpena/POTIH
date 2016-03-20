@@ -1,5 +1,6 @@
 <script type="text/javascript">
 	var token = '<?= $token ?>';
+	var fromNotication = Number('<?= $this->uri->segment(3) ?>');
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -56,6 +57,14 @@
         edit: [spndate],
         disp: [spndate],
         td_class: "tablerow column_click column_hover tddate"
+    };
+
+    var spnduedate = document.createElement('span');
+	colarray['duedate'] = { 
+        header_title: "Due Date",
+        edit: [spnduedate],
+        disp: [spnduedate],
+        td_class: "tablerow column_click column_hover tdduedate"
     };
 
     var spnmemo = document.createElement('span');
@@ -120,6 +129,9 @@
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
+	if (fromNotication != 0) 
+		$('#date_from').val('');
+	
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
@@ -164,9 +176,10 @@
 								from_branch 	: from_branch_val,
 								to_branch 		: to_branch_val,
 								status 			: status_val,
-								filter_reset : filterResetValue,
-								row_start : rowStartValue,
-								row_end : rowEndValue
+								notification 	: fromNotication,
+								filter_reset 	: filterResetValue,
+								row_start 		: rowStartValue,
+								row_end 		: rowEndValue
 							};
 
 		tableHelper.contentHelper.refreshTableWithLimit(objectValues);

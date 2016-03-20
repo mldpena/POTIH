@@ -157,9 +157,14 @@
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
-		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "mm-dd-yy");
+		$('#date, #due-date').datepicker();
+    	$('#date, #due-date').datepicker("option", "dateFormat", "mm-dd-yy");
     	$('#date').datepicker("setDate", new Date());
+    	$('#due-date').datepicker("option", "minDate", $('#date').val());
+
+    	$('#date').change(function(){
+    		$('#due-date').datepicker("option", "minDate", $('#date').val());
+    	});
 
 		var arr = 	{ 
 						fnc : 'get_request_details'
@@ -184,6 +189,9 @@
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
+
+					if (response.due_date != '') 
+						$('#due-date').val(response.due_date);	
 
 					if (response.delivery_reference_numbers != '') 
 					{
@@ -260,12 +268,14 @@
 	function getHeadDetailsBeforeSubmit()
 	{
 		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var due_date	= moment($('#due-date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 	= $('#memo').val();
 		var to_branch 	= $('#to_branch').val();
 
 		var arr = 	{ 
 						fnc 	 	: 'save_request_head', 
 						entry_date 	: date_val,
+						due_date 	: due_date,
 						memo 		: memo_val,
 						to_branch 	: to_branch
 					};

@@ -13,6 +13,8 @@
 		const COMPLETE = 2;
 		const NO_RECEIVED = 3;
 		const EXCESS = 4;
+		const INCOMPLETE_DELIVERY = 1;
+		const NO_DELIVERY = 2;
 	}
 
 ?>

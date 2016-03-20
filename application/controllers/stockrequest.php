@@ -159,7 +159,8 @@ class StockRequest extends CI_Controller {
 			switch ($fnc) 
 			{
 				case 'create_reference_number':
-					$response = get_next_number('stock_request_head','reference_number', array('entry_date' => date("Y-m-d H:i:s")));
+					$response = get_next_number('stock_request_head','reference_number', array('entry_date' => date("Y-m-d H:i:s"), 
+																								'due_date' => date('Y-m-d', strtotime('+10 day', strtotime(date('Y-m-d '))))));
 					break;
 
 				case 'search_request_to_list':

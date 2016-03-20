@@ -6,6 +6,7 @@ class Delivery_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_interval_date = '';
 	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert delivery detail!',
 									'UNABLE_TO_UPDATE' => 'Unable to update delivery detail!',
 									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update delivery head!',
@@ -30,6 +31,7 @@ class Delivery_Model extends CI_Model {
 		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d H:i:s");
+		$this->_interval_date 		= date('Y-m-d H:i:s', strtotime('-'.\Constants\DELIVERY_CONST::DATE_INTERVAL.' day', strtotime($this->_current_date)));
 	}
 
 	public function get_stock_delivery_transaction_info()
@@ -1289,16 +1291,16 @@ class Delivery_Model extends CI_Model {
 
 		$this->db->select("SUM(COALESCE(`recv_quantity`,0)) AS 'qty_delivered'")
 				->from("stock_delivery_head AS SH")
-				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id`", "left")
-				->where("SH.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
-				->where("SH.`is_used`", \Constants\ADJUST_CONST::ACTIVE)
+				->join("stock_delivery_detail AS SD", "SD.`headid` = SH.`id` AND SD.`is_for_branch` = ".Constants\DELIVERY_CONST::ACTIVE, "inner")
+				->where("SH.`is_show`", \Constants\DELIVERY_CONST::ACTIVE)
+				->where("SH.`is_used`", \Constants\DELIVERY_CONST::ACTIVE)
 				->where("SH.`to_branchid`", $this->_current_branch_id)
-				->where("SD.`is_for_branch`", \Constants\ADJUST_CONST::ACTIVE)
+				->where("SH.`entry_date` >=", $this->_interval_date)
 				->group_by("SH.`id`")
 				->having("qty_delivered", 0);
 		
 		$inner_query = $this->db->get_compiled_select();
-
+		
 		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
 
 		$result = $this->db->query($query_count);

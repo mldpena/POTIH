@@ -77,6 +77,7 @@ $route['requestfrom/view/(:any)'] = 'stockrequest';
 //For notification
 $route['delreceive/list/(:any)'] = 'stockdelivery';
 $route['requestfrom/list/(:any)'] = 'stockrequest';
+$route['requestto/list/(:any)'] = 'stockrequest';
 $route['pending/list/(:any)'] = 'inventoryadjust';
 
 $route['404_override'] = '';
