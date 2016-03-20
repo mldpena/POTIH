@@ -252,8 +252,8 @@ class Product_Manager
 									'type' => $is_nonstack,
 									'material_type_id' => $material,
 									'subgroup_id' => $subgroup,
-									'date_created' => $this->_current_date,
-									'created_by' => $this->_current_user);
+									'last_modified_date' => $this->_current_date,
+									'last_modified_by' => $this->_current_user);
 
 		$branch_inventory_field_data = array();
 
