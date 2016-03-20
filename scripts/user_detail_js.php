@@ -4,6 +4,13 @@
 		OtherProfile : 0
 	};
 
+	var UserType = {
+		SuperAdmin : 1,
+		Admin : 2,
+		NormalUser : 3,
+		Salesman : 4
+	};
+
 	var isOwnProfile = false;
 	var flag = 0;
 	var token = '<?= $token ?>';
@@ -17,7 +24,7 @@
 		var id = $(this).attr('id');
 		id = id.replace('-permission','');
 
-		var presetDetailPermissionClass = (id == 'admin')  ?  'check-detail, .permission-section' : id + '-preset, .' + id + '-preset-section';
+		var presetDetailPermissionClass = (id == 'admin')  ?  'check-detail, .permission-section' : id + '-preset';
 
 		if ($(this).is(':checked'))
 		{
@@ -28,8 +35,11 @@
 		else
 		{
 			$('.' + presetDetailPermissionClass).removeAttr('checked');
+			$('.permission-section').removeAttr('checked');
 			$('.preset').removeAttr('disabled');
 		}
+
+		checkSectionPermission();
 	});
 
 	$('.permission-section').click(function(){
@@ -101,6 +111,7 @@
 		var contact_val 	= $("#contact").val();
 		var branches_val    = $('#branches').val() == null ? '' : $('#branches').val();
 		var permission_list = [];
+		var user_type 		= $('.preset:checked').length > 0 ? $('.preset:checked').val() : UserType.NormalUser;
 		var fnc_val 		= "<?= $this->uri->segment(3) ?>" != "" ? "update_user" : "insert_new_user";
 		
 
@@ -161,7 +172,7 @@
 		}
 
 		if ($('#admin-permission').is(':checked'))
-			permission_list.push($('#admin-permission').val());
+			permission_list.push("<?= \Permission\SuperAdmin_Code::ADMIN ?>");
 		else
 		{
 			$('.check-detail:checked').each(function(key,element){
@@ -178,6 +189,7 @@
 						password 	: password_val,
 						contact 	: contact_val,
 						branches 	: branches_val,
+						user_type 	: user_type,
 						permission_list : permission_list
 					};
 
@@ -291,6 +303,9 @@
 
 		if ($('.reports-detail').length == $('.reports-detail:checked').length)
 			$('#reports-permission').attr('checked','checked');
+
+		if ($('.sales-detail').length == $('.sales-detail:checked').length)
+			$('#sales-permission').attr('checked','checked');
 	}
 
 	function checkPresetPermission(presetEntity)
