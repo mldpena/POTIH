@@ -7,12 +7,12 @@
 		if (flag) 
 			return;
 
-		var code_val			= $("#code").val();
-		var company_name_val 	= $("#company-name").val();
-		var office_address_val 	= $("#office-address").val();
-		var plant_address_val 	= $("#plant-address").val();
+		var code_val			= $.trim($("#code").val());
+		var company_name_val 	= $.trim($("#company-name").val());
+		var office_address_val 	= $.trim($("#office-address").val());
+		var plant_address_val 	= $.trim($("#plant-address").val());
 		var contact_val 		= $("#contact").val();
-		var contact_person_val 	= $("#contact-person").val();
+		var contact_person_val 	= $.trim($("#contact-person").val());
 		var tin_val 			= $("#tin").val();
 		var tax_val 			= $("#tax").val();
 
