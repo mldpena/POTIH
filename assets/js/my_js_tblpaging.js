@@ -317,6 +317,7 @@ function my_js_tblpaging(table_id_var){
 	});
 	
 	$("#"+this.txtfilternumber_id).live("change",function(){
+		var page = $.trim($("#"+this_var.txtfilternumber_id).val());
 		var row = $.trim($("#"+this_var.txtfilternumber_id).val());
 		var re = $.isNumeric(Number(row));
 		
