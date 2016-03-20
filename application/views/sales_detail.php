@@ -3,23 +3,23 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li><a href="<?= base_url() ?>reservation/list">Sales Reservation List</a></li>
-			<li class="active"><a href="<?= base_url() ?>reservation/view/<?= $this->uri->segment(3) ?>">Sales Reservation Detail</a></li>
+			<li><a href="<?= base_url() ?>sales/list">Sales Invoice List</a></li>
+			<li class="active"><a href="<?= base_url() ?>sales/view/<?= $this->uri->segment(3) ?>">Sales Invoice Detail</a></li>
 		</ol>
 	</div>
 	<div class="content-form">
-		<div class="form-header">Sales Reservation Detail</div>
+		<div class="form-header">Sales Invoice Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
 				<div class="row">
 					<div class="col-md-12">
-						<label class="form-inline">
-							<input type="radio" name="customer-type" value="1" checked>
-							Regular
-						</label>
 						<label class="form-inline margin-left5">
 							<input type="radio" name="customer-type" value="2">
 							Walk-in
+						</label>
+						<label class="form-inline">
+							<input type="radio" name="customer-type" value="1" checked>
+							Regular
 						</label>
 					</div>
 				</div>
@@ -157,12 +157,16 @@
 					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>
-			<div class="max-row tbl-total" align="right">
+			<div class="max-row tbl-total" align="left">
 				<table>
 					<tr>
 						<td>Total Quantity:</td>
 						<td class="td-right"><span id="total_qty">0</span></td>
 					</tr>
+				</table>
+			</div>
+			<div class="max-row tbl-total" align="right">
+				<table>
 					<tr>
 						<td>VATable:</td>
 						<td class="td-right"><span id="vatable">0</span></td>
@@ -202,11 +206,11 @@
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Delete Sales Reservation Entry</h4>
+				<h4 class="modal-title" id="myModalLabel">Delete Sales Invoice Entry</h4>
 			</div>
 			<div class="modal-body">
 				<div class="message-content">
-					Are you sure you want to delete this sales reservation entry?
+					Are you sure you want to delete this sales invoice entry?
 				</div>
 				<br/><div id="messagebox_2"></div>
 			</div>

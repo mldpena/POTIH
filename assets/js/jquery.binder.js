@@ -28,7 +28,7 @@
 
 		        switch(format){
 					case 'numeric':
-						if (e.keyCode == 173) 
+						if (e.keyCode == 173 || (e.keyCode === 190 && !e.shiftKey)) 
 							return;
 
 						if (e.shiftKey) 

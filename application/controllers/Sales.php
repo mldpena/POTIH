@@ -63,7 +63,7 @@ class Sales extends CI_Controller {
 				$page = 'sales_detail';
 				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
 				$customer_list = get_name_list_from_table(TRUE, 'customer', FALSE, 0, "`code`, ' - ', `company_name`");
-				$salesman_list = get_name_list_from_table(TRUE, 'user', FALSE, $this->encrypt->decode(get_cookie('temp')), '`full_name`');
+				$salesman_list = get_name_list_from_table(TRUE, 'user', FALSE, $this->encrypt->decode(get_cookie('temp')), '`full_name`', " AND `type` = ".\Permission\UserType_Code::SALESMAN);
 				$allow_user = $this->permission_checker->check_permission(\Permission\Sales_Code::VIEW_SALES);
 				$permissions = array(
 										'allow_to_edit' => $this->permission_checker->check_permission(\Permission\Sales_Code::EDIT_SALES),
@@ -183,6 +183,10 @@ class Sales extends CI_Controller {
 
 				case 'get_customer_details':
 					$response = $this->_customer_manager->get_customer_details($post_data['customer_id']);
+					break;
+
+				case 'remove_imported_reservation':
+					$response = $this->_sales_manager->remove_imported_reservation();
 					break;
 
 				case 'check_notifications':

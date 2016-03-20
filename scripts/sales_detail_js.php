@@ -9,6 +9,8 @@
 		Vatable :2 
 	};
 
+	var previousCustomerBuffer = 0;
+
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
 	tab.id = "tableid";
@@ -120,7 +122,7 @@
 	var txtmemo = document.createElement('input');
 	txtmemo.setAttribute('class','form-control txtmemo');
 	colarray['memo'] = { 
-		header_title: "Memo",
+		header_title: "Remarks",
 		edit: [txtmemo],
 		disp: [spnmemo],
 		td_class: "tablerow column_click column_hover tdmemo"
@@ -177,6 +179,7 @@
 	tableHelper.detailContent.bindAllEvents({ 
 												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+												deleteEventsAfterCallback : computeSummary,
 												addInventoryChecker : false
 											});
 
@@ -198,6 +201,7 @@
 		$('#date, #due-date').datepicker("option","dateFormat", "mm-dd-yy");
 		$('#date').datepicker("setDate", new Date());
 		$('#due-date').datepicker("option", "minDate", $('#date').val());
+		$('.txtprice').binder('setRule', 'numeric');
 
     	$('#date').change(function(){
     		$('#due-date').datepicker("option", "minDate", $('#date').val());
@@ -283,6 +287,8 @@
 	}
 
 	$('#customer').change(function(){
+		
+		removeReservationNotification();
 
 		var customer_id = $(this).val();
 
@@ -299,14 +305,21 @@
 			{
 				$('#address').val(response.office_address);
 				$('#is-vatable').val(response.tax);
-				computeSummary();
+				removeImportedReservation();
 			}
 		});
 	});
 
-	$("input[name='customer-type'][value=2]").click(function(){
-		$('#is-vatable').val(Tax.Vatable);
-		computeSummary();
+	$("input[name='customer-type']").change(function(){
+		
+		var value = $(this).val();
+
+		removeReservationNotification();
+
+		if (value == CustomerType.Walkin)
+			$('#is-vatable').val(Tax.Vatable);
+		
+		removeImportedReservation();
 	});
 
 	$('.txtprice').live('change', function(){
@@ -343,6 +356,12 @@
 			return false;
 		};
 		
+		if (salesman_val == 0) 
+		{
+			alert('Please select a salesman!');
+			return false;
+		};
+
 		var arr = 	{ 
 						fnc 	 	: 'save_sales_head', 
 						customer_id : customer_id_val,
@@ -364,13 +383,41 @@
 	{
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId 		= tableHelper.contentProvider.getData(rowIndex, 'product', 1);
-		var qty 			= Number(tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,""));
+		var qty 			= tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,"");
 		var memo 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex, 'memo'));
-		var price 			= Number(tableHelper.contentProvider.getData(rowIndex, 'price').replace(/\,/gi,""));
+		var price 			= tableHelper.contentProvider.getData(rowIndex, 'price').replace(/\,/gi,"");
 		var sales_detail_id = tableHelper.contentProvider.getData(rowIndex, 'id');
 		var reservation_detail_id = Number(tableHelper.contentProvider.getData(rowIndex, 'reservationid'));
 		var description 	= (tableHelper.contentProvider.getData(rowIndex, 'product', 4));
 		var actionFunction 	= sales_detail_id != 0 ? "update_sales_detail" : "insert_sales_detail";
+
+		var errorList = $.dataValidation([ 
+											{   
+												value : productId,
+												fieldName : 'Product',
+												required : true,
+												isNotEqual : { value : 0, errorMessage : 'Please select a valid product!'}
+											},
+											{
+												value : qty,
+												fieldName : 'Quantity',
+												required : true,
+												rules : 'numeric'
+											},
+											{
+												value : price,
+												fieldName : 'Price',
+												required : true,
+												rules : 'numeric'
+											}
+										]);
+
+		if (errorList.length > 0) 
+		{
+			clear_message_box();
+			build_message_box('messagebox_1', build_error_message(errorList), 'danger');
+			return false;
+		};
 
 		var arr = 	{ 
 						fnc 	 	: actionFunction, 
@@ -405,6 +452,34 @@
 		$('#less-vat').html(vatAmount.formatMoney(2));
 		$('#total').html(vatableAmount.formatMoney(2));
 		$('#amount-due').html(totalAmount.formatMoney(2));
+	}
+
+	function removeReservationNotification()
+	{
+		alert("Products imported from Sales Reservation will be removed upon changing customer.");
+	}
+
+	function removeImportedReservation()
+	{
+		var arr = 	{ 
+						fnc : 'remove_imported_reservation'
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
+			success: function(response) 
+			{
+				if (response.error !== '') 
+				{
+					alert(response.error);
+					window.reload();
+				}
+				else
+					computeSummary();
+			}
+		});
 	}
 
 	function toggleColumn()

@@ -313,4 +313,19 @@ class Sales_Model extends CI_Model {
 
 		return $this->db->get();
 	}
+
+	public function delete_imported_reservation_by_transaction_id()
+	{
+		$response = [];
+
+		$this->db->trans_start();
+			$this->db->where("`reservation_detail_id` >", 0);
+			$this->db->where("`headid`", $this->_sales_head_id);
+			$this->db->delete("sales_detail");
+		$this->db->trans_complete();
+
+		$response['error'] = $this->db->error()['message'];
+
+		return $response;
+	}
 }

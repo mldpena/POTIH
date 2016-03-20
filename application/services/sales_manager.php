@@ -18,7 +18,8 @@ class Sales_Manager
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete sales invoice head!',
 									'HAS_DELIVERED' => 'Sales Invoice can only be deleted if sales invoice status is no delivery!',
 									'NOT_OWN_BRANCH' => 'Cannot delete sales invoice entry of other branches!',
-									'UNABLE_TO_GENERATE_REFERENCE' => 'Unablet to generate new reference number!');
+									'UNABLE_TO_DELETE_RESERVATION' => 'Unable to remove imported sales reservation. Please try again.',
+									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!');
 
 	public function __construct()
 	{
@@ -257,6 +258,16 @@ class Sales_Manager
 		if (!empty($response['error']))
 			throw new \Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 
+		return $response;
+	}
+
+	public function remove_imported_reservation()
+	{
+		$response = $this->_CI->sales_model->delete_imported_reservation_by_transaction_id();
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_DELETE_RESERVATION']);
+			
 		return $response;
 	}
 }
