@@ -278,7 +278,7 @@ class Product_Manager
 	public function delete_product($param)
 	{
 		extract($param);
-
+		
 		$product_id = $this->_CI->encrypt->decode($head_id);
 
 		$updated_product_fields = array('is_show' => \Constants\PRODUCT_CONST::DELETED,

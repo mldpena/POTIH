@@ -54,6 +54,17 @@
 
 			<?php endif; ?>
 
+			<?php if($page_permissions['customer']) : ?>
+
+			<a href="<?= base_url() ?>customer/list">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>customer.png">
+					<div class="btn-title">Customer</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
+
 			<?php if($page_permissions['branch']) : ?>
 
 			<a href="<?= base_url() ?>branch/list">
