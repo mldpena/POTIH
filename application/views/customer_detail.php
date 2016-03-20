@@ -2,7 +2,7 @@
 	<div class="breadcrumbs-panel">
 		<ol class="breadcrumb">
 			<li><a href="<?= base_url() ?>controlpanel">Home</a></li>
-			<li><a href="<?= base_url() ?>customer/list">User List</a></li>
+			<li><a href="<?= base_url() ?>customer/list">Customer List</a></li>
 			<li class="active"><a href="<?= base_url() ?>customer/<?= $this->uri->segment(2).'/'.$this->uri->segment(3) ?>">Customer Information</a></li>
 		</ol>
 	</div>

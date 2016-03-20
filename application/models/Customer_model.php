@@ -32,7 +32,7 @@ class Customer_Model extends CI_Model {
 							`tin`,
 							CASE 
 								WHEN `is_vatable` = ".\Constants\CUSTOMER_CONST::VATABLE." THEN 'Vatable'
-								WHEN `is_vatable` = ".\Constants\CUSTOMER_CONST::NONVAT." THEN 'Nonvat'
+								WHEN `is_vatable` = ".\Constants\CUSTOMER_CONST::NONVAT." THEN 'Non-vat'
 							END AS 'is_vatable'")
 				->from("customer")
 				->where("`is_show`", \Constants\CUSTOMER_CONST::ACTIVE);
