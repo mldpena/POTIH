@@ -9,7 +9,7 @@
 		Vatable :2 
 	};
 
-	var previousCustomerBuffer = 0;
+	var processingFlag = false;
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -28,13 +28,22 @@
 		headertd_class : "tdheader_id"
 	};
 
-	var spnreservationid = document.createElement('span');
+	var spnreservation_detail_id = document.createElement('span');
 	colarray['reservationid'] = { 
 		header_title: "",
-		edit: [spnreservationid],
-		disp: [spnreservationid],
+		edit: [spnreservation_detail_id],
+		disp: [spnreservation_detail_id],
 		td_class: "tablerow hide-elem tdreservationid",
 		headertd_class : "hide-elem tdreservationid"
+	};
+
+	var spnreservationreference = document.createElement('span');
+	colarray['reservationreference'] = { 
+		header_title: "",
+		edit: [spnreservationreference],
+		disp: [spnreservationreference],
+		td_class: "tablerow hide-elem tdreservationref",
+		headertd_class : "hide-elem tdreservationref"
 	};
 
 	var spnnumber = document.createElement('span');
@@ -159,7 +168,71 @@
 	};
 
 
+	/**
+	 * Initialization for JS table Reseravation Lists
+	 */
+
+	var tab_reservation_list = document.createElement('table');
+	tab_reservation_list.className = "tblstyle";
+	tab_reservation_list.id = "table_reservationlist_id";
+	tab_reservation_list.setAttribute("style","border-collapse:collapse;");
+	tab_reservation_list.setAttribute("class","border-collapse:collapse;");
+	
+	var colarray_reservation_list = [];
+
+	var spnreservationid = document.createElement('span');
+	colarray_reservation_list['id'] = { 
+		header_title: "",
+		edit: [spnreservationid],
+		disp: [spnreservationid],
+		td_class: "tablerow tdid",
+		headertd_class : "tdheader_id"
+	};
+
+	var chkdetails = document.createElement('input');
+	chkdetails.setAttribute('type','checkbox');
+	chkdetails.setAttribute('class','chkdetails');
+	colarray_reservation_list['check'] = { 
+		header_title: "",
+		edit: [chkdetails],
+		disp: [chkdetails],
+		td_class: "tablerow tddetails"
+	};
+
+	var spnreferencenumber = document.createElement('span');
+	colarray_reservation_list['reservation_number'] = { 
+		header_title: "Ref #",
+		edit: [spnreferencenumber],
+		disp: [spnreferencenumber],
+		td_class: "tablerow tdrefnumber"
+	};
+
+	var spndate = document.createElement('span');
+	colarray_reservation_list['date'] = { 
+		header_title: "Date",
+		edit: [spndate],
+		disp: [spndate],
+		td_class: "tablerow tddate"
+	};
+
+	var spnsalesman = document.createElement('span');
+	colarray_reservation_list['salesman'] = { 
+		header_title: "Salesman",
+		edit: [spnsalesman],
+		disp: [spnsalesman],
+		td_class: "tablerow tdsalesman"
+	};
+
+	var spntotalqty = document.createElement('span');
+	colarray_reservation_list['totalqty'] = { 
+		header_title: "Qty",
+		edit: [spntotalqty],
+		disp: [spntotalqty],
+		td_class: "tablerow tdtotalqty"
+	};
+
 	var myjstbl;
+	var myjstbl_reservation_list;
 
 	var root = document.getElementById("tbl");
 	myjstbl = new my_table(tab, colarray, {	ispaging : false, 
@@ -170,11 +243,24 @@
 
 	root.appendChild(myjstbl.tab);
 
+	var root_reservation_list = document.getElementById("tbl_reservation");
+	myjstbl_reservation_list = new my_table(tab_reservation_list, colarray_reservation_list, {	
+																								ispaging : false, 
+																								tdhighlight_when_hover : "tablerow",
+																								iscursorchange_when_hover : true,
+																								isdeleteicon_when_hover : false
+																							}
+											);
+
+	root_reservation_list.appendChild(myjstbl_reservation_list.tab);
+
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'sales',
 										  token : notificationToken,
 										  recentNameElementId : 'supplier' } );
+
+	var reservationListTableHelper = new TableHelper ({ tableObject : myjstbl_reservation_list, tableArray : colarray_reservation_list }, { token : notificationToken });
 
 	tableHelper.detailContent.bindAllEvents({ 
 												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
@@ -266,6 +352,9 @@
 					computeSummary();
 				}
 
+				if (response.reservation_list_error == '') 
+					myjstbl_reservation_list.insert_multiplerow_with_value(1, response.reservation_lists);
+
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
@@ -286,11 +375,11 @@
 		});
 	}
 
-	$('#customer').change(function(){
+	$('#customer, #orderfor').change(function(){
 		
 		removeReservationNotification();
 
-		var customer_id = $(this).val();
+		var customer_id = $('#customer').val();
 
 		var arr = 	{ 
 						fnc : 'get_customer_details',
@@ -317,7 +406,11 @@
 		removeReservationNotification();
 
 		if (value == CustomerType.Walkin)
+		{
 			$('#is-vatable').val(Tax.Vatable);
+			$('#customer').val(0).trigger('liszt:updated');
+
+		}
 		
 		removeImportedReservation();
 	});
@@ -331,6 +424,76 @@
 		tableHelper.contentProvider.setData(rowIndex, 'amount', [amount.formatMoney(2)]);
 
 		computeSummary();
+	});
+
+	$('.chkdetails').live('click',function(){
+
+		if (processingFlag) 
+			return;
+
+		processingFlag = true;
+
+		var rowIndex = $(this).parent().parent().index();
+		var self = $(this);
+
+		if ($(self).is(':checked')) 
+		{
+			$(self).attr('disabled','disabled');
+
+			var reservation_head_id = reservationListTableHelper.contentProvider.getData(rowIndex, 'id');
+
+			var arr = 	{ 
+							fnc : 'get_reservation_details',
+							reservation_head_id : reservation_head_id
+						};
+
+			$.ajax({
+				type: "POST",
+				dataType : 'JSON',
+				data: 'data=' + JSON.stringify(arr) + notificationToken,
+				success: function(response) {
+					clear_message_box();
+
+					if (response.error != '') 
+						build_message_box('messagebox_1', response.error, 'danger');
+					else
+					{
+						var nextRow = myjstbl.get_row_count() - 1;
+
+						myjstbl.insert_multiplerow_with_value(nextRow, response.detail);
+						tableHelper.contentProvider.recomputeTotalQuantity();
+						tableHelper.contentProvider.recomputeRowNumber();
+						tableHelper.contentHelper.checkProductInfo();
+						checkSoldDetails();
+						computeSummary();
+					}
+
+					$(self).removeAttr('disabled');
+
+					processingFlag = false;
+				}       
+			});
+		}
+		else
+		{
+			var importReferenceNumber = reservationListTableHelper.contentProvider.getData(rowIndex, 'reservation_number');
+
+			for(var i = myjstbl.get_row_count() - 1; i > 0; i--)
+			{
+				var tableDetailRowReservationNumber = tableHelper.contentProvider.getData(i, 'reservationreference');
+
+				if (importReferenceNumber == tableDetailRowReservationNumber) 
+					myjstbl.delete_row(i);
+			};
+
+			tableHelper.contentProvider.recomputeTotalQuantity();
+			tableHelper.contentProvider.recomputeRowNumber();
+			computeSummary();
+
+			processingFlag = false;
+		}
+
+		
 	});
 
 	function getHeadDetailsBeforeSubmit()
@@ -387,7 +550,7 @@
 		var memo 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex, 'memo'));
 		var price 			= tableHelper.contentProvider.getData(rowIndex, 'price').replace(/\,/gi,"");
 		var sales_detail_id = tableHelper.contentProvider.getData(rowIndex, 'id');
-		var reservation_detail_id = Number(tableHelper.contentProvider.getData(rowIndex, 'reservationid'));
+		var reservation_detail_id = tableHelper.contentProvider.getData(rowIndex, 'reservationid');
 		var description 	= (tableHelper.contentProvider.getData(rowIndex, 'product', 4));
 		var actionFunction 	= sales_detail_id != 0 ? "update_sales_detail" : "insert_sales_detail";
 
@@ -408,7 +571,8 @@
 												value : price,
 												fieldName : 'Price',
 												required : true,
-												rules : 'numeric'
+												rules : 'numeric',
+												isNotEqual : { value : 0, errorMessage : 'Price must not be equal to zero!'}
 											}
 										]);
 
@@ -452,6 +616,8 @@
 		$('#less-vat').html(vatAmount.formatMoney(2));
 		$('#total').html(vatableAmount.formatMoney(2));
 		$('#amount-due').html(totalAmount.formatMoney(2));
+
+		checkRemainingReservationDetils();
 	}
 
 	function removeReservationNotification()
@@ -461,8 +627,14 @@
 
 	function removeImportedReservation()
 	{
+		var customer_id 	= $('#customer').val();
+		var for_branch_id 	= $('#orderfor').val();
+		var customer_type 	= $("input[name='customer-type']:checked").val();
+
 		var arr = 	{ 
-						fnc : 'remove_imported_reservation'
+						fnc : 'remove_imported_reservation',
+						customer_id : customer_id,
+						for_branch_id : for_branch_id
 					};
 
 		$.ajax({
@@ -477,8 +649,65 @@
 					window.reload();
 				}
 				else
+				{
+					for (var i = 1; i < myjstbl.get_row_count(); i++) 
+					{
+						var reservationRowId = Number(tableHelper.contentProvider.getData(i, 'reservationreference'));
+
+						if (reservationRowId != '')
+							myjstbl.delete_row(i);
+					};
+					
 					computeSummary();
+					myjstbl_reservation_list.clear_table();
+					tableHelper.contentProvider.recomputeRowNumber();
+
+
+					if (customer_id == 0 && customer_type == CustomerType.Regular) 
+						return false;
+
+					if (response.reservation.error == '') 
+						myjstbl_reservation_list.insert_multiplerow_with_value(1, response.reservation.data);
+				}
 			}
+		});
+	}
+
+	function checkSoldDetails()
+	{
+		for (var i = 1; i < myjstbl.get_row_count(); i++) 
+		{
+			var salesDetailId = tableHelper.contentProvider.getData(i, 'id');
+
+			if (salesDetailId == 0) 
+			{
+				myjstbl.edit_row(i);
+				tableHelper.contentHelper.descriptionAccessibilty(i);
+			}
+		};
+	}
+
+	function checkRemainingReservationDetils()
+	{
+		$(".chkdetails:checked").each(function(index, element){
+			var detailExist = false;
+			var reservationRowIndex = $(element).parent().parent().index();
+
+			var importReservationNumber = reservationListTableHelper.contentProvider.getData(reservationRowIndex, 'reservation_number');
+
+			for (var i = 1; i < myjstbl.get_row_count(); i++) 
+			{
+				var tableDetailRowReservationNumber = tableHelper.contentProvider.getData(i, 'reservationreference');
+
+				if (tableDetailRowReservationNumber == importReservationNumber)
+				{
+					detailExist = true;
+					break;
+				}
+			};
+
+			if (!detailExist) 
+				$(element).removeAttr('checked');
 		});
 	}
 

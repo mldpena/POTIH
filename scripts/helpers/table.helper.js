@@ -619,9 +619,11 @@ var TableHelper = function(tableOptions,options) {
 
 						self.contentHelper.descriptionAccessibilty(rowIndex);
 						
-						if (arr.detail_id == 0) {
-							self.contentProvider.setData(rowIndex,'id',[response.id]);
-							if (self._settings.isAddRow)
+						if (arr.detail_id == 0) 
+						{
+							self.contentProvider.setData(rowIndex, 'id', [response.id]);
+
+							if (self._settings.isAddRow && rowIndex == self._jsTable.get_row_count())
 								self.contentProvider.addRow(self._settings.productClass);
 						}
 

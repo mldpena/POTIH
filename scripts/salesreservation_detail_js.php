@@ -287,6 +287,12 @@
 			return false;
 		};
 		
+		if (salesman_val == 0) 
+		{
+			alert('Please select a salesman!');
+			return false;
+		};
+		
 		var arr = 	{ 
 						fnc 	 	: 'save_sales_reservation_head', 
 						customer_id : customer_id_val,
