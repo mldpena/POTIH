@@ -13,13 +13,13 @@
 			<div class="max-row tbl-filters">
 				<div class="row">
 					<div class="col-md-12">
-						<label class="form-inline">
-							<input type="radio" name="customer-type" value="1" checked>
-							Regular
-						</label>
 						<label class="form-inline margin-left5">
 							<input type="radio" name="customer-type" value="2">
 							Walk-in
+						</label>
+						<label class="form-inline">
+							<input type="radio" name="customer-type" value="1" checked>
+							Regular
 						</label>
 					</div>
 				</div>
