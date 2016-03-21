@@ -259,15 +259,18 @@ var TableHelper = function(tableOptions,options) {
 						var descriptionElement = $(x).parent().find('.' + self._settings.nonStackClass);
 
 						if (error.length > 0) {
-							self.contentProvider.setData(rowIndex,'product',['',0,'','','']);
-							self.contentProvider.setData(rowIndex,'code',['']);
-							self.contentProvider.setData(rowIndex,'qty',['']);
-							self.contentProvider.setData(rowIndex,'memo',['']);
-							self.contentProvider.setData(rowIndex,'uom',['']);
+							self.contentProvider.setData(rowIndex,'product',['', 0, '', '', '', '']);
+							self.contentProvider.setData(rowIndex,'code', ['']);
+							self.contentProvider.setData(rowIndex,'qty', ['']);
+							self.contentProvider.setData(rowIndex,'memo', ['']);
+							self.contentProvider.setData(rowIndex,'uom', ['']);
 							
 							if (self._jsTableArray.hasOwnProperty("receivedby")) 
-								self.contentProvider.setData(rowIndex,'receivedby',['']);
+								self.contentProvider.setData(rowIndex, 'receivedby', ['']);
 							
+							if (self._jsTableArray.hasOwnProperty("price")) 
+								self.contentProvider.setData(rowIndex, 'price', ['']);
+
 							$(descriptionElement).hide();
 						}
 						else
@@ -281,7 +284,7 @@ var TableHelper = function(tableOptions,options) {
 							else
 								$(descriptionElement).val('').hide();
 
-							self.contentProvider.setData(rowIndex,'product',[ret_datas[1],ret_datas[0],ret_datas[3],newLine,'']);
+							self.contentProvider.setData(rowIndex,'product',[ret_datas[1], ret_datas[0], ret_datas[3], newLine, '', '']);
 							self.contentProvider.setData(rowIndex,'code',[ret_datas[2]]);
 							self.contentProvider.setData(rowIndex,'uom',[ret_datas[4]]);
 						}
