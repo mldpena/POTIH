@@ -19,6 +19,7 @@ class Sales_Manager
 									'HAS_DELIVERED' => 'Sales Invoice can only be deleted if sales invoice status is no delivery!',
 									'NOT_OWN_BRANCH' => 'Cannot delete sales invoice entry of other branches!',
 									'UNABLE_TO_DELETE_RESERVATION' => 'Unable to remove imported sales reservation. Please try again.',
+									'RESERVATION_NOT_FOUND' => 'No sales reservation found!',
 									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!');
 
 	public function __construct()
@@ -40,6 +41,7 @@ class Sales_Manager
 
 		$response['error'] = '';
 		$response['detail_error'] = '';
+		$response['reservation_list_error'] = ''; 
 
 		$result_head = $this->_CI->sales_model->get_sales_head_info_by_id();
 
@@ -82,6 +84,7 @@ class Sales_Manager
 				$break_line = $row->type == \Constants\SALES_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->reservation_detail_id));
+				$response['detail'][$i][] = array($row->reservation_number);
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
 				$response['detail'][$i][] = array($row->material_code);
@@ -98,6 +101,13 @@ class Sales_Manager
 		}
 
 		$result_detail->free_result();
+
+		$reservation_lists = $this->get_customer_reservation_list($response['customer_id'], $response['for_branch']);
+
+		if ($reservation_lists['error'] !== '')
+			$response['reservation_list_error'] = $reservation_lists['error'];
+		else
+			$response['reservation_lists'] = $reservation_lists['data'];
 
 		return $response;
 	}
@@ -267,6 +277,93 @@ class Sales_Manager
 
 		if (!empty($response['error']))
 			throw new \Exception($this->_error_message['UNABLE_TO_DELETE_RESERVATION']);
+			
+		return $response;
+	}
+
+	public function get_customer_reservation_list($customer_id, $branch_id)
+	{
+		$reservation_lists['error'] = '';
+
+		$result_reservation_list = $this->_CI->sales_model->get_customer_reservation_list_by_id($customer_id, $branch_id);
+
+		if ($result_reservation_list->num_rows() == 0) 
+			$reservation_lists['error'] = $this->_error_message['RESERVATION_NOT_FOUND'];
+		else
+		{
+			$i = 0;
+			foreach ($result_reservation_list->result() as $row) 
+			{
+				$reservation_lists['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
+				$reservation_lists['data'][$i][] = array($row->is_sold);
+				$reservation_lists['data'][$i][] = array($row->reservation_number);
+				$reservation_lists['data'][$i][] = array(date('m-d-Y', strtotime($row->reservation_date)));
+				$reservation_lists['data'][$i][] = array($row->salesman);
+				$reservation_lists['data'][$i][] = array($row->total_qty);
+				$i++;
+			}
+		}
+
+		$result_reservation_list->free_result();
+
+		return $reservation_lists;
+	}
+
+	public function get_transaction_reservation_details($param)
+	{
+		extract($param);
+
+		$response['error'] = '';
+
+		$reservation_head_id = $this->_CI->encrypt->decode($reservation_head_id);
+
+		$result = $this->_CI->sales_model->get_reservation_details_by_id($reservation_head_id);
+
+		if ($result->num_rows() == 0) 
+			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+		else
+		{
+			$i = 0;
+			foreach ($result->result() as $row) 
+			{
+				$break_line = $row->type == \Constants\SALES_CONST::STOCK ? '' : '<br/>';
+				$response['detail'][$i][] = $row->id == 0 ? array(0) : array($this->_CI->encrypt->encode($row->id));
+				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->reservation_detail_id));
+				$response['detail'][$i][] = array($row->reservation_number);
+				$response['detail'][$i][] = array($i+1);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
+				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
+				$response['detail'][$i][] = array($row->quantity);
+				$response['detail'][$i][] = array($row->price);
+				$response['detail'][$i][] = array($row->qty_released);
+				$response['detail'][$i][] = array($row->memo);
+				$response['detail'][$i][] = array($row->amount);
+				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array('');
+				$i++;
+			}
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	public function update_sales_head_upon_customer_change($param)
+	{
+		extract($param);
+
+		$sales_head_data = [
+								'for_branch_id' => $for_branch_id,
+								'customer_id' => $customer_id,
+								'is_vatable' => $is_vatable
+							];
+
+		$response = $this->_CI->sales_model->update_sales_table($sales_head_data, \Constants\SALES_CONST::TBL_SALES_HEAD, $this->_sales_head_id);
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 			
 		return $response;
 	}

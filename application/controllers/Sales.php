@@ -187,6 +187,12 @@ class Sales extends CI_Controller {
 
 				case 'remove_imported_reservation':
 					$response = $this->_sales_manager->remove_imported_reservation();
+					$response = $this->_sales_manager->update_sales_head_upon_customer_change($post_data);
+					$response['reservation'] = $this->_sales_manager->get_customer_reservation_list($post_data['customer_id'], $post_data['for_branch_id']);
+					break;
+
+				case 'get_reservation_details':
+					$response = $this->_sales_manager->get_transaction_reservation_details($post_data);
 					break;
 
 				case 'check_notifications':

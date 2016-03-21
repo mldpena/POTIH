@@ -21,7 +21,7 @@ class Sales_Model extends CI_Model {
 	public function get_sales_head_info_by_id()
 	{
 		$this->db->select("
-							CONCAT('SO', SH.`reference_number`) AS 'reference_number', 
+							CONCAT('SI', SH.`reference_number`) AS 'reference_number', 
 							SH.`for_branch_id`,
 							SH.`branch_id`,
 							SH.`customer_id`,
@@ -54,6 +54,7 @@ class Sales_Model extends CI_Model {
 							SD.`product_id`, 
 							COALESCE(P.`material_code`,'') AS 'material_code', 
 							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(CONCAT('SO', SRH.`reference_number`), '') AS 'reservation_number',
 							COALESCE(P.`is_show`, 0) AS 'is_deleted',
 							CASE
 								WHEN P.`uom` = ".\Constants\SALES_CONST::PCS." THEN 'PCS'
@@ -71,6 +72,8 @@ class Sales_Model extends CI_Model {
 							SD.`reservation_detail_id`
 						")
 				->from("sales_detail AS SD")
+				->join("sales_reservation_detail AS SRD", "SRD.`id` = SD.`reservation_detail_id`", "left")
+				->join("sales_reservation_head AS SRH", "SRH.`id` = SRD.`headid` AND SRH.`is_show` = ".\Constants\SALES_CONST::ACTIVE." AND SRH.`is_used` = ".\Constants\SALES_CONST::USED, "left")
 				->join("product AS P", "P.`id` = SD.`product_id`", "left")
 				->where("SD.`headid`", $this->_sales_head_id);
 
@@ -85,7 +88,7 @@ class Sales_Model extends CI_Model {
 							SH.`id`, 
 							COALESCE(B.`name`, '') AS 'location',
 							COALESCE(B2.`name`, '') AS 'for_branch',
-							CONCAT('SO', SH.`reference_number`) AS 'reference_number',
+							CONCAT('SI', SH.`reference_number`) AS 'reference_number',
 							COALESCE(C.`company_name`, SH.`walkin_customer_name`) AS 'customer',
 							COALESCE(S.`full_name`, '') AS 'salesman',
 							DATE(SH.`entry_date`) AS 'entry_date',
@@ -128,7 +131,7 @@ class Sales_Model extends CI_Model {
 			$this->db->where("SH.`for_branch_id`", (int)$for_branch);
 
 		if (!empty($search_string)) 
-			$this->db->like("CONCAT('SO', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
+			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
 
 		if ($customer != \Constants\SALES_CONST::ALL_OPTION)
 		{
@@ -205,7 +208,7 @@ class Sales_Model extends CI_Model {
 			$this->db->where("SH.`for_branch_id`", (int)$for_branch);
 
 		if (!empty($search_string)) 
-			$this->db->like("CONCAT('SO', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
+			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
 
 		if ($customer != \Constants\SALES_CONST::ALL_OPTION)
 		{
@@ -327,5 +330,99 @@ class Sales_Model extends CI_Model {
 		$response['error'] = $this->db->error()['message'];
 
 		return $response;
+	}
+
+	public function get_customer_reservation_list_by_id($customer_id, $branch_id)
+	{
+		$this->db->select("
+							SD.`reservation_detail_id`,
+							SD.`id`, 
+							SH.`for_branch_id`
+						")
+					->from("sales_head AS SH")
+					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
+					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE)
+					->where("SH.`id`", $this->_sales_head_id);
+
+		$sales_query = $this->db->get_compiled_select('', TRUE);
+
+		$this->db->select("
+							SRH.`id`,
+							IF(COUNT(SD.`id`) > 0, 1, 0) AS 'is_sold',
+						  	CONCAT('SO', SRH.`reference_number`) AS 'reservation_number',
+						    DATE(SRH.`entry_date`) AS 'reservation_date',
+						    SUM(SRD.`quantity`) AS 'total_qty',
+						    COALESCE(S.`full_name`, '') AS 'salesman',
+						    SUM(IF((SRD.`quantity` - SRD.`sold_qty`) < 0, 0, SRD.`quantity` - SRD.`sold_qty`)) AS 'total_remaining_qty'
+						")
+				->from("sales_reservation_head AS SRH")
+				->join("sales_reservation_detail AS SRD", "SRD.`headid` = SRH.`id`", "left")
+				->join("user AS S", "S.`id` = SRH.`salesman_id`", "left")
+				->join("($sales_query) AS SD", "SD.`reservation_detail_id` = SRD.`id`", "left")
+				->where("SRH.`is_show`", \Constants\SALES_CONST::ACTIVE)
+				->where("SRH.`is_used`", \Constants\SALES_CONST::USED)
+				->where("SRH.`customer_id`", $customer_id)
+				->group_start()
+					->where("SRH.`for_branch_id`", $branch_id)
+					->or_where("SRH.`for_branch_id` = SD.`for_branch_id`")
+				->group_end()
+				->group_by("SRH.`id`")
+				->having("total_remaining_qty >", 0)
+				->or_having("is_sold", 1);
+
+		return $this->db->get();
+	}
+
+	public function get_reservation_details_by_id($sales_reservation_head_id)
+	{
+		$this->db->select("
+							SD.`reservation_detail_id`,
+							SD.`quantity`,
+							SD.`id`,
+							SD.`memo`, 
+							SD.`description`,
+							FORMAT(SD.`price`, 2) AS 'price',
+							SD.`qty_released`
+						")
+					->from("sales_head AS SH")
+					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
+					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE)
+					->where("SH.`id`", $this->_sales_head_id);
+
+		$sales_query = $this->db->get_compiled_select('', TRUE);
+
+		$this->db->select("
+							COALESCE(SD.`id`, 0) AS 'id',
+							SRD.`id` AS 'reservation_detail_id',
+							CONCAT('SO', SRH.`reference_number`) AS 'reservation_number', 
+							SRD.`product_id`, 
+							COALESCE(P.`material_code`,'') AS 'material_code',
+							COALESCE(SD.`description`, SRD.`description`) AS 'description',
+							COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+							COALESCE(P.`is_show`, 0) AS 'is_deleted',
+							CASE
+								WHEN P.`uom` = ".\Constants\SALES_CONST::PCS." THEN 'PCS'
+								WHEN P.`uom` = ".\Constants\SALES_CONST::KG." THEN 'KGS'
+								WHEN P.`uom` = ".\Constants\SALES_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
+							END AS 'uom',
+							COALESCE(P.`type`, '') AS 'type',
+							COALESCE(SD.`quantity`, SRD.`quantity` - SRD.`sold_qty`) AS 'quantity',
+							COALESCE(SD.`memo`, SRD.`memo`) AS 'memo',
+							COALESCE(SD.`price`, 0) AS 'price',
+							COALESCE(SD.`qty_released`, 0) AS 'qty_released',
+							FORMAT(COALESCE(SD.`price`, 0) * COALESCE(SD.`quantity`, SRD.`quantity`), 2) AS 'amount',
+							IF(COALESCE(SD.`id`,0) = 0 AND (SRD.`quantity` - SRD.`sold_qty`) <= 0, 1, 0) AS 'is_removed'
+						")
+				->from("sales_reservation_head AS SRH")
+				->join("sales_reservation_detail AS SRD", "SRD.`headid` = SRH.`id`", "left")
+				->join("product AS P", "P.`id` = SRD.`product_id`", "left")
+				->join("($sales_query) AS SD", "SD.`reservation_detail_id` = SRD.`id`", "left")
+				->where("SRH.`is_show`", \Constants\SALES_CONST::ACTIVE)
+				->where("SRH.`is_used`", \Constants\SALES_CONST::USED)
+				->where("SRH.`id`", $sales_reservation_head_id)
+				->having("is_removed", 0);
+
+		return $this->db->get();
 	}
 }

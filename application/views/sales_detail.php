@@ -92,58 +92,7 @@
 							</table>
 						</div>
 						<div class="pull-right salestbl-detail">
-							<div class="tbl single max">
-								<table>
-									<tr class="tableheader">
-										<td>Ref #</td>
-										<td>Date</td>
-										<td>Salesman</td>
-										<td>Amount</td>
-									</tr>
-									<tr>
-										<td>10203123</td>
-										<td>2016-02-23</td>
-										<td>Kristine Dera</td>
-										<td>2,000.00</td>
-									</tr>
-									<tr>
-										<td>10203123</td>
-										<td>2016-02-23</td>
-										<td>Kristine Dera</td>
-										<td>2,000.00</td>
-									</tr>
-									<tr>
-										<td>10203123</td>
-										<td>2016-02-23</td>
-										<td>Kristine Dera</td>
-										<td>2,000.00</td>
-									</tr>
-									<tr>
-										<td>10203123</td>
-										<td>2016-02-23</td>
-										<td>Kristine Dera</td>
-										<td>2,000.00</td>
-									</tr>
-									<tr>
-										<td>10203123</td>
-										<td>2016-02-23</td>
-										<td>Kristine Dera</td>
-										<td>2,000.00</td>
-									</tr>
-									<tr>
-										<td>10203123</td>
-										<td>2016-02-23</td>
-										<td>Kristine Dera</td>
-										<td>2,000.00</td>
-									</tr>
-									<tr>
-										<td>10203123</td>
-										<td>2016-02-23</td>
-										<td>Kristine Dera</td>
-										<td>2,000.00</td>
-									</tr>
-								</table>
-							</div>
+							<div class="tbl single max tbl-reservation" id="tbl_reservation"></div>
 						</div>
 					</div>
 				</div>
