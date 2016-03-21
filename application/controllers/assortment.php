@@ -41,6 +41,7 @@ class Assortment extends CI_Controller {
 
 		$permissions = array();
 		$branch_list = '';
+		$customer_list = '';
 		
 		switch ($page) 
 		{
@@ -55,6 +56,7 @@ class Assortment extends CI_Controller {
 
 			case 'view':
 				$page = 'assortment_detail';
+				$customer_list = get_name_list_from_table(TRUE, 'customer', FALSE, 0, "`code`, ' - ', `company_name`");
 				$allow_user = $this->permission_checker->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Assortment_Code::EDIT_ASSORTMENT),
 									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Assortment_Code::ADD_ASSORTMENT),
@@ -77,6 +79,7 @@ class Assortment extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
+						'customer_list' => $customer_list,
 						'permission_list' => $permissions,
 						'section_permissions' => $this->permission_checker->get_section_permissions(),
 						'page_permissions' => $this->permission_checker->get_page_permissions());

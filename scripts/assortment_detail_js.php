@@ -159,6 +159,18 @@
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
+		$.toggleOption('customer-type', [
+											{
+												optionValue : 1,
+												elementId : 'customer_chzn'
+											},
+											{
+												optionValue : 2,
+												elementId : 'walkin-customer'
+											}
+										]);
+
+		$('#customer').chosen();
 		$('#date').datepicker();
 		$('#date').datepicker("option","dateFormat", "mm-dd-yy");
 		$('#date').datepicker("setDate", new Date());

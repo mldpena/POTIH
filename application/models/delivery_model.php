@@ -16,6 +16,7 @@ class Delivery_Model extends CI_Model {
 									'UNABLE_TO_DELETE_HEAD' => 'Unable to delete delivery head!',
 									'HAS_RECEIVED' => 'Item Delivery can only be deleted if delivery status is no received!',
 									'NOT_OWN_BRANCH' => 'Cannot delete item delivery entry of other branches!',
+									'SALES_NOT_FOUND' => 'No sales invoice found!',
 									'NO_ITEMS_TO_PRINT' => 'No items to print!');
 
 	/**
@@ -39,8 +40,9 @@ class Delivery_Model extends CI_Model {
 		$response 		= array();
 		$branch_id 		= 0;
 
-		$response['error'] 	= '';
-		$response['detail_error'] 	= ''; 
+		$response['error'] = '';
+		$response['detail_error'] = ''; 
+		$response['sales_list_error'] = '';
 
 		$query_head = "SELECT CONCAT('SD',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
 					SH.`memo`, SH.`branch_id`, SH.`to_branchid`, SUM(SD.`recv_quantity`) AS 'total_qty', SH.`delivery_type`, SH.`is_used`,
@@ -83,13 +85,17 @@ class Delivery_Model extends CI_Model {
 							SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
 							SD.`recv_quantity` AS 'receiveqty', SD.`description`, 
 							COALESCE(P.`type`, '') AS 'type', 
-							SD.`invoice`
+							SD.`invoice`,
+							COALESCE(CONCAT('SI', SSH.`reference_number`), '') AS 'sales_reference',
+							SD.`sales_detail_id`
 						FROM `stock_delivery_detail` AS SD
 						LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+						LEFT JOIN `sales_detail` AS SSD ON SSD.`id` = SD.`sales_detail_id`
+						LEFT JOIN `sales_head` AS SSH ON SSH.`id` = SSD.`headid` AND SSH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SSH.`is_used` = ".\Constants\DELIVERY_CONST::USED."
 						LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
 						WHERE SD.`headid` = ?";
 
-		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
+		$result_detail = $this->db->query($query_detail, $this->_delivery_head_id);
 
 		if ($result_detail->num_rows() == 0) 
 			$response['detail_error'] = 'No item delivery details found!';
@@ -100,6 +106,8 @@ class Delivery_Model extends CI_Model {
 			{
 				$break_line = $row->type == \Constants\DELIVERY_CONST::STOCK ? '' : '<br/>';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
+				$response['detail'][$i][] = array($this->encrypt->encode($row->sales_detail_id));
+				$response['detail'][$i][] = array($row->sales_reference);
 				$response['detail'][$i][] = array($row->is_for_branch);
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
@@ -115,6 +123,59 @@ class Delivery_Model extends CI_Model {
 			}
 		}
 
+		$query_sales_list_data = array($this->_delivery_head_id, $this->_current_branch_id);
+		$query_sales_list = "SELECT 
+							    SH.`id`,
+								IF(COUNT(SDD.`id`) > 0, 1, 0) AS 'is_sold',
+							    CONCAT('SI', SH.`reference_number`) AS 'sales_reference',
+							    DATE(SH.`entry_date`) AS 'sales_date',
+							    SUM(SD.`quantity`) AS 'total_qty',
+							    SUM(IF((SD.`quantity` - SD.`qty_released`) < 0, 0, SD.`quantity` - SD.`qty_released`)) AS 'total_remaining_qty'
+							FROM
+							    sales_head AS SH
+								LEFT JOIN sales_detail AS SD ON SD.`headid` = SH.`id`
+							    LEFT JOIN 
+							    (
+									SELECT 
+										SDD.`sales_detail_id`, 
+										SDD.`id`, 
+										SDH.`branch_id`
+							        FROM 
+							        	stock_delivery_head AS SDH
+							        LEFT JOIN 
+							        	stock_delivery_detail AS SDD ON SDD.`headid` = SDH.`id`
+							        WHERE 
+							        	SDH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
+							        	SDH.`id` = ?
+							    )
+							    AS SDD ON SDD.`sales_detail_id` = SD.`id`
+							WHERE
+							    SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
+							    SH.`is_used` = ".\Constants\DELIVERY_CONST::USED." AND 
+							    (SH.`for_branch_id` = ? OR SH.`for_branch_id` = SDD.`branch_id`)
+							GROUP BY SH.`id`
+							HAVING 
+								total_remaining_qty > 0 OR is_sold = 1";
+
+		$result_sales_list = $this->db->query($query_sales_list, $query_sales_list_data);
+
+		if ($result_sales_list->num_rows() == 0) 
+			throw new Exception($this->_error_message['SALES_NOT_FOUND']);
+		else
+		{
+			$i = 0;
+			foreach ($result_sales_list->result() as $row) 
+			{
+				$response['sales_lists'][$i][] = array($this->encrypt->encode($row->id));
+				$response['sales_lists'][$i][] = array($row->is_sold);
+				$response['sales_lists'][$i][] = array($row->sales_reference);
+				$response['sales_lists'][$i][] = array(date('m-d-Y', strtotime($row->sales_date)));
+				$response['sales_lists'][$i][] = array($row->total_qty);
+				$i++;
+			}
+		}
+
+		$result_sales_list->free_result();
 		$result_head->free_result();
 		$result_detail->free_result();
 
@@ -128,7 +189,10 @@ class Delivery_Model extends CI_Model {
 		$response = array();
 
 		$response['error'] = '';
-		$query_data 	= array($this->_delivery_head_id, $qty, $product_id, $memo, $istransfer, $description, $invoice);
+
+		$sales_detail_id = $this->encrypt->decode($sales_detail_id);
+
+		$query_data 	= array($this->_delivery_head_id, $qty, $product_id, $memo, $istransfer, $description, $invoice, $sales_detail_id);
 
 		$query = "INSERT INTO `stock_delivery_detail`
 					(`headid`,
@@ -137,9 +201,10 @@ class Delivery_Model extends CI_Model {
 					`memo`,
 					`is_for_branch`,
 					`description`,
-					`invoice`)
+					`invoice`,
+					`sales_detail_id`)
 					VALUES
-					(?,?,?,?,?,?,?);";
+					(?,?,?,?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -160,6 +225,7 @@ class Delivery_Model extends CI_Model {
 		$response['error'] = '';
 
 		$delivery_detail_id = $this->encrypt->decode($detail_id);
+		$sales_detail_id = $this->encrypt->decode($sales_detail_id);
 		$request_detail_id = 0;
 
 		$old_delivery_detail_result = $this->get_stock_delivery_detail_info($delivery_detail_id);
@@ -178,7 +244,7 @@ class Delivery_Model extends CI_Model {
 			
 		$old_delivery_detail_result->free_result();
 
-		$query_data 	= array($qty, $product_id, $memo, $istransfer, $description, $invoice, $request_detail_id, $delivery_detail_id);
+		$query_data 	= array($qty, $product_id, $memo, $istransfer, $description, $invoice, $request_detail_id, $sales_detail_id, $delivery_detail_id);
 
 		$query = "UPDATE `stock_delivery_detail`
 					SET
@@ -188,7 +254,8 @@ class Delivery_Model extends CI_Model {
 					`is_for_branch` = ?,
 					`description` = ?,
 					`invoice` = ?,
-					`request_detail_id` = ?
+					`request_detail_id` = ?,
+					`sales_detail_id` = ?
 					WHERE `id` = ?;";
 
 		$result = $this->sql->execute_query($query,$query_data);
@@ -1321,5 +1388,134 @@ class Delivery_Model extends CI_Model {
 		$result->free_result();
 
 		return $count;
+	}
+
+	public function get_sales_delivery_detail($param)
+	{
+		extract($param);
+
+		$response['error'] = '';
+
+		$sales_head_id = $this->encrypt->decode($sales_head_id);
+
+		$query = "SELECT 
+						COALESCE(SDD.`id`, 0) AS 'id',
+						SD.`id` AS 'sales_detail_id', 
+						SD.`product_id`, 
+						COALESCE(P.`material_code`,'') AS 'material_code',
+						COALESCE(CONCAT(P.`description`, IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
+						COALESCE(P.`is_show`, 0) AS 'is_deleted',
+						COALESCE(SDD.`quantity`, SD.`quantity` - SD.`qty_released`) AS 'quantity', 
+						SD.`memo`, 
+						CASE
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
+							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
+						END AS 'uom',
+						CONCAT('SI', SH.`reference_number`) AS 'sales_reference', 
+						COALESCE(SDD.`description`, SD.`description`) AS 'description', 
+						COALESCE(P.`type`, '') AS 'type',
+						COALESCE(SDD.`invoice`, CONCAT('SI', SH.`reference_number`)) AS 'invoice',
+						COALESCE(SDD.`memo`, COALESCE(C.`company_name`, SH.`walkin_customer_name`)) AS 'memo',
+						IF(COALESCE(SDD.`id`, 0) = 0 AND (SD.`quantity` - SD.`qty_released`) <= 0, 1, 0) AS 'is_removed',
+						0 AS 'is_for_branch',
+						COALESCE(SDD.`recv_quantity`, 0) AS 'receiveqty'
+					FROM `sales_head` AS SH
+					LEFT JOIN 
+						`sales_detail` AS SD ON SD.`headid` = SH.`id` 
+					LEFT JOIN 
+						`customer` AS C ON C.`id` = SH.`customer_id`
+					LEFT JOIN 
+						`product` AS P ON P.`id` = SD.`product_id`
+					LEFT JOIN 
+					(
+						SELECT 
+							SDD.`sales_detail_id`, 
+							SDD.`quantity`, 
+							SDD.`id`, 
+							SDD.`memo`, 
+							SDD.`invoice`,
+							SDD.`description`,
+							SDD.`recv_quantity`
+				        FROM 
+				        	stock_delivery_head AS SDH
+				        LEFT JOIN 
+				        	stock_delivery_detail AS SDD ON SDD.`headid` = SDH.`id`
+				        WHERE 
+				        	SDH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
+				        	SDH.`id` = ?
+					)
+					AS SDD ON SDD.`sales_detail_id` = SD.`id`
+					WHERE 
+						SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
+						SH.`is_used` = ".\Constants\DELIVERY_CONST::USED." AND 
+						SH.`id` = ?
+					HAVING 
+						is_removed = 0";
+
+		$result = $this->db->query($query, [$this->_delivery_head_id, $sales_head_id]);
+
+		if ($result->num_rows() == 0) 
+			throw new Exception($this->_error_message['SALES_NOT_FOUND']);
+		else
+		{
+			$i = 0;
+			foreach ($result->result() as $row) 
+			{
+				$break_line = $row->type == \Constants\DELIVERY_CONST::STOCK ? '' : '<br/>';
+				$response['detail'][$i][] = $row->id == 0 ? array(0) : array($this->encrypt->encode($row->id));
+				$response['detail'][$i][] = array($this->encrypt->encode($row->sales_detail_id));
+				$response['detail'][$i][] = array($row->sales_reference);
+				$response['detail'][$i][] = array($row->is_for_branch);
+				$response['detail'][$i][] = array($i+1);
+				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);
+				$response['detail'][$i][] = array($row->material_code);
+				$response['detail'][$i][] = array($row->uom);
+				$response['detail'][$i][] = array($row->quantity);
+				$response['detail'][$i][] = array($row->receiveqty);
+				$response['detail'][$i][] = array($row->invoice);
+				$response['detail'][$i][] = array($row->memo);
+				$response['detail'][$i][] = array('');
+				$response['detail'][$i][] = array('');
+				$i++;
+			}
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	public function remove_imported_sales_from_delivery()
+	{
+		$response = [];
+
+		$this->db->trans_start();
+			$this->db->where("`sales_detail_id` >", 0);
+			$this->db->where("`headid`", $this->_delivery_head_id);
+			$this->db->delete("stock_delivery_detail");
+		$this->db->trans_complete();
+
+		$response['error'] = $this->db->error()['message'];
+
+		return $response;
+	}
+
+	public function update_delivery_type($param)
+	{
+		extract($param);
+
+		$response = [];
+
+		$this->db->trans_start();
+			$this->db->set('`delivery_type`', $delivery_type);
+			$this->db->where("`id`", $this->_delivery_head_id);
+			$this->db->update('stock_delivery_head');
+		$this->db->trans_complete();
+
+		$response['error'] = $this->db->error()['message'];
+
+		return $response;
 	}
 }

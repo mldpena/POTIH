@@ -188,7 +188,8 @@ class StockDelivery extends CI_Controller {
 				case 'create_reference_number':
 					$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d H:i:s"),
 																								'delivery_receive_date' => date("Y-m-d H:i:s"),
-																								'customer_receive_date' => date("Y-m-d H:i:s")));
+																								'customer_receive_date' => date("Y-m-d H:i:s"),
+																								'delivery_type' => \Constants\DELIVERY_CONST::BOTH));
 					break;
 
 				case 'get_stock_delivery_details':
@@ -279,7 +280,19 @@ class StockDelivery extends CI_Controller {
 				case 'check_notifications':
 					$response = $this->_notification_manager->get_header_notifications();
 					break;
-					
+				
+				case 'get_sales_details':
+					$response = $this->delivery_model->get_sales_delivery_detail($post_data);
+					break;
+
+				case 'remove_imported_sales':
+					$response = $this->delivery_model->remove_imported_sales_from_delivery();
+					break;
+
+				case 'update_delivery_type':
+					$response = $this->delivery_model->update_delivery_type($post_data);
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
