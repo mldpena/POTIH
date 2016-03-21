@@ -287,7 +287,7 @@ class Sales_Manager
 
 		$result_reservation_list = $this->_CI->sales_model->get_customer_reservation_list_by_id($customer_id, $branch_id);
 
-		if ($result_reservation_list->num_rows() == 0 && $branch_id == $this->_current_branch_id) 
+		if ($result_reservation_list->num_rows() == 0) 
 			$reservation_lists['error'] = $this->_error_message['RESERVATION_NOT_FOUND'];
 		else
 		{
@@ -347,6 +347,24 @@ class Sales_Manager
 
 		$result->free_result();
 
+		return $response;
+	}
+
+	public function update_sales_head_upon_customer_change($param)
+	{
+		extract($param);
+
+		$sales_head_data = [
+								'for_branch_id' => $for_branch_id,
+								'customer_id' => $customer_id,
+								'is_vatable' => $is_vatable
+							];
+
+		$response = $this->_CI->sales_model->update_sales_table($sales_head_data, \Constants\SALES_CONST::TBL_SALES_HEAD, $this->_sales_head_id);
+
+		if (!empty($response['error']))
+			throw new \Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
+			
 		return $response;
 	}
 }

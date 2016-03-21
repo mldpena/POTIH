@@ -332,9 +332,19 @@ class User_Model extends CI_Model {
 
 		$response['error'] = '';
 
-		$query = "SELECT `code`, `full_name`, `is_active`, `username`, `password`, `contact_number`, `id`
-					FROM `user` 
-					WHERE `is_show` = ".\Constants\USER_CONST::ACTIVE." AND `id` = ?";
+		$query = "SELECT 
+						`code`, 
+						`full_name`, 
+						`is_active`, 
+						`username`, 
+						`password`, 
+						`contact_number`, 
+						`id`,
+						`type`
+					FROM 
+						`user` 
+					WHERE 
+						`is_show` = ".\Constants\USER_CONST::ACTIVE." AND `id` = ?";
 
 		$result = $this->db->query($query,$this->_user_head_id);
 
@@ -349,6 +359,7 @@ class User_Model extends CI_Model {
 			$response['full_name'] 	= $row->full_name;
 			$response['is_active'] 	= $row->is_active;
 			$response['contact'] 	= $row->contact_number;
+			$response['type'] 		= $row->type;
 			$response['is_own_profile'] = $this->encrypt->decode(get_cookie('temp')) == $row->id ? \Constants\USER_CONST::OWN_PROFILE : \Constants\USER_CONST::OTHER_PROFILE;
 
 			$query_branches = "SELECT `user_branch_id` AS 'branch_id'

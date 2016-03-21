@@ -426,6 +426,24 @@
 		computeSummary();
 	});
 
+	$('.imgdel').live('click', function(){
+
+		var rowIndex = $(this).parent().parent().index();
+		var reservationInvoice = tableHelper.contentProvider.getData(rowIndex, 'reservationreference');
+		var salesDetailId = Number(tableHelper.contentProvider.getData(rowIndex, 'id'));
+
+		if (reservationInvoice !== '' && salesDetailId === 0)
+		{
+			myjstbl.delete_row(rowIndex);
+			checkRemainingReservationDetils();
+			tableHelper.contentProvider.recomputeRowNumber();
+		}
+
+		if (salesDetailId === 0) 
+			tableHelper.contentProvider.setData(rowIndex, 'price', ['']);
+	});
+
+
 	$('.chkdetails').live('click',function(){
 
 		if (processingFlag) 
@@ -629,12 +647,14 @@
 	{
 		var customer_id 	= $('#customer').val();
 		var for_branch_id 	= $('#orderfor').val();
+		var is_vatable 		= $('#is-vatable').val();
 		var customer_type 	= $("input[name='customer-type']:checked").val();
 
 		var arr = 	{ 
 						fnc : 'remove_imported_reservation',
 						customer_id : customer_id,
-						for_branch_id : for_branch_id
+						for_branch_id : for_branch_id,
+						is_vatable : is_vatable
 					};
 
 		$.ajax({
@@ -650,18 +670,17 @@
 				}
 				else
 				{
-					for (var i = 1; i < myjstbl.get_row_count(); i++) 
+					for(var i = myjstbl.get_row_count() - 1; i > 0; i--) 
 					{
-						var reservationRowId = Number(tableHelper.contentProvider.getData(i, 'reservationreference'));
+						var reservationReference = tableHelper.contentProvider.getData(i, 'reservationreference');
 
-						if (reservationRowId != '')
+						if (reservationReference != '')
 							myjstbl.delete_row(i);
 					};
 					
 					computeSummary();
 					myjstbl_reservation_list.clear_table();
 					tableHelper.contentProvider.recomputeRowNumber();
-
 
 					if (customer_id == 0 && customer_type == CustomerType.Regular) 
 						return false;

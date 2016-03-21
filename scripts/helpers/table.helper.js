@@ -183,13 +183,12 @@ var TableHelper = function(tableOptions,options) {
 				}
 				else
 				{
-					self.contentProvider.setData(self.globalRowIndex,'product',['',0,'','','']);
+					self.contentProvider.setData(self.globalRowIndex,'product',['', 0, '', '', '', '']);
 					self.contentProvider.setData(self.globalRowIndex,'qty',['']);
 					self.contentProvider.setData(self.globalRowIndex,'memo',['']);
 					self.contentProvider.setData(self.globalRowIndex,'code',['']);
 					self.contentProvider.recomputeTotalQuantity();
-					self.contentHelper.descriptionAccessibilty(self.globalRowIndex,true);
-
+					self.contentHelper.descriptionAccessibilty(self.globalRowIndex, true);
 				}
 			});
 
@@ -623,7 +622,7 @@ var TableHelper = function(tableOptions,options) {
 						{
 							self.contentProvider.setData(rowIndex, 'id', [response.id]);
 
-							if (self._settings.isAddRow && rowIndex == self._jsTable.get_row_count())
+							if (self._settings.isAddRow && rowIndex == (self._jsTable.get_row_count() - 1))
 								self.contentProvider.addRow(self._settings.productClass);
 						}
 
