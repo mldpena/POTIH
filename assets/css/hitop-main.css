@@ -328,13 +328,13 @@ body{
 .main-content.cpanel > .content-form .form-body a .each-btn{
 	float: left;
 	border: 1px #ddd solid;
-	width: 160.8px;
-	height: 129px;
+	width: 164.8px;
+	height: 161px;
 	margin-left: 15px;
 	margin-top: 15px;
 	background: #f2f2f2;
 	border-radius: 4px;
-	padding: 0px 10px;
+	padding: 10px;
 }
 .main-content.cpanel > .content-form .form-body a .each-btn:hover{
 	background: #f9f9f9;
@@ -342,7 +342,7 @@ body{
 .main-content.cpanel > .content-form .form-body a .each-btn img{
 	width: 60px;
 	height: 60px;
-	margin-top: 10px;
+	margin-top: 20px;
 }
 .main-content.cpanel > .content-form .form-body a .each-btn .btn-title{
 	margin-top: 7px;
