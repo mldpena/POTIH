@@ -18,7 +18,7 @@
 							Walk-in
 						</label>
 						<label class="form-inline margin-left5">
-							<input type="radio" name="customer-type" value="1" checked>
+							<input type="radio" name="customer-type" value="1">
 							Regular
 						</label>
 					</div>

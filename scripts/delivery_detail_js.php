@@ -11,6 +11,7 @@
 		ForSales : 0
 	}
 	
+	var processingFlag = false;
 	var token = '<?= $token ?>';
 	var isUsed = '';
 
@@ -29,6 +30,24 @@
 		disp: [spnid],
 		td_class: "tablerow tdid",
 		headertd_class : "tdheader_id"
+	};
+
+	var spnsalesid = document.createElement('span');
+	colarray['salesid'] = { 
+		header_title: "",
+		edit: [spnsalesid],
+		disp: [spnsalesid],
+		td_class: "tablerow hide-elem tdsalesid",
+		headertd_class : "hide-elem tdsalesid"
+	};
+
+	var spnreservationreference = document.createElement('span');
+	colarray['reservationreference'] = { 
+		header_title: "",
+		edit: [spnreservationreference],
+		disp: [spnreservationreference],
+		td_class: "tablerow hide-elem tdreservationref",
+		headertd_class : "hide-elem tdreservationref"
 	};
 
 	var chkchecktransfer = document.createElement('input');
@@ -159,7 +178,72 @@
 		headertd_class: "tddelete"
 	};
 
+
+	/**
+	 * Initialization for JS table Reseravation Lists
+	 */
+
+	var tab_sales_list = document.createElement('table');
+	tab_sales_list.className = "tblstyle";
+	tab_sales_list.id = "table_reservationlist_id";
+	tab_sales_list.setAttribute("style","border-collapse:collapse;");
+	tab_sales_list.setAttribute("class","border-collapse:collapse;");
+	
+	var colarray_sales_list = [];
+
+	var spnsalesid = document.createElement('span');
+	colarray_sales_list['id'] = { 
+		header_title: "",
+		edit: [spnsalesid],
+		disp: [spnsalesid],
+		td_class: "tablerow tdid",
+		headertd_class : "tdheader_id"
+	};
+
+	var chkdetails = document.createElement('input');
+	chkdetails.setAttribute('type','checkbox');
+	chkdetails.setAttribute('class','chkdetails');
+	colarray_sales_list['check'] = { 
+		header_title: "",
+		edit: [chkdetails],
+		disp: [chkdetails],
+		td_class: "tablerow tddetails"
+	};
+
+	var spnreferencenumber = document.createElement('span');
+	colarray_sales_list['reservation_number'] = { 
+		header_title: "Ref #",
+		edit: [spnreferencenumber],
+		disp: [spnreferencenumber],
+		td_class: "tablerow tdrefnumber"
+	};
+
+	var spndate = document.createElement('span');
+	colarray_sales_list['date'] = { 
+		header_title: "Date",
+		edit: [spndate],
+		disp: [spndate],
+		td_class: "tablerow tddate"
+	};
+
+	var spnsalesman = document.createElement('span');
+	colarray_sales_list['salesman'] = { 
+		header_title: "Salesman",
+		edit: [spnsalesman],
+		disp: [spnsalesman],
+		td_class: "tablerow tddate"
+	};
+
+	var spntotalqty = document.createElement('span');
+	colarray_sales_list['totalqty'] = { 
+		header_title: "Qty",
+		edit: [spntotalqty],
+		disp: [spntotalqty],
+		td_class: "tablerow tdtotalqty"
+	};
+
 	var myjstbl;
+	var myjstbl_sales_list;
 
 	var root = document.getElementById("tbl");
 	myjstbl = new my_table(tab, colarray, {	ispaging : false, 
@@ -170,14 +254,29 @@
 
 	root.appendChild(myjstbl.tab);
 
+	var root_sales_list = document.getElementById("tbl_sales");
+	myjstbl_sales_list = new my_table(tab_sales_list, colarray_sales_list, {	
+																				ispaging : false, 
+																				tdhighlight_when_hover : "tablerow",
+																				iscursorchange_when_hover : true,
+																				isdeleteicon_when_hover : false
+																			}
+										);
+
+	root_sales_list.appendChild(myjstbl_sales_list.tab);
+
 	$('#tbl').hide();
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", controller : 'delivery' });
 
-	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
+	var salesListTableHelper = new TableHelper ({ tableObject : myjstbl_sales_list, tableArray : colarray_sales_list }, { token : notificationToken });
+
+	tableHelper.detailContent.bindAllEvents({ 	
+												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
-												addInventoryChecker : true} );
+												addInventoryChecker : true
+											});
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -204,7 +303,7 @@
 					$('#to_branch').val(response.to_branchid);
 
 					if (response.to_branchid != response.own_branch)
-						$("#to_branch option[value="+response.own_branch+"]").remove();
+						$("#to_branch option[value=" + response.own_branch + "]").remove();
 
 					if (response.entry_date != '') 
 						$('#date').val(response.entry_date);	
@@ -216,12 +315,14 @@
 					{
 						isUsed = ", .tdreceive";
 						$('#print').hide();
-					} 
-						
+					}
 				}
 				
 				if (response.detail_error == '') 
 					myjstbl.insert_multiplerow_with_value(1,response.detail);
+
+				if (response.sales_list_error == '') 
+					myjstbl_sales_list.insert_multiplerow_with_value(1, response.sales_lists);
 
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
@@ -237,14 +338,9 @@
 				else
 					tableHelper.contentProvider.addRow();
 
-				var isHideTransfer = false;
+				hideTransferAndReceived();
 
-				if (response.delivery_type != DeliveryType.Both) 
-					isHideTransfer = true;
-				
-				hideTransferAndReceived(isHideTransfer);
-
-				if (!$.inArray(response.delivery_type,[DeliveryType.Both,DeliveryType.Unsaved]))
+				if ($.inArray(Number(response.delivery_type),[Number(DeliveryType.Both),Number(DeliveryType.Unsaved)]) == -1)
 				{
 					$('.tdistransfer').hide();
 					hideTransferAndReceived(true);
@@ -261,19 +357,28 @@
 		$('input, textarea').attr('disabled','disabled');
 
 	$('#delivery_type').live('change',function(){
-		if ($(this).val() == DeliveryType.Sales) 
+
+		var delivery_type = $(this).val();
+
+		if (delivery_type == DeliveryType.Sales) 
 		{
 			$('#delivery_to_list').hide();
+			$('#tbl_sales').show();
 			$('.tdistransfer').hide();
 			hideTransferAndReceived(true);
 		}
-		else if ($(this).val() == DeliveryType.Transfer) 
+		else if (delivery_type == DeliveryType.Transfer) 
 		{
 			$('#delivery_to_list').show();
+			$('#tbl_sales').hide();
 			$('.tdistransfer').hide();
+			
+			alert("Products imported from Sales Invoice will be removed upon changing to transfer.");
+
+			removeImportedSales();
 			hideTransferAndReceived(true);
 		}
-		else if ($(this).val() == DeliveryType.Both)
+		else if (delivery_type == DeliveryType.Both)
 		{
 			for (var i = 1; i < myjstbl.get_row_count(); i++) 
 			{
@@ -282,12 +387,117 @@
 			}
 
 			$('#delivery_to_list').show();
+			$('#tbl_sales').show();
 			$('.tdistransfer').show();
 			$('.chktransfer').removeAttr('checked');
 			$('#dynamic-css').html('');
 			hideTransferAndReceived();
-
 		}
+
+
+		var arr = 	{ 
+						fnc : 'update_delivery_type',
+						delivery_type : delivery_type
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
+			success: function(response) {
+				clear_message_box();
+
+				if (response.error != '')
+				{
+					build_message_box('messagebox_1', response.error, 'danger');
+					window.reload();
+				}
+			}       
+		});
+	});
+
+	$('.chkdetails').live('click',function(){
+
+		if (processingFlag) 
+			return;
+
+		processingFlag = true;
+
+		var rowIndex = $(this).parent().parent().index();
+		var self = $(this);
+
+		if ($(self).is(':checked')) 
+		{
+			$(self).attr('disabled','disabled');
+
+			var sales_head_id = salesListTableHelper.contentProvider.getData(rowIndex, 'id');
+
+			var arr = 	{ 
+							fnc : 'get_sales_details',
+							sales_head_id : sales_head_id
+						};
+
+			$.ajax({
+				type: "POST",
+				dataType : 'JSON',
+				data: 'data=' + JSON.stringify(arr) + notificationToken,
+				success: function(response) {
+					clear_message_box();
+
+					if (response.error != '') 
+						build_message_box('messagebox_1', response.error, 'danger');
+					else
+					{
+						var nextRow = myjstbl.get_row_count() - 1;
+
+						myjstbl.insert_multiplerow_with_value(nextRow, response.detail);
+						tableHelper.contentProvider.recomputeTotalQuantity();
+						tableHelper.contentProvider.recomputeRowNumber();
+						tableHelper.contentHelper.checkProductInfo();
+						checkDeliveryDetails();
+					}
+
+					$(self).removeAttr('disabled');
+
+					processingFlag = false;
+				}       
+			});
+		}
+		else
+		{
+			var importReferenceNumber = salesListTableHelper.contentProvider.getData(rowIndex, 'reservation_number');
+
+			for(var i = myjstbl.get_row_count() - 1; i > 0; i--)
+			{
+				var tableDetailRowSalesNumber = tableHelper.contentProvider.getData(i, 'reservationreference');
+
+				if (importReferenceNumber == tableDetailRowSalesNumber) 
+					myjstbl.delete_row(i);
+			};
+
+			tableHelper.contentProvider.recomputeTotalQuantity();
+			tableHelper.contentProvider.recomputeRowNumber();
+
+			processingFlag = false;
+		}
+	});
+
+	$('.imgdel').live('click', function(){
+
+		var rowIndex = $(this).parent().parent().index();
+		var salesInvoice = tableHelper.contentProvider.getData(rowIndex, 'reservationreference');
+		var deliveryDetailId = Number(tableHelper.contentProvider.getData(rowIndex, 'id'));
+
+		if (salesInvoice !== '' && deliveryDetailId === 0)
+		{
+			myjstbl.delete_row(rowIndex);
+			checkDeliveryDetails();
+			tableHelper.contentProvider.recomputeRowNumber();
+		}
+
+		if (deliveryDetailId === 0) 
+			tableHelper.contentProvider.setData(rowIndex, 'invoice', ['']);
+
 	});
 
 	$('.print').click(function(){
@@ -363,6 +573,7 @@
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
 		var description 	= (tableHelper.contentProvider.getData(rowIndex,'product',4));
+		var sales_detail_id = tableHelper.contentProvider.getData(rowIndex,'salesid');
 		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
 		if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && memo == '') || (type_val == DeliveryType.Sales && memo == '')) 
@@ -379,10 +590,69 @@
 						detail_id 	: rowId,
 						istransfer 	: isTransfer,
 						description : description,
-						invoice 	: invoice
+						invoice 	: invoice,
+						sales_detail_id : sales_detail_id
 					};
 
 		return arr;
+	}
+
+	function checkDeliveryDetails()
+	{
+		for (var i = 1; i < myjstbl.get_row_count(); i++) 
+		{
+			var deliveryDetailId = tableHelper.contentProvider.getData(i, 'id');
+			var reservationReference = tableHelper.contentProvider.getData(i, 'reservationreference');
+			var salesDetailId = tableHelper.contentProvider.getData(i, 'salesid');
+
+			if (deliveryDetailId == 0) 
+			{
+				myjstbl.edit_row(i);
+				tableHelper.contentHelper.descriptionAccessibilty(i);
+			}
+
+			if (reservationReference != '' && salesDetailId != '') 
+			{
+				var checkboxElement = tableHelper.contentProvider.getElement(i, 'istransfer');
+				$(checkboxElement).attr('disabled', 'disabled');
+			}
+		};
+	}
+
+	function removeImportedSales()
+	{
+		$('.chkdetails').removeAttr('checked');
+
+		var arr = 	{ 
+						fnc : 'remove_imported_sales'
+					};
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
+			success: function(response) 
+			{
+				if (response.error !== '') 
+				{
+					alert(response.error);
+					window.reload();
+				}
+				else
+				{
+					for(var i = myjstbl.get_row_count() - 1; i > 0; i--) 
+					{
+						var reservationReference = tableHelper.contentProvider.getData(i, 'reservationreference');
+
+						if (reservationReference != '')
+							myjstbl.delete_row(i);
+					};
+
+					tableHelper.contentProvider.recomputeRowNumber();
+					tableHelper.contentProvider.recomputeTotalQuantity();
+				}
+			}
+		});
 	}
 
 	function hideTransferAndReceived(isTransfer)
