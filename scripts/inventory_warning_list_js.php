@@ -8,15 +8,6 @@
     tab.setAttribute("class","border-collapse:collapse;");
     
     var colarray = [];
-    
-    var spnid = document.createElement('span');
-    colarray['id'] = { 
-        header_title: "",
-        edit: [spnid],
-        disp: [spnid],
-        td_class: "tablerow tdid",
-        headertd_class : "tdheader_id"
-    };
 
     var spnnumber = document.createElement('span');
     colarray['number'] = { 

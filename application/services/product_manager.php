@@ -308,7 +308,6 @@ class Product_Manager
 
 			foreach ($result->result() as $row) 
 			{
-				$response['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
