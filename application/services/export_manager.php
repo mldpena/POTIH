@@ -48,8 +48,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('purchaseorder_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -85,8 +83,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('purchasereturn_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -118,8 +114,6 @@ class Export_Manager
 	public function parse_get_purchase_receive_by_transaction($param)
 	{
 		$this->_CI->load->model('purchasereceive_model');
-
-		$current_invoice = '';
 
 		$response = array();
 
@@ -154,8 +148,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('delivery_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -189,8 +181,6 @@ class Export_Manager
 	public function parse_get_delivery_receive_by_transaction($param, $receive_type)
 	{
 		$this->_CI->load->model('delivery_model');
-
-		$current_invoice = '';
 
 		$response = array();
 
@@ -228,8 +218,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('return_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -261,8 +249,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('damage_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -292,8 +278,6 @@ class Export_Manager
 	public function parse_get_inventory_adjustment($param)
 	{
 		$this->_CI->load->model('adjust_model');
-
-		$current_invoice = '';
 
 		$response = array();
 
@@ -329,16 +313,38 @@ class Export_Manager
 
 	public function parse_get_inventory_warning($param)
 	{
+		extract($param);		
+
 		$this->_CI->load->constant('product_const');
 		$this->_CI->load->model('product_model');
+		$this->_CI->load->model('branch_model');
 
-		$current_invoice = '';
-
-		$response = array();
-
+		$response = [];
+		$branch_column_list = '';
+		$string_buffer = '';
 		$response['rowcnt'] = 0;
+		$response['branch_name'] = [];
 
-		$result = $this->_CI->product_model->get_product_warning_list_by_filter($param, FALSE);
+		$branch_result = $this->_CI->branch_model->get_branch_list();
+		
+		if($branch_result->num_rows() > 0) 
+		{
+			foreach ($branch_result->result() as $row) 
+			{
+				if ((int)$branch === (int)$row->id) 
+					$string_buffer = ",COALESCE(PBI.`inventory`,0) AS 'inventory'";
+				else
+				{
+					$branch_column_list .= ",SUM(IF(PBI2.`branch_id` = ".$row->id.", PBI2.`inventory`, 0)) AS '".$row->name."'";
+					$response['branch_name'][] = strtoupper($row->name);
+				}
+			}
+
+			$branch_column_list .= $string_buffer;
+			$response['branch_name'][] = 'INVENTORY';
+		}
+
+		$result = $this->_CI->product_model->get_product_warning_list_by_filter($param, FALSE, $branch_column_list);
 
 		if ($result->num_rows() > 0) 
 		{
@@ -347,15 +353,9 @@ class Export_Manager
 
 			foreach ($result->result() as $row) 
 			{
-				$response['data'][$i][] = $row->material_code;
-				$response['data'][$i][] = $row->description;
-				$response['data'][$i][] = $row->type;
-				$response['data'][$i][] = $row->material_type;
-				$response['data'][$i][] = $row->subgroup;
-				$response['data'][$i][] = $row->min_inv;
-				$response['data'][$i][] = $row->max_inv;
-				$response['data'][$i][] = $row->inventory;
-				$response['data'][$i][] = $row->status;
+				foreach ($row as $key => $value) 
+					$response['data'][$i][] = $value;
+
 				$i++;
 			}
 		}
