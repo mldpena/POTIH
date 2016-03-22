@@ -67,8 +67,10 @@ class PurchaseReturn_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\PURCHASE_RETURN_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\PURCHASE_RETURN_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\PURCHASE_RETURN_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom',
-						PD.`quantity`, PD.`memo`, PD.`description`, P.`type`
+						PD.`quantity`, PD.`memo`, PD.`description`, 
+						COALESCE(P.`type`, '') AS 'type'
 					FROM `purchase_return_detail` AS PD
 					LEFT JOIN `purchase_return_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE."
@@ -377,6 +379,7 @@ class PurchaseReturn_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom'
 							FROM purchase_return_head AS H
 							LEFT JOIN purchase_return_detail AS D ON D.`headid` = H.`id`

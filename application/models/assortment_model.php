@@ -71,8 +71,11 @@ class Assortment_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom', 
-						PD.`quantity`, PD.`memo`, PD.`description`, P.`type`, PD.`qty_released`,
+						PD.`quantity`, PD.`memo`, PD.`description`, 
+						COALESCE(P.`type`, '') AS 'type', 
+						PD.`qty_released`,
 						(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
 					FROM `release_order_detail` AS PD
 					LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
@@ -440,6 +443,7 @@ class Assortment_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom'
 							FROM release_order_head AS H
 							LEFT JOIN release_order_detail AS D ON D.`headid` = H.`id`

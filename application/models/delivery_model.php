@@ -75,9 +75,12 @@ class Delivery_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom', 
 						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity` AS 'receiveqty', SD.`description`, P.`type`, SD.`invoice`
+						SD.`recv_quantity` AS 'receiveqty', SD.`description`, 
+						COALESCE(P.`type`, '') AS 'type', 
+						SD.`invoice`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -712,9 +715,12 @@ class Delivery_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\DELIVERY_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom', 
 						SD.`quantity`, SD.`memo`, SD.`is_for_branch`, 
-						SD.`recv_quantity`, SD.`description`, P.`type`, SD.`receive_memo`, SD.`received_by`,
+						SD.`recv_quantity`, SD.`description`, 
+						COALESCE(P.`type`, '') AS 'type', 
+						SD.`receive_memo`, SD.`received_by`,
 						IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
@@ -865,6 +871,7 @@ class Delivery_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							D.`invoice`
 							FROM stock_delivery_head AS H
@@ -944,6 +951,7 @@ class Delivery_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							D.`invoice`
 							FROM stock_delivery_head AS H
@@ -1005,6 +1013,7 @@ class Delivery_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							D.`invoice`
 							FROM stock_delivery_head AS H

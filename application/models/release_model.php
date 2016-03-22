@@ -111,12 +111,14 @@ class Release_Model extends CI_Model {
 
 		$query_detail = "SELECT PRD.`id` AS 'receive_detail_id', PRD.`release_order_detail_id`,
 						COALESCE(CONCAT('PA',PH.`reference_number`),'') AS 'po_number',
-						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', P.`type`,
+						PRD.`product_id`, COALESCE(P.`material_code`,'') AS 'material_code', 
+						COALESCE(P.`type`, '') AS 'type',
 						COALESCE(P.`description`,'') AS 'product', COALESCE(PD.`description`,'') AS 'description', 
 						CASE
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom',
 						COALESCE(PD.`quantity`,0) AS 'quantity', COALESCE(PD.`memo`,'') AS 'memo', 
 						(COALESCE(PD.`quantity`,0) - COALESCE(PD.`qty_released`,0)) AS 'qty_remaining',
@@ -193,9 +195,11 @@ class Release_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\RELEASE_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom',
 						PD.`quantity`, PD.`memo`, 
-						CONCAT('PA',PH.`reference_number`) AS 'po_number', PD.`description`, P.`type`,
+						CONCAT('PA',PH.`reference_number`) AS 'po_number', PD.`description`, 
+						COALESCE(P.`type`, '') AS 'type',
 						COALESCE(PRD.`quantity`,0) AS 'qty_released', (PD.`quantity` - PD.`qty_released`) AS 'qty_remaining',
 						IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`qty_released`) <= 0, 1, 0) AS 'is_removed'
 					FROM `release_order_head` AS PH
@@ -527,6 +531,7 @@ class Release_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom'
 							FROM release_head AS H
 							LEFT JOIN release_detail AS D ON D.`headid` = H.`id`

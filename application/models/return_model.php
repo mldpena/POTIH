@@ -65,8 +65,11 @@ class Return_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\RETURN_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\RETURN_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\RETURN_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom', 
-						RD.`quantity`, RD.`memo`, RD.`description`, P.`type`, RD.`received_by`
+						RD.`quantity`, RD.`memo`, RD.`description`, 
+						COALESCE(P.`type`, '') AS 'type', 
+						RD.`received_by`
 					FROM `return_detail` AS RD
 					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
@@ -373,6 +376,7 @@ class Return_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom'
 							FROM return_head AS H
 							LEFT JOIN return_detail AS D ON D.`headid` = H.`id`

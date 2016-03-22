@@ -34,10 +34,12 @@ class Adjust_Model extends CI_Model {
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KGS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
 							COALESCE(PBI.`inventory`,0) AS 'inventory', COALESCE(IA.`id`,0) AS 'adjust_id', 
@@ -334,10 +336,12 @@ class Adjust_Model extends CI_Model {
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KGS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							CASE 
 								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'
@@ -548,6 +552,7 @@ class Adjust_Model extends CI_Model {
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::PCS." THEN 'PCS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::KG." THEN 'KGS'
 								WHEN P.`uom` = ".\Constants\ADJUST_CONST::ROLL." THEN 'ROLL'
+								ELSE ''
 							END AS 'uom',
 							IA.`old_inventory`, IA.`new_inventory`, IA.`memo`, 
 							CASE 
@@ -676,6 +681,7 @@ class Adjust_Model extends CI_Model {
 							CASE 
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\ADJUST_CONST::STOCK." THEN 'Stock'
+								ELSE ''
 							END AS 'type',
 							CASE 
 								WHEN IA.`status` = ".\Constants\ADJUST_CONST::PENDING." THEN 'Pending'

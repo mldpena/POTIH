@@ -75,9 +75,11 @@ class Request_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\REQUEST_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\REQUEST_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\REQUEST_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom', 
 						SD.`quantity`, SD.`memo`,
-						SD.`qty_delivered` AS 'qty_delivered', SD.`description`, P.`type`
+						SD.`qty_delivered` AS 'qty_delivered', SD.`description`, 
+						COALESCE(P.`type`, '') AS 'type'
 					FROM `stock_request_detail` AS SD
 					LEFT JOIN `stock_request_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."

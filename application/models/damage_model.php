@@ -61,8 +61,10 @@ class Damage_Model extends CI_Model {
 							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::KG." THEN 'KGS'
 							WHEN P.`uom` = ".\Constants\DAMAGE_CONST::ROLL." THEN 'ROLL'
+							ELSE ''
 						END AS 'uom', 
-						DD.`quantity`, DD.`memo`, DD.`description`, P.`type`
+						DD.`quantity`, DD.`memo`, DD.`description`, 
+						COALESCE(P.`type`, '') AS 'type'
 					FROM `damage_detail` AS DD
 					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
 					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
@@ -358,6 +360,7 @@ class Damage_Model extends CI_Model {
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
+								ELSE ''
 							END AS 'uom'
 							FROM damage_head AS H
 							LEFT JOIN damage_detail AS D ON D.`headid` = H.`id`
