@@ -724,7 +724,7 @@ class Delivery_Model extends CI_Model {
 						IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
 					WHERE SD.`headid` = ? AND SD.`is_for_branch` = $is_transfer";
 
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
