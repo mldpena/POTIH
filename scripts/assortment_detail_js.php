@@ -602,7 +602,7 @@
 			var detailExist = false;
 			var salesRowIndex = $(element).parent().parent().index();
 
-			var importSalesNumber = salesListTableHelper.contentProvider.getData(salesRowIndex, 'sales_number');
+			var importSalesNumber = salesListTableHelper.contentProvider.getData(salesRowIndex, 'reference_number');
 
 			for (var i = 1; i < myjstbl.get_row_count(); i++) 
 			{
