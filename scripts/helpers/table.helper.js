@@ -187,6 +187,7 @@ var TableHelper = function(tableOptions,options) {
 					self.contentProvider.setData(self.globalRowIndex,'qty',['']);
 					self.contentProvider.setData(self.globalRowIndex,'memo',['']);
 					self.contentProvider.setData(self.globalRowIndex,'code',['']);
+					self.contentProvider.setData(self.globalRowIndex,'uom', ['']);
 					self.contentProvider.recomputeTotalQuantity();
 					self.contentHelper.descriptionAccessibilty(self.globalRowIndex, true);
 				}
@@ -270,6 +271,9 @@ var TableHelper = function(tableOptions,options) {
 							
 							if (self._jsTableArray.hasOwnProperty("price")) 
 								self.contentProvider.setData(rowIndex, 'price', ['']);
+
+							if (self._jsTableArray.hasOwnProperty("invoice")) 
+								self.contentProvider.setData(rowIndex, 'invoice', ['']);
 
 							$(descriptionElement).hide();
 						}

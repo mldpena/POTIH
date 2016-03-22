@@ -130,25 +130,29 @@ class Delivery_Model extends CI_Model {
 							    CONCAT('SI', SH.`reference_number`) AS 'sales_reference',
 							    DATE(SH.`entry_date`) AS 'sales_date',
 							    SUM(SD.`quantity`) AS 'total_qty',
+							    COALESCE(S.`full_name`, '') AS 'salesman',
 							    SUM(IF((SD.`quantity` - SD.`qty_released`) < 0, 0, SD.`quantity` - SD.`qty_released`)) AS 'total_remaining_qty'
 							FROM
 							    sales_head AS SH
-								LEFT JOIN sales_detail AS SD ON SD.`headid` = SH.`id`
-							    LEFT JOIN 
-							    (
-									SELECT 
-										SDD.`sales_detail_id`, 
-										SDD.`id`, 
-										SDH.`branch_id`
-							        FROM 
-							        	stock_delivery_head AS SDH
-							        LEFT JOIN 
-							        	stock_delivery_detail AS SDD ON SDD.`headid` = SDH.`id`
-							        WHERE 
-							        	SDH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
-							        	SDH.`id` = ?
-							    )
-							    AS SDD ON SDD.`sales_detail_id` = SD.`id`
+							LEFT JOIN
+							    user AS S ON S.`id` = SH.`salesman_id`
+							LEFT JOIN 
+								sales_detail AS SD ON SD.`headid` = SH.`id`
+						    LEFT JOIN 
+						    (
+								SELECT 
+									SDD.`sales_detail_id`, 
+									SDD.`id`, 
+									SDH.`branch_id`
+						        FROM 
+						        	stock_delivery_head AS SDH
+						        LEFT JOIN 
+						        	stock_delivery_detail AS SDD ON SDD.`headid` = SDH.`id`
+						        WHERE 
+						        	SDH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
+						        	SDH.`id` = ?
+						    )
+						    AS SDD ON SDD.`sales_detail_id` = SD.`id`
 							WHERE
 							    SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
 							    SH.`is_used` = ".\Constants\DELIVERY_CONST::USED." AND 
@@ -160,7 +164,7 @@ class Delivery_Model extends CI_Model {
 		$result_sales_list = $this->db->query($query_sales_list, $query_sales_list_data);
 
 		if ($result_sales_list->num_rows() == 0) 
-			throw new Exception($this->_error_message['SALES_NOT_FOUND']);
+			$response['sales_list_error'] = $this->_error_message['SALES_NOT_FOUND'];
 		else
 		{
 			$i = 0;
@@ -170,6 +174,7 @@ class Delivery_Model extends CI_Model {
 				$response['sales_lists'][$i][] = array($row->is_sold);
 				$response['sales_lists'][$i][] = array($row->sales_reference);
 				$response['sales_lists'][$i][] = array(date('m-d-Y', strtotime($row->sales_date)));
+				$response['sales_lists'][$i][] = array($row->salesman);
 				$response['sales_lists'][$i][] = array($row->total_qty);
 				$i++;
 			}
@@ -512,13 +517,11 @@ class Delivery_Model extends CI_Model {
 		$result = $this->db->query($query,$delivery_head_id);
 		$row 	= $result->row();
 
-		if ($row->total_received > 0) {
+		if ($row->total_received > 0)
 			throw new Exception($this->_error_message['HAS_RECEIVED']);
-		}
 
-		if ($row->branch_id != $this->_current_branch_id) {
+		if ($row->branch_id != $this->_current_branch_id)
 			throw new Exception($this->_error_message['NOT_OWN_BRANCH']);
-		}
 
 		$result->free_result();
 
@@ -1489,7 +1492,7 @@ class Delivery_Model extends CI_Model {
 
 	public function remove_imported_sales_from_delivery()
 	{
-		$response = [];
+		$response['error'] = '';
 
 		$this->db->trans_start();
 			$this->db->where("`sales_detail_id` >", 0);
@@ -1497,7 +1500,10 @@ class Delivery_Model extends CI_Model {
 			$this->db->delete("stock_delivery_detail");
 		$this->db->trans_complete();
 
-		$response['error'] = $this->db->error()['message'];
+		$error = $this->db->error()['message'];
+		
+		if (!empty($error)) 
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE']);
 
 		return $response;
 	}
@@ -1506,7 +1512,7 @@ class Delivery_Model extends CI_Model {
 	{
 		extract($param);
 
-		$response = [];
+		$response['error'] = '';
 
 		$this->db->trans_start();
 			$this->db->set('`delivery_type`', $delivery_type);
@@ -1514,7 +1520,10 @@ class Delivery_Model extends CI_Model {
 			$this->db->update('stock_delivery_head');
 		$this->db->trans_complete();
 
-		$response['error'] = $this->db->error()['message'];
+		$error = $this->db->error()['message'];
+		
+		if (!empty($error)) 
+			throw new Exception($this->_error_message['UNABLE_TO_DELETE_HEAD']);
 
 		return $response;
 	}

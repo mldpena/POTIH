@@ -226,6 +226,14 @@
 		td_class: "tablerow tddate"
 	};
 
+	var spnsalesman = document.createElement('span');
+	colarray_sales_list['salesman'] = { 
+		header_title: "Salesman",
+		edit: [spnsalesman],
+		disp: [spnsalesman],
+		td_class: "tablerow tddate"
+	};
+
 	var spntotalqty = document.createElement('span');
 	colarray_sales_list['totalqty'] = { 
 		header_title: "Qty",
@@ -486,6 +494,10 @@
 			checkDeliveryDetails();
 			tableHelper.contentProvider.recomputeRowNumber();
 		}
+
+		if (deliveryDetailId === 0) 
+			tableHelper.contentProvider.setData(rowIndex, 'invoice', ['']);
+
 	});
 
 	$('.print').click(function(){
