@@ -33,7 +33,7 @@
 								</tr>
 								<tr>
 									<td>Customer:</td>
-									<td>
+									<td style="max-width: 234px;">
 										<select class="form-control" id="customer">
 											<option value="0"></option>
 											<?= $customer_list ?>
@@ -106,41 +106,43 @@
 					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>
-			<div class="max-row tbl-total" align="left">
-				<table>
-					<tr>
-						<td>Total Quantity:</td>
-						<td class="td-right"><span id="total_qty">0</span></td>
-					</tr>
-				</table>
-			</div>
-			<div class="max-row tbl-total" align="right">
-				<table>
-					<tr>
-						<td>VATable:</td>
-						<td class="td-right"><span id="vatable">0</span></td>
-					</tr>
-					<tr>
-						<td>VAT Amount:</td>
-						<td class="td-right"><span id="vat-amount" >0</span></td>
-					</tr>
-					<tr>
-						<td>Total Sales (VAT Inclusive):</td>
-						<td class="td-right"><span id="vat-inclusive">0</span></td>
-					</tr>
-					<tr>
-						<td>Less VAT:</td>
-						<td class="td-right"><span id="less-vat">0</span></td>
-					</tr>
-					<tr>
-						<td>Total:</td>
-						<td class="td-right"><span id="total">0</span></td>
-					</tr>
-					<tr>
-						<td>Total Amount Due:</td>
-						<td class="td-right"><span id="amount-due">0</span></td>
-					</tr>
-				</table>
+			<div class="max-row tbl-total">
+				<div class="pull-left">
+					<table>
+						<tr>
+							<td>Total Quantity:</td>
+							<td class="td-right"><span id="total_qty">0</span></td>
+						</tr>
+					</table>
+				</div>
+				<div class="tbl-total pull-right">
+					<table>
+						<tr>
+							<td>VATable:</td>
+							<td class="td-right"><span id="vatable">0</span></td>
+						</tr>
+						<tr>
+							<td>VAT Amount:</td>
+							<td class="td-right"><span id="vat-amount" >0</span></td>
+						</tr>
+						<tr>
+							<td>Total Sales (VAT Inclusive):</td>
+							<td class="td-right"><span id="vat-inclusive">0</span></td>
+						</tr>
+						<tr>
+							<td>Less VAT:</td>
+							<td class="td-right"><span id="less-vat">0</span></td>
+						</tr>
+						<tr>
+							<td>Total:</td>
+							<td class="td-right"><span id="total">0</span></td>
+						</tr>
+						<tr>
+							<td>Total Amount Due:</td>
+							<td class="td-right"><span id="amount-due">0</span></td>
+						</tr>
+					</table>
+				</div>
 			</div>
 			<div class="max-row">
 				<div class="pull-right">

@@ -332,7 +332,7 @@ var TableHelper = function(tableOptions,options) {
 				},
 				fnc_render : function(ul, item){
 					return my_autocomplete_render_fnc(ul, item, "code_name", [0], 
-						{ width : ["200px"] });
+						{ width : ["auto"] });
 				}
 			},'recent_name_autocomplete');
 		},

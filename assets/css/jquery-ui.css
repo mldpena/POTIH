@@ -537,6 +537,7 @@ button.ui-button::-moz-focus-inner {
 .ui-menu {
 	list-style: none;
 	padding: 0;
+	padding-bottom: 3px;
 	margin: 0;
 	display: block;
 	outline: none;
@@ -854,6 +855,9 @@ body .ui-tooltip {
 .ui-widget-content a {
 	color: #222222;
 	width: 100%;
+}
+.ui-widget-content a span{
+	padding: 3px;
 }
 .ui-widget-header {
 	border: 1px solid #4297d7;
