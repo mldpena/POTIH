@@ -1,6 +1,10 @@
 <script type="text/javascript">
 	var token = '<?= $token ?>';
 	var fromNotication = Number('<?= $this->uri->segment(3) ?>');
+	var NotificationType = {
+		Incomplete : 1,
+		NoDelivery : 2
+	};
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -130,7 +134,11 @@
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
 	if (fromNotication != 0) 
+	{
+		var status = fromNotication == NotificationType.NoDelivery ? 3 : 1;
 		$('#date_from').val('');
+		$('#status').val(status);
+	}
 	
 	bind_asc_desc('order_type');
 

@@ -187,8 +187,11 @@
 					if (response.to_branchid != response.own_branch)
 						$("#to_branch option[value="+response.own_branch+"]").remove();
 
-					if (response.entry_date != '') 
-						$('#date').val(response.entry_date);	
+					if (response.entry_date != '')
+					{
+						$('#date').val(response.entry_date);
+						$('#due-date').datepicker("option", "minDate", $('#date').val());	
+					}
 
 					if (response.due_date != '') 
 						$('#due-date').val(response.due_date);	
