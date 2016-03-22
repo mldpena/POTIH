@@ -6,6 +6,7 @@ class Assortment extends CI_Controller {
 	private $_autocomplete_manager;
 	private $_notification_manager;
 	private $_product_manager;
+	private $_sales_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -41,6 +42,7 @@ class Assortment extends CI_Controller {
 
 		$permissions = array();
 		$branch_list = '';
+		$customer_list = '';
 		
 		switch ($page) 
 		{
@@ -55,6 +57,7 @@ class Assortment extends CI_Controller {
 
 			case 'view':
 				$page = 'assortment_detail';
+				$customer_list = get_name_list_from_table(TRUE, 'customer', FALSE, 0, "`code`, ' - ', `company_name`");
 				$allow_user = $this->permission_checker->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Assortment_Code::EDIT_ASSORTMENT),
 									'allow_to_add' => $this->permission_checker->check_permission(\Permission\Assortment_Code::ADD_ASSORTMENT),
@@ -77,6 +80,7 @@ class Assortment extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
+						'customer_list' => $customer_list,
 						'permission_list' => $permissions,
 						'section_permissions' => $this->permission_checker->get_section_permissions(),
 						'page_permissions' => $this->permission_checker->get_page_permissions());
@@ -110,10 +114,12 @@ class Assortment extends CI_Controller {
 		$this->load->service('autocomplete_manager');
 		$this->load->service('notification_manager');
 		$this->load->service('product_manager');
+		$this->load->service('sales_manager');
 
 		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
 		$this->_product_manager = new Services\Product_Manager();
+		$this->_sales_manager = new Services\Sales_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -131,7 +137,7 @@ class Assortment extends CI_Controller {
 					break;
 
 				case 'create_reference_number':
-					$response = get_next_number('release_order_head','reference_number',array('entry_date' => date("Y-m-d H:i:s")));
+					$response = get_next_number('release_order_head','reference_number', array('entry_date' => date("Y-m-d H:i:s")));
 					break;
 
 				case 'get_assortment_details':
@@ -142,11 +148,11 @@ class Assortment extends CI_Controller {
 					$response = $this->_autocomplete_manager->get_recent_names($post_data, 1);
 					break;
 
-				case 'insert_detail':
+				case 'insert_assortment_detail':
 					$response = $this->assortment_model->insert_assortment_detail($post_data);
 					break;
 
-				case 'update_detail':
+				case 'update_assortment_detail':
 					$response = $this->assortment_model->update_assortment_detail($post_data);
 					break;
 
@@ -178,6 +184,16 @@ class Assortment extends CI_Controller {
 					$response = $this->_notification_manager->get_header_notifications();
 					break;
 					
+				case 'get_sales_details':
+					$response = $this->assortment_model->get_sales_assortment_detail($post_data);
+					break;
+
+				case 'remove_imported_sales':
+					$response = $this->assortment_model->remove_imported_sales_from_assortment();
+					$response = $this->assortment_model->update_assortment_head_upon_customer_change($post_data);
+					$response['sales'] = $this->assortment_model->get_customer_sales_list($post_data['customer_id'], $this->encrypt->decode(get_cookie('branch')));
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

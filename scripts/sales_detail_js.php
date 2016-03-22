@@ -376,8 +376,6 @@
 	}
 
 	$('#customer, #orderfor').change(function(){
-		
-		removeReservationNotification();
 
 		var customer_id = $('#customer').val();
 
@@ -403,13 +401,10 @@
 		
 		var value = $(this).val();
 
-		removeReservationNotification();
-
 		if (value == CustomerType.Walkin)
 		{
 			$('#is-vatable').val(Tax.Vatable);
 			$('#customer').val(0).trigger('liszt:updated');
-
 		}
 		
 		removeImportedReservation();
@@ -638,13 +633,10 @@
 		checkRemainingReservationDetils();
 	}
 
-	function removeReservationNotification()
-	{
-		alert("Products imported from Sales Reservation will be removed upon changing customer.");
-	}
-
 	function removeImportedReservation()
 	{
+		alert("Products imported from Sales Reservation will be removed upon changing customer.");
+		
 		var customer_id 	= $('#customer').val();
 		var for_branch_id 	= $('#orderfor').val();
 		var is_vatable 		= $('#is-vatable').val();

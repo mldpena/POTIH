@@ -11,24 +11,53 @@
 		<div class="form-header">Pick-Up Assortment Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
-				<table>
-					<tr>
-						<td>Reference #:</td>
-						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
-					</tr>
-					<tr>
-						<td>Customer:</td>
-						<td><input type="text" class="form-control" id="customer"></td>
-					</tr>
-					<tr>
-						<td>Date:</td>
-						<td><input type="text" class="form-control" id="date"></td>
-					</tr>
-					<tr>
-						<td valign="top">Memo:</td>
-						<td><textarea class="form-control" rows="3" id='memo'></textarea></td>
-					</tr>
-				</table>
+				<div class="row">
+					<div class="col-md-12">
+						<label class="form-inline">
+							<input type="radio" name="customer-type" value="2">
+							Walk-in
+						</label>
+						<label class="form-inline margin-left5">
+							<input type="radio" name="customer-type" value="1" checked>
+							Regular
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="pull-left">
+							<table>
+								<tr>
+									<td>Reference #:</td>
+									<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
+								</tr>
+								<tr>
+									<td>Customer:</td>
+									<td>
+										<select class="form-control" id="customer">
+											<option value="0"></option>
+											<?= $customer_list ?>
+										</select>
+										<input type="text" class="form-control hide-elem" id="walkin-customer">
+									</td>
+								</tr>
+								<tr>
+									<td>Date:</td>
+									<td><input type="text" class="form-control" id="date"></td>
+								</tr>
+								<tr>
+									<td valign="top">Memo:</td>
+									<td><textarea class="form-control" rows="3" id='memo'></textarea></td>
+								</tr>
+							</table>
+						</div>
+						<div class="pull-right">
+							<div class="tbl-detail">
+								<div class="tbl single max tbl-sales" id="tbl_sales"></div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="divider-line"></div>
 			<div class="max-row">

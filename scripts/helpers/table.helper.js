@@ -187,6 +187,7 @@ var TableHelper = function(tableOptions,options) {
 					self.contentProvider.setData(self.globalRowIndex,'qty',['']);
 					self.contentProvider.setData(self.globalRowIndex,'memo',['']);
 					self.contentProvider.setData(self.globalRowIndex,'code',['']);
+					self.contentProvider.setData(self.globalRowIndex,'uom',['']);
 					self.contentProvider.recomputeTotalQuantity();
 					self.contentHelper.descriptionAccessibilty(self.globalRowIndex, true);
 				}
@@ -284,7 +285,7 @@ var TableHelper = function(tableOptions,options) {
 							else
 								$(descriptionElement).val('').hide();
 
-							self.contentProvider.setData(rowIndex,'product',[ret_datas[1], ret_datas[0], ret_datas[3], newLine, '', '']);
+							self.contentProvider.setData(rowIndex,'product',[ret_datas[1], ret_datas[0], ret_datas[3], newLine, '', 1]);
 							self.contentProvider.setData(rowIndex,'code',[ret_datas[2]]);
 							self.contentProvider.setData(rowIndex,'uom',[ret_datas[4]]);
 						}
