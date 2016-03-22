@@ -68,22 +68,36 @@ class Release_Model extends CI_Model {
 		$query_po_list = "SELECT 
 							    PH.`id`,
 								IF(COUNT(PRD.`id`) > 0, 1, 0) AS 'is_received',
-							    CONCAT('PA', PH.`reference_number`) AS 'pa_number', PH.`customer`,
+							    CONCAT('PA', PH.`reference_number`) AS 'pa_number', 
+							    COALESCE(C.`company_name`, PH.`customer`) AS 'customer',
 							    DATE(PH.`entry_date`) AS 'po_date',
 							    SUM(PD.`quantity`) AS 'total_qty',
 							    SUM(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'total_remaining_qty'
 							FROM
 							    release_order_head AS PH
-								LEFT JOIN release_order_detail AS PD ON PD.`headid` = PH.`id`
-							    LEFT JOIN (
-									SELECT PRD.`release_order_detail_id`, PRD.`id`, PRH.`branch_id`
-							        FROM release_head AS PRH
-							        LEFT JOIN release_detail AS PRD ON PRD.`headid` = PRH.`id`
-							        WHERE PRH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PRH.`id` = ?
-							    )AS PRD ON PRD.`release_order_detail_id` = PD.`id`
+							LEFT JOIN
+								customer AS C ON C.`id` = PH.`customer_id`
+							LEFT JOIN 
+								release_order_detail AS PD ON PD.`headid` = PH.`id`
+						    LEFT JOIN 
+						    (
+								SELECT 
+									PRD.`release_order_detail_id`, 
+									PRD.`id`, 
+									PRH.`branch_id`
+						        FROM 
+						        	release_head AS PRH
+						        LEFT JOIN 
+						        	release_detail AS PRD ON PRD.`headid` = PRH.`id`
+						        WHERE 
+						        	PRH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND 
+						        	PRH.`id` = ?
+						    )
+						    AS PRD ON PRD.`release_order_detail_id` = PD.`id`
 							WHERE
-							    PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::USED."
-							        AND (PH.`branch_id` = ? OR PH.`branch_id` = PRD.`branch_id`)
+							    PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND 
+							    PH.`is_used` = ".\Constants\RELEASE_CONST::USED." AND 
+							    (PH.`branch_id` = ? OR PH.`branch_id` = PRD.`branch_id`)
 							GROUP BY PH.`id`
 							HAVING total_remaining_qty > 0 OR is_received = 1";
 
@@ -506,14 +520,24 @@ class Release_Model extends CI_Model {
 
 		$release_head_id = $this->encrypt->decode($this->session->userdata('release_slip'));
 
-		$query_head = "SELECT CONCAT('WR',RH.`reference_number`) AS 'reference_number', 
-						DATE(H.`entry_date`) AS 'entry_date', RH.`customer`, RH.`memo`, 
-						CONCAT('PA',RH.`reference_number`) AS 'assortment_number'
-					FROM release_head AS H
-					LEFT JOIN release_detail AS D ON D.`headid` = H.`id`
-					LEFT JOIN release_order_detail AS RD ON RD.`id` = D.`release_order_detail_id` 
-					LEFT JOIN release_order_head AS RH ON RH.`id` = RD.`headid`
-					WHERE H.`id` = ?
+		$query_head = "SELECT 
+							CONCAT('WR',RH.`reference_number`) AS 'reference_number', 
+							DATE(H.`entry_date`) AS 'entry_date', 
+							COALESCE(C.`company_name`, RH.`customer`) AS 'customer', 
+							RH.`memo`, 
+							CONCAT('PA',RH.`reference_number`) AS 'assortment_number'
+					FROM 
+						release_head AS H
+					LEFT JOIN 
+						release_detail AS D ON D.`headid` = H.`id`
+					LEFT JOIN 
+						release_order_detail AS RD ON RD.`id` = D.`release_order_detail_id` 
+					LEFT JOIN 
+						release_order_head AS RH ON RH.`id` = RD.`headid`
+					LEFT JOIN
+						customer AS C ON C.`id` = RH.`customer_id`
+					WHERE 
+						H.`id` = ?
 					GROUP BY H.`id`";
 
 		$result_head = $this->db->query($query_head,$release_head_id);

@@ -258,7 +258,7 @@
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'sales',
 										  token : notificationToken,
-										  recentNameElementId : 'supplier' } );
+										  recentNameElementId : 'walkin-customer' } );
 
 	var reservationListTableHelper = new TableHelper ({ tableObject : myjstbl_reservation_list, tableArray : colarray_reservation_list }, { token : notificationToken });
 

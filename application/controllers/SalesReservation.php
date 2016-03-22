@@ -193,7 +193,11 @@ class SalesReservation extends CI_Controller {
 				case 'check_notifications':
 					$response = $this->_notification_manager->get_header_notifications();
 					break;
-						
+				
+				case 'recent_name_autocomplete':
+					$response = $this->_autocomplete_manager->get_recent_names($post_data, 1);
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

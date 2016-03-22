@@ -297,7 +297,7 @@ var TableHelper = function(tableOptions,options) {
 				},
 				fnc_render : function(ul, item){
 					return my_autocomplete_render_fnc(ul, item, "code_name", [2,1], 
-						{ width : ["100px","auto"] });
+						{ width : ["100px", "auto"] });
 				}
 			});
 			

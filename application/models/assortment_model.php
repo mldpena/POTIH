@@ -264,7 +264,8 @@ class Assortment_Model extends CI_Model {
 		$response['rowcnt'] = 0;
 
 		$this->db->select("PH.`id`, COALESCE(B.`name`,'') AS 'location',
-							CONCAT('PA',PH.`reference_number`) AS 'reference_number', PH.`customer`,
+							CONCAT('PA',PH.`reference_number`) AS 'reference_number', 
+							COALESCE(C.`company_name`, PH.`customer`) AS 'customer',
 							COALESCE(DATE(PH.`entry_date`),'') AS 'entry_date', IF(PH.`is_used` = 0, 'Unused', PH.`memo`) AS 'memo',
 							COALESCE(SUM(PD.`quantity`),0) AS 'total_qty', PH.`is_used`,
 							IF(PH.`is_used` = ".\Constants\ASSORTMENT_CONST::ACTIVE.",
@@ -284,6 +285,7 @@ class Assortment_Model extends CI_Model {
 								END,'') 
 							, 0) AS 'status_code'")
 				->from("release_order_head AS PH")
+				->join("customer AS C", "C.`id` = PH.`customer_id`", "left")
 				->join("release_order_detail AS PD", "PD.`headid` = PH.`id`", "left")
 				->join("branch AS B", "B.`id` = PH.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE, "left")
 				->where("PH.`is_show`", \Constants\ASSORTMENT_CONST::ACTIVE);
@@ -298,7 +300,7 @@ class Assortment_Model extends CI_Model {
 			$this->db->where("PH.`branch_id`", (int)$branch);
 
 		if (!empty($search_string)) 
-			$this->db->like("CONCAT('PA',PH.`reference_number`,' ',PH.`memo`,' ',PH.`customer`)", $search_string, "both");
+			$this->db->like("CONCAT('PA', PH.`reference_number`,' ', PH.`memo`, ' ', COALESCE(C.`company_name`, PH.`customer`))", $search_string, "both");
 
 		switch ($order_by) 
 		{
@@ -372,6 +374,7 @@ class Assortment_Model extends CI_Model {
 								END,'') 
 							, 0) AS 'status_code'")
 				->from("release_order_head AS PH")
+				->join("customer AS C", "C.`id` = PH.`customer_id`", "left")
 				->join("release_order_detail AS PD", "PD.`headid` = PH.`id`", "left")
 				->where("PH.`is_show`", \Constants\ASSORTMENT_CONST::ACTIVE);
 
@@ -385,7 +388,7 @@ class Assortment_Model extends CI_Model {
 			$this->db->where("PH.`branch_id`", (int)$branch);
 
 		if (!empty($search_string)) 
-			$this->db->like("CONCAT('PA',PH.`reference_number`,' ',PH.`memo`,' ',PH.`customer`)", $search_string, "both");
+			$this->db->like("CONCAT('PA', PH.`reference_number`,' ', PH.`memo`, ' ', COALESCE(C.`company_name`, PH.`customer`))", $search_string, "both");
 
 		$this->db->group_by("PH.`id`");
 
@@ -455,11 +458,19 @@ class Assortment_Model extends CI_Model {
 
 		$release_order_head_id = $this->encrypt->decode($this->session->userdata('release_slip'));
 
-		$query_head = "SELECT CONCAT('PA',H.`reference_number`) AS 'reference_number', 
-						DATE(H.`entry_date`) AS 'entry_date', H.`customer`, H.`memo`
-					FROM release_order_head AS H
-					LEFT JOIN branch AS B ON B.`id` = H.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
-					WHERE H.`id` = ?";
+		$query_head = "SELECT 
+							CONCAT('PA',H.`reference_number`) AS 'reference_number', 
+							DATE(H.`entry_date`) AS 'entry_date', 
+							COALESCE(C.`company_name`, H.`customer`) AS 'customer', 
+							H.`memo`
+						FROM 
+							release_order_head AS H
+						LEFT JOIN
+							customer AS C ON C.`id` = H.`customer_id`
+						LEFT JOIN 
+							branch AS B ON B.`id` = H.`branch_id` AND B.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
+						WHERE 
+							H.`id` = ?";
 
 		$result_head = $this->db->query($query_head,$release_order_head_id);
 		

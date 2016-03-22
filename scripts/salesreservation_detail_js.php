@@ -140,7 +140,7 @@
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'reservation',
 										  token : notificationToken,
-										  recentNameElementId : 'supplier' } );
+										  recentNameElementId : 'walkin-customer' } );
 
 	tableHelper.detailContent.bindAllEvents({ 
 												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,

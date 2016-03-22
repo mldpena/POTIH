@@ -237,7 +237,7 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'assort',
-										  recentNameElementId : 'customer' } );
+										  recentNameElementId : 'walkin-customer' } );
 
 	var root_sales_list = document.getElementById("tbl_sales");
 	myjstbl_sales_list = new my_table(tab_sales_list, colarray_sales_list, {	

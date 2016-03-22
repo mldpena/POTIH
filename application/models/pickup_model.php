@@ -177,9 +177,14 @@ class Pickup_Model extends CI_Model {
 
 		$summary_head_id = $this->encrypt->decode($this->session->userdata('pickup_summary'));
 
-		$query_head = "SELECT CONCAT('PS',`reference_number`) AS 'reference_number', DATE(`entry_date`) AS 'entry_date'
-					FROM pickup_summary_head
-					WHERE `is_show` = ".\Constants\PICKUP_CONST::ACTIVE." AND `id` = ?";
+		$query_head = "SELECT 
+							CONCAT('PS',`reference_number`) AS 'reference_number', 
+							DATE(`entry_date`) AS 'entry_date'
+						FROM 
+							pickup_summary_head
+						WHERE 
+							`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." AND 
+							`id` = ?";
 
 		$result_head = $this->db->query($query_head, $summary_head_id);
 
@@ -195,24 +200,39 @@ class Pickup_Model extends CI_Model {
 
 		$result_head->free_result();
 
-		$query_detail = "SELECT RD.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
-							COALESCE(ROD.`description`,'') AS 'description', COALESCE(P.`material_code`,'-') AS 'item_code', 
-							COALESCE(ROD.`memo`,'') AS 'memo', COALESCE(ROH.`customer`, '') AS 'customer', 
+		$query_detail = "SELECT 
+							RD.`quantity`, COALESCE(P.`description`,'-') AS 'product', 
+							COALESCE(ROD.`description`,'') AS 'description', 
+							COALESCE(P.`material_code`,'-') AS 'item_code', 
+							COALESCE(ROD.`memo`,'') AS 'memo', 
+							COALESCE(C.`company_name`, ROH.`customer`) AS 'customer',
 							COALESCE(CONCAT('WR',RH.`reference_number`), '') AS 'reference_number',
 							CASE
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
 							END AS 'uom'
-							FROM pickup_summary_head AS PH
-							LEFT JOIN pickup_summary_detail AS PD ON PD.`headid` = PH.`id`
-							LEFT JOIN release_head AS RH ON RH.`id` = PD.`release_head_id`
-							LEFT JOIN release_detail AS RD ON RD.`headid` = RH.`id`
-							LEFT JOIN product AS P ON P.`id` = RD.`product_id`
-							LEFT JOIN release_order_detail AS ROD ON ROD.`id` = RD.`release_order_detail_id`
-							LEFT JOIN release_order_head AS ROH ON ROH.`id` = ROD.`headid`
-							WHERE PH.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." AND PH.`id` = ? 
-							AND RH.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." AND RH.`is_used` = ".\Constants\PICKUP_CONST::USED;
+						FROM 
+							pickup_summary_head AS PH
+						LEFT JOIN 
+							pickup_summary_detail AS PD ON PD.`headid` = PH.`id`
+						LEFT JOIN 
+							release_head AS RH ON RH.`id` = PD.`release_head_id`
+						LEFT JOIN 
+							release_detail AS RD ON RD.`headid` = RH.`id`
+						LEFT JOIN 
+							product AS P ON P.`id` = RD.`product_id`
+						LEFT JOIN 
+							release_order_detail AS ROD ON ROD.`id` = RD.`release_order_detail_id`
+						LEFT JOIN 
+							release_order_head AS ROH ON ROH.`id` = ROD.`headid`
+						LEFT JOIN
+							customer AS C ON C.`id` = ROH.`customer_id`
+						WHERE 
+							PH.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." AND 
+							PH.`id` = ? AND 
+							RH.`is_show` = ".\Constants\PICKUP_CONST::ACTIVE." AND 
+							RH.`is_used` = ".\Constants\PICKUP_CONST::USED;
 
 		$result_detail = $this->db->query($query_detail, $summary_head_id);
 
