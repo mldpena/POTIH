@@ -791,7 +791,7 @@ class Product_Manager
 		
 		foreach ($result->result() as $row) 
 		{
-			$returned_data = [$row->id, $row->description, $row->material_code, $row->type, $row->uom];
+			$returned_data = [$row->id, $row->description, $row->material_code, $row->type, $row->uom, 1];
 
 			if ($with_inventory) 
 				$returned_data[3] = $row->inventory;

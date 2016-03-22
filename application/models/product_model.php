@@ -345,13 +345,18 @@ class Product_Model extends CI_Model {
 
 	public function get_product_by_term($term, $branch_id, $with_inventory)
 	{
-		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`, 
+		$this->db->select(
+							"P.`description`, 
+							P.`id`, 
+							P.`material_code`,
+							 P.`type`, 
 							CASE
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
 								ELSE ''
-							END AS 'uom'");
+							END AS 'uom'
+						");
 
 		if ($with_inventory)
 			$this->db->select("COALESCE(PBI.`inventory`,0) AS 'inventory'");

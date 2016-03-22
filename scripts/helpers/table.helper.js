@@ -285,7 +285,7 @@ var TableHelper = function(tableOptions,options) {
 							else
 								$(descriptionElement).val('').hide();
 
-							self.contentProvider.setData(rowIndex,'product',[ret_datas[1], ret_datas[0], ret_datas[3], newLine, '', '']);
+							self.contentProvider.setData(rowIndex,'product',[ret_datas[1], ret_datas[0], ret_datas[3], newLine, '', 1]);
 							self.contentProvider.setData(rowIndex,'code',[ret_datas[2]]);
 							self.contentProvider.setData(rowIndex,'uom',[ret_datas[4]]);
 						}
