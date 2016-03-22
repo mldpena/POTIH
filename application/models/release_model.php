@@ -128,7 +128,7 @@ class Release_Model extends CI_Model {
 					LEFT JOIN `release_head` AS PRH ON PRH.`id` = PRD.`headid` 
 					LEFT JOIN `release_order_detail` AS PD ON PD.`id` = PRD.`release_order_detail_id`
 					LEFT JOIN `release_order_head` AS PH ON PH.`id` = PD.`headid`
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
 					WHERE PRD.`headid` = ? AND PH.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\RELEASE_CONST::ACTIVE;
 
 		$result_detail = $this->db->query($query_detail,$this->_release_head_id);
@@ -204,7 +204,7 @@ class Release_Model extends CI_Model {
 						IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`qty_released`) <= 0, 1, 0) AS 'is_removed'
 					FROM `release_order_head` AS PH
 					LEFT JOIN `release_order_detail` AS PD ON PD.`headid` = PH.`id` 
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\RELEASE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
 					LEFT JOIN (
 								SELECT PRD.`release_order_detail_id`, PRD.`quantity`, PRD.`id`
 						        FROM release_head AS PRH

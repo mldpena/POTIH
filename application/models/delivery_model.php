@@ -83,7 +83,7 @@ class Delivery_Model extends CI_Model {
 						SD.`invoice`
 					FROM `stock_delivery_detail` AS SD
 					LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
 					WHERE SD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);

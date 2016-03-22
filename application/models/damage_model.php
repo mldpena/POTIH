@@ -67,7 +67,7 @@ class Damage_Model extends CI_Model {
 						COALESCE(P.`type`, '') AS 'type'
 					FROM `damage_detail` AS DD
 					LEFT JOIN `damage_head` AS DH ON DD.`headid` = DH.`id` AND DH.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id` AND P.`is_show` = ".\Constants\DAMAGE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = DD.`product_id`
 					WHERE DD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_damage_head_id);

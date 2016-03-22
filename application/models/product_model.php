@@ -72,7 +72,7 @@ class Product_Model extends CI_Model {
 	public function get_product_details_by_id($product_id)
 	{
 		$this->db->select("P.`material_code`, P.`description`,
-						COALESCE(P.`type`, '') AS 'type'
+						COALESCE(P.`type`, '') AS 'type',
 						COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup',
 						P.`material_type_id`, P.`subgroup_id`, COALESCE(P.`uom`, '') AS 'uom'")
 				->from("product AS P")

@@ -79,7 +79,7 @@ class Assortment_Model extends CI_Model {
 						(IF((PD.`quantity` - PD.`qty_released`) < 0, 0, PD.`quantity` - PD.`qty_released`)) AS 'qty_remaining'
 					FROM `release_order_detail` AS PD
 					LEFT JOIN `release_order_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
 					WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,(int)$this->_assortment_head_id);

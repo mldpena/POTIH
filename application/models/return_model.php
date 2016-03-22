@@ -72,7 +72,7 @@ class Return_Model extends CI_Model {
 						RD.`received_by`
 					FROM `return_detail` AS RD
 					LEFT JOIN `return_head` AS RH ON RD.`headid` = RH.`id` AND RH.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id` AND P.`is_show` = ".\Constants\RETURN_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = RD.`product_id`
 					WHERE RD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_return_head_id);

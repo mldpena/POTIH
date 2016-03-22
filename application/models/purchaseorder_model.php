@@ -81,7 +81,7 @@ class PurchaseOrder_Model extends CI_Model {
 						PD.`recv_quantity`
 					FROM `purchase_detail` AS PD
 					LEFT JOIN `purchase_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
 					WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_purchase_head_id);

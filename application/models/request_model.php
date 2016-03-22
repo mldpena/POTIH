@@ -82,7 +82,7 @@ class Request_Model extends CI_Model {
 						COALESCE(P.`type`, '') AS 'type'
 					FROM `stock_request_detail` AS SD
 					LEFT JOIN `stock_request_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id` AND P.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
 					WHERE SD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_request_head_id);

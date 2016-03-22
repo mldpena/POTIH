@@ -41,7 +41,7 @@ class PurchaseReceive_Model extends CI_Model {
 		$response['po_list_error'] 	= ''; 
 
 		$query_head = "SELECT CONCAT('PR',`reference_number`) AS 'reference_number', 
-				COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `is_used`
+						COALESCE(DATE(`entry_date`),'') AS 'entry_date', `memo`, `branch_id`, `is_used`
 					FROM `purchase_receive_head`
 					WHERE `is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND `id` = ?";
 
@@ -127,7 +127,7 @@ class PurchaseReceive_Model extends CI_Model {
 					LEFT JOIN `purchase_receive_head` AS PRH ON PRH.`id` = PRD.`headid` 
 					LEFT JOIN `purchase_detail` AS PD ON PD.`id` = PRD.`purchase_detail_id`
 					LEFT JOIN `purchase_head` AS PH ON PH.`id` = PD.`headid`
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
 					WHERE PRD.`headid` = ? AND PH.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE." AND PH.`is_used` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE;
 
 		$result_detail = $this->db->query($query_detail,$this->_receive_head_id);
@@ -204,7 +204,7 @@ class PurchaseReceive_Model extends CI_Model {
 						IF(COALESCE(PRD.`id`,0) = 0 AND (PD.`quantity` - PD.`recv_quantity`) <= 0, 1, 0) AS 'is_removed'
 					FROM `purchase_head` AS PH
 					LEFT JOIN `purchase_detail` AS PD ON PD.`headid` = PH.`id` 
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_RECEIVE_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
 					LEFT JOIN (
 								SELECT PRD.`purchase_detail_id`, PRD.`quantity`, PRD.`id`, PRD.`receive_memo`, PRD.`received_by`
 						        FROM purchase_receive_head AS PRH

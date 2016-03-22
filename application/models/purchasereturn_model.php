@@ -73,7 +73,7 @@ class PurchaseReturn_Model extends CI_Model {
 						COALESCE(P.`type`, '') AS 'type'
 					FROM `purchase_return_detail` AS PD
 					LEFT JOIN `purchase_return_head` AS PH ON PD.`headid` = PH.`id` AND PH.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE."
-					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id` AND P.`is_show` = ".\Constants\PURCHASE_RETURN_CONST::ACTIVE."
+					LEFT JOIN `product` AS P ON P.`id` = PD.`product_id`
 					WHERE PD.`headid` = ?";
 
 		$result_detail = $this->db->query($query_detail,$this->_purchase_return_head_id);
