@@ -106,6 +106,13 @@ class Printout extends CI_Controller {
 					$response 	= $this->delivery_model->get_customer_receive_printout_details();
 					break;
 
+				case 'request':
+					$this->load->model('request_model');
+
+					$page 		= 'request_entry';
+					$response 	= $this->request_model->get_request_printout_details();
+					break;
+
 				default:
 					echo "Invalid Page URL!";
 					exit();

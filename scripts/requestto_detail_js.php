@@ -153,7 +153,8 @@
 										{ baseURL : "<?= base_url() ?>", controller : 'requestto' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											 	addInventoryChecker : false} );
+											 	addInventoryChecker : false,
+											 	saveEventsAfterCallback : goToPrintOut } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
@@ -225,36 +226,28 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('.print').click(function(){
+	$('#print').click(function(){
 		goToPrintOut($(this));
 	});
 
 	function goToPrintOut(element)
 	{
-		var printType = "both";
-
-		if (element) 
-			printType = $(element).attr('id');
-
-		var arr = 	{ 
-						fnc : 'set_session_delivery',
-						print_type : printType 
-					}
+		var arr = { fnc : 'set_session' }
 
 		$.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(response) {
-            	if(response.error != '') 
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				if(response.error != '') 
 					alert(response.error);
 				else
 				{
 					$('#print').show();
-                	window.open('<?= base_url() ?>printout/delivery/Delivery');
+					window.open('<?= base_url() ?>printout/request/Request');
 				}
-            }
-        });
+			}
+		});
 	}
 
 	function getHeadDetailsBeforeSubmit()
