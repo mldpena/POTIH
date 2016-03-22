@@ -235,7 +235,7 @@ class Assortment_Model extends CI_Model {
 
 		$response['error'] 	= '';
 		$entry_date 		= $entry_date.' '.date('H:i:s');
-		$query_data 		= array($entry_date,$memo,$customer_name,$this->_current_user,$this->_current_date,$this->_assortment_head_id, $customer_id);
+		$query_data 		= array($entry_date,$memo,$customer_name,$this->_current_user,$this->_current_date, $customer_id, $this->_assortment_head_id);
 
 		$query = "UPDATE `release_order_head`
 					SET
