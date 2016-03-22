@@ -187,6 +187,7 @@ var TableHelper = function(tableOptions,options) {
 					self.contentProvider.setData(self.globalRowIndex,'qty',['']);
 					self.contentProvider.setData(self.globalRowIndex,'memo',['']);
 					self.contentProvider.setData(self.globalRowIndex,'code',['']);
+					self.contentProvider.setData(self.globalRowIndex,'uom',['']);
 					self.contentProvider.recomputeTotalQuantity();
 					self.contentHelper.descriptionAccessibilty(self.globalRowIndex, true);
 				}
