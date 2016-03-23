@@ -509,6 +509,32 @@
 		
 	});
 
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session' };
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
+			success: function(response) 
+			{
+				if(response.error != '') 
+					alert(response.error);
+				else
+				{
+					$('#print').show();
+					window.open('<?= base_url() ?>printout/sales/Sales');
+				}
+			}
+		});
+	}
+
+
 	function getHeadDetailsBeforeSubmit()
 	{
 		var customer_type 	= $("input[name='customer-type']:checked").val();

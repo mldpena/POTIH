@@ -203,6 +203,10 @@ class Sales extends CI_Controller {
 					$response = $this->_autocomplete_manager->get_recent_names($post_data, 1);
 					break;
 					
+				case 'set_session':
+					$response = $this->set_session_data();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
@@ -214,5 +218,21 @@ class Sales extends CI_Controller {
 		}
 		
 		echo json_encode($response);
+	}
+
+	private function set_session_data()
+	{
+		$response['error'] = '';
+
+		//$result = $this->damage_model->check_if_transaction_has_product();
+
+		//if ($result->num_rows() == 0)
+		//	throw new Exception("Please encode at least one product!");
+		//else
+			$this->session->set_userdata('sales_invoice', $this->uri->segment(3));
+
+		//$result->free_result();
+		
+		return $response;
 	}
 }
