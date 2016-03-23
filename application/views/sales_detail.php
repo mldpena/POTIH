@@ -92,7 +92,7 @@
 							</table>
 						</div>
 						<div class="pull-right salestbl-detail">
-							<div class="tbl single max tbl-reservation" id="tbl_reservation"></div>
+							<div class="tbl max tbl-reservation" id="tbl_reservation"></div>
 						</div>
 					</div>
 				</div>

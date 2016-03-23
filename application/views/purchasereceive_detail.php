@@ -25,7 +25,7 @@
 					</tr>
 				</table>
 				<div class="pull-right po-container">
-					<div class="tbl single max tbl-po" id="tbl_po"></div>
+					<div class="tbl max tbl-po" id="tbl_po"></div>
 				</div>
 			</div>
 			<div class="divider-line"></div>

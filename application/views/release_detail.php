@@ -29,7 +29,7 @@
 						<input type="checkbox" id="po_for_current_branch">
 						PO for Current Branch
 					</div> -->
-					<div class="tbl single max tbl-po" id="tbl_release_order"></div>
+					<div class="tbl max tbl-po" id="tbl_release_order"></div>
 				</div>
 			</div>
 			<div class="divider-line"></div>
