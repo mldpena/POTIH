@@ -120,6 +120,7 @@ class Sales_Manager
 		$response = [];
 
 		$response['rowcnt'] = 0;
+		$response['total_amount'] = 0;
 
 		$result = $this->_CI->sales_model->get_sales_list_by_filter($param);
 
@@ -127,8 +128,11 @@ class Sales_Manager
 		{
 			$i = 0;
 			
-			$response['rowcnt'] = $this->_CI->sales_model->get_sales_list_count_by_filter($param);
-
+			$summary_result = $this->_CI->sales_model->get_sales_list_count_by_filter($param);
+			$row = $summary_result->row();
+			$response['rowcnt'] = $row->rowCount;
+			$response['total_amount'] = number_format($row->total_amount, 2);
+			
 			foreach ($result->result() as $row) 
 			{
 				$response['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
@@ -140,10 +144,13 @@ class Sales_Manager
 				$response['data'][$i][] = array($row->salesman);
 				$response['data'][$i][] = array($row->entry_date);
 				$response['data'][$i][] = array($row->memo);
+				$response['data'][$i][] = array(number_format($row->amount, 2));
 				$response['data'][$i][] = array($row->status);
 				$response['data'][$i][] = array('');
 				$i++;
 			}
+
+			$summary_result->free_result();
 		}
 
 		$result->free_result();
@@ -376,6 +383,7 @@ class Sales_Manager
 		$response = [];
 
 		$response['rowcnt'] = 0;
+		$response['total_amount'] = 0;
 
 		$result = $this->_CI->sales_model->get_sales_list_by_filter($param);
 
@@ -383,7 +391,10 @@ class Sales_Manager
 		{
 			$i = 0;
 			
-			$response['rowcnt'] = $this->_CI->sales_model->get_sales_list_count_by_filter($param);
+			$summary_result = $this->_CI->sales_model->get_sales_list_count_by_filter($param);
+			$row = $summary_result->row();
+			$response['rowcnt'] = $row->rowCount;
+			$response['total_amount'] = number_format($row->total_amount, 2);
 
 			foreach ($result->result() as $row) 
 			{
@@ -395,6 +406,8 @@ class Sales_Manager
 				$response['data'][$i][] = array(number_format($row->amount, 2));
 				$i++;
 			}
+
+			$summary_result->free_result();
 		}
 
 		$result->free_result();

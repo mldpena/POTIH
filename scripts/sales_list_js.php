@@ -81,6 +81,14 @@
         td_class: "tablerow column_click column_hover tdmemo"
     };
     
+    var spnamount = document.createElement('span');
+	colarray['amount'] = { 
+        header_title: "Amount",
+        edit: [spnamount],
+        disp: [spnamount],
+        td_class: "tablerow column_click column_hover tdamount"
+    };
+
     var spnstatus = document.createElement('span');
 	colarray['status'] = { 
         header_title: "Status",
@@ -192,7 +200,7 @@
 
 		$.extend(filterValues, paginationRowValues);
 
-		tableHelper.contentHelper.refreshTableWithLimit(filterValues);
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues, showSummary);
 	}
 
 	function actionAfterDelete()
@@ -201,4 +209,14 @@
 		build_message_box('messagebox_1','Sales Invoice entry successfully deleted!','success');
 	}
 
+	function showSummary(response)
+	{
+		if (response.rowcnt > 0) 
+		{
+			$('#total_amount').html(response.total_amount);
+			$('.tbl-total').show();
+		}
+		else
+			$('.tbl-total').hide();
+	}
 </script>

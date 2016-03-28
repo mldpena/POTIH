@@ -119,6 +119,9 @@ class Sales_Model extends CI_Model {
 					->join("user AS S", "S.`id` = SH.`salesman_id`", "left")
 					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE);
 
+		if (isset($transaction_status))
+			$this->db->where("SH.`is_used`", (int)$transaction_status);
+
 		if (isset($date_from) && !empty($date_from))
 			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
 
@@ -190,7 +193,8 @@ class Sales_Model extends CI_Model {
 									WHEN SUM(SD.`quantity`) - SUM(SD.`qty_released`) = 0 THEN ".\Constants\SALES_CONST::COMPLETE."
 									ELSE ".\Constants\SALES_CONST::EXCESS."
 								END,'') 
-							, 0) AS 'status_code'
+							, 0) AS 'status_code',
+							COALESCE(SUM(SD.`quantity` * SD.`price`)) AS 'amount'
 						")
 					->from("sales_head AS SH")
 					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
@@ -198,6 +202,9 @@ class Sales_Model extends CI_Model {
 					->join("branch AS B2", "B2.`id` = SH.`for_branch_id`", "left")
 					->join("customer AS C", "C.`id` = SH.`customer_id`", "left")
 					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE);
+
+		if (isset($transaction_status))
+			$this->db->where("SH.`is_used`", (int)$transaction_status);
 
 		if (isset($date_from) && !empty($date_from))
 			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
@@ -258,15 +265,9 @@ class Sales_Model extends CI_Model {
 		
 		$inner_query = $this->db->get_compiled_select();
 
-		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+		$query_count = "SELECT COUNT(*) AS rowCount, SUM(A.`amount`) AS 'total_amount' FROM ($inner_query)A";
 
-		$result = $this->db->query($query_count);
-		$row 	= $result->row();
-		$count 	= $row->rowCount;
-
-		$result->free_result();
-
-		return $count;
+		return $this->db->query($query_count);;
 	}
 
 	public function insert_new_sales_detail($reservation_detail_data)
@@ -450,6 +451,9 @@ class Sales_Model extends CI_Model {
 					->join("user AS S", "S.`id` = SH.`salesman_id`", "left")
 					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE);
 
+		if (isset($transaction_status))
+			$this->db->where("SH.`is_used`", (int)$transaction_status);
+		
 		if (isset($date_from) && !empty($date_from))
 			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
 

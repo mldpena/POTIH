@@ -522,10 +522,10 @@ class Export_Manager
 			{		
 				$response['data'][$i][] = $row->reference_number;
 
-				if ($param['report_type'] != 'daily_sales') 
+				if ($param['report_type'] != \Constants\SALES_CONST::DAILY_SALES_REPORT) 
 					$response['data'][$i][] = date('m-d-Y', strtotime($row->entry_date));
 
-				if ($param['report_type'] != 'customer_sales') 
+				if ($param['report_type'] != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT) 
 					$response['data'][$i][] = $row->customer;
 				else
 					$response['customer_name'] = $row->customer;
@@ -552,7 +552,7 @@ class Export_Manager
 				$response['data'][$i][] = $value;
 			}
 
-			if ($param['report_type'] != 'customer_sales')
+			if ($param['report_type'] != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT)
 			{
 				$salesman_result = $this->_CI->sales_model->get_salesman_sales_by_filter($param);
 
@@ -567,7 +567,7 @@ class Export_Manager
 					
 					$response['data'][$i][] = '';
 
-					if ($param['report_type'] == 'periodic_sales')
+					if ($param['report_type'] == \Constants\SALES_CONST::PERIODIC_SALES_REPORT)
 						$response['data'][$i][] = '';
 
 					$response['data'][$i][] = 'Salesman Breakdown';
@@ -593,11 +593,7 @@ class Export_Manager
 
 							$response['data'][$i][] = $value;
 						}
-
-						
 					}
-
-					
 				}
 
 				$salesman_result->free_result();

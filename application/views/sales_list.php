@@ -82,6 +82,14 @@
 					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>
+			<div class="max-row tbl-total" align="right">
+				<table>
+					<tr>
+						<td>Total Amount:</td>
+						<td><span id="total_amount">0</span></td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</div>
 </div>

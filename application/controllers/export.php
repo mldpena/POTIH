@@ -98,7 +98,7 @@ class Export extends CI_Controller {
 					break;
 
 				case 'sales_report':
-					$page = $this->input->get('report_type');
+					$page = $this->input->get('page');
 					$response = $this->_export_manager->parse_generate_sales_report($this->input->get());
 					break;
 

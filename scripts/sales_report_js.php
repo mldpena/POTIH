@@ -98,23 +98,34 @@
 
 	triggerSearchRequest();
 	
-	$('.export').click(function () {
+	$('.export').click(function(){
 
 		var filterValues = getSearchFilterValues();
-		var reportType = $(this).attr('id');
+		var reportType = $('#report-type').val();
+		var excelFile = $(this).attr('id');
 
 		filterValues.fnc = "sales_report";
 		filterValues.report_type = reportType;
+		filterValues.page = excelFile;
 
 		var queryString = $.objectToQueryString(filterValues);
 
-		if (reportType == 'customer_sales' && filterValues.customer == 0) 
+		if (reportType == ReportType.Customer && filterValues.customer == 0) 
 		{
 			alert('Please select a specific customer!');
 			return false;
 		}
 
 		window.open("<?= base_url() ?>export?" + queryString);
+	});
+
+	$('#report-type').change(function(){
+
+		var value = $(this).val();
+
+		$('.export').hide();
+		$('.export-option-' + value).show();
+
 	});
 
 	function getSearchFilterValues()
@@ -125,6 +136,7 @@
 		var for_branch_val  = $('#for_branch').val();
 		var order_val 		= 1;
 		var order_type_val 	= 'ASC';
+		var transaction_status_val = 1;
 
 		var filterValues = 	{ 
 								fnc 	 		: 'generate_sales_report', 
@@ -133,7 +145,8 @@
 								date_from		: date_from_val,
 								date_to 		: date_to_val,
 								for_branch 		: for_branch_val,
-								customer 		: customer_val
+								customer 		: customer_val,
+								transaction_status : transaction_status_val
 							};
 
 		return filterValues;
@@ -168,13 +181,12 @@
 
 		$.extend(filterValues, paginationRowValues);
 
-		tableHelper.contentHelper.refreshTableWithLimit(filterValues, showSalesReportType);
+		tableHelper.contentHelper.refreshTableWithLimit(filterValues, showSummary);
 	}
 
-	function showSalesReportType()
+	function showSummary(response)
 	{
 		var reportType = $('#report-type').val();
-
 
 		if (reportType == ReportType.DailySales)
 		{
@@ -188,5 +200,13 @@
 			$('.tddate').show();
 			$('.tdcustomer').hide();
 		}
+
+		if (response.rowcnt > 0) 
+		{
+			$('#total_amount').html(response.total_amount);
+			$('.tbl-total').show();
+		}
+		else
+			$('.tbl-total').hide();
 	}
 </script>

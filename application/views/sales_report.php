@@ -55,10 +55,18 @@
 					<div id="tbl" class="tbl max"></div>
 				</center>
 			</div>
+			<div class="max-row tbl-total" align="right">
+				<table>
+					<tr>
+						<td>Total Amount:</td>
+						<td><span id="total_amount">0</span></td>
+					</tr>
+				</table>
+			</div>
 			<div class="max-row" align="right">
-				<button class="btn btn-info btn-excel export" id="daily_sales"><i class="fa fa-file-excel-o"></i>&nbsp; Export Daily <br/> Sales Excel</button>		
-				<button class="btn btn-info btn-excel export" id="periodic_sales"><i class="fa fa-file-excel-o"></i>&nbsp; Export Periodic <br/> Sales Excel</button>		
-				<button class="btn btn-info btn-excel export" id="customer_sales"><i class="fa fa-file-excel-o"></i>&nbsp; Export Customer <br/> Sales Excel</button>		
+				<button class="btn btn-info btn-excel export export-option-1" id="daily_sales"><i class="fa fa-file-excel-o"></i>&nbsp; Export Daily <br/> Sales Excel</button>		
+				<button class="btn btn-info btn-excel export export-option-2 hide-elem" id="periodic_sales"><i class="fa fa-file-excel-o"></i>&nbsp; Export Periodic <br/> Sales Excel</button>		
+				<button class="btn btn-info btn-excel export export-option-3 hide-elem" id="customer_sales"><i class="fa fa-file-excel-o"></i>&nbsp; Export Customer <br/> Sales Excel</button>		
 			</div>
 		</div>
 	</div>
