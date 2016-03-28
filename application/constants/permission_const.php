@@ -151,19 +151,12 @@
 		const DELETE_RELEASE= 203; 
 	}
 
-	class InventoryWarning_Code
+	class SystemReport_Code
 	{
-		const VIEW_WARNING = 211;
-	}
-
-	class BranchInventory_Code
-	{
+		const VIEW_PRODUCT_WARNING = 211;
 		const VIEW_BRANCH_INVENTORY = 212;
-	}
-
-	class TransactionSummary_Code
-	{
 		const VIEW_TRANSACTION_SUMMARY = 213;
+		const VIEW_SALES_REPORT = 214;
 	}
 
 	class Assortment_Code

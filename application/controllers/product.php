@@ -74,7 +74,7 @@ class Product extends CI_Controller {
 			case 'warning':
 				$page = 'inventory_warning_list';
 				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
-				$allow_user = $this->permission_checker->check_permission(\Permission\InventoryWarning_Code::VIEW_WARNING);
+				$allow_user = $this->permission_checker->check_permission(\Permission\SystemReport_Code::VIEW_PRODUCT_WARNING);
 
 				break;
 
@@ -82,13 +82,13 @@ class Product extends CI_Controller {
 			case 'summary':
 				$page = 'transaction_list';
 				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
-				$allow_user = $this->permission_checker->check_permission(\Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY);
+				$allow_user = $this->permission_checker->check_permission(\Permission\SystemReport_Code::VIEW_TRANSACTION_SUMMARY);
 				break;
 
 			case 'inventory':
 				$page = 'branch_inventory_list';
 				$branch_list = get_name_list_from_table(TRUE,' branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
-				$allow_user = $this->permission_checker->check_permission(\Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY);
+				$allow_user = $this->permission_checker->check_permission(\Permission\SystemReport_Code::VIEW_BRANCH_INVENTORY);
 
 				break;
 

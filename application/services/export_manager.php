@@ -499,6 +499,115 @@ class Export_Manager
 		
 		return $response;
 	}
+
+	public function parse_generate_sales_report($param)
+	{
+		$this->_CI->load->model('sales_model');
+
+		$response = [];
+
+		$response['rowcnt'] = 0;
+		$response['customer_name'] = '';
+
+		$total_amount = 0;
+
+		$result = $this->_CI->sales_model->get_sales_list_by_filter($param, FALSE);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{		
+				$response['data'][$i][] = $row->reference_number;
+
+				if ($param['report_type'] != 'daily_sales') 
+					$response['data'][$i][] = date('m-d-Y', strtotime($row->entry_date));
+
+				if ($param['report_type'] != 'customer_sales') 
+					$response['data'][$i][] = $row->customer;
+				else
+					$response['customer_name'] = $row->customer;
+
+				$response['data'][$i][] = $row->salesman;
+				$response['data'][$i][] = number_format($row->amount, 2);
+
+				$total_amount += $row->amount;
+
+				$i++;
+			}
+
+			$data_length = count($response['data'][0]);
+
+			for ($x=0; $x < $data_length; $x++) 
+			{ 
+				$value = '';
+
+				if ($x == ($data_length - 2))
+					$value = 'Total';
+				else if ($x == ($data_length - 1))
+ 					$value = number_format($total_amount, 2);
+
+				$response['data'][$i][] = $value;
+			}
+
+			if ($param['report_type'] != 'customer_sales')
+			{
+				$salesman_result = $this->_CI->sales_model->get_salesman_sales_by_filter($param);
+
+				if ($salesman_result->num_rows() > 0) 
+				{
+					$i++;
+
+					for ($x=0; $x < $data_length; $x++) 
+						$response['data'][$i][] = '';
+
+					$i++;
+					
+					$response['data'][$i][] = '';
+
+					if ($param['report_type'] == 'periodic_sales')
+						$response['data'][$i][] = '';
+
+					$response['data'][$i][] = 'Salesman Breakdown';
+
+					for ($x=count($response['data'][$i]); $x < $data_length; $x++) 
+						$response['data'][$i][] = '';
+
+					foreach ($salesman_result->result() as $row) 
+					{		
+
+						$i++;
+
+						for ($x=0; $x < $data_length; $x++) 
+						{ 
+							$value = '';
+
+							if ($x == ($data_length - 3))
+								$value = $row->salesman;
+							else if ($x == ($data_length - 2))
+								$value = $row->invoice_count.' invoices';
+							else if ($x == ($data_length - 1))
+			 					$value = number_format($row->amount, 2);
+
+							$response['data'][$i][] = $value;
+						}
+
+						
+					}
+
+					
+				}
+
+				$salesman_result->free_result();
+			}
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
 }
 
 ?>

@@ -243,6 +243,9 @@
 					for (var i = 0; i < response.permissions.length; i++)
 						$('.check-detail[value=' + response.permissions[i] + ']').attr('checked','checked');
 
+					if (response.type == UserType.Admin) 
+						$('.check-detail').attr('checked','checked');
+
 					checkSectionPermission();
 					
 					if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && response.is_own_profile != ProfileStatus.OwnProfile)
@@ -278,5 +281,8 @@
 
 		if ($('.sales-detail').length == $('.sales-detail:checked').length)
 			$('#sales-permission').attr('checked','checked');
+
+		if ($('.pickup-detail').length == $('.pickup-detail:checked').length)
+			$('#pickup-permission').attr('checked','checked');
 	}
 </script>

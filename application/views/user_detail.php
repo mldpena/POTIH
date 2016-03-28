@@ -429,7 +429,7 @@
 					</tr>
 					<tr>
 						<td>Product Inventory Warning</td>
-						<td><input type="checkbox" class="check-detail reports-detail" value="<?= \Permission\InventoryWarning_Code::VIEW_WARNING ?>"></td>
+						<td><input type="checkbox" class="check-detail reports-detail" value="<?= \Permission\SystemReport_Code::VIEW_PRODUCT_WARNING ?>"></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -438,7 +438,7 @@
 					</tr>
 					<tr>
 						<td>Product Branch Inventory</td>
-						<td><input type="checkbox" class="check-detail reports-detail encoder-preset" value="<?= \Permission\BranchInventory_Code::VIEW_BRANCH_INVENTORY ?>"></td>
+						<td><input type="checkbox" class="check-detail reports-detail encoder-preset" value="<?= \Permission\SystemReport_Code::VIEW_BRANCH_INVENTORY ?>"></td>
 						<td></td>
 						<td></td>
 						<td></td>
@@ -447,7 +447,16 @@
 					</tr>
 					<tr>
 						<td>Product Transaction Summary</td>
-						<td><input type="checkbox" class="check-detail reports-detail" value="<?= \Permission\TransactionSummary_Code::VIEW_TRANSACTION_SUMMARY ?>"></td>
+						<td><input type="checkbox" class="check-detail reports-detail" value="<?= \Permission\SystemReport_Code::VIEW_TRANSACTION_SUMMARY ?>"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
+					<tr>
+						<td>Sales Report</td>
+						<td><input type="checkbox" class="check-detail reports-detail" value="<?= \Permission\SystemReport_Code::VIEW_SALES_REPORT ?>"></td>
 						<td></td>
 						<td></td>
 						<td></td>

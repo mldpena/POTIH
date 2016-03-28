@@ -20,7 +20,8 @@ class Sales_Manager
 									'NOT_OWN_BRANCH' => 'Cannot delete sales invoice entry of other branches!',
 									'UNABLE_TO_DELETE_RESERVATION' => 'Unable to remove imported sales reservation. Please try again.',
 									'RESERVATION_NOT_FOUND' => 'No sales reservation found!',
-									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!');
+									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!',
+									'NO_SALES_REPORT' => 'No sales report found!');
 
 	public function __construct()
 	{
@@ -365,6 +366,39 @@ class Sales_Manager
 		if (!empty($response['error']))
 			throw new \Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 			
+		return $response;
+	}
+
+	public function generate_sales_report($param)
+	{
+		$row_start = (int)$param['row_start'];
+		
+		$response = [];
+
+		$response['rowcnt'] = 0;
+
+		$result = $this->_CI->sales_model->get_sales_list_by_filter($param);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			
+			$response['rowcnt'] = $this->_CI->sales_model->get_sales_list_count_by_filter($param);
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($row_start + $i + 1);
+				$response['data'][$i][] = array($row->reference_number);
+				$response['data'][$i][] = array($row->entry_date);
+				$response['data'][$i][] = array($row->customer);
+				$response['data'][$i][] = array($row->salesman);	
+				$response['data'][$i][] = array(number_format($row->amount, 2));
+				$i++;
+			}
+		}
+
+		$result->free_result();
+
 		return $response;
 	}
 }
