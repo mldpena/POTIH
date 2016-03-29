@@ -1,4 +1,9 @@
 <script type="text/javascript">
+	var ReportType = {
+		DailySales : 1,
+		PeriodicSales : 2,
+		Customer : 3
+	};
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -7,15 +12,6 @@
 	tab.setAttribute("class","border-collapse:collapse;");
     
     var colarray = [];
-	
-	var spnid = document.createElement('span');
-	colarray['id'] = { 
-        header_title: "",
-        edit: [spnid],
-        disp: [spnid],
-        td_class: "tablerow tdid",
-		headertd_class : "tdheader_id"
-    };
 
     var spnnumber = document.createElement('span');
 	colarray['number'] = { 
@@ -23,22 +19,6 @@
         edit: [spnnumber],
         disp: [spnnumber],
         td_class: "tablerow tdnumber"
-    };
-
-    var spnlocation = document.createElement('span');
-	colarray['location'] = { 
-        header_title: "Location",
-        edit: [spnlocation],
-        disp: [spnlocation],
-        td_class: "tablerow column_click column_hover tdlocation"
-    };
-
-    var spnforbranch = document.createElement('span');
-	colarray['forbranch'] = { 
-        header_title: "For Branch",
-        edit: [spnforbranch],
-        disp: [spnforbranch],
-        td_class: "tablerow column_click column_hover tdforbranch"
     };
 
     var spnreferencenumber = document.createElement('span');
@@ -49,12 +29,22 @@
         td_class: "tablerow column_click column_hover tdreference"
     };
     
+    var spndate = document.createElement('span');
+	colarray['date'] = { 
+        header_title: "Date",
+        edit: [spndate],
+        disp: [spndate],
+        td_class: "tablerow column_click column_hover tddate",
+        headertd_class : "tddate"
+    };
+
     var spncustomer = document.createElement('span');
 	colarray['customer'] = { 
         header_title: "Customer",
         edit: [spncustomer],
         disp: [spncustomer],
-        td_class: "tablerow column_click column_hover tdcustomer"
+        td_class: "tablerow column_click column_hover tdcustomer",
+        headertd_class : "tdcustomer"
     };
    	
    	var spnsalesman = document.createElement('span');
@@ -65,22 +55,6 @@
         td_class: "tablerow column_click column_hover tdsalesman"
     };
 
-   	var spndate = document.createElement('span');
-	colarray['date'] = { 
-        header_title: "Entry Date",
-        edit: [spndate],
-        disp: [spndate],
-        td_class: "tablerow column_click column_hover tddate"
-    };
-
-    var spnmemo = document.createElement('span');
-	colarray['memo'] = { 
-        header_title: "Memo",
-        edit: [spnmemo],
-        disp: [spnmemo],
-        td_class: "tablerow column_click column_hover tdmemo"
-    };
-    
     var spnamount = document.createElement('span');
 	colarray['amount'] = { 
         header_title: "Amount",
@@ -88,30 +62,6 @@
         disp: [spnamount],
         td_class: "tablerow column_click column_hover tdamount"
     };
-
-    var spnstatus = document.createElement('span');
-	colarray['status'] = { 
-        header_title: "Status",
-        edit: [spnstatus],
-        disp: [spnstatus],
-        td_class: "tablerow column_click column_hover status"
-    };
-
-    var imgDelete = document.createElement('i');
-	imgDelete.setAttribute("class","imgdel fa fa-trash");
-
-	<?php if (!$permission_list['allow_to_delete']) : ?>
-
-	imgDelete.setAttribute("style","display:none;");
-
-	<?php endif; ?>
-
-	colarray['coldelete'] = { 
-		header_title: "",
-		edit: [imgDelete],
-		disp: [imgDelete],
-		td_class: "tablerow column_hover tddelete"
-	};
 
 	var myjstbl;
 
@@ -130,7 +80,7 @@
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 	
 	$('#tbl').hide();
-	$('#branch_list, #for_branch, #customer').chosen();
+	$('#for_branch, #customer').chosen();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
@@ -141,39 +91,62 @@
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'sales',
 										  token : notificationToken,
-										  notFoundMessage : 'No sales invoice entry found!',
-										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
+										  notFoundMessage : 'No sales report found!'
 										});
 
-	tableHelper.headContent.bindAllEvents( { searchEventsBeforeCallback : triggerSearchRequest, 
-											deleteEventsAfterCallback : actionAfterDelete } );
+	tableHelper.headContent.bindAllEvents({ searchEventsBeforeCallback : triggerSearchRequest });
 
 	triggerSearchRequest();
 	
-		
+	$('.export').click(function(){
+
+		var filterValues = getSearchFilterValues();
+		var reportType = $('#report-type').val();
+		var excelFile = $(this).attr('id');
+
+		filterValues.fnc = "sales_report";
+		filterValues.report_type = reportType;
+		filterValues.page = excelFile;
+
+		var queryString = $.objectToQueryString(filterValues);
+
+		if (reportType == ReportType.Customer && filterValues.customer == 0) 
+		{
+			alert('Please select a specific customer!');
+			return false;
+		}
+
+		window.open("<?= base_url() ?>export?" + queryString);
+	});
+
+	$('#report-type').change(function(){
+
+		var value = $(this).val();
+
+		$('.export').hide();
+		$('.export-option-' + value).show();
+
+	});
+
 	function getSearchFilterValues()
 	{
-		var search_val 		= $('#search_string').val();
-		var order_val 		= $('#order_by').val();
-		var orde_type_val 	= $('#order_type').val();
 		var date_from_val 	= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
-		var branch_val 		= $('#branch_list').val();
-		var status_val 		= $('#status').val();
 		var customer_val 	= $('#customer').val();
 		var for_branch_val  = $('#for_branch').val();
+		var order_val 		= 1;
+		var order_type_val 	= 'ASC';
+		var transaction_status_val = 1;
 
 		var filterValues = 	{ 
-								fnc 	 		: 'search_sales_list', 
-								search_string 	: search_val,
+								fnc 	 		: 'generate_sales_report', 
 								order_by  		: order_val,
-								order_type 		: orde_type_val,
+								order_type 		: order_type_val,
 								date_from		: date_from_val,
 								date_to 		: date_to_val,
-								branch 			: branch_val,
 								for_branch 		: for_branch_val,
-								status 			: status_val,
-								customer 		: customer_val
+								customer 		: customer_val,
+								transaction_status : transaction_status_val
 							};
 
 		return filterValues;
@@ -189,6 +162,7 @@
 		var filterResetValue = (typeof rowStart === 'undefined') ? 1 : 0;
 		var rowStartValue = (typeof rowStart === 'undefined') ? 0 : rowStart;
 		var rowEndValue = (typeof rowEnd === 'undefined') ? (myjstbl.mypage.mysql_interval-1) : rowEnd;
+		var reportType = $('#report-type').val();
 
 		var paginationRowValues = 	{ 
 										filter_reset : filterResetValue,
@@ -198,19 +172,35 @@
 
 		var filterValues = getSearchFilterValues();
 
+		if (reportType == ReportType.Customer && filterValues.customer == 0) 
+		{
+			alert('Please select a specific customer!');
+			$('#tbl').hide();
+			return false;
+		}
+
 		$.extend(filterValues, paginationRowValues);
 
 		tableHelper.contentHelper.refreshTableWithLimit(filterValues, showSummary);
 	}
 
-	function actionAfterDelete()
-	{
-		triggerSearchRequest();
-		build_message_box('messagebox_1','Sales Invoice entry successfully deleted!','success');
-	}
-
 	function showSummary(response)
 	{
+		var reportType = $('#report-type').val();
+
+		if (reportType == ReportType.DailySales)
+		{
+			$('.tdcustomer').show();
+			$('.tddate').hide();
+		}	
+		else if (reportType == ReportType.PeriodicSales) 
+			$('.tdcustomer, .tddate').show();
+		else if (reportType == ReportType.Customer) 
+		{
+			$('.tddate').show();
+			$('.tdcustomer').hide();
+		}
+
 		if (response.rowcnt > 0) 
 		{
 			$('#total_amount').html(response.total_amount);

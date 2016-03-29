@@ -108,7 +108,8 @@ class Sales_Model extends CI_Model {
 									WHEN SUM(SD.`quantity`) - SUM(SD.`qty_released`) = 0 THEN ".\Constants\SALES_CONST::COMPLETE."
 									ELSE ".\Constants\SALES_CONST::EXCESS."
 								END,'') 
-							, 0) AS 'status_code'
+							, 0) AS 'status_code',
+							COALESCE(SUM(SD.`price` * SD.`quantity`), 0) AS 'amount'
 						")
 					->from("sales_head AS SH")
 					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
@@ -118,50 +119,56 @@ class Sales_Model extends CI_Model {
 					->join("user AS S", "S.`id` = SH.`salesman_id`", "left")
 					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE);
 
-		if (!empty($date_from))
+		if (isset($transaction_status))
+			$this->db->where("SH.`is_used`", (int)$transaction_status);
+
+		if (isset($date_from) && !empty($date_from))
 			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
 
-		if (!empty($date_to))
+		if (isset($date_to) && !empty($date_to))
 			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
 
-		if ($branch != \Constants\SALES_CONST::ALL_OPTION) 
+		if (isset($branch) && $branch != \Constants\SALES_CONST::ALL_OPTION) 
 			$this->db->where("SH.`branch_id`", (int)$branch);
 
-		if ($for_branch != \Constants\SALES_CONST::ALL_OPTION) 
+		if (isset($for_branch) &&  $for_branch != \Constants\SALES_CONST::ALL_OPTION) 
 			$this->db->where("SH.`for_branch_id`", (int)$for_branch);
 
-		if (!empty($search_string)) 
+		if (isset($search_string) && !empty($search_string)) 
 			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
 
-		if ($customer != \Constants\SALES_CONST::ALL_OPTION)
+		if (isset($customer) && $customer != \Constants\SALES_CONST::ALL_OPTION)
 		{
 			$customer = (int)$customer === \Constants\SALES_CONST::WALKIN ? 0 : (int)$customer;
 			$this->db->where("SH.`customer_id`", (int)$customer);
 		}
 
-		switch ($order_by) 
+		if (isset($order_by)) 
 		{
-			case \Constants\SALES_CONST::ORDER_BY_REFERENCE:
-				$order_field = "SH.`reference_number`";
-				break;
-			
-			case \Constants\SALES_CONST::ORDER_BY_LOCATION:
-				$order_field = "B.`name`";
-				break;
+			switch ($order_by) 
+			{
+				case \Constants\SALES_CONST::ORDER_BY_REFERENCE:
+					$order_field = "SH.`reference_number`";
+					break;
+				
+				case \Constants\SALES_CONST::ORDER_BY_LOCATION:
+					$order_field = "B.`name`";
+					break;
 
-			case \Constants\SALES_CONST::ORDER_BY_DATE:
-				$order_field = "SH.`entry_date`";
-				break;
+				case \Constants\SALES_CONST::ORDER_BY_DATE:
+					$order_field = "SH.`entry_date`";
+					break;
 
-			case \Constants\SALES_CONST::ORDER_BY_CUSTOMER:
-				$order_field = "`customer`";
-				break;
+				case \Constants\SALES_CONST::ORDER_BY_CUSTOMER:
+					$order_field = "`customer`";
+					break;
+			}
 		}
 
 		$this->db->group_by("SH.`id`")
 				->order_by($order_field, $order_type);
 
-		if ($status != \Constants\SALES_CONST::ALL_OPTION)
+		if (isset($status) &&  $status != \Constants\SALES_CONST::ALL_OPTION)
 			$this->db->having("status_code", $status); 
 
 		if ($with_limit) 
@@ -186,7 +193,8 @@ class Sales_Model extends CI_Model {
 									WHEN SUM(SD.`quantity`) - SUM(SD.`qty_released`) = 0 THEN ".\Constants\SALES_CONST::COMPLETE."
 									ELSE ".\Constants\SALES_CONST::EXCESS."
 								END,'') 
-							, 0) AS 'status_code'
+							, 0) AS 'status_code',
+							COALESCE(SUM(SD.`quantity` * SD.`price`)) AS 'amount'
 						")
 					->from("sales_head AS SH")
 					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
@@ -195,50 +203,56 @@ class Sales_Model extends CI_Model {
 					->join("customer AS C", "C.`id` = SH.`customer_id`", "left")
 					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE);
 
-		if (!empty($date_from))
+		if (isset($transaction_status))
+			$this->db->where("SH.`is_used`", (int)$transaction_status);
+
+		if (isset($date_from) && !empty($date_from))
 			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
 
-		if (!empty($date_to))
+		if (isset($date_to) && !empty($date_to))
 			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
 
-		if ($branch != \Constants\SALES_CONST::ALL_OPTION) 
+		if (isset($branch) && $branch != \Constants\SALES_CONST::ALL_OPTION) 
 			$this->db->where("SH.`branch_id`", (int)$branch);
 
-		if ($for_branch != \Constants\SALES_CONST::ALL_OPTION) 
+		if (isset($for_branch) &&  $for_branch != \Constants\SALES_CONST::ALL_OPTION) 
 			$this->db->where("SH.`for_branch_id`", (int)$for_branch);
 
-		if (!empty($search_string)) 
+		if (isset($search_string) && !empty($search_string)) 
 			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
 
-		if ($customer != \Constants\SALES_CONST::ALL_OPTION)
+		if (isset($customer) && $customer != \Constants\SALES_CONST::ALL_OPTION)
 		{
 			$customer = (int)$customer === \Constants\SALES_CONST::WALKIN ? 0 : (int)$customer;
 			$this->db->where("SH.`customer_id`", (int)$customer);
 		}
 
-		switch ($order_by) 
+		if (isset($order_by)) 
 		{
-			case \Constants\SALES_CONST::ORDER_BY_REFERENCE:
-				$order_field = "SH.`reference_number`";
-				break;
-			
-			case \Constants\SALES_CONST::ORDER_BY_LOCATION:
-				$order_field = "B.`name`";
-				break;
+			switch ($order_by) 
+			{
+				case \Constants\SALES_CONST::ORDER_BY_REFERENCE:
+					$order_field = "SH.`reference_number`";
+					break;
+				
+				case \Constants\SALES_CONST::ORDER_BY_LOCATION:
+					$order_field = "B.`name`";
+					break;
 
-			case \Constants\SALES_CONST::ORDER_BY_DATE:
-				$order_field = "SH.`entry_date`";
-				break;
+				case \Constants\SALES_CONST::ORDER_BY_DATE:
+					$order_field = "SH.`entry_date`";
+					break;
 
-			case \Constants\SALES_CONST::ORDER_BY_CUSTOMER:
-				$order_field = "`customer`";
-				break;
+				case \Constants\SALES_CONST::ORDER_BY_CUSTOMER:
+					$order_field = "`customer`";
+					break;
+			}
 		}
 
 		$this->db->group_by("SH.`id`")
 				->order_by($order_field, $order_type);
 
-		if ($status != \Constants\SALES_CONST::ALL_OPTION)
+		if (isset($status) && $status != \Constants\SALES_CONST::ALL_OPTION)
 		{
 			if ($status != \Constants\SALES_CONST::INCOMPLETE_NO_DELIVERY)
 				$this->db->having("status_code", $status); 
@@ -251,15 +265,9 @@ class Sales_Model extends CI_Model {
 		
 		$inner_query = $this->db->get_compiled_select();
 
-		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
+		$query_count = "SELECT COUNT(*) AS rowCount, SUM(A.`amount`) AS 'total_amount' FROM ($inner_query)A";
 
-		$result = $this->db->query($query_count);
-		$row 	= $result->row();
-		$count 	= $row->rowCount;
-
-		$result->free_result();
-
-		return $count;
+		return $this->db->query($query_count);;
 	}
 
 	public function insert_new_sales_detail($reservation_detail_data)
@@ -422,6 +430,46 @@ class Sales_Model extends CI_Model {
 				->where("SRH.`is_used`", \Constants\SALES_CONST::USED)
 				->where("SRH.`id`", $sales_reservation_head_id)
 				->having("is_removed", 0);
+
+		return $this->db->get();
+	}
+
+	public function get_salesman_sales_by_filter($param)
+	{
+		extract($param);
+
+		$this->db->select("
+							COALESCE(S.`full_name`, '') AS 'salesman',
+							COUNT(DISTINCT SH.`id`) AS 'invoice_count',
+							COALESCE(SUM(SD.`price` * SD.`quantity`), 0) AS 'amount'
+						")
+					->from("sales_head AS SH")
+					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
+					->join("branch AS B", "B.`id` = SH.`branch_id`", "left")
+					->join("branch AS B2", "B2.`id` = SH.`for_branch_id`", "left")
+					->join("customer AS C", "C.`id` = SH.`customer_id`", "left")
+					->join("user AS S", "S.`id` = SH.`salesman_id`", "left")
+					->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE);
+
+		if (isset($transaction_status))
+			$this->db->where("SH.`is_used`", (int)$transaction_status);
+		
+		if (isset($date_from) && !empty($date_from))
+			$this->db->where("SH.`entry_date` >=", $date_from." 00:00:00");
+
+		if (isset($date_to) && !empty($date_to))
+			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
+
+		if (isset($for_branch) &&  $for_branch != \Constants\SALES_CONST::ALL_OPTION) 
+			$this->db->where("SH.`for_branch_id`", (int)$for_branch);
+
+		if (isset($customer) && $customer != \Constants\SALES_CONST::ALL_OPTION)
+		{
+			$customer = (int)$customer === \Constants\SALES_CONST::WALKIN ? 0 : (int)$customer;
+			$this->db->where("SH.`customer_id`", (int)$customer);
+		}
+
+		$this->db->group_by("SH.`salesman_id`");
 
 		return $this->db->get();
 	}

@@ -72,6 +72,15 @@ class Sales extends CI_Controller {
 				
 				break;
 
+			case 'report':
+				$page = 'sales_report';
+				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
+				$customer_list = get_name_list_from_table(TRUE, 'customer', TRUE, 0, "`code`, ' - ', `company_name`");
+				$salesman_list = get_name_list_from_table(TRUE, 'user', FALSE, $this->encrypt->decode(get_cookie('temp')), '`full_name`', " AND `type` = ".\Permission\UserType_Code::SALESMAN);
+				$allow_user = $this->permission_checker->check_permission(\Permission\SystemReport_Code::VIEW_SALES_REPORT);
+				$permissions = [];				
+				break;
+
 			default:
 				echo "Invalid Page URL!";
 				exit();
@@ -193,6 +202,10 @@ class Sales extends CI_Controller {
 
 				case 'get_reservation_details':
 					$response = $this->_sales_manager->get_transaction_reservation_details($post_data);
+					break;
+
+				case 'generate_sales_report':
+					$response = $this->_sales_manager->generate_sales_report($post_data);
 					break;
 
 				case 'check_notifications':
