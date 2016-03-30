@@ -8,7 +8,7 @@
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 	$pdf->setFontSubsetting(false);
 
-	// $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, 12);
+	$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, 12);
 
 	$pdf->setPrintHeader(false);
 	$pdf->setPrintFooter(false);
