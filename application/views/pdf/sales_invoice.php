@@ -75,13 +75,31 @@
 	$pdf->writeHTMLCell('', '', 24, 54.5, '#1888 GO SOTTO COMPOUND, MJ CUENCO AVE., MABOLO,', 0, 1, 0, true, 'L', true); // Address
 	$pdf->writeHTMLCell('', '', 181, 54.5, 'DIONISSA', 0, 1, 0, true, 'L', true); // Salesman
 
-	
-	$y = 6; 
-	for ($i = 1; $i <= 19; $i++) {  // 19 products
-		$pdf->writeHTMLCell('', '', 4, $y + 74, '999 pcs', 0, 1, 0, true, 'L', true); // y = 80 is the starting y of printing the 1st product
-		$pdf->writeHTMLCell('', '', 24, $y + 74, 'BRASS ROUND BAR STREET KNUCKLE PLATINUM IRON', 0, 1, 0, true, 'L', true);
-		$y += 6; // add 6 for next line
+	$tr_product = '';
+	for ($i=1; $i <= 19; $i++) { 
+		$tr_product .= '
+			<tr>
+				<td>999 pcs</td>
+				<td>BRASS ROUND BAR STREET KNUCKLE PLATINUM IRON</td>
+				<td align="right">999.00</td>
+				<td align="right">999.00</td>
+			</tr>
+		';
 	}
+
+	$html_groupedtable = '
+		<table>
+			<tr>
+				<td width="71px"></td>
+				<td width="440px"></td>
+				<td width="100px" align="right">UNIT PRICE</td>
+				<td width="110px"></td>
+			</tr>
+			'.$tr_product.'
+		</table>
+	';
+
+	$pdf->writeHTMLCell('', '', 4, 74, $html_groupedtable, 0, 1, 0, true, 'L', true); 
 
 	// 1st table
 	$html_groupedtable = '
