@@ -35,6 +35,8 @@
 	$description_count = 0;
 	$print_description = FALSE;
 
+	$pdf->SetFont($font, '', $font_size, '', '', '');
+
 	$style = "
 		<style type='text/css'>
 			.tdleft {
@@ -87,6 +89,7 @@
 		';
 	}
 
+	// Table Products
 	$html_groupedtable = '
 		<table>
 			<tr>
@@ -101,7 +104,7 @@
 
 	$pdf->writeHTMLCell('', '', 4, 74, $html_groupedtable, 0, 1, 0, true, 'L', true); 
 
-	// 1st table
+	// 1st amount table
 	$html_groupedtable = '
 		<table>
 			<tr><td width="100px" align="right">33, 941.96</td></tr>
@@ -113,7 +116,12 @@
 
 	$pdf->writeHTMLCell('', '', 27, 207.5, $html_groupedtable, 0, 1, 0, true, 'L', true);
 
-	// 2nd table
+	// Amount in words
+	$pdf->SetFont($font, '', 9, '', '', '');
+	$pdf->writeHTMLCell('', '', 35, 199.5, 'THIRTY-THREE THOUSAND NINE HUNDRED FOURTY ONE PESOS AND NINETY-SIX CENTAVOSESOSES CENTAVOSESOSES', 0, 1, 0, true, 'L', true);
+	$pdf->SetFont($font, 'B', $font_size, '', '', '');
+
+	// 2nd amount table
 	$html_groupedtable = '
 		<table>
 			<tr><td width="100px" align="right">33, 941.96</td></tr>
