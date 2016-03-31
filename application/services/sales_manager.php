@@ -21,7 +21,8 @@ class Sales_Manager
 									'NOT_OWN_BRANCH' => 'Cannot delete sales invoice entry of other branches!',
 									'UNABLE_TO_DELETE_RESERVATION' => 'Unable to remove imported sales reservation. Please try again.',
 									'RESERVATION_NOT_FOUND' => 'No sales reservation found!',
-									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!');
+									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!',
+									'PRINT_TRANSACTION_DETAILS_ERROR' => 'Please encode at least one product!');
 
 	public function __construct()
 	{
@@ -34,7 +35,7 @@ class Sales_Manager
 		$numberToWords = new \Kwn\NumberToWords\NumberToWords($registry);
 
 		$this->_currency_transformer = $numberToWords->getCurrencyTransformer('en', 'USD', \Kwn\NumberToWords\Model\SubunitFormat::WORDS);
-		
+
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d H:i:s");
@@ -374,6 +375,77 @@ class Sales_Manager
 		if (!empty($response['error']))
 			throw new \Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
 			
+		return $response;
+	}
+
+	public function set_session_data()
+	{
+		$response['error'] = '';
+
+		$result = $this->_CI->sales_model->check_if_transaction_has_product();
+
+		if ($result->num_rows() == 0)
+			throw new Exception($this->_error_message['PRINT_TRANSACTION_DETAILS_ERROR']);
+		else
+			$this->_CI->session->set_userdata('sales_invoice', $this->_CI->uri->segment(3));
+
+		$result->free_result();
+		
+		return $response;
+	}
+
+	public function get_sales_invoice_printout_details_by_id()
+	{
+		$response = [];
+
+		$response['error'] = '';
+
+		$sales_head_id = $this->_CI->encrypt->decode($this->_CI->session->userdata('sales_invoice'));
+
+		$result_head = $this->_CI->sales_model->get_sales_head_info_by_id($sales_head_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+
+			$response['amount_word'] = str_replace('Dollars', 'Pesos', ucwords($this->_currency_transformer->toWords($response['amount'])));
+			$response['amount_word'] = str_replace('Zero Cents', '', $response['amount_word']);
+			$response['entry_date'] = date('m/d/Y', strtotime($response['entry_date']));
+
+			$vat_amount = $response['is_vatable'] == \Constants\SALES_CONST::VATABLE ? ($response['amount'] * 0.12) / 1.12 : 0;
+			$vatable_amount = $response['is_vatable'] == \Constants\SALES_CONST::VATABLE ? ($response['amount'] - $vat_amount) : 0;
+
+			$response['vat_amount'] = number_format($vat_amount, 2);
+			$response['vatable_amount'] = number_format($vatable_amount, 2);
+			$response['amount'] = number_format($response['amount'], 2);
+		}
+		else
+			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$result_detail = $this->_CI->sales_model->get_sales_detail_info_by_id($sales_head_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
+
 		return $response;
 	}
 }

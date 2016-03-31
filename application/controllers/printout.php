@@ -119,8 +119,7 @@ class Printout extends CI_Controller {
 					$this->_sales_manager = new Services\Sales_Manager();
 
 					$page 		= 'sales_invoice';
-					$response 	= [];
-					//$response 	= $this->_sales_manager->get_request_printout_details();
+					$response 	= $this->_sales_manager->get_sales_invoice_printout_details_by_id();
 					break;
 
 				default:

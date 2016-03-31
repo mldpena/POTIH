@@ -16,6 +16,8 @@
 		const WALKIN = -1;
 		const TBL_SALES_DETAIL = 'sales_detail';
 		const TBL_SALES_HEAD = 'sales_head';
+		const VATABLE = 2;
+		const NONVAT = 1;
 	}
 
 ?>

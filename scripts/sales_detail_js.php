@@ -9,6 +9,7 @@
 		Vatable :2 
 	};
 
+	var pageLimit = 2;
 	var processingFlag = false;
 
 	var tab = document.createElement('table');
@@ -410,6 +411,10 @@
 		removeImportedReservation();
 	});
 
+	$('#memo').blur(function(){
+		checkPageLimit();
+	});
+
 	$('.txtprice, .txtqty').live('change', function(){
 		var rowIndex = $(this).parent().parent().index();
 		var quantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,""));
@@ -564,6 +569,11 @@
 			return false;
 		};
 
+		var isContinue = checkPageLimit();
+
+		if (!isContinue) 
+			return false;
+
 		var arr = 	{ 
 						fnc 	 	: 'save_sales_head', 
 						customer_id : customer_id_val,
@@ -621,6 +631,11 @@
 			build_message_box('messagebox_1', build_error_message(errorList), 'danger');
 			return false;
 		};
+
+		var isContinue = checkPageLimit();
+
+		if (!isContinue) 
+			return false;
 
 		var arr = 	{ 
 						fnc 	 	: actionFunction, 
@@ -746,6 +761,19 @@
 			if (!detailExist) 
 				$(element).removeAttr('checked');
 		});
+	}
+
+	function checkPageLimit()
+	{
+		var memo = $('#memo').val();
+		var currentLimit = memo != '' ? pageLimit : pageLimit + 3;
+		var lastRow = myjstbl.get_row_count() - 1;
+		var isContinue = true;
+
+		if (lastRow >= currentLimit)
+			isContinue = confirm('Added product will already exceed the maximum no. of rows in the printout. Do you want to continue?');
+
+		return isContinue;
 	}
 
 	function toggleColumn()

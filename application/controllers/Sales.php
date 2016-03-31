@@ -204,7 +204,7 @@ class Sales extends CI_Controller {
 					break;
 					
 				case 'set_session':
-					$response = $this->set_session_data();
+					$response = $this->_sales_manager->set_session_data();
 					break;
 					
 				default:
@@ -218,21 +218,5 @@ class Sales extends CI_Controller {
 		}
 		
 		echo json_encode($response);
-	}
-
-	private function set_session_data()
-	{
-		$response['error'] = '';
-
-		//$result = $this->damage_model->check_if_transaction_has_product();
-
-		//if ($result->num_rows() == 0)
-		//	throw new Exception("Please encode at least one product!");
-		//else
-			$this->session->set_userdata('sales_invoice', $this->uri->segment(3));
-
-		//$result->free_result();
-		
-		return $response;
 	}
 }
