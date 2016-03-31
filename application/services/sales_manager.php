@@ -5,6 +5,7 @@ namespace Services;
 class Sales_Manager
 {
 	private $_CI;
+	private $_currency_transformer;
 	private $_current_branch_id = 0;
 	private $_sales_head_id = 0;
 	private $_current_user = 0;
@@ -26,6 +27,14 @@ class Sales_Manager
 	{
 		$this->_CI = $CI =& get_instance();
 
+		$registry = new \Kwn\NumberToWords\Transformer\TransformerFactoriesRegistry([
+		    new \Kwn\NumberToWords\Language\English\TransformerFactory
+		]);
+
+		$numberToWords = new \Kwn\NumberToWords\NumberToWords($registry);
+
+		$this->_currency_transformer = $numberToWords->getCurrencyTransformer('en', 'USD', \Kwn\NumberToWords\Model\SubunitFormat::WORDS);
+		
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d H:i:s");
