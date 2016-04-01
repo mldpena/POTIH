@@ -71,13 +71,18 @@
 		$page_amount = 0;
 
 		$pdf->AddPage();
-		$pdf->writeHTMLCell('', '', 25, 35.5, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
-		$pdf->writeHTMLCell('', '', 174, 35.5, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 181, 42, $ponumber, 0, 1, 0, true, 'L', true); // P.O.
-		$pdf->writeHTMLCell('', '', 118, 45, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 181, 48, $drnumber, 0, 1, 0, true, 'L', true); // D.R.
-		$pdf->writeHTMLCell('', '', 24, 54.5, $address, 0, 1, 0, true, 'L', true); // Address
-		$pdf->writeHTMLCell('', '', 178, 54.5, $salesman, 0, 1, 0, true, 'L', true); // Salesman
+		$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Sold to
+		$pdf->writeHTMLCell('', '', 25, 38.5, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
+		$pdf->writeHTMLCell('', '', 174, 38.5, $entry_date, 0, 1, 0, true, 'L', true); // Date
+		$pdf->writeHTMLCell('', '', 181, 45, $ponumber, 0, 1, 0, true, 'L', true); // P.O.
+		$pdf->writeHTMLCell('', '', 118, 48, $tin, 0, 1, 0, true, 'L', true); // TIN
+		$pdf->writeHTMLCell('', '', 181, 51, $drnumber, 0, 1, 0, true, 'L', true); // D.R.
+		$pdf->writeHTMLCell('', '', 24, 57, $address, 0, 1, 0, true, 'L', true); // Address
+
+
+		$pdf->SetFont($font, 'B', 9, '', '', '');
+		$pdf->writeHTMLCell('', '', 180, 58, $salesman, 0, 1, 0, true, 'L', true); // Salesman
+		$pdf->SetFont($font, 'B', $font_size, '', '', '');
 
 		$table_detail = '
 			<table>
@@ -143,7 +148,7 @@
 
 		// Amount in words
 		$pdf->SetFont($font, 'B', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 35, 199.5, $page_amount_word, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 37, 202, $page_amount_word, 0, 1, 0, true, 'L', true);
 		$pdf->SetFont($font, 'B', $font_size, '', '', '');
 
 		$left_total = '
@@ -155,7 +160,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 27, 207.5, $left_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 27, 209.5, $left_total, 0, 1, 0, true, 'L', true);
 
 		// 2nd amount table
 		$right_total = '
@@ -167,10 +172,10 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 116, 207.5, $right_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 116, 209.5, $right_total, 0, 1, 0, true, 'L', true);
 
 		// Grand total
-		$pdf->writeHTMLCell('', '', 180, 218, $page_amount, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 180, 221, $page_amount, 0, 1, 0, true, 'L', true);
 
 		if (($product_count + 1) == count($detail))
 			break;
