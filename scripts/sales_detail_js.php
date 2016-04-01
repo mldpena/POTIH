@@ -9,7 +9,7 @@
 		Vatable :2 
 	};
 
-	var pageLimit = 2;
+	var pageLimit = 18;
 	var processingFlag = false;
 
 	var tab = document.createElement('table');
@@ -255,11 +255,13 @@
 
 	root_reservation_list.appendChild(myjstbl_reservation_list.tab);
 
-	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
-										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'sales',
-										  token : notificationToken,
-										  recentNameElementId : 'walkin-customer' } );
+	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray},
+										{ 
+											baseURL : "<?= base_url() ?>", 
+										  	controller : 'sales',
+										  	token : notificationToken,
+										  	recentNameElementId : 'walkin-customer'
+										});
 
 	var reservationListTableHelper = new TableHelper ({ tableObject : myjstbl_reservation_list, tableArray : colarray_reservation_list }, { token : notificationToken });
 
@@ -267,7 +269,8 @@
 												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
 												deleteEventsAfterCallback : computeSummary,
-												addInventoryChecker : false
+												addInventoryChecker : false,
+												saveEventsAfterCallback : goToPrintOut 
 											});
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -412,7 +415,7 @@
 	});
 
 	$('#memo').blur(function(){
-		checkPageLimit();
+		checkPageLimit(false);
 	});
 
 	$('.txtprice, .txtqty').live('change', function(){
@@ -569,7 +572,13 @@
 			return false;
 		};
 
-		var isContinue = checkPageLimit();
+		if (customer_type == CustomerType.Walkin && address_val == '') 
+		{
+			alert('Please add an address for the customer!');
+			return false;
+		}
+
+		var isContinue = checkPageLimit(false);
 
 		if (!isContinue) 
 			return false;
@@ -593,6 +602,7 @@
 
 	function getRowDetailsBeforeSubmit(element)
 	{
+		var lastRow 		= myjstbl.get_row_count() - 1;
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId 		= tableHelper.contentProvider.getData(rowIndex, 'product', 1);
 		var qty 			= tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,"");
@@ -632,10 +642,14 @@
 			return false;
 		};
 
-		var isContinue = checkPageLimit();
+		if (rowIndex === lastRow && sales_detail_id == 0) 
+		{
+			var isContinue = checkPageLimit(true);
 
-		if (!isContinue) 
-			return false;
+			if (!isContinue) 
+				return false;	
+		}
+		
 
 		var arr = 	{ 
 						fnc 	 	: actionFunction, 
@@ -763,14 +777,14 @@
 		});
 	}
 
-	function checkPageLimit()
+	function checkPageLimit(isRowEdited)
 	{
 		var memo = $('#memo').val();
-		var currentLimit = memo != '' ? pageLimit : pageLimit + 3;
-		var lastRow = myjstbl.get_row_count() - 1;
+		var currentLimit = memo != '' ? pageLimit : pageLimit + 4;
+		var lastRow = myjstbl.get_row_count() - (isRowEdited ? 1 : 2);
 		var isContinue = true;
 
-		if (lastRow >= currentLimit)
+		if (lastRow > currentLimit)
 			isContinue = confirm('Added product will already exceed the maximum no. of rows in the printout. Do you want to continue?');
 
 		return isContinue;

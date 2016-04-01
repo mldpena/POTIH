@@ -29,7 +29,7 @@
 
 	$linegap = 6;
 
-	$page_row_limit = !empty($memo) ? 19 : 22;
+	$page_row_limit = !empty($memo) ? 19 : 23;
 	$is_finished = FALSE;
 	$product_count = 0;
 
@@ -67,6 +67,8 @@
 	{
 		$x = $margin_left;
 		$y = $margin_top;
+		$row_counter = 0;
+		$page_amount = 0;
 
 		$pdf->AddPage();
 		$pdf->writeHTMLCell('', '', 25, 35.5, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
@@ -90,9 +92,9 @@
 
 		for ($i= $product_count; $i < count($detail); $i++) 
 		{ 
-			$product_count = $i;
+			$row_counter++;
 
-			if (($i + 1) > $page_row_limit) 
+			if ($row_counter % $page_row_limit == 0)
 				break;
 
 			$table_detail .= '
@@ -103,14 +105,24 @@
 					<td align="right">'.$detail[$i]['amount'].'</td>
 				</tr>
 			';
+
+			$page_amount += str_replace(',', '', $detail[$i]['amount']);
+			$product_count = $i;
 		}
 		
-		$table_detail .= '
-			<tr>
-				<td></td>
-				<td colspan="3">'.(empty($memo) ? '' : ' = '.$memo).'</td>
-			</tr>
-		';
+		if (!empty($memo)) 
+		{
+			$table_detail .= '
+				<tr>
+					<td colspan="4"></td>
+				</tr>
+				<tr>
+					<td></td>
+					<td colspan="3">'.(empty($memo) ? '' : ' Note : '.$memo).'</td>
+				</tr>
+			';
+		}
+		
 
 		$table_detail = '
 			<table>
@@ -118,11 +130,20 @@
 			</table>
 		';
 
+		$vat_amount = $is_vatable == 2 ? ($page_amount * 0.12) / 1.12 : 0;
+		$vatable_amount = $is_vatable == 2 ? ($page_amount - $vat_amount) : 0;
+		$page_amount_word = str_replace('Dollars', 'Pesos', ucwords($currency_transformer->toWords($page_amount)));
+		$page_amount_word = str_replace('Zero Cents', '', $page_amount_word);
+
+		$page_amount = number_format($page_amount, 2);
+		$vat_amount = number_format($vat_amount, 2);
+		$vatable_amount = number_format($vatable_amount, 2);
+
 		$pdf->writeHTMLCell('', '', 4, 74, $table_detail, 0, 1, 0, true, 'L', true); 
 
 		// Amount in words
 		$pdf->SetFont($font, 'B', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 35, 199.5, $amount_word, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 35, 199.5, $page_amount_word, 0, 1, 0, true, 'L', true);
 		$pdf->SetFont($font, 'B', $font_size, '', '', '');
 
 		$left_total = '
@@ -139,20 +160,22 @@
 		// 2nd amount table
 		$right_total = '
 			<table>
-				<tr><td width="100px" align="right">'.$amount.'</td></tr>
+				<tr><td width="100px" align="right">'.$page_amount.'</td></tr>
 				<tr><td height="25.5px" width="100px" align="right">'.$vat_amount.'</td></tr>
 				<tr><td width="100px" align="right">'.$vatable_amount.'</td></tr>
-				<tr><td width="100px" align="right">'.$amount.'</td></tr>
+				<tr><td width="100px" align="right">'.$page_amount.'</td></tr>
 			</table>
 		';
 
 		$pdf->writeHTMLCell('', '', 116, 207.5, $right_total, 0, 1, 0, true, 'L', true);
 
 		// Grand total
-		$pdf->writeHTMLCell('', '', 180, 218, $amount, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 180, 218, $page_amount, 0, 1, 0, true, 'L', true);
 
 		if (($product_count + 1) == count($detail))
-			$is_finished = TRUE;
+			break;
+
+		$product_count++;
 	}
 
 	$pdf->Output('sales_invoice.pdf', 'I');

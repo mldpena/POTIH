@@ -411,16 +411,8 @@ class Sales_Manager
 			foreach ($row as $key => $value)
 				$response[$key] = $value;
 
-			$response['amount_word'] = str_replace('Dollars', 'Pesos', ucwords($this->_currency_transformer->toWords($response['amount'])));
-			$response['amount_word'] = str_replace('Zero Cents', '', $response['amount_word']);
+			$response['currency_transformer'] = $this->_currency_transformer;
 			$response['entry_date'] = date('m/d/Y', strtotime($response['entry_date']));
-
-			$vat_amount = $response['is_vatable'] == \Constants\SALES_CONST::VATABLE ? ($response['amount'] * 0.12) / 1.12 : 0;
-			$vatable_amount = $response['is_vatable'] == \Constants\SALES_CONST::VATABLE ? ($response['amount'] - $vat_amount) : 0;
-
-			$response['vat_amount'] = number_format($vat_amount, 2);
-			$response['vatable_amount'] = number_format($vatable_amount, 2);
-			$response['amount'] = number_format($response['amount'], 2);
 		}
 		else
 			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
