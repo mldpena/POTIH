@@ -671,15 +671,18 @@
 		var totalAmount = 0;
 		var vatAmount = 0;
 		var vatableAmount = 0;
+		var vatExempt = 0;
 
 		for (var i = 1; i < myjstbl.get_row_count(); i++) 
 			totalAmount += Number(tableHelper.contentProvider.getData(i, 'amount').replace(/\,/gi,""));
 
 		vatAmount 		= (isVatable) ? ((totalAmount * 0.12) / 1.12) : 0;
 		vatableAmount 	= (isVatable) ? (totalAmount - vatAmount) : 0;
+		vatExempt 		= !(isVatable) ? totalAmount : 0;
 
 		$('#vatable').html(vatableAmount.formatMoney(2));
 		$('#vat-amount').html(vatAmount.formatMoney(2));
+		$('#vat-exempt-amount').html(vatExempt.formatMoney(2));
 		$('#vat-inclusive').html(totalAmount.formatMoney(2));
 		$('#less-vat').html(vatAmount.formatMoney(2));
 		$('#total').html(vatableAmount.formatMoney(2));

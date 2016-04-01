@@ -126,6 +126,10 @@
 							<td class="td-right"><span id="vat-amount" >0</span></td>
 						</tr>
 						<tr>
+							<td>VAT Exempt Amount:</td>
+							<td class="td-right"><span id="vat-exempt-amount" >0</span></td>
+						</tr>
+						<tr>
 							<td>Total Sales (VAT Inclusive):</td>
 							<td class="td-right"><span id="vat-inclusive">0</span></td>
 						</tr>

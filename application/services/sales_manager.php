@@ -5,7 +5,7 @@ namespace Services;
 class Sales_Manager
 {
 	private $_CI;
-	private $_currency_transformer;
+	private $_number_transformer;
 	private $_current_branch_id = 0;
 	private $_sales_head_id = 0;
 	private $_current_user = 0;
@@ -34,7 +34,7 @@ class Sales_Manager
 
 		$numberToWords = new \Kwn\NumberToWords\NumberToWords($registry);
 
-		$this->_currency_transformer = $numberToWords->getCurrencyTransformer('en', 'USD', \Kwn\NumberToWords\Model\SubunitFormat::WORDS);
+		$this->_number_transformer = $numberToWords->getNumberTransformer('en');
 
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
@@ -411,7 +411,7 @@ class Sales_Manager
 			foreach ($row as $key => $value)
 				$response[$key] = $value;
 
-			$response['currency_transformer'] = $this->_currency_transformer;
+			$response['number_transformer'] = $this->_number_transformer;
 			$response['entry_date'] = date('m/d/Y', strtotime($response['entry_date']));
 		}
 		else

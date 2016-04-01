@@ -71,7 +71,7 @@
 		$page_amount = 0;
 
 		$pdf->AddPage();
-		$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Sold to
+		/*$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true);*/ // Sold to
 		$pdf->writeHTMLCell('', '', 25, 38.5, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
 		$pdf->writeHTMLCell('', '', 174, 38.5, $entry_date, 0, 1, 0, true, 'L', true); // Date
 		$pdf->writeHTMLCell('', '', 181, 45, $ponumber, 0, 1, 0, true, 'L', true); // P.O.
@@ -137,9 +137,14 @@
 
 		$vat_amount = $is_vatable == 2 ? ($page_amount * 0.12) / 1.12 : 0;
 		$vatable_amount = $is_vatable == 2 ? ($page_amount - $vat_amount) : 0;
-		$page_amount_word = str_replace('Dollars', 'Pesos and', ucwords($currency_transformer->toWords($page_amount)));
-		$page_amount_word = str_replace('and Zero Cents', '', $page_amount_word);
 
+		$decimal_amount = ($page_amount - floor($page_amount)) * 100;
+		$whole_amount = floor($page_amount);
+
+		$page_amount_word = ucwords($number_transformer->toWords($whole_amount)).' Pesos';
+		$page_amount_word .= $decimal_amount == 0 ? '' : ' and '.ucwords($number_transformer->toWords($decimal_amount)).' Cents';
+
+		$vat_exempt_amount = ($is_vatable == 2) ? number_format(0, 2) : number_format($page_amount, 2);
 		$page_amount = number_format($page_amount, 2);
 		$vat_amount = number_format($vat_amount, 2);
 		$vatable_amount = number_format($vatable_amount, 2);
@@ -154,7 +159,7 @@
 		$left_total = '
 			<table>
 				<tr><td width="100px" align="right">'.$vatable_amount.'</td></tr>
-				<tr><td height="25.5px" width="100px" align="right">0.00</td></tr>
+				<tr><td height="25.5px" width="100px" align="right">'.$vat_exempt_amount.'</td></tr>
 				<tr><td width="100px" align="right">0.00</td></tr>
 				<tr><td width="100px" align="right">'.$vat_amount.'</td></tr>
 			</table>
