@@ -642,7 +642,7 @@
 			return false;
 		};
 
-		if (rowIndex === lastRow && sales_detail_id == 0) 
+		if (rowIndex == lastRow && sales_detail_id == 0) 
 		{
 			var isContinue = checkPageLimit(true);
 

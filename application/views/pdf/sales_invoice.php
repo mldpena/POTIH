@@ -137,8 +137,8 @@
 
 		$vat_amount = $is_vatable == 2 ? ($page_amount * 0.12) / 1.12 : 0;
 		$vatable_amount = $is_vatable == 2 ? ($page_amount - $vat_amount) : 0;
-		$page_amount_word = str_replace('Dollars', 'Pesos', ucwords($currency_transformer->toWords($page_amount)));
-		$page_amount_word = str_replace('Zero Cents', '', $page_amount_word);
+		$page_amount_word = str_replace('Dollars', 'Pesos and', ucwords($currency_transformer->toWords($page_amount)));
+		$page_amount_word = str_replace('and Zero Cents', '', $page_amount_word);
 
 		$page_amount = number_format($page_amount, 2);
 		$vat_amount = number_format($vat_amount, 2);
