@@ -216,6 +216,10 @@ class Sales extends CI_Controller {
 					$response = $this->_autocomplete_manager->get_recent_names($post_data, 1);
 					break;
 					
+				case 'set_session':
+					$response = $this->_sales_manager->set_session_data();
+					break;
+					
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

@@ -5,6 +5,7 @@ namespace Services;
 class Sales_Manager
 {
 	private $_CI;
+	private $_number_transformer;
 	private $_current_branch_id = 0;
 	private $_sales_head_id = 0;
 	private $_current_user = 0;
@@ -21,11 +22,20 @@ class Sales_Manager
 									'UNABLE_TO_DELETE_RESERVATION' => 'Unable to remove imported sales reservation. Please try again.',
 									'RESERVATION_NOT_FOUND' => 'No sales reservation found!',
 									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!',
-									'NO_SALES_REPORT' => 'No sales report found!');
+									'NO_SALES_REPORT' => 'No sales report found!',
+									'PRINT_TRANSACTION_DETAILS_ERROR' => 'Please encode at least one product!');
 
 	public function __construct()
 	{
 		$this->_CI = $CI =& get_instance();
+
+		$registry = new \Kwn\NumberToWords\Transformer\TransformerFactoriesRegistry([
+		    new \Kwn\NumberToWords\Language\English\TransformerFactory
+		]);
+
+		$numberToWords = new \Kwn\NumberToWords\NumberToWords($registry);
+
+		$this->_number_transformer = $numberToWords->getNumberTransformer('en');
 
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
@@ -411,6 +421,67 @@ class Sales_Manager
 		}
 
 		$result->free_result();
+	}
+
+	public function set_session_data()
+	{
+		$response['error'] = '';
+
+		$result = $this->_CI->sales_model->check_if_transaction_has_product();
+
+		if ($result->num_rows() == 0)
+			throw new Exception($this->_error_message['PRINT_TRANSACTION_DETAILS_ERROR']);
+		else
+			$this->_CI->session->set_userdata('sales_invoice', $this->_CI->uri->segment(3));
+
+		$result->free_result();
+		
+		return $response;
+	}
+
+	public function get_sales_invoice_printout_details_by_id()
+	{
+		$response = [];
+
+		$response['error'] = '';
+
+		$sales_head_id = $this->_CI->encrypt->decode($this->_CI->session->userdata('sales_invoice'));
+
+		$result_head = $this->_CI->sales_model->get_sales_head_info_by_id($sales_head_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+
+			$response['number_transformer'] = $this->_number_transformer;
+			$response['entry_date'] = date('m/d/Y', strtotime($response['entry_date']));
+		}
+		else
+			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$result_detail = $this->_CI->sales_model->get_sales_detail_info_by_id($sales_head_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
 
 		return $response;
 	}

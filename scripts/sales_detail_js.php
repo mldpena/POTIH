@@ -9,6 +9,7 @@
 		Vatable :2 
 	};
 
+	var pageLimit = 18;
 	var processingFlag = false;
 
 	var tab = document.createElement('table');
@@ -254,11 +255,13 @@
 
 	root_reservation_list.appendChild(myjstbl_reservation_list.tab);
 
-	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray},
-										{ baseURL : "<?= base_url() ?>", 
-										  controller : 'sales',
-										  token : notificationToken,
-										  recentNameElementId : 'walkin-customer' } );
+	var tableHelper = new TableHelper({ tableObject : myjstbl, tableArray : colarray},
+										{ 
+											baseURL : "<?= base_url() ?>", 
+										  	controller : 'sales',
+										  	token : notificationToken,
+										  	recentNameElementId : 'walkin-customer'
+										});
 
 	var reservationListTableHelper = new TableHelper ({ tableObject : myjstbl_reservation_list, tableArray : colarray_reservation_list }, { token : notificationToken });
 
@@ -266,7 +269,8 @@
 												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
 												deleteEventsAfterCallback : computeSummary,
-												addInventoryChecker : false
+												addInventoryChecker : false,
+												saveEventsAfterCallback : goToPrintOut 
 											});
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
@@ -410,6 +414,10 @@
 		removeImportedReservation();
 	});
 
+	$('#memo').blur(function(){
+		checkPageLimit(false);
+	});
+
 	$('.txtprice, .txtqty').live('change', function(){
 		var rowIndex = $(this).parent().parent().index();
 		var quantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,""));
@@ -509,6 +517,32 @@
 		
 	});
 
+	$('#print').click(function(){
+		goToPrintOut();
+	});
+
+	function goToPrintOut()
+	{
+		var arr = { fnc : 'set_session' };
+
+		$.ajax({
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
+			success: function(response) 
+			{
+				if(response.error != '') 
+					alert(response.error);
+				else
+				{
+					$('#print').show();
+					window.open('<?= base_url() ?>printout/sales/Sales');
+				}
+			}
+		});
+	}
+
+
 	function getHeadDetailsBeforeSubmit()
 	{
 		var customer_type 	= $("input[name='customer-type']:checked").val();
@@ -538,6 +572,17 @@
 			return false;
 		};
 
+		if (customer_type == CustomerType.Walkin && address_val == '') 
+		{
+			alert('Please add an address for the customer!');
+			return false;
+		}
+
+		var isContinue = checkPageLimit(false);
+
+		if (!isContinue) 
+			return false;
+
 		var arr = 	{ 
 						fnc 	 	: 'save_sales_head', 
 						customer_id : customer_id_val,
@@ -557,6 +602,7 @@
 
 	function getRowDetailsBeforeSubmit(element)
 	{
+		var lastRow 		= myjstbl.get_row_count() - 1;
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId 		= tableHelper.contentProvider.getData(rowIndex, 'product', 1);
 		var qty 			= tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,"");
@@ -596,6 +642,15 @@
 			return false;
 		};
 
+		if (rowIndex == lastRow && sales_detail_id == 0) 
+		{
+			var isContinue = checkPageLimit(true);
+
+			if (!isContinue) 
+				return false;	
+		}
+		
+
 		var arr = 	{ 
 						fnc 	 	: actionFunction, 
 						product_id 	: productId,
@@ -616,15 +671,19 @@
 		var totalAmount = 0;
 		var vatAmount = 0;
 		var vatableAmount = 0;
+		var vatExempt = 0;
 
 		for (var i = 1; i < myjstbl.get_row_count(); i++) 
 			totalAmount += Number(tableHelper.contentProvider.getData(i, 'amount').replace(/\,/gi,""));
 
 		vatAmount 		= (isVatable) ? ((totalAmount * 0.12) / 1.12) : 0;
 		vatableAmount 	= (isVatable) ? (totalAmount - vatAmount) : 0;
+		vatExempt 		= !(isVatable) ? totalAmount : 0;
 
 		$('#vatable').html(vatableAmount.formatMoney(2));
 		$('#vat-amount').html(vatAmount.formatMoney(2));
+		$('#vat-exempt-amount').html(vatExempt.formatMoney(2));
+		$('#vat-zero-rated').html(vatExempt.formatMoney(2));
 		$('#vat-inclusive').html(totalAmount.formatMoney(2));
 		$('#less-vat').html(vatAmount.formatMoney(2));
 		$('#total').html(vatableAmount.formatMoney(2));
@@ -720,6 +779,19 @@
 			if (!detailExist) 
 				$(element).removeAttr('checked');
 		});
+	}
+
+	function checkPageLimit(isRowEdited)
+	{
+		var memo = $('#memo').val();
+		var currentLimit = memo != '' ? pageLimit : pageLimit + 4;
+		var lastRow = myjstbl.get_row_count() - (isRowEdited ? 1 : 2);
+		var isContinue = true;
+
+		if (lastRow > currentLimit)
+			isContinue = confirm('Added product will already exceed the maximum no. of rows in the printout. Do you want to continue?');
+
+		return isContinue;
 	}
 
 	function toggleColumn()

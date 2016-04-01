@@ -19,6 +19,8 @@
 		const DAILY_SALES_REPORT = 1;
 		const PERIODIC_SALES_REPORT = 2;
 		const CUSTOMER_SALES_REPORT = 3;
+		const VATABLE = 2;
+		const NONVAT = 1;
 	}
 
 ?>

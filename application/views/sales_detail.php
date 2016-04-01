@@ -126,6 +126,14 @@
 							<td class="td-right"><span id="vat-amount" >0</span></td>
 						</tr>
 						<tr>
+							<td>VAT Zero Rated:</td>
+							<td class="td-right"><span id="vat-zero-rated" >0</span></td>
+						</tr>
+						<tr>
+							<td>VAT Exempt Amount:</td>
+							<td class="td-right"><span id="vat-exempt-amount" >0</span></td>
+						</tr>
+						<tr>
 							<td>Total Sales (VAT Inclusive):</td>
 							<td class="td-right"><span id="vat-inclusive">0</span></td>
 						</tr>
@@ -146,6 +154,7 @@
 			</div>
 			<div class="max-row">
 				<div class="pull-right">
+					<input type="button" class="btn btn-primary" value="Print" id="print">
 					<input type="button" class="btn btn-success" value="Save" id="save">
 				</div>
 			</div>

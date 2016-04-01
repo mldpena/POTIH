@@ -2,6 +2,7 @@
 
 class Printout extends CI_Controller {
 
+	private $_sales_manager;
 	/**
 	 * Load needed model or library for the current controller
 	 * @return [none]
@@ -111,6 +112,14 @@ class Printout extends CI_Controller {
 
 					$page 		= 'request_entry';
 					$response 	= $this->request_model->get_request_printout_details();
+					break;
+
+				case 'sales':
+					$this->load->service('sales_manager');
+					$this->_sales_manager = new Services\Sales_Manager();
+
+					$page 		= 'sales_invoice';
+					$response 	= $this->_sales_manager->get_sales_invoice_printout_details_by_id();
 					break;
 
 				default:

@@ -18,8 +18,10 @@ class Sales_Model extends CI_Model {
 		$this->load->constant('sales_const');
 	}
 
-	public function get_sales_head_info_by_id()
+	public function get_sales_head_info_by_id($sales_head_id = 0)
 	{
+		$current_sales_head_id = $sales_head_id == 0 ? $this->_sales_head_id : $sales_head_id;
+
 		$this->db->select("
 							CONCAT('SI', SH.`reference_number`) AS 'reference_number', 
 							SH.`for_branch_id`,
@@ -35,20 +37,27 @@ class Sales_Model extends CI_Model {
 							SUM(SD.`qty_released`) AS 'qty_released',
 							SH.`is_vatable`,
 							SH.`ponumber`,
-							SH.`drnumber`
+							SH.`drnumber`,
+							SUM(SD.`quantity` * SD.`price`) AS 'amount',
+							COALESCE(C.`company_name`, SH.`walkin_customer_name`) AS 'customer_displayed_name',
+							COALESCE(C.`tin`, '') AS 'tin',
+							COALESCE(S.`full_name`, '') AS 'salesman'
 						")
 				->from("sales_head AS SH")
 				->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
 				->join("customer AS C", "C.`id` = SH.`customer_id`", "left")
+				->join("user AS S", "S.`id` = SH.`salesman_id`", "left")
 				->where("SH.`is_show`", \Constants\SALES_CONST::ACTIVE)
-				->where("SH.`id`", $this->_sales_head_id)
+				->where("SH.`id`", $current_sales_head_id)
 				->group_by("SH.`id`");
 
 		return $this->db->get();
 	}
 
-	public function get_sales_detail_info_by_id()
+	public function get_sales_detail_info_by_id($sales_head_id = 0)
 	{
+		$current_sales_head_id = $sales_head_id == 0 ? $this->_sales_head_id : $sales_head_id;
+
 		$this->db->select("
 							SD.`id`,
 							SD.`product_id`, 
@@ -75,7 +84,7 @@ class Sales_Model extends CI_Model {
 				->join("sales_reservation_detail AS SRD", "SRD.`id` = SD.`reservation_detail_id`", "left")
 				->join("sales_reservation_head AS SRH", "SRH.`id` = SRD.`headid` AND SRH.`is_show` = ".\Constants\SALES_CONST::ACTIVE." AND SRH.`is_used` = ".\Constants\SALES_CONST::USED, "left")
 				->join("product AS P", "P.`id` = SD.`product_id`", "left")
-				->where("SD.`headid`", $this->_sales_head_id);
+				->where("SD.`headid`", $current_sales_head_id);
 
 		return $this->db->get();
 	}
@@ -472,5 +481,18 @@ class Sales_Model extends CI_Model {
 		$this->db->group_by("SH.`salesman_id`");
 
 		return $this->db->get();
+	}
+
+	public function check_if_transaction_has_product()
+	{
+		$this->db->select("D.*")
+				->from("sales_detail AS D")
+				->join("sales_head AS H", "H.`id` = D.`headid`", "left")
+				->where("H.`is_show`", \Constants\SALES_CONST::ACTIVE)
+				->where("H.`id`", $this->_sales_head_id);
+
+		$result = $this->db->get();
+
+		return $result;
 	}
 }
