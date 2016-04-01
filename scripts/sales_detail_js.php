@@ -683,6 +683,7 @@
 		$('#vatable').html(vatableAmount.formatMoney(2));
 		$('#vat-amount').html(vatAmount.formatMoney(2));
 		$('#vat-exempt-amount').html(vatExempt.formatMoney(2));
+		$('#vat-zero-rated').html(vatExempt.formatMoney(2));
 		$('#vat-inclusive').html(totalAmount.formatMoney(2));
 		$('#less-vat').html(vatAmount.formatMoney(2));
 		$('#total').html(vatableAmount.formatMoney(2));

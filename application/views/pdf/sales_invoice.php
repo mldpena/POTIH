@@ -160,7 +160,7 @@
 			<table>
 				<tr><td width="100px" align="right">'.$vatable_amount.'</td></tr>
 				<tr><td height="25.5px" width="100px" align="right">'.$vat_exempt_amount.'</td></tr>
-				<tr><td width="100px" align="right">0.00</td></tr>
+				<tr><td width="100px" align="right">'.$vat_exempt_amount.'</td></tr>
 				<tr><td width="100px" align="right">'.$vat_amount.'</td></tr>
 			</table>
 		';
