@@ -391,6 +391,17 @@
 			</a>
 
 			<?php endif; ?>
+
+			<?php if($page_permissions['book_report']) : ?>
+
+			<a href="<?= base_url() ?>sales/book_report">
+				<div class="each-btn" align="center">
+					<img src="<?= base_url().IMG ?>sales-book-report.png">
+					<div class="btn-title">Sales Book Report</div>
+				</div>
+			</a>
+
+			<?php endif; ?>
 		</div>
 	</div>
 

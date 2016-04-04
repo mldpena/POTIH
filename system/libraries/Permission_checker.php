@@ -14,7 +14,7 @@ class CI_Permission_checker
 
 	public function check_section_permission($page)
 	{
-		$permission_exist = false;
+		$permission_exist = FALSE;
 
 		switch ($page) {
 			case 'data':
@@ -80,7 +80,8 @@ class CI_Permission_checker
 											\Permission\SystemReport_Code::VIEW_PRODUCT_WARNING,
 											\Permission\SystemReport_Code::VIEW_BRANCH_INVENTORY,
 											\Permission\SystemReport_Code::VIEW_TRANSACTION_SUMMARY,
-											\Permission\SystemReport_Code::VIEW_SALES_REPORT
+											\Permission\SystemReport_Code::VIEW_SALES_REPORT,
+											\Permission\SystemReport_Code::VIEW_BOOK_REPORT
 										);
 				break;
 
@@ -98,13 +99,13 @@ class CI_Permission_checker
 
 	private function _check_permission_exists($permission_needed)
 	{
-		$permission_exists = false;
+		$permission_exists = FALSE;
 
 		for ($i = 0; $i < count($permission_needed); $i++) 
 		{ 
 			if (in_array($permission_needed[$i],$this->_current_permission_list)) 
 			{
-				$permission_exists = true;
+				$permission_exists = TRUE;
 				break;
 			}
 		}
@@ -167,6 +168,7 @@ class CI_Permission_checker
 						'branch_inventory' => $this->check_permission(\Permission\SystemReport_Code::VIEW_BRANCH_INVENTORY),
 						'transaction_summary' => $this->check_permission(\Permission\SystemReport_Code::VIEW_TRANSACTION_SUMMARY),
 						'sales_report' => $this->check_permission(\Permission\SystemReport_Code::VIEW_SALES_REPORT),
+						'book_report' => $this->check_permission(\Permission\SystemReport_Code::VIEW_BOOK_REPORT),
 						'assortment' => $this->check_permission(\Permission\Assortment_Code::VIEW_ASSORTMENT),
 						'pickup' => $this->check_permission(\Permission\PickUp_Code::PRINT_SUMMARY)
 					);

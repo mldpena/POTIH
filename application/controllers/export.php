@@ -102,6 +102,11 @@ class Export extends CI_Controller {
 					$response = $this->_export_manager->parse_generate_sales_report($this->input->get());
 					break;
 
+				case 'book_report':
+					$page = 'sales_book';
+					$response = $this->_export_manager->parse_generate_sales_book_report($this->input->get());
+					break;
+
 				default:
 					echo "Invalid Page URL!";
 					exit();

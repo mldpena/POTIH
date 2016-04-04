@@ -118,7 +118,13 @@ class Sales_Model extends CI_Model {
 									ELSE ".\Constants\SALES_CONST::EXCESS."
 								END,'') 
 							, 0) AS 'status_code',
-							COALESCE(SUM(SD.`price` * SD.`quantity`), 0) AS 'amount'
+							COALESCE(SUM(SD.`price` * SD.`quantity`), 0) AS 'amount',
+							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vatable_amount',
+							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
+								COALESCE(SUM(SD.`quantity` * SD.`price`), 0) - 
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vat_amount',
+							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", COALESCE(SUM(SD.`price` * SD.`quantity`), 0), 0) AS 'vat_exempt_amount' 
 						")
 					->from("sales_head AS SH")
 					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
@@ -143,14 +149,17 @@ class Sales_Model extends CI_Model {
 		if (isset($for_branch) &&  $for_branch != \Constants\SALES_CONST::ALL_OPTION) 
 			$this->db->where("SH.`for_branch_id`", (int)$for_branch);
 
-		if (isset($search_string) && !empty($search_string)) 
-			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
-
 		if (isset($customer) && $customer != \Constants\SALES_CONST::ALL_OPTION)
 		{
 			$customer = (int)$customer === \Constants\SALES_CONST::WALKIN ? 0 : (int)$customer;
 			$this->db->where("SH.`customer_id`", (int)$customer);
 		}
+
+		if (isset($salesman) && $salesman != \Constants\SALES_CONST::ALL_OPTION) 
+			$this->db->where("SH.`salesman_id`", $salesman);
+
+		if (isset($search_string) && !empty($search_string)) 
+			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
 
 		if (isset($order_by)) 
 		{
@@ -203,7 +212,13 @@ class Sales_Model extends CI_Model {
 									ELSE ".\Constants\SALES_CONST::EXCESS."
 								END,'') 
 							, 0) AS 'status_code',
-							COALESCE(SUM(SD.`quantity` * SD.`price`)) AS 'amount'
+							COALESCE(SUM(SD.`quantity` * SD.`price`), 0) AS 'amount',
+							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vatable_amount',
+							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
+								COALESCE(SUM(SD.`quantity` * SD.`price`), 0) - 
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vat_amount',
+							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", COALESCE(SUM(SD.`price` * SD.`quantity`), 0), 0) AS 'vat_exempt_amount' 
 						")
 					->from("sales_head AS SH")
 					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
@@ -227,14 +242,17 @@ class Sales_Model extends CI_Model {
 		if (isset($for_branch) &&  $for_branch != \Constants\SALES_CONST::ALL_OPTION) 
 			$this->db->where("SH.`for_branch_id`", (int)$for_branch);
 
-		if (isset($search_string) && !empty($search_string)) 
-			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
-
 		if (isset($customer) && $customer != \Constants\SALES_CONST::ALL_OPTION)
 		{
 			$customer = (int)$customer === \Constants\SALES_CONST::WALKIN ? 0 : (int)$customer;
 			$this->db->where("SH.`customer_id`", (int)$customer);
 		}
+
+		if (isset($salesman) && $salesman != \Constants\SALES_CONST::ALL_OPTION) 
+			$this->db->where("SH.`salesman_id`", $salesman);
+
+		if (isset($search_string) && !empty($search_string)) 
+			$this->db->like("CONCAT('SI', SH.`reference_number`, ' ', SH.`memo`, ' ', COALESCE(C.`company_name`, SH.`walkin_customer_name`))", $search_string, "both");
 
 		if (isset($order_by)) 
 		{
@@ -272,11 +290,18 @@ class Sales_Model extends CI_Model {
 			}
 		}
 		
-		$inner_query = $this->db->get_compiled_select();
+		$inner_query = $this->db->get_compiled_select('', TRUE);
 
-		$query_count = "SELECT COUNT(*) AS rowCount, SUM(A.`amount`) AS 'total_amount' FROM ($inner_query)A";
+		$this->db->select("
+							COUNT(*) AS rowCount, 
+							SUM(A.`amount`) AS 'total_amount',
+							SUM(A.`vatable_amount`) AS 'total_vatable_amount',
+							SUM(A.`vat_amount`) AS 'total_vat_amount',
+							SUM(A.`vat_exempt_amount`) AS 'total_vat_exempt_amount'
+						")
+				->from("($inner_query) AS A");
 
-		return $this->db->query($query_count);;
+		return $this->db->get();
 	}
 
 	public function insert_new_sales_detail($reservation_detail_data)

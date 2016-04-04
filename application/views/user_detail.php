@@ -463,6 +463,15 @@
 						<td></td>
 						<td></td>
 					</tr>
+					<tr>
+						<td>Sales Book Report</td>
+						<td><input type="checkbox" class="check-detail reports-detail" value="<?= \Permission\SystemReport_Code::VIEW_BOOK_REPORT ?>"></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+						<td></td>
+					</tr>
 				</table>
 			</div>
 		</div>
