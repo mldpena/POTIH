@@ -72,7 +72,7 @@
 
     $.dataValidation = function(data){
         var numericReg = /[^0-9-]/;
-        var alphaNumericCharReg = /[^A-Za-z0-9 '".\/-,]/;
+        var alphaNumericCharReg = /[^A-Za-z0-9 ,'".\/-]/;
         var alphaNumericReg = /[^A-Za-z0-9 -]/;
         var codeReg = /[^A-Za-z0-9]/;
         var letterReg = /[^A-Za-z ]/;
