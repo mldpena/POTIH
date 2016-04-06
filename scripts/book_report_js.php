@@ -126,6 +126,7 @@
 		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var customer_val 	= $('#customer').val();
 		var for_branch_val  = $('#for_branch').val();
+		var branch_name_val = $('#for_branch option:selected').text();
 		var salesman_val  	= $('#salesman').val();
 		var order_val 		= 1;
 		var order_type_val 	= 'ASC';
@@ -138,6 +139,7 @@
 								date_from		: date_from_val,
 								date_to 		: date_to_val,
 								for_branch 		: for_branch_val,
+								branch_name 	: branch_name_val,
 								customer 		: customer_val,
 								salesman 		: salesman_val,
 								transaction_status : transaction_status_val

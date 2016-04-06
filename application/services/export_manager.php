@@ -607,6 +607,8 @@ class Export_Manager
 
 	public function parse_generate_sales_book_report($param)
 	{
+		extract($param);
+
 		$this->_CI->load->model('sales_model');
 
 		$response = [];
@@ -644,13 +646,13 @@ class Export_Manager
 			}
 		}
 
-		$response['data'][$i][] = '';
-		$response['data'][$i][] = '';
-		$response['data'][$i][] = 'GRAND TOTAL:';
-		$response['data'][$i][] = $total_amount;
-		$response['data'][$i][] = $total_vatable_amount;
-		$response['data'][$i][] = $total_vat_amount;
-		$response['data'][$i][] = $total_vat_exempt_amount;
+		$response['branch_name'] = strtoupper($branch_name);
+		$response['date_from'] = date("m/d/Y", strtotime($date_from));
+		$response['date_to'] = date("m/d/Y", strtotime($date_to));
+		$response['total_amount'] = $total_amount;
+		$response['total_vatable_amount'] = $total_vatable_amount;
+		$response['total_vat_amount'] = $total_vat_amount;
+		$response['total_vat_exempt_amount'] = $total_vat_exempt_amount;
 
 		$result->free_result();
 
