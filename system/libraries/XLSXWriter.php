@@ -261,17 +261,17 @@ class CI_XLSXWriter
 		$sheet->file_writer->write(  '<sheetData>');
 	}
 
-	public function writeSheetHeader($sheet_name, array $header_types)
+	public function writeSheetHeader($header_types, $sheet_name)
 	{
-		if (empty($sheet_name) || empty($header_types) || !empty($this->sheets[$sheet_name]))
+		if (empty($sheet_name) || empty($header_types))
 			return;
 
 		self::customInitializeSheet($sheet_name);
 		$sheet = &$this->sheets[$sheet_name];
 
-		$sheet->file_writer->write('<row collapsed="false" customFormat="false" customHeight="false" hidden="false" ht="12.1" outlineLevel="0" r="' . (1) . '">');
+		$sheet->file_writer->write('<row collapsed="false" customFormat="false" customHeight="false" hidden="false" ht="12.1" outlineLevel="0" r="' . ($sheet->row_count + 1) . '">');
 		foreach ($header_types as $k => $v) {
-			$this->customWriteCell($sheet->file_writer, 0, $k, $v, $cell_format = 'string', 1);
+			$this->customWriteCell($sheet->file_writer, $sheet->row_count, $k, $v, 'string', $sheet->row_count + 1, TRUE);
 		}
 		$sheet->file_writer->write('</row>');
 		$sheet->row_count++;
@@ -309,15 +309,18 @@ class CI_XLSXWriter
 
 		self::customInitializeSheet($sheet_name);
 		$sheet = &$this->sheets[$sheet_name];
+
 		if (empty($sheet->cell_formats))
 		{
 			$sheet->cell_formats = array_fill(0, count($row), 'string');
 		}
 
 		$sheet->file_writer->write('<row collapsed="false" customFormat="false" customHeight="false" hidden="false" ht="12.1" outlineLevel="0" r="' . ($sheet->row_count + 1) . '">');
-		$i = 2;
+		
+		$i = $this->getColumnCount() + 2;
 		$i += $indexes[0] - 1;
-		$this->customWriteCell($sheet->file_writer, $sheet->row_count, $indexes[0]-1, "TOTAL:", $sheet->cell_formats[$indexes[$o] - 1], $i);
+
+		$this->customWriteCell($sheet->file_writer, $sheet->row_count, $indexes[0] - 1, "GRAND TOTAL:", $sheet->cell_formats[$indexes[0] - 1], $i);
 		$i++;
 		
 		for($o=0; $o<sizeof($row); $o++){
@@ -356,18 +359,15 @@ class CI_XLSXWriter
 		$sheet->finalized=true;
 	}
 
-	public function customWriteSheet($data, $sheet_name='' , array $header_types=array())
+	public function customWriteSheet($data, $sheet_name='')
 	{
 		$sheet_name = empty($sheet_name) ? 'Sheet1' : $sheet_name;
 		$data = empty($data) ? array('') : $data;
-		if (!empty($header_types))
-		{
-			$this->writeSheetHeader($sheet_name, $header_types);
-		}
+
 		$this->writeSheetRow($sheet_name, $data);
 	}
 
-	public function customWriteSheetTotal($data, $sheet_name='' , $indexes)
+	public function customWriteSheetTotal($data, $indexes, $sheet_name = '')
 	{
 		$sheet_name = empty($sheet_name) ? 'Sheet1' : $sheet_name;
 		$data = empty($data) ? array('') : $data;
@@ -394,21 +394,22 @@ class CI_XLSXWriter
 		$this->finalizeSheet($sheet_name);
 	}
 
-	protected function customWriteCell(XLSXWriter_BuffererWriter &$file, $row_number, $column_number, $value, $cell_format, $i)
+	protected function customWriteCell(XLSXWriter_BuffererWriter &$file, $row_number, $column_number, $value, $cell_format, $i, $is_header = FALSE)
 	{
 		static $styles = array('money'=>1,'dollar'=>1,'datetime'=>2,'date'=>3,'string'=>0);
 		$cell = self::xlsCell($row_number, $column_number);
 		$s = isset($styles[$cell_format]) ? $styles[$cell_format] : '0';
 		$t = 's';
-
-		if ($row_number == 0) {
-			$file->write('<c r="'.$cell.'" s="'.$i.'" t="'.$t.'"><v>'.self::xmlspecialchars($this->setSharedString($value)).'</v></c>');
-		}else{
-			if ($this->formats[$i-2] != 'String') {
+		//$i = $i > ($this->getColumnCount() + 2) ? $i % $this->getColumnCount() : $i;
+		
+		if ($is_header) 
+			$file->write('<c r="'.$cell.'" s="1" t="'.$t.'"><v>'.self::xmlspecialchars($this->setSharedString($value)).'</v></c>');
+		else
+		{
+			if ($this->formats[$i - 2] != 'String' && $value != 'GRAND TOTAL:')
 				$file->write('<c r="'.$cell.'" s="'.$i.'" t="n"><v>'.($value*1).'</v></c>');//int,float, etc
-			} else { //excel wants to trim leading zeros
+			else //excel wants to trim leading zeros
 				$file->write('<c r="'.$cell.'" s="'.$i.'" t="s"><v>'.self::xmlspecialchars($this->setSharedString($value)).'</v></c>');
-			}
 		}
 	}
 
@@ -441,9 +442,7 @@ class CI_XLSXWriter
 		$file = new XLSXWriter_BuffererWriter($temporary_filename);
 		$file->write('<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n");
 		$file->write('<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">');
-		$file->write('<numFmts count="'.(count($count)+1).'">');
-		$file->write(		'<numFmt formatCode="GENERAL" numFmtId="0"/>');
-		$file->write(		'<numFmt formatCode="GENERAL" numFmtId="0"/>');
+		$file->write('<numFmts count="'.$count.'">');
 		$i = 164;
 		if(!empty($formats)){
 			foreach ($formats as $row) {
@@ -492,15 +491,12 @@ class CI_XLSXWriter
 			}
 		}
 		$file->write('</numFmts>');
-		$file->write('<fonts count="4">');
+		$file->write('<fonts count="3">');
 		$headerstyle = (strlen($headerstyle) > 0) ? "<".strtolower(substr($headerstyle, 0,1))."/>" : '';
 		$headerstyle2 = (strlen($headerstyle2) > 0) ? "<".strtolower(substr($headerstyle2, 0,1))."/>" : '';
 		$file->write(		'<font><name val="Arial"/><charset val="1"/><family val="2"/><sz val="10"/></font>');
 		$file->write(		'<font><name val="Arial"/><charset val="1"/><family val="2"/><sz val="10"/>'.$headerstyle.''.$headerstyle2.'</font>');
 		$file->write(		'<font><name val="Arial"/><charset val="1"/><family val="2"/><sz val="10"/></font>');
-		$file->write(		'<font><name val="Tahoma"/><family val="0"/><sz val="10"/></font>');
-		$file->write(		'<font><name val="Calibri"/><family val="0"/><sz val="10"/></font>');
-		$file->write(		'<font><name val="Times New Roman"/><family val="0"/><sz val="10"/></font>');
 		$file->write('</fonts>');
 		$file->write('<fills count="2"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill></fills>');
 		$file->write('<borders count="2">');
@@ -513,7 +509,7 @@ class CI_XLSXWriter
 		$file->write(	'<cellStyleXfs count="1">');
 		$file->write(		'<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>');
 		$file->write(	'</cellStyleXfs>');
-		$file->write(	'<cellXfs count="'.(count($align)+2).'">');
+		$file->write(	'<cellXfs count="'.((count($align) * 2) + 2).'">');
 		$file->write(		'<xf applyAlignment="1" borderId="0" fillId="0" fontId="0" numFmtId="0">');
 		$file->write(		'<alignment horizontal="general"/>');
 		$file->write(		'<protection hidden="false" locked="true"/>');
@@ -540,6 +536,27 @@ class CI_XLSXWriter
 				$i++;
 			}
 		}
+
+		$i = 164;
+
+		if(!empty($align)){
+			foreach ($align as $row) {
+				$file->write(		'<xf applyAlignment="1" borderId="'.$tableborder.'" fillId="0" fontId="1" numFmtId="'.$i.'">');
+				$file->write(		'<alignment horizontal="right"/>');
+				$file->write(		'<protection hidden="false" locked="true"/>');
+				$file->write(		'</xf>');
+				$i++;
+			}
+		}else{
+			for ($o=0; $o<$count; $o++) {
+				$file->write(		'<xf applyAlignment="1" borderId="'.$tableborder.'" fillId="0" fontId="1" numFmtId="'.$i.'">');
+				$file->write(		'<alignment horizontal="right"/>');
+				$file->write(		'<protection hidden="false" locked="true"/>');
+				$file->write(		'</xf>');
+				$i++;
+			}
+		}
+
 		$file->write(	'</cellXfs>');
 		$file->write(	'<cellStyles count="1">');
 		$file->write(		'<cellStyle name="Normal" xfId="0" builtinId="0"/>');

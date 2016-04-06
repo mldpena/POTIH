@@ -421,6 +421,8 @@ class Sales_Manager
 		}
 
 		$result->free_result();
+
+		return $response;
 	}
 
 	public function set_session_data()
@@ -482,6 +484,53 @@ class Sales_Manager
 			throw new \Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
 
 		$result_detail->free_result();
+
+		return $response;
+	}
+
+	public function generate_book_report($param)
+	{
+		$row_start = (int)$param['row_start'];
+		
+		$response = [];
+
+		$response['rowcnt'] = 0;
+		$response['total_amount'] = 0;
+		$response['total_vatable_amount'] = 0;
+		$response['total_vat_amount'] = 0;
+		$response['total_vat_exempt_amount'] = 0;
+
+		$result = $this->_CI->sales_model->get_sales_list_by_filter($param);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			
+			$summary_result = $this->_CI->sales_model->get_sales_list_count_by_filter($param);
+			$row = $summary_result->row();
+			$response['rowcnt'] = $row->rowCount;
+			$response['total_amount'] = number_format($row->total_amount, 2);
+			$response['total_vatable_amount'] = number_format($row->total_vatable_amount, 2);
+			$response['total_vat_amount'] = number_format($row->total_vat_amount, 2);
+			$response['total_vat_exempt_amount'] = number_format($row->total_vat_exempt_amount, 2);
+
+			foreach ($result->result() as $row) 
+			{
+				$response['data'][$i][] = array($row_start + $i + 1);
+				$response['data'][$i][] = array(date("m/d/Y", strtotime($row->entry_date)));
+				$response['data'][$i][] = array($row->reference_number);
+				$response['data'][$i][] = array($row->customer);
+				$response['data'][$i][] = array(number_format($row->amount, 2));
+				$response['data'][$i][] = array(number_format($row->vatable_amount, 2));
+				$response['data'][$i][] = array(number_format($row->vat_amount, 2));
+				$response['data'][$i][] = array(number_format($row->vat_exempt_amount, 2));
+				$i++;
+			}
+
+			$summary_result->free_result();
+		}
+
+		$result->free_result();
 
 		return $response;
 	}

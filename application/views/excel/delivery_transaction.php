@@ -23,12 +23,11 @@
 	$writer->setWidth($width);
 	$writer->setBorder(1);
 
+	$writer->writeSheetHeader($header, 'Sheet1');
+
 	for ($i=0; $i < count($data); $i++) 
-	{ 
-		if ($i == 0) 
-			$writer->customWriteSheet($data[$i],'Sheet1', $header);
-		else
-			$writer->customWriteSheet($data[$i],'Sheet1');
+	{
+		$writer->customWriteSheet($data[$i], 'Sheet1');
 	}	
 	
 	$writer->endSheet('Sheet1');

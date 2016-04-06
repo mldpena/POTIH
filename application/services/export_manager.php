@@ -604,6 +604,60 @@ class Export_Manager
 
 		return $response;
 	}
+
+	public function parse_generate_sales_book_report($param)
+	{
+		extract($param);
+
+		$this->_CI->load->model('sales_model');
+
+		$response = [];
+
+		$response['rowcnt'] = 0;
+
+		$total_amount = 0;
+		$total_vatable_amount = 0;
+		$total_vat_amount = 0;
+		$total_vat_exempt_amount = 0;
+
+		$result = $this->_CI->sales_model->get_sales_list_by_filter($param, FALSE);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{		
+				$response['data'][$i][] = date('m/d/Y', strtotime($row->entry_date));
+				$response['data'][$i][] = $row->reference_number;
+				$response['data'][$i][] = $row->customer;
+				$response['data'][$i][] = $row->amount;
+				$response['data'][$i][] = $row->vatable_amount;
+				$response['data'][$i][] = $row->vat_amount;
+				$response['data'][$i][] = $row->vat_exempt_amount;
+
+				$total_amount += $row->amount;
+				$total_vatable_amount += $row->vatable_amount;
+				$total_vat_amount += $row->vat_amount;
+				$total_vat_exempt_amount += $row->vat_exempt_amount;
+
+				$i++;
+			}
+		}
+
+		$response['branch_name'] = strtoupper($branch_name);
+		$response['date_from'] = date("m/d/Y", strtotime($date_from));
+		$response['date_to'] = date("m/d/Y", strtotime($date_to));
+		$response['total_amount'] = $total_amount;
+		$response['total_vatable_amount'] = $total_vatable_amount;
+		$response['total_vat_amount'] = $total_vat_amount;
+		$response['total_vat_exempt_amount'] = $total_vat_exempt_amount;
+
+		$result->free_result();
+
+		return $response;
+	}
 }
 
 ?>

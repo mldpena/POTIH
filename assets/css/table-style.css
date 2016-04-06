@@ -111,7 +111,7 @@
 	display: none;
 }
 .td-right{
-	text-align: right;
+	text-align: right !important;
 }
 /*TABLE TD SIZES*/
 .tdqty,

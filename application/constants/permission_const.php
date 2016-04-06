@@ -157,6 +157,7 @@
 		const VIEW_BRANCH_INVENTORY = 212;
 		const VIEW_TRANSACTION_SUMMARY = 213;
 		const VIEW_SALES_REPORT = 214;
+		const VIEW_BOOK_REPORT = 215;
 	}
 
 	class Assortment_Code
