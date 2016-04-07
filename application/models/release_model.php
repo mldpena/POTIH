@@ -157,7 +157,7 @@ class Release_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\RELEASE_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\RELEASE_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 
 				$response['detail'][$i][] = array($this->encrypt->encode($row->receive_detail_id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->release_order_detail_id));
@@ -242,7 +242,7 @@ class Release_Model extends CI_Model {
 			$i = 0;
 			foreach ($result->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\RELEASE_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\RELEASE_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = $row->receive_detail_id == 0 ? array(0) : array($this->encrypt->encode($row->receive_detail_id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->release_order_detail_id));
 				$response['detail'][$i][] = array($i+1);

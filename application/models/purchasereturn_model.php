@@ -87,7 +87,7 @@ class PurchaseReturn_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\PURCHASE_RETURN_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\PURCHASE_RETURN_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($i+1);
 				$response['detail'][$i][] = array($row->product, $row->product_id, $row->type, $break_line, $row->description, $row->is_deleted);

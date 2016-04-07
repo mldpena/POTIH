@@ -121,7 +121,7 @@ class Assortment_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\ASSORTMENT_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\ASSORTMENT_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->sales_detail_id));
 				$response['detail'][$i][] = array($row->sales_reference);
@@ -609,7 +609,7 @@ class Assortment_Model extends CI_Model {
 			$i = 0;
 			foreach ($result->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\ASSORTMENT_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\ASSORTMENT_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = $row->id == 0 ? array(0) : array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->sales_detail_id));
 				$response['detail'][$i][] = array($row->sales_reference);

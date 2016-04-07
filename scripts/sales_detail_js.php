@@ -9,7 +9,6 @@
 		Vatable :2 
 	};
 
-	var pageLimit = 18;
 	var processingFlag = false;
 
 	var tab = document.createElement('table');
@@ -414,10 +413,6 @@
 		removeImportedReservation();
 	});
 
-	$('#memo').blur(function(){
-		checkPageLimit(false);
-	});
-
 	$('.txtprice, .txtqty').live('change', function(){
 		var rowIndex = $(this).parent().parent().index();
 		var quantity = Number(tableHelper.contentProvider.getData(rowIndex, 'qty').replace(/\,/gi,""));
@@ -578,11 +573,6 @@
 			return false;
 		}
 
-		var isContinue = checkPageLimit(false);
-
-		if (!isContinue) 
-			return false;
-
 		var arr = 	{ 
 						fnc 	 	: 'save_sales_head', 
 						customer_id : customer_id_val,
@@ -641,15 +631,6 @@
 			build_message_box('messagebox_1', build_error_message(errorList), 'danger');
 			return false;
 		};
-
-		if (rowIndex == lastRow && sales_detail_id == 0) 
-		{
-			var isContinue = checkPageLimit(true);
-
-			if (!isContinue) 
-				return false;	
-		}
-		
 
 		var arr = 	{ 
 						fnc 	 	: actionFunction, 
@@ -779,19 +760,6 @@
 			if (!detailExist) 
 				$(element).removeAttr('checked');
 		});
-	}
-
-	function checkPageLimit(isRowEdited)
-	{
-		var memo = $('#memo').val();
-		var currentLimit = memo != '' ? pageLimit : pageLimit + 4;
-		var lastRow = myjstbl.get_row_count() - (isRowEdited ? 1 : 2);
-		var isContinue = true;
-
-		if (lastRow > currentLimit)
-			isContinue = confirm('Added product will already exceed the maximum no. of rows in the printout. Do you want to continue?');
-
-		return isContinue;
 	}
 
 	function toggleColumn()

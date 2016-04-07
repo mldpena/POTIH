@@ -5,7 +5,6 @@ namespace Services;
 class Sales_Manager
 {
 	private $_CI;
-	private $_number_transformer;
 	private $_current_branch_id = 0;
 	private $_sales_head_id = 0;
 	private $_current_user = 0;
@@ -28,14 +27,6 @@ class Sales_Manager
 	public function __construct()
 	{
 		$this->_CI = $CI =& get_instance();
-
-		$registry = new \Kwn\NumberToWords\Transformer\TransformerFactoriesRegistry([
-		    new \Kwn\NumberToWords\Language\English\TransformerFactory
-		]);
-
-		$numberToWords = new \Kwn\NumberToWords\NumberToWords($registry);
-
-		$this->_number_transformer = $numberToWords->getNumberTransformer('en');
 
 		$this->_current_branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= $this->_CI->encrypt->decode(get_cookie('temp'));
@@ -92,7 +83,7 @@ class Sales_Manager
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\SALES_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\SALES_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->reservation_detail_id));
 				$response['detail'][$i][] = array($row->reservation_number);
@@ -344,7 +335,7 @@ class Sales_Manager
 			$i = 0;
 			foreach ($result->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\SALES_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\SALES_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = $row->id == 0 ? array(0) : array($this->_CI->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->reservation_detail_id));
 				$response['detail'][$i][] = array($row->reservation_number);
@@ -458,7 +449,6 @@ class Sales_Manager
 			foreach ($row as $key => $value)
 				$response[$key] = $value;
 
-			$response['number_transformer'] = $this->_number_transformer;
 			$response['entry_date'] = date('m/d/Y', strtotime($response['entry_date']));
 		}
 		else
