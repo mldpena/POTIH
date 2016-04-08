@@ -502,12 +502,16 @@ class Export_Manager
 
 	public function parse_generate_sales_report($param)
 	{
+		extract($param);
+
 		$this->_CI->load->model('sales_model');
 
 		$response = [];
 
 		$response['rowcnt'] = 0;
 		$response['customer_name'] = '';
+		$response['date_from'] = date("m/d/Y", strtotime($date_from));
+		$response['date_to'] = date("m/d/Y", strtotime($date_to));
 
 		$total_amount = 0;
 
@@ -520,12 +524,15 @@ class Export_Manager
 
 			foreach ($result->result() as $row) 
 			{		
+				if ($report_type == \Constants\SALES_CONST::DAILY_SALES_REPORT) 
+					$response['data'][$i][] = $i + 1;
+
 				$response['data'][$i][] = $row->reference_number;
 
-				if ($param['report_type'] != \Constants\SALES_CONST::DAILY_SALES_REPORT) 
+				if ($report_type != \Constants\SALES_CONST::DAILY_SALES_REPORT) 
 					$response['data'][$i][] = date('m-d-Y', strtotime($row->entry_date));
 
-				if ($param['report_type'] != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT) 
+				if ($report_type != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT) 
 					$response['data'][$i][] = $row->customer;
 				else
 					$response['customer_name'] = $row->customer;
@@ -552,7 +559,7 @@ class Export_Manager
 				$response['data'][$i][] = $value;
 			}
 
-			if ($param['report_type'] != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT)
+			if ($report_type != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT)
 			{
 				$salesman_result = $this->_CI->sales_model->get_salesman_sales_by_filter($param);
 
@@ -565,9 +572,12 @@ class Export_Manager
 
 					$i++;
 					
+					if ($report_type == \Constants\SALES_CONST::DAILY_SALES_REPORT) 
+						$response['data'][$i][] = '';
+					
 					$response['data'][$i][] = '';
 
-					if ($param['report_type'] == \Constants\SALES_CONST::PERIODIC_SALES_REPORT)
+					if ($report_type == \Constants\SALES_CONST::PERIODIC_SALES_REPORT)
 						$response['data'][$i][] = '';
 
 					$response['data'][$i][] = 'Salesman Breakdown';

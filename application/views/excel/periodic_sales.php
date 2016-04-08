@@ -10,7 +10,7 @@
 	$formats 	= array('String', 'String', 'String', 'String', 'String');
 	$align 		= array('Center', 'Center', 'Left', 'Left', 'Right');
 	$width 		= array(20, 20, 50, 50, 30);
-	$count 		= 4;
+	$count 		= 5;
 
 	$writer = new CI_XLSXWriter();
 	$writer->setFilename($filename);
@@ -21,14 +21,16 @@
 	$writer->setFormat($formats);
 	$writer->setAlign($align);
 	$writer->setWidth($width);
-	$writer->setBorder(1);
+
+	$writer->writeSheetHeader(['', '', 'HI TOP MERCHANDISING, INC', '', ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', 'PERIODIC SALES REPORT', '', ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', 'FROM '.$date_from.' TO '.$date_to, '', ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', '', '', ''], 'Sheet1');
 
 	$writer->writeSheetHeader($header, 'Sheet1');
 
 	for ($i=0; $i < count($data); $i++) 
-	{
 		$writer->customWriteSheet($data[$i], 'Sheet1');
-	}	
 	
 	$writer->endSheet('Sheet1');
 

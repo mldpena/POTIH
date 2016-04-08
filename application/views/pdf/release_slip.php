@@ -23,7 +23,7 @@
 
 	//ob_start();
 
-	$pdf = new CI_TCPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
+	$pdf = new CI_TCPDF('P', PDF_UNIT, 'FOLIO', true, 'UTF-8', false);
 
 	$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);
 	$pdf->setFontSubsetting(false);
@@ -44,8 +44,8 @@
 	$margin_right = 120;
 	$margin_top = 5;
 
-	$half_page_y = 147;
-	$whole_page_y = 278;
+	$half_page_y = 164;
+	$whole_page_y = 329;
 
 	$linegap = 6;
 

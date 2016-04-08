@@ -56,6 +56,10 @@
 				text-align: center;
 			}
 
+			.td-right{
+				text-align: right;
+			}
+
 			table {
 				border-bottom-style : solid;
 			}
@@ -125,7 +129,7 @@ EOD;
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[5].";\" class=\"tdcenter table-data\">".substr($detail[$i]["customer"],0,29)."</td>
-							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
+							<td style=\"width:".$column_width[0].";\" class=\"td-right table-data\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[6].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["memo"]."</td>
