@@ -6,11 +6,11 @@
 	}
 
 	$filename 	= $customer_name.' - Sales('.date('Y-m-d').').xlsx';
-	$header 	= array('ITEM#', 'INV#', 'DATE', 'SALESMAN', 'AMOUNT');
-	$formats 	= array('String', 'String', 'String', 'String', 'String');
-	$align 		= array('Center', 'Center', 'Center', 'Left', 'Right');
-	$width 		= array(10, 20, 20, 50, 30);
-	$count 		= 5;
+	$header 	= array('INV#', 'DATE', 'SALESMAN', 'AMOUNT');
+	$formats 	= array('String', 'String', 'String', 'String');
+	$align 		= array('Center', 'Center', 'Left', 'Right');
+	$width 		= array(20, 20, 50, 30);
+	$count 		= 4;
 
 	$writer = new CI_XLSXWriter();
 	$writer->setFilename($filename);
@@ -22,10 +22,10 @@
 	$writer->setAlign($align);
 	$writer->setWidth($width);
 
-	$writer->writeSheetHeader(['', '', '', 'HI TOP MERCHANDISING, INC'], 'Sheet1');
-	$writer->writeSheetHeader(['', '', '', 'CUSTOMER SALES REPORT', ''], 'Sheet1');
-	$writer->writeSheetHeader(['', '', '', 'FROM '.$date_from.' TO '.$date_to, ''], 'Sheet1');
-	$writer->writeSheetHeader(['', '', '', '', ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', 'HI TOP MERCHANDISING, INC'], 'Sheet1');
+	$writer->writeSheetHeader(['', '', 'CUSTOMER SALES REPORT', ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', 'FROM '.$date_from.' TO '.$date_to, ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', '', ''], 'Sheet1');
 
 	$writer->writeSheetHeader($header, 'Sheet1');
 

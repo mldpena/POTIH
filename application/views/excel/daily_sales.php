@@ -6,7 +6,7 @@
 	}
 
 	$filename 	= 'daily_sales('.date('Y-m-d').').xlsx';
-	$header 	= array('ITEM#', 'INV#', 'CUSTOMER NAME', 'SALESMAN', 'AMOUNT');
+	$header 	= array('', 'INV#', 'CUSTOMER NAME', 'SALESMAN', 'AMOUNT');
 	$formats 	= array('String', 'String', 'String', 'String', 'String');
 	$align 		= array('Center', 'Center', 'Left', 'Left', 'Right');
 	$width 		= array(10, 20, 50, 50, 30);
