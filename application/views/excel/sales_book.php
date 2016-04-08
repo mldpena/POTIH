@@ -34,8 +34,6 @@
 	
 	$writer->customWriteSheetTotal([$total_amount, $total_vatable_amount, $total_vat_amount, $total_vat_exempt_amount], [3, 4, 5, 6]);
 
-	//$writer->writeSheetHeader(['', '', 'GRAND TOTAL:', $total_amount, $total_vatable_amount, $total_vat_amount, $total_vat_exempt_amount], 'Sheet1');
-
 	$writer->endSheet('Sheet1');
 
 	$writer->writeToStdOut();

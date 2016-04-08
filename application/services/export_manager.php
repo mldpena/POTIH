@@ -502,12 +502,16 @@ class Export_Manager
 
 	public function parse_generate_sales_report($param)
 	{
+		extract($param);
+
 		$this->_CI->load->model('sales_model');
 
 		$response = [];
 
 		$response['rowcnt'] = 0;
 		$response['customer_name'] = '';
+		$response['date_from'] = date("m/d/Y", strtotime($date_from));
+		$response['date_to'] = date("m/d/Y", strtotime($date_to));
 
 		$total_amount = 0;
 
@@ -520,6 +524,7 @@ class Export_Manager
 
 			foreach ($result->result() as $row) 
 			{		
+				$response['data'][$i][] = $i + 1;
 				$response['data'][$i][] = $row->reference_number;
 
 				if ($param['report_type'] != \Constants\SALES_CONST::DAILY_SALES_REPORT) 
@@ -565,6 +570,7 @@ class Export_Manager
 
 					$i++;
 					
+					$response['data'][$i][] = '';
 					$response['data'][$i][] = '';
 
 					if ($param['report_type'] == \Constants\SALES_CONST::PERIODIC_SALES_REPORT)

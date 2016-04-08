@@ -3,7 +3,7 @@
 
 	//ob_start();
 
-	global $pdf, $y, $number_transformer, $page_amount, $note, $is_vatable, $font_size, $font, $colspan1_width, $colspan2_width;
+	global $pdf, $y, $number_transformer, $page_amount, $note, $is_vat, $font_size, $font, $colspan1_width, $colspan2_width;
 
 	$pdf = new CI_TCPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
@@ -34,6 +34,7 @@
 	$margin_right = 120;
 	$margin_top = 5;
 	$note = $memo;
+	$is_vat = $is_vatable;
 	$limitY = empty($note) ? 205 : 185;
 	$widthLimit = 124;
 	$linegap = 6;
@@ -219,7 +220,7 @@
 
 	function set_footer()
 	{
-		global $pdf, $y, $number_transformer, $page_amount, $note, $is_vatable, $font_size, $font, $colspan1_width, $colspan2_width;
+		global $pdf, $y, $number_transformer, $page_amount, $note, $is_vat, $font_size, $font, $colspan1_width, $colspan2_width;
 
 		if (!empty($note)) 
 		{
@@ -238,8 +239,8 @@
 			$pdf->writeHTMLCell('', '', 4, $y, $table_detail, 0, 1, 0, true, 'L', true); 
 		}
 
-		$vat_amount = $is_vatable == 2 ? ($page_amount * 0.12) / 1.12 : 0;
-		$vatable_amount = $is_vatable == 2 ? ($page_amount - $vat_amount) : 0;
+		$vat_amount = $is_vat == 2 ? ($page_amount * 0.12) / 1.12 : 0;
+		$vatable_amount = $is_vat == 2 ? ($page_amount - $vat_amount) : 0;
 
 		$decimal_amount = ($page_amount - floor($page_amount)) * 100;
 		$whole_amount = floor($page_amount);
@@ -247,12 +248,11 @@
 		$page_amount_word = ucwords($number_transformer->toWords($whole_amount)).' Pesos';
 		$page_amount_word .= $decimal_amount == 0 ? '' : ' and '.ucwords($number_transformer->toWords($decimal_amount)).' Cents';
 
-		$vat_exempt_amount = ($is_vatable == 2) ? number_format(0, 2) : number_format($page_amount, 2);
+		$vat_exempt_amount = ($is_vat == 2) ? number_format(0, 2) : number_format($page_amount, 2);
 		$page_amount = number_format($page_amount, 2);
 		$vat_amount = number_format($vat_amount, 2);
 		$vatable_amount = number_format($vatable_amount, 2);
-
-		
+		$vat_inclusive = $is_vat == 2 ? $page_amount : number_format(0, 2);
 
 		// Amount in words
 		$pdf->SetFont($font, '', 9, '', '', '');
@@ -273,7 +273,7 @@
 		// 2nd amount table
 		$right_total = '
 			<table>
-				<tr><td width="100px" align="right">'.$vat_amount.'</td></tr>
+				<tr><td width="100px" align="right">'.$vat_inclusive.'</td></tr>
 				<tr><td height="25.5px" width="100px" align="right">'.$vat_amount.'</td></tr>
 				<tr><td width="100px" align="right">'.$vatable_amount.'</td></tr>
 				<tr><td width="100px" align="right">'.$page_amount.'</td></tr>
