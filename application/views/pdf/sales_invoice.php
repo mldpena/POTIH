@@ -74,7 +74,7 @@
 		</style>
 	";
 
-	$width = [66, 8, 440, 125, 98];
+	$width = [66, 8, 440, 125, 107];
 	$colspan1_width = $width[0] + $width[1];
 	$colspan2_width = $width[2] + $width[3] + $width[4];
 
@@ -89,14 +89,14 @@
 		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
 		$pdf->writeHTMLCell('', '', 25, 34, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
 		$pdf->writeHTMLCell('', '', 178, 34, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 183, 40, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
+		$pdf->writeHTMLCell('', '', 185, 40, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
 		$pdf->writeHTMLCell('', '', 120, 43, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 183, 46, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
+		$pdf->writeHTMLCell('', '', 185, 46, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
 		$pdf->writeHTMLCell('', '', 24, 52, $address, 0, 1, 0, true, 'L', true); // Address
 
 
 		$pdf->SetFont($font, '', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 183, 53, $salesman, 0, 1, 0, true, 'L', true); // Salesman
+		$pdf->writeHTMLCell('', '', 184, 53, $salesman, 0, 1, 0, true, 'L', true); // Salesman
 		$pdf->SetFont($font, '', $font_size, '', '', '');
 
 		$table_detail = '
@@ -263,7 +263,7 @@
 			<table>
 				<tr><td width="100px" align="right">'.$vatable_amount.'</td></tr>
 				<tr><td height="25.5px" width="100px" align="right">'.$vat_exempt_amount.'</td></tr>
-				<tr><td width="100px" align="right">'.$vat_exempt_amount.'</td></tr>
+				<tr><td height="25px" width="100px" align="right">'.$vat_exempt_amount.'</td></tr>
 				<tr><td width="100px" align="right">'.$vat_amount.'</td></tr>
 			</table>
 		';
@@ -275,7 +275,7 @@
 			<table>
 				<tr><td width="100px" align="right">'.$vat_inclusive.'</td></tr>
 				<tr><td height="25.5px" width="100px" align="right">'.$vat_amount.'</td></tr>
-				<tr><td width="100px" align="right">'.$vatable_amount.'</td></tr>
+				<tr><td height="25px" width="100px" align="right">'.$vatable_amount.'</td></tr>
 				<tr><td width="100px" align="right">'.$page_amount.'</td></tr>
 			</table>
 		';
@@ -290,6 +290,6 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 180, 219, $grand_total,  0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 180, 222, $grand_total,  0, 1, 0, true, 'L', true);
 	}
 ?>
