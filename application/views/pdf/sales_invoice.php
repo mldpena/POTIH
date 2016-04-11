@@ -74,29 +74,29 @@
 		</style>
 	";
 
-	$width = [66, 5, 440, 100, 110];
+	$width = [66, 8, 440, 125, 84];
 	$colspan1_width = $width[0] + $width[1];
 	$colspan2_width = $width[2] + $width[3] + $width[4];
 
 	while ($is_finished == FALSE) 
 	{
-		$x = 4;
+		$x = 2;
 		$y = $margin_top;
 		$page_amount = 0;
 		$footer_printed = FALSE;
 
 		$pdf->AddPage();
-		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Sold to
-		$pdf->writeHTMLCell('', '', 25, 38.5, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
-		$pdf->writeHTMLCell('', '', 174, 38.5, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 181, 45, $ponumber, 0, 1, 0, true, 'L', true); // P.O.
-		$pdf->writeHTMLCell('', '', 118, 48, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 181, 51, $drnumber, 0, 1, 0, true, 'L', true); // D.R.
-		$pdf->writeHTMLCell('', '', 24, 57, $address, 0, 1, 0, true, 'L', true); // Address
+		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
+		$pdf->writeHTMLCell('', '', 25, 34, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
+		$pdf->writeHTMLCell('', '', 176, 34, $entry_date, 0, 1, 0, true, 'L', true); // Date
+		$pdf->writeHTMLCell('', '', 182, 40, "1234567", 0, 1, 0, true, 'L', true); // P.O. $ponumber
+		$pdf->writeHTMLCell('', '', 118, 43, $tin, 0, 1, 0, true, 'L', true); // TIN
+		$pdf->writeHTMLCell('', '', 182, 46, "1234567", 0, 1, 0, true, 'L', true); // D.R.  $drnumber
+		$pdf->writeHTMLCell('', '', 24, 52, $address, 0, 1, 0, true, 'L', true); // Address
 
 
 		$pdf->SetFont($font, '', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 180, 58, $salesman, 0, 1, 0, true, 'L', true); // Salesman
+		$pdf->writeHTMLCell('', '', 183, 53, $salesman, 0, 1, 0, true, 'L', true); // Salesman
 		$pdf->SetFont($font, '', $font_size, '', '', '');
 
 		$table_detail = '
@@ -236,7 +236,7 @@
 				</table>
 			';
 
-			$pdf->writeHTMLCell('', '', 4, $y, $table_detail, 0, 1, 0, true, 'L', true); 
+			$pdf->writeHTMLCell('', '', 2, $y, $table_detail, 0, 1, 0, true, 'L', true); 
 		}
 
 		$vat_amount = $is_vat == 2 ? ($page_amount * 0.12) / 1.12 : 0;
@@ -256,7 +256,7 @@
 
 		// Amount in words
 		$pdf->SetFont($font, '', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 37, 202, $page_amount_word, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 37, 203, $page_amount_word, 0, 1, 0, true, 'L', true);
 		$pdf->SetFont($font, 'B', $font_size, '', '', '');
 
 		$left_total = '
@@ -268,7 +268,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 27, 209.5, $left_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 27, 210, $left_total, 0, 1, 0, true, 'L', true);
 
 		// 2nd amount table
 		$right_total = '
@@ -280,10 +280,10 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 116, 209.5, $right_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 116, 210, $right_total, 0, 1, 0, true, 'L', true);
 
 		// Grand total
-		$pdf->writeHTMLCell('', '', 180, 221, $page_amount, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 188, 221, $page_amount, 0, 1, 0, true, 'L', true);
 	}
 
 ?>
