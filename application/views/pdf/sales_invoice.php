@@ -89,9 +89,9 @@
 		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
 		$pdf->writeHTMLCell('', '', 25, 34, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
 		$pdf->writeHTMLCell('', '', 176, 34, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 182, 40, "1234567", 0, 1, 0, true, 'L', true); // P.O. $ponumber
+		$pdf->writeHTMLCell('', '', 182, 40, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
 		$pdf->writeHTMLCell('', '', 118, 43, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 182, 46, "1234567", 0, 1, 0, true, 'L', true); // D.R.  $drnumber
+		$pdf->writeHTMLCell('', '', 182, 46, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
 		$pdf->writeHTMLCell('', '', 24, 52, $address, 0, 1, 0, true, 'L', true); // Address
 
 
