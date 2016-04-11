@@ -30,7 +30,7 @@
 	$font = 'arial';
 	$font_size = 11.5;
 
-	$margin_left = 10;
+	$margin_left = 9;
 	$margin_right = 120;
 	$margin_top = 5;
 	$note = $memo;
@@ -74,7 +74,7 @@
 		</style>
 	";
 
-	$width = [66, 8, 440, 125, 84];
+	$width = [66, 8, 440, 125, 98];
 	$colspan1_width = $width[0] + $width[1];
 	$colspan2_width = $width[2] + $width[3] + $width[4];
 
@@ -88,10 +88,10 @@
 		$pdf->AddPage();
 		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
 		$pdf->writeHTMLCell('', '', 25, 34, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
-		$pdf->writeHTMLCell('', '', 176, 34, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 182, 40, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
-		$pdf->writeHTMLCell('', '', 118, 43, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 182, 46, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
+		$pdf->writeHTMLCell('', '', 178, 34, $entry_date, 0, 1, 0, true, 'L', true); // Date
+		$pdf->writeHTMLCell('', '', 183, 40, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
+		$pdf->writeHTMLCell('', '', 120, 43, $tin, 0, 1, 0, true, 'L', true); // TIN
+		$pdf->writeHTMLCell('', '', 183, 46, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
 		$pdf->writeHTMLCell('', '', 24, 52, $address, 0, 1, 0, true, 'L', true); // Address
 
 
@@ -280,10 +280,16 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 116, 210, $right_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 123, 210, $right_total, 0, 1, 0, true, 'L', true);
 
 		// Grand total
-		$pdf->writeHTMLCell('', '', 188, 221, $page_amount, 0, 1, 0, true, 'L', true);
-	}
 
+		$grand_total = '
+			<table>
+				<tr><td width="100px" align="right">'.$page_amount.'</td></tr>
+			</table>
+		';
+
+		$pdf->writeHTMLCell('', '', 180, 219, $grand_total,  0, 1, 0, true, 'L', true);
+	}
 ?>
