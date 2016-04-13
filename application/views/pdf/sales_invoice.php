@@ -87,16 +87,21 @@
 
 		$pdf->AddPage();
 		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
-		$pdf->writeHTMLCell('', '', 25, 34, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
-		$pdf->writeHTMLCell('', '', 178, 34, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 185, 40, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
-		$pdf->writeHTMLCell('', '', 120, 43, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 185, 46, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
-		$pdf->writeHTMLCell('', '', 24, 52, $address, 0, 1, 0, true, 'L', true); // Address
+		$pdf->writeHTMLCell('', '', 25, 37, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
+		$pdf->writeHTMLCell('', '', 180, 37, $entry_date, 0, 1, 0, true, 'L', true); // Date
+		$pdf->writeHTMLCell('', '', 186, 43, "123456", 0, 1, 0, true, 'L', true); // P.O. $ponumber
+		$pdf->writeHTMLCell('', '', 123, 46, $tin, 0, 1, 0, true, 'L', true); // TIN
+		$pdf->writeHTMLCell('', '', 187, 50, "123456", 0, 1, 0, true, 'L', true); // D.R.  $drnumber
+		$pdf->writeHTMLCell('', '', 24, 55, $address, 0, 1, 0, true, 'L', true); // Address
 
+		$sales_man = '
+			<table>
+				<tr><td width="90px">'.$salesman.'</td></tr>
+			</table>
+		';
 
 		$pdf->SetFont($font, '', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 184, 53, $salesman, 0, 1, 0, true, 'L', true); // Salesman
+		$pdf->writeHTMLCell('', '', 190, 56, $sales_man, 0, 1, 0, true, 'L', true); // Salesman
 		$pdf->SetFont($font, '', $font_size, '', '', '');
 
 		$table_detail = '
@@ -111,7 +116,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', $x, 74, $table_detail, 0, 1, 0, true, 'C', true);
+		$pdf->writeHTMLCell('', '', $x, 77, $table_detail, 0, 1, 0, true, 'C', true);
 
 		$y = $pdf->GetY();
 
@@ -256,7 +261,7 @@
 
 		// Amount in words
 		$pdf->SetFont($font, '', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 37, 203, $page_amount_word, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 40, 206, $page_amount_word, 0, 1, 0, true, 'L', true);
 		$pdf->SetFont($font, 'B', $font_size, '', '', '');
 
 		$left_total = '
@@ -268,7 +273,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 27, 210, $left_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 27, 213, $left_total, 0, 1, 0, true, 'L', true);
 
 		// 2nd amount table
 		$right_total = '
@@ -280,7 +285,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 123, 210, $right_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 123, 213, $right_total, 0, 1, 0, true, 'L', true);
 
 		// Grand total
 
@@ -290,6 +295,6 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 180, 222, $grand_total,  0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 180, 223, $grand_total,  0, 1, 0, true, 'L', true);
 	}
 ?>
