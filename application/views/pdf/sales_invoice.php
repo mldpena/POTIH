@@ -74,7 +74,7 @@
 		</style>
 	";
 
-	$width = [66, 8, 440, 125, 107];
+	$width = [66, 14, 440, 125, 108.5];
 	$colspan1_width = $width[0] + $width[1];
 	$colspan2_width = $width[2] + $width[3] + $width[4];
 
@@ -89,9 +89,9 @@
 		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
 		$pdf->writeHTMLCell('', '', 25, 37, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
 		$pdf->writeHTMLCell('', '', 180, 37, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 186, 43, "123456", 0, 1, 0, true, 'L', true); // P.O. $ponumber
+		$pdf->writeHTMLCell('', '', 186, 43, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
 		$pdf->writeHTMLCell('', '', 123, 46, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 187, 50, "123456", 0, 1, 0, true, 'L', true); // D.R.  $drnumber
+		$pdf->writeHTMLCell('', '', 187, 50, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
 		$pdf->writeHTMLCell('', '', 24, 55, $address, 0, 1, 0, true, 'L', true); // Address
 
 		$sales_man = '
@@ -285,7 +285,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 123, 213, $right_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 125, 213, $right_total, 0, 1, 0, true, 'L', true);
 
 		// Grand total
 
