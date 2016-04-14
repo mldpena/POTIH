@@ -261,7 +261,7 @@
 
 		// Amount in words
 		$pdf->SetFont($font, '', 9, '', '', '');
-		$pdf->writeHTMLCell('', '', 40, 206, $page_amount_word, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 40, 209, $page_amount_word, 0, 1, 0, true, 'L', true);
 		$pdf->SetFont($font, 'B', $font_size, '', '', '');
 
 		$left_total = '
@@ -273,7 +273,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 27, 213, $left_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 27, 216, $left_total, 0, 1, 0, true, 'L', true);
 
 		// 2nd amount table
 		$right_total = '
@@ -285,7 +285,7 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 125, 213, $right_total, 0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 125, 216, $right_total, 0, 1, 0, true, 'L', true);
 
 		// Grand total
 
@@ -295,6 +295,6 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 180, 223, $grand_total,  0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 180, 228, $grand_total,  0, 1, 0, true, 'L', true);
 	}
 ?>
