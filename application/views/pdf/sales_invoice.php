@@ -89,10 +89,26 @@
 		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
 		$pdf->writeHTMLCell('', '', 25, 37, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
 		$pdf->writeHTMLCell('', '', 180, 37, $entry_date, 0, 1, 0, true, 'L', true); // Date
-		$pdf->writeHTMLCell('', '', 186, 43, $ponumber, 0, 1, 0, true, 'L', true); // P.O. 
+
+		$po_number = '
+			<table>
+				<tr><td width="110px">'.$ponumber.'</td></tr>
+			</table>
+		';
+
+		$pdf->writeHTMLCell('', '', 186, 43, $po_number, 0, 1, 0, true, 'L', true); // P.O. 
 		$pdf->writeHTMLCell('', '', 123, 46, $tin, 0, 1, 0, true, 'L', true); // TIN
-		$pdf->writeHTMLCell('', '', 187, 50, $drnumber, 0, 1, 0, true, 'L', true); // D.R.  
+
+		$dr_number = '
+			<table>
+				<tr><td width="110px">'.$drnumber.'</td></tr>
+			</table>
+		';
+
+		$pdf->writeHTMLCell('', '', 187, 50, $dr_number, 0, 1, 0, true, 'L', true); // D.R.  
 		$pdf->writeHTMLCell('', '', 24, 55, $address, 0, 1, 0, true, 'L', true); // Address
+
+
 
 		$sales_man = '
 			<table>
@@ -295,6 +311,6 @@
 			</table>
 		';
 
-		$pdf->writeHTMLCell('', '', 180, 228, $grand_total,  0, 1, 0, true, 'L', true);
+		$pdf->writeHTMLCell('', '', 180, 226, $grand_total,  0, 1, 0, true, 'L', true);
 	}
 ?>
