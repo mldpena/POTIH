@@ -69,7 +69,7 @@
     {
         return encodeURIComponent(string.replace(/\n/g, "&#10;")
                                         .replace(/\\/g, "\\\\")
-                                        .replace("\"", '\\\"'));
+                                        .replace(/\"/g, '\\\"'));
     };  
 
     $.dataValidation = function(data){
