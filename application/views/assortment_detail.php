@@ -53,7 +53,7 @@
 						</div>
 						<div class="pull-right">
 							<div class="tbl-detail">
-								<div class="tbl max tbl-sales" id="tbl_sales"></div>
+								<div class="tbl max tbl-sales detail" id="tbl_sales"></div>
 							</div>
 						</div>
 					</div>

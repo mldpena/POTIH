@@ -231,7 +231,7 @@
 		header_title: "Salesman",
 		edit: [spnsalesman],
 		disp: [spnsalesman],
-		td_class: "tablerow tddate"
+		td_class: "tablerow tdsalesman"
 	};
 
 	var spntotalqty = document.createElement('span');

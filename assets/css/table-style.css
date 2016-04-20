@@ -2,6 +2,12 @@
 .tbl{
 	overflow-x: auto;
 }
+.tbl.detail{
+	max-height: 235px;
+}
+.tbl.detail .tdsalesman{
+	width: 170px;
+}
 .tbl.max table:nth-of-type(1){
 	width: 100%;
 }

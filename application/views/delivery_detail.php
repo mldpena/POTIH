@@ -42,7 +42,7 @@
 					</tr>
 				</table>
 				<div class="pull-right">
-					<div class="tbl max tbl-sales" id="tbl_sales"></div>
+					<div class="tbl max tbl-sales detail" id="tbl_sales"></div>
 				</div>
 			</div>
 			<div class="divider-line"></div>
