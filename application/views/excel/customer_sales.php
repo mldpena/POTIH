@@ -26,6 +26,9 @@
 	$writer->writeSheetHeader(['', '', 'CUSTOMER SALES REPORT', ''], 'Sheet1');
 	$writer->writeSheetHeader(['', '', 'FROM '.$date_from.' TO '.$date_to, ''], 'Sheet1');
 	$writer->writeSheetHeader(['', '', '', ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', $customer_name, ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', $customer_address, ''], 'Sheet1');
+	$writer->writeSheetHeader(['', '', '', ''], 'Sheet1');
 
 	$writer->writeSheetHeader($header, 'Sheet1');
 

@@ -163,7 +163,8 @@ class Sales extends CI_Controller {
 					$response = get_next_number('sales_head', 'reference_number', [
 																					'entry_date' => date("Y-m-d H:i:s"),
 																					'for_branch_id' => $this->encrypt->decode(get_cookie('branch'))
-																				  ]);
+																				  ],
+																				  " AND `branch_id` = ".$this->encrypt->decode(get_cookie('branch')));
 					break;
 
 				case 'get_sales_details':

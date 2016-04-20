@@ -600,7 +600,7 @@
 		var price 			= tableHelper.contentProvider.getData(rowIndex, 'price').replace(/\,/gi,"");
 		var sales_detail_id = tableHelper.contentProvider.getData(rowIndex, 'id');
 		var reservation_detail_id = tableHelper.contentProvider.getData(rowIndex, 'reservationid');
-		var description 	= (tableHelper.contentProvider.getData(rowIndex, 'product', 4));
+		var description 	= $.sanitize(tableHelper.contentProvider.getData(rowIndex, 'product', 4));
 		var actionFunction 	= sales_detail_id != 0 ? "update_sales_detail" : "insert_sales_detail";
 
 		var errorList = $.dataValidation([ 

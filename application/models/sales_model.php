@@ -120,11 +120,12 @@ class Sales_Model extends CI_Model {
 							, 0) AS 'status_code',
 							COALESCE(SUM(SD.`price` * SD.`quantity`), 0) AS 'amount',
 							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
-								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vatable_amount',
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vat_amount',
 							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
 								COALESCE(SUM(SD.`quantity` * SD.`price`), 0) - 
-								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vat_amount',
-							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", COALESCE(SUM(SD.`price` * SD.`quantity`), 0), 0) AS 'vat_exempt_amount' 
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vatable_amount',
+							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", COALESCE(SUM(SD.`price` * SD.`quantity`), 0), 0) AS 'vat_exempt_amount',
+							COALESCE(C.`office_address`, SH.`walkin_customer_address`) AS 'customer_address'
 						")
 					->from("sales_head AS SH")
 					->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")
@@ -214,10 +215,10 @@ class Sales_Model extends CI_Model {
 							, 0) AS 'status_code',
 							COALESCE(SUM(SD.`quantity` * SD.`price`), 0) AS 'amount',
 							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
-								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vatable_amount',
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vat_amount',
 							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", 0, 
 								COALESCE(SUM(SD.`quantity` * SD.`price`), 0) - 
-								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vat_amount',
+								(COALESCE(SUM(SD.`quantity` * SD.`price`), 0) * 0.12) / 1.12) AS 'vatable_amount',
 							IF(SH.`is_vatable` = ".\Constants\SALES_CONST::NONVAT.", COALESCE(SUM(SD.`price` * SD.`quantity`), 0), 0) AS 'vat_exempt_amount' 
 						")
 					->from("sales_head AS SH")

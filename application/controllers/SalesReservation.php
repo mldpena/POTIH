@@ -147,7 +147,8 @@ class SalesReservation extends CI_Controller {
 																								'entry_date' => date("Y-m-d H:i:s"),
 																								'due_date' => date('Y-m-d', strtotime('+7 day', strtotime(date('Y-m-d ')))),
 																								'for_branch_id' => $this->encrypt->decode(get_cookie('branch'))
-																							  ]);
+																							  ],
+																							  " AND `branch_id` = ".$this->encrypt->decode(get_cookie('branch')));
 					break;
 
 				case 'get_sales_reservation_details':
