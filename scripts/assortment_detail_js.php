@@ -498,7 +498,7 @@
 		var memo 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex, 'memo'));
 		var assortment_detail_id = tableHelper.contentProvider.getData(rowIndex, 'id');
 		var sales_detail_id = tableHelper.contentProvider.getData(rowIndex, 'salesid');
-		var description 	= (tableHelper.contentProvider.getData(rowIndex, 'product', 4));
+		var description 	= $.sanitize(tableHelper.contentProvider.getData(rowIndex, 'product', 4));
 		var actionFunction 	= assortment_detail_id != 0 ? "update_assortment_detail" : "insert_assortment_detail";
 
 		var errorList = $.dataValidation([ 
