@@ -395,6 +395,20 @@ class Request_Model extends CI_Model {
 		if (!empty($date_to))
 			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
 
+		if (isset($notification) && $notification != 0) 
+		{
+			switch ($notification) 
+			{
+				case \Constants\REQUEST_CONST::INCOMPLETE_DELIVERY:
+					$this->db->where("DATE_ADD(DATE(SH.`due_date`), INTERVAL -1 DAY) = CURDATE()");
+					break;
+				
+				case \Constants\REQUEST_CONST::NO_DELIVERY:
+					$this->db->where("SH.`due_date` = CURDATE()");
+					break;
+			}
+		}
+		
 		if ($from_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
 			$this->db->where("SH.`branch_id`", (int)$from_branch);
 

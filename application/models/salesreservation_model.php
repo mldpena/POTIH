@@ -116,6 +116,9 @@ class SalesReservation_Model extends CI_Model {
 		if (!empty($date_to))
 			$this->db->where("SRH.`entry_date` <=", $date_to." 23:59:59");
 
+		if (isset($is_notified) && $is_notified != 0) 
+			$this->db->where("SRH.`due_date` < CURDATE()");
+
 		if ($branch != \Constants\SALESRESERVATION_CONST::ALL_OPTION) 
 			$this->db->where("SRH.`branch_id`", (int)$branch);
 
@@ -201,6 +204,9 @@ class SalesReservation_Model extends CI_Model {
 		if (!empty($date_to))
 			$this->db->where("SRH.`entry_date` <=", $date_to." 23:59:59");
 
+		if (isset($is_notified) && $is_notified != 0) 
+			$this->db->where("SRH.`due_date` < CURDATE()");
+		
 		if ($branch != \Constants\SALESRESERVATION_CONST::ALL_OPTION) 
 			$this->db->where("SRH.`branch_id`", (int)$branch);
 

@@ -172,7 +172,8 @@
 								branch 			: branch_val,
 								for_branch 		: for_branch_val,
 								status 			: status_val,
-								customer 		: customer_val
+								customer 		: customer_val,
+								is_notified 	: isNotified
 							};
 
 		return filterValues;
