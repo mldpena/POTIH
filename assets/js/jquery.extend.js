@@ -67,8 +67,10 @@
 
     $.sanitize = function(string)
     {
-        return encodeURIComponent(string.replace(/\\/g, "\\\\").replace("\"", '\\\"'));
-    };
+        return encodeURIComponent(string.replace(/\n/g, "&#10;")
+                                        .replace(/\\/g, "\\\\")
+                                        .replace(/\"/g, '\\\"'));
+    };  
 
     $.dataValidation = function(data){
         var numericReg = /[^0-9-]/;

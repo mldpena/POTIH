@@ -535,7 +535,10 @@ class Export_Manager
 				if ($report_type != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT) 
 					$response['data'][$i][] = $row->customer;
 				else
+				{
 					$response['customer_name'] = $row->customer;
+					$response['customer_address'] = $row->customer_address;
+				}
 
 				$response['data'][$i][] = $row->salesman;
 				$response['data'][$i][] = number_format($row->amount, 2);

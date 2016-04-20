@@ -296,7 +296,7 @@
 	    var qty             = tableHelper.contentProvider.getData(rowIndex,'qty');
 	    var memo            = $.sanitize(tableHelper.contentProvider.getData(rowIndex,'memo'));
 	    var rowUniqueId     = tableHelper.contentProvider.getData(rowIndex,'id');
-	    var nonStackDescription  = tableHelper.contentProvider.getData(rowIndex,'product',4);
+	    var nonStackDescription  = $.sanitize(tableHelper.contentProvider.getData(rowIndex,'product',4));
 	    var receivedBy 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
 	    var actionFunction  = rowUniqueId != 0 ? tableHelper._settings.updateDetailName : tableHelper._settings.insertDetailName;
 

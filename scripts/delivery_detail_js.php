@@ -572,7 +572,7 @@
 		var invoice 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'invoice'));
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
-		var description 	= (tableHelper.contentProvider.getData(rowIndex,'product',4));
+		var description 	= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'product',4));
 		var sales_detail_id = tableHelper.contentProvider.getData(rowIndex,'salesid');
 		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
