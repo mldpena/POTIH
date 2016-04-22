@@ -65,7 +65,7 @@
 											{
 												value : business_style_val,
 												fieldName : 'Business Style',
-												required : true,
+												required : false,
 												rules : 'alphaNumericChar'
 											}
 										]);
