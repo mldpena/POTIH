@@ -13,7 +13,8 @@ class Customer_Manager
 									'UNABLE_TO_UPDATE' => 'Unable to update customer!',
 									'UNABLE_TO_SELECT' => 'Unable to get select details!',
 									'UNABLE_TO_DELETE' => 'Unable to delete customer!',
-									'UNABLE_TO_GET_DATA' => 'Error while retrieving dat. Please try again.',);
+									'UNABLE_TO_GET_DATA' => 'Error while retrieving dat. Please try again.',
+									'TRANSACTION_EXISTS' => 'Cannot delete customer with record or transaction!');
 
 	public function __construct()
 	{
@@ -34,7 +35,7 @@ class Customer_Manager
 	{
 		$row_start = (int)$param['row_start'];
 		
-		$response = array();
+		$response = [];
 
 		$response['rowcnt'] = 0;
 
@@ -79,6 +80,7 @@ class Customer_Manager
 									'contact_person' => $contact_person,
 									'tin' => $tin,
 									'is_vatable' => $tax,
+									'business_style' => $business_style,
 									'date_created' => $this->_current_date,
 									'created_by' => $this->_current_user);
 
@@ -110,6 +112,7 @@ class Customer_Manager
 			$response['contact_person'] = $row->contact_person;
 			$response['tin'] 			= $row->tin;
 			$response['tax'] 			= $row->is_vatable;
+			$response['business_style'] = $row->business_style;
 		}
 		else
 			throw new \Exception($this->_error_message["UNABLE_TO_SELECT"]);
@@ -133,6 +136,7 @@ class Customer_Manager
 									'contact_person' => $contact_person,
 									'tin' => $tin,
 									'is_vatable' => $tax,
+									'business_style' => $business_style,
 									'last_modified_by' => $this->_current_user,
 									'last_modified_date' => $this->_current_date);
 
@@ -150,14 +154,36 @@ class Customer_Manager
 
 		$customer_id = $this->_CI->encrypt->decode($head_id);
 
-		$updated_customer_fields = array('is_show' => \Constants\CUSTOMER_CONST::DELETED,
+		$response = $this->validate_customer_transaction($customer_id);
+
+		$updated_customer_fields = [
+										'is_show' => \Constants\CUSTOMER_CONST::DELETED,
 										'last_modified_date' => $this->_current_date,
-										'last_modified_by' => $this->_current_user);
+										'last_modified_by' => $this->_current_user
+									];
 
 		$response = $this->_CI->customer_model->update_customer_details_by_id($updated_customer_fields, $customer_id);
 
 		if (!empty($response['error']))
 			throw new \Exception($this->_error_message['UNABLE_TO_DELETE']);
+
+		return $response;
+	}
+
+	public function validate_customer_transaction($customer_id)
+	{
+		$response['error'] = '';
+
+		$result = $this->_CI->customer_model->check_customer_transaction($customer_id);
+
+		$row = $result->row();
+
+		$transaction_count = $row->transaction_count;
+
+		$result->free_result();
+
+		if ($transaction_count > 0)
+			throw new \Exception($this->_error_message['TRANSACTION_EXISTS']);
 
 		return $response;
 	}

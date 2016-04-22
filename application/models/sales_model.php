@@ -41,7 +41,8 @@ class Sales_Model extends CI_Model {
 							SUM(SD.`quantity` * SD.`price`) AS 'amount',
 							COALESCE(C.`company_name`, SH.`walkin_customer_name`) AS 'customer_displayed_name',
 							COALESCE(C.`tin`, '') AS 'tin',
-							COALESCE(S.`full_name`, '') AS 'salesman'
+							COALESCE(S.`full_name`, '') AS 'salesman',
+							COALESCE(C.`business_style`, '') AS 'customer_business_style'
 						")
 				->from("sales_head AS SH")
 				->join("sales_detail AS SD", "SD.`headid` = SH.`id`", "left")

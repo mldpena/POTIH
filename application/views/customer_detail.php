@@ -46,6 +46,10 @@
 									</select>
 								</td>
 							</tr>
+							<tr>
+								<td>Business Style:</td>
+								<td><input type="text" class="form-control" id="business-style"></td>
+							</tr>
 						</table>
 						<div id="messagebox_1"></div>
 					</div>

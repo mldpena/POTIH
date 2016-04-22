@@ -127,8 +127,6 @@ class Customer_Model extends CI_Model {
 			$this->db->update("customer", $customer_field_data);
 		$this->db->trans_complete();
 
-		//var_dump($customer_field_data);
-
 		$response['error'] = $this->db->error()['message'];
 
 		return $response;
@@ -139,6 +137,25 @@ class Customer_Model extends CI_Model {
 		$this->db->from("customer")
 				->where("`is_show`", \Constants\CUSTOMER_CONST::ACTIVE)
 				->where("`id`", $customer_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function check_customer_transaction($customer_id)
+	{
+		$this->db->select("
+					SUM(IF(ROH.`id` IS NULL, 0, 1)) + 
+				    SUM(IF(RH.`id` IS NULL, 0, 1)) + 
+				    SUM(IF(SH.`id` IS NULL, 0, 1)) + 
+				    SUM(IF(SRH.`id` IS NULL, 0, 1)) AS 'transaction_count'")
+				->from("customer AS C")
+				->join("release_order_head AS ROH", "ROH.`customer_id` = C.`id` AND ROH.`is_show` = ".\Constants\CUSTOMER_CONST::ACTIVE." AND ROH.`is_used` = ".\Constants\CUSTOMER_CONST::USED, "left")
+				->join("return_head AS RH", "RH.`customer_id` = C.`id` AND RH.`is_show` = ".\Constants\CUSTOMER_CONST::ACTIVE." AND RH.`is_used` = ".\Constants\CUSTOMER_CONST::USED, "left")
+				->join("sales_head AS SH", "SH.`customer_id` = C.`id` AND SH.`is_show` = ".\Constants\CUSTOMER_CONST::ACTIVE." AND SH.`is_used` = ".\Constants\CUSTOMER_CONST::USED, "left")
+				->join("sales_reservation_head AS SRH", "SRH.`customer_id` = C.`id` AND SRH.`is_show` = ".\Constants\CUSTOMER_CONST::ACTIVE." AND SRH.`is_used` = ".\Constants\CUSTOMER_CONST::USED, "left")
+				->where("C.`id`", $customer_id);
 
 		$result = $this->db->get();
 
