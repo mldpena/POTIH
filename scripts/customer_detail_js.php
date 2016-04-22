@@ -15,6 +15,7 @@
 		var contact_person_val 	= $.trim($("#contact-person").val());
 		var tin_val 			= $("#tin").val();
 		var tax_val 			= $("#tax").val();
+		var business_style_val  = $('#business-style').val();
 
 		var fnc_val 		= "<?= $this->uri->segment(3) ?>" != "" ? "update_customer" : "insert_new_customer";
 		
@@ -61,6 +62,12 @@
 												required : false,
 												rules : 'numericReg'
 											},
+											{
+												value : business_style_val,
+												fieldName : 'Business Style',
+												required : true,
+												rules : 'alphaNumericChar'
+											}
 										]);
 
 		if (errorList.length > 0) 
@@ -78,7 +85,8 @@
 						contact 		: contact_val,
 						contact_person 	: contact_person_val,
 						tin 			: tin_val,
-						tax 			: tax_val
+						tax 			: tax_val,
+						business_style 	: business_style_val
 					};
 
 		flag = true;
@@ -133,6 +141,7 @@
 					$('#contact-person').val(response.contact_person);
 					$('#tin').val(response.tin);
 					$('#tax').val(response.tax);
+					$('#business-style').val(response.business_style);
 
 					if (!Boolean(<?= $permission_list['allow_to_edit'] ?>))
 						$('#save').hide();

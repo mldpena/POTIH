@@ -89,6 +89,7 @@
 		//$pdf->writeHTMLCell('', '', 4, 10, $reference_number, 0, 1, 0, true, 'L', true); // Reference No
 		$pdf->writeHTMLCell('', '', 25, 37, $customer_displayed_name, 0, 1, 0, true, 'L', true); // Sold to
 		$pdf->writeHTMLCell('', '', 180, 37, $entry_date, 0, 1, 0, true, 'L', true); // Date
+		//$pdf->writeHTMLCell('', '', 180, 37, $customer_business_style, 0, 1, 0, true, 'L', true); // Date
 
 		$po_number = '
 			<table>
