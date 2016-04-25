@@ -204,6 +204,111 @@ class Customer_Manager
 			
 		$result->free_result();
 	}
+
+	public function import_customer_from_csv()
+	{
+		$exploded_name 	= explode(".", $_FILES["file"]["name"]);
+		$extension 		= end($exploded_name);
+
+		$response = [];
+
+		$response['error'] = '';
+
+		$i = 0;
+
+		if ($_FILES['file']['type'] == 'application/vnd.ms-excel' && $extension == 'csv')
+		{
+			$customer_csv_file = $_FILES['file']['tmp_name'];
+			$handle = fopen($customer_csv_file, "r");
+			$customer_data_list = [];
+
+			while (($customer_csv_data = fgetcsv($handle, 10000)) !== FALSE) 
+			{
+				$i++;
+
+				if ($i > 1 && count($customer_csv_data) >= 9)
+				{
+					if (count($customer_csv_data) < 9)
+					{
+						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete detail count!";
+						continue;
+					}
+
+					if (
+							!in_array(strtolower($customer_csv_data[7]), ['yes', 'no']) || 
+							empty($customer_csv_data[0]) || 
+							empty($customer_csv_data[1]) ||
+							empty($customer_csv_data[2]) ||
+							empty($customer_csv_data[3])
+						) 
+					{
+						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete details!";
+						continue;
+					}
+
+					$with_error 	= FALSE;
+					$customer_code 	= trim($customer_csv_data[0]);
+					$customer_name 	= trim($customer_csv_data[1]);
+					$office_address = trim($customer_csv_data[2]);
+					$plant_address 	= trim($customer_csv_data[3]);
+					$contact 		= trim($customer_csv_data[4]);
+					$contact_person = trim($customer_csv_data[5]);
+					$tin 			= trim($customer_csv_data[6]);
+					$business_style = trim($customer_csv_data[8]);
+
+					$is_vatable 	= strtolower($customer_csv_data[7]) == 'yes' ? \Constants\CUSTOMER_CONST::VATABLE : \Constants\CUSTOMER_CONST::NONVAT;
+
+					$result = $this->_CI->customer_model->check_if_field_data_exists(["`code`" => $customer_code]);
+				
+					if ($result->num_rows() > 0) 
+					{
+						$response['logs'][] = 'Row #'.$i." : Customer Code [".$customer_code."] already exists!";
+						$with_error = TRUE;
+					}
+
+					$result->free_result();
+
+					$result = $this->_CI->customer_model->check_if_field_data_exists(["`company_name`" => $customer_name]);
+
+					if ($result->num_rows() > 0) 
+					{
+						$response['logs'][] = 'Row #'.$i." : Customer Name [".$customer_name."] already exists!";
+						$with_error = TRUE;
+					}
+						
+					$result->free_result();
+
+					if (!$with_error) 
+					{
+						$customer_data_list = 	[
+													'code' => $customer_code,
+													'company_name' => $customer_name,
+													'office_address' => $office_address,
+													'plant_address' => $plant_address,
+													'contact' => $contact,
+													'contact_person' => $contact_person,
+													'tin' => $tin,
+													'is_vatable' => $is_vatable,
+													'business_style' => $business_style,
+													'date_created' => $this->_current_date,
+													'created_by' => $this->_current_user
+												];
+
+						$customer_inserted_result = $this->_CI->customer_model->insert_new_customer($customer_data_list);
+					
+						if (!empty($customer_inserted_result['error'])) 
+							$response['logs'][] = 'Row #'.$i." : Unable to process current row!";
+						else
+							$response['logs'][] = 'Row #'.$i." : Successfully imported!";
+					}
+				}
+			}
+		}
+		else
+			$response['error'] = 'Invalid file type!';
+		
+		return $response;
+	}
 }
 
 ?>

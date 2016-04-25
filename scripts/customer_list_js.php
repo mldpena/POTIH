@@ -1,5 +1,5 @@
 <script type="text/javascript">
-	var token = '<?= $token ?>';
+	var isProcessing = false;
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -98,7 +98,7 @@
 	myjstbl.mypage.isOldPaging = true;
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 
-	$('#tbl').hide();
+	$('#tbl, #loadingimg_upload').hide();
 
 	bind_asc_desc('order_type');
 
@@ -107,6 +107,7 @@
 										  controller : 'customer', 
 										  deleteHeadName : 'delete_customer',
 										  notFoundMessage : 'No customer found!',
+										  token : '<?= $token ?>',
 										  permissions : { allow_to_view : Boolean(<?= $permission_list['allow_to_view_detail'] ?>) } 
 										});
 
@@ -114,6 +115,62 @@
 											deleteEventsAfterCallback : actionAfterDelete } );
 
 	triggerSearchRequest();
+
+	$('#uploadFile').live('click', function(e){
+		
+		e.preventDefault();
+		
+		if (isProcessing) 
+			return;
+
+		$('#messagebox_4').html('');
+
+		var uploadedFile = $('#fileData').prop('files')[0];   
+
+		if (typeof uploadedFile === 'undefined') 
+		{
+			build_message_box('messagebox_4', 'Please upload a file!', 'danger');
+			return;
+		};
+
+		var formData = new FormData();    
+		var tokenValue = notificationToken.substr(Number(notificationToken.indexOf('=')) + 1);    
+		var tokenName = notificationToken.substr(1, Number(notificationToken.indexOf('=')) - 1);
+
+		formData.append('file', uploadedFile);                         
+		formData.append(tokenName, tokenValue);
+		formData.append('fnc', 'import_customer');
+		
+		isProcessing = true;
+
+		$('#loadingimg_upload').show();
+
+		$.ajax
+		(
+			{
+				dataType: 'json',
+				cache: false,
+				contentType: false,
+				processData: false,
+				data: formData,                         
+				type: 'post',
+				success: function(response)
+				{
+					if (response.error != '')
+						build_message_box('messagebox_4', response.error, 'danger');
+					else
+					{
+						$('#uploadModal').modal('hide');
+						window.location = "<?= base_url() ?>customer/logs/import_customer";
+					}
+					
+					isProcessing = false;
+
+					$('#loadingimg_upload').hide();
+				}
+		 	}	
+		 );
+	});
 
     function triggerSearchRequest(rowStart, rowEnd)
 	{
