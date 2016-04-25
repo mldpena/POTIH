@@ -153,6 +153,9 @@
 				</div>
 			</div>
 			<div class="max-row">
+				<div class="pull-left">
+					<button class="btn btn-info" id="transfer">Transfer Details to New Sales Invoice</button>	
+				</div>
 				<div class="pull-right">
 					<input type="button" class="btn btn-primary" value="Print" id="print">
 					<input type="button" class="btn btn-success" value="Save" id="save">

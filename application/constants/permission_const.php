@@ -216,6 +216,7 @@
 		const VIEW_SALES_DETAIL = 271;
 		const ADD_SALES = 272;
 		const EDIT_SALES = 273;
-		const DELETE_SALES= 274;
+		const DELETE_SALES = 274;
+		const TRANSFER_DETAILS = 275; 
 	}
 ?>

@@ -22,7 +22,8 @@ class Sales_Manager
 									'RESERVATION_NOT_FOUND' => 'No sales reservation found!',
 									'UNABLE_TO_GENERATE_REFERENCE' => 'Unable to generate new reference number!',
 									'NO_SALES_REPORT' => 'No sales report found!',
-									'PRINT_TRANSACTION_DETAILS_ERROR' => 'Please encode at least one product!');
+									'PRINT_TRANSACTION_DETAILS_ERROR' => 'Please encode at least one product!',
+									'NO_REMAINING_SALES_FOUND' => 'No remaining sales invoice details found!');
 
 	public function __construct()
 	{
@@ -84,6 +85,7 @@ class Sales_Manager
 			foreach ($result_detail->result() as $row) 
 			{
 				$break_line = ($row->type == \Constants\SALES_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
+				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->reservation_detail_id));
 				$response['detail'][$i][] = array($row->reservation_number);
@@ -523,6 +525,85 @@ class Sales_Manager
 		$result->free_result();
 
 		return $response;
+	}
+
+	public function transfer_details_to_new_sales($param)
+	{
+		extract($param);
+
+		$response = [];
+
+		$response['error'] = '';
+
+		$new_sales_invoice_head_id = 0;
+		$selected_sales_detail_id = $this->_CI->encrypt->decode_array($selected_detail_id);
+
+		$new_sales_detail = array();
+		$old_sales_detail = array();
+
+		$result_old_sales_details = $this->_CI->sales_model->get_sales_details_with_remaining($selected_sales_detail_id);
+
+		if ($result_old_sales_details->num_rows() > 0) 
+		{
+			$sales_head_data_result = $this->_CI->sales_model->get_sales_head_info_by_id($this->_sales_head_id);
+
+			if ($sales_head_data_result->num_rows() != 1) 
+				throw new \Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+
+			$row = $sales_head_data_result->row();
+
+			$new_sales_head_result = get_next_number('sales_head', 'reference_number', 	[
+																							'entry_date' => date("Y-m-d H:i:s"),
+																							'for_branch_id' => $row->for_branch_id,
+																							'customer_id' => $row->customer_id,
+																							'walkin_customer_name' => $row->walkin_customer_name,
+																							'walkin_customer_address' => $row->address,
+																							'memo' => $row->memo,
+																							'salesman_id' => $row->salesman_id,
+																							'ponumber' => $row->ponumber,
+																							'drnumber' => $row->drnumber,
+																							'is_vatable' => $row->is_vatable
+																					  	],
+																					  " AND `branch_id` = ".$this->_current_branch_id);
+
+			$sales_head_data_result->free_result();
+
+			if ($new_sales_head_result['error'] != '')
+				throw new \Exception($this->_error_message['UNABLE_TO_GENERATE_REFERENCE']);
+
+			$new_sales_invoice_head_id = $this->_CI->encrypt->decode($new_sales_head_result['id']);
+
+			$i = 0;
+
+			foreach ($result_old_sales_details->result() as $row) 
+			{
+				array_push($new_sales_detail, 	[
+													'headid' => $new_sales_invoice_head_id,
+													'quantity' => $row->quantity - $row->qty_released,
+													'product_id' => $row->product_id,
+													'description' => $row->description,
+													'memo' => $row->memo,
+													'price' => $row->price,
+													'reservation_detail_id' => $row->reservation_detail_id
+												]);
+
+				$old_sales_detail[$i]['id'] = $row->id;
+				$old_sales_detail[$i]['detail'] = array('quantity' => $row->qty_released);
+
+				$i++;
+			}
+		}
+		else
+			throw new \Exception($this->_error_message['NO_REMAINING_SALES_FOUND']);
+			
+		$result_old_sales_details->free_result();
+
+		$this->_CI->sales_model->transfer_remaining_details_to_new_sales_invoice($old_sales_detail, $new_sales_detail);
+
+		$response['id'] = $new_sales_head_result['id'];
+
+		return $response;
+
 	}
 }
 

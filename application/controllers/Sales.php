@@ -67,7 +67,8 @@ class Sales extends CI_Controller {
 				$allow_user = $this->permission_checker->check_permission(\Permission\Sales_Code::VIEW_SALES);
 				$permissions = array(
 										'allow_to_edit' => $this->permission_checker->check_permission(\Permission\Sales_Code::EDIT_SALES),
-										'allow_to_add' => $this->permission_checker->check_permission(\Permission\Sales_Code::ADD_SALES)
+										'allow_to_add' => $this->permission_checker->check_permission(\Permission\Sales_Code::ADD_SALES),
+										'allow_to_transfer' => $this->permission_checker->check_permission(\Permission\Sales_Code::TRANSFER_DETAILS),
 									);
 				
 				break;
@@ -232,7 +233,11 @@ class Sales extends CI_Controller {
 				case 'set_session':
 					$response = $this->_sales_manager->set_session_data();
 					break;
-					
+				
+				case 'transfer_to_new_sales':
+					$response = $this->_sales_manager->transfer_details_to_new_sales($post_data);
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;
