@@ -389,6 +389,9 @@
 				else
 					tableHelper.contentProvider.addRow();
 
+				if (response.is_saved && (Boolean(<?= $permission_list['allow_to_transfer']?>) == false)) 
+					$('.tdistransfer, #transfer').hide();
+
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductInfo();
 			}       
