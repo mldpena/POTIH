@@ -87,7 +87,8 @@ class Delivery_Model extends CI_Model {
 							COALESCE(P.`type`, '') AS 'type', 
 							SD.`invoice`,
 							COALESCE(CONCAT('SI', SSH.`reference_number`), '') AS 'sales_reference',
-							SD.`sales_detail_id`
+							SD.`sales_detail_id`,
+							SD.`customer_name`
 						FROM `stock_delivery_detail` AS SD
 						LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 						LEFT JOIN `sales_detail` AS SSD ON SSD.`id` = SD.`sales_detail_id`
@@ -115,6 +116,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->receiveqty);
+				$response['detail'][$i][] = array($row->customer_name);
 				$response['detail'][$i][] = array($row->invoice);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
@@ -197,7 +199,7 @@ class Delivery_Model extends CI_Model {
 
 		$sales_detail_id = $this->encrypt->decode($sales_detail_id);
 
-		$query_data 	= array($this->_delivery_head_id, $qty, $product_id, $memo, $istransfer, $description, $invoice, $sales_detail_id);
+		$query_data 	= array($this->_delivery_head_id, $qty, $product_id, $memo, $istransfer, $description, $invoice, $sales_detail_id, $customer_name);
 
 		$query = "INSERT INTO `stock_delivery_detail`
 					(`headid`,
@@ -207,9 +209,10 @@ class Delivery_Model extends CI_Model {
 					`is_for_branch`,
 					`description`,
 					`invoice`,
-					`sales_detail_id`)
+					`sales_detail_id`,
+					`customer_name`)
 					VALUES
-					(?,?,?,?,?,?,?,?);";
+					(?,?,?,?,?,?,?,?,?);";
 
 		$result = $this->sql->execute_query($query,$query_data);
 
@@ -249,22 +252,23 @@ class Delivery_Model extends CI_Model {
 			
 		$old_delivery_detail_result->free_result();
 
-		$query_data 	= array($qty, $product_id, $memo, $istransfer, $description, $invoice, $request_detail_id, $sales_detail_id, $delivery_detail_id);
+		$query_data 	= array($qty, $product_id, $memo, $istransfer, $description, $invoice, $request_detail_id, $sales_detail_id, $customer_name, $delivery_detail_id);
 
 		$query = "UPDATE `stock_delivery_detail`
 					SET
-					`quantity` = ?,
-					`product_id` = ?,
-					`memo` = ?,
-					`is_for_branch` = ?,
-					`description` = ?,
-					`invoice` = ?,
-					`request_detail_id` = ?,
-					`sales_detail_id` = ?
+						`quantity` = ?,
+						`product_id` = ?,
+						`memo` = ?,
+						`is_for_branch` = ?,
+						`description` = ?,
+						`invoice` = ?,
+						`request_detail_id` = ?,
+						`sales_detail_id` = ?,
+						`customer_name` = ?
 					WHERE `id` = ?;";
-
+		
 		$result = $this->sql->execute_query($query,$query_data);
-
+		
 		if ($result['error'] != '') 
 			throw new Exception($this->_error_message['UNABLE_TO_UPDATE']);
 
@@ -796,7 +800,8 @@ class Delivery_Model extends CI_Model {
 							SD.`recv_quantity`, SD.`description`, 
 							COALESCE(P.`type`, '') AS 'type', 
 							SD.`receive_memo`, SD.`received_by`,
-							IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked'
+							IF(SD.`recv_quantity` >= SD.`quantity`, 1, 0) AS 'is_checked',
+							SD.`customer_name`
 						FROM `stock_delivery_detail` AS SD
 						LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 						LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
@@ -822,6 +827,10 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->material_code);
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
+				
+				if ($receive_type == \Constants\DELIVERY_CONST::FOR_CUSTOMER)
+					$response['detail'][$i][] = array($row->customer_name);
+
 				$response['detail'][$i][] = array($row->memo);
 
 				if ($receive_type == \Constants\DELIVERY_CONST::FOR_TRANSFER)
@@ -1420,10 +1429,11 @@ class Delivery_Model extends CI_Model {
 						COALESCE(SDD.`description`, SD.`description`) AS 'description', 
 						COALESCE(P.`type`, '') AS 'type',
 						COALESCE(SDD.`invoice`, CONCAT('SI', SH.`reference_number`)) AS 'invoice',
-						COALESCE(SDD.`memo`, COALESCE(C.`company_name`, SH.`walkin_customer_name`)) AS 'memo',
+						COALESCE(SDD.`memo`, SD.`memo`) AS 'memo',
 						IF(COALESCE(SDD.`id`, 0) = 0 AND (SD.`quantity` - SD.`qty_released`) <= 0, 1, 0) AS 'is_removed',
 						0 AS 'is_for_branch',
-						COALESCE(SDD.`recv_quantity`, 0) AS 'receiveqty'
+						COALESCE(SDD.`recv_quantity`, 0) AS 'receiveqty',
+						COALESCE(SDD.`customer_name`, COALESCE(C.`company_name`, SH.`walkin_customer_name`)) AS 'customer_name'
 					FROM `sales_head` AS SH
 					LEFT JOIN 
 						`sales_detail` AS SD ON SD.`headid` = SH.`id` 
@@ -1440,7 +1450,8 @@ class Delivery_Model extends CI_Model {
 							SDD.`memo`, 
 							SDD.`invoice`,
 							SDD.`description`,
-							SDD.`recv_quantity`
+							SDD.`recv_quantity`,
+							SDD.`customer_name`
 				        FROM 
 				        	stock_delivery_head AS SDH
 				        LEFT JOIN 
@@ -1477,6 +1488,7 @@ class Delivery_Model extends CI_Model {
 				$response['detail'][$i][] = array($row->uom);
 				$response['detail'][$i][] = array($row->quantity);
 				$response['detail'][$i][] = array($row->receiveqty);
+				$response['detail'][$i][] = array($row->customer_name);
 				$response['detail'][$i][] = array($row->invoice);
 				$response['detail'][$i][] = array($row->memo);
 				$response['detail'][$i][] = array('');
