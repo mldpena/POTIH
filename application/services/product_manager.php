@@ -690,16 +690,15 @@ class Product_Manager
 																'memo' => 'Beginning Inventory',
 																'created_by' => $this->_current_user,
 																'date_created' => $this->_current_date));
+
+							$response['logs'][] = 'Row #'.$i." : [$key] Successfully updated beginning inventory!";
 						}
+						else
+							$response['logs'][] = 'Row #'.$i." : [$key] Unable to update beginning inventory!";
 					}
 
 					if (count($adjustment_field_data) > 0)
-					{
 						$this->_CI->adjust_model->insert_batch_adjustment($adjustment_field_data);
-						$response['logs'][] = 'Row #'.$i." : Successfully updated beginning inventory!";
-					} 
-					else
-						$response['logs'][] = 'Row #'.$i." : Unable to update beginning inventory!";
 				}
 			}
 		}
