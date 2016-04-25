@@ -554,7 +554,7 @@ class Assortment_Model extends CI_Model {
 						IF(P.`is_show` = 0, '(Product Deleted)', '')),'') AS 'product',
 						COALESCE(P.`is_show`, 0) AS 'is_deleted',
 						COALESCE(RD.`quantity`, SD.`quantity` - SD.`qty_released`) AS 'quantity', 
-						COALESCE(RD.`memo`, '') AS 'memo',
+						COALESCE(RD.`memo`, SD.`memo`) AS 'memo',
 						CASE
 							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::PCS." THEN 'PCS'
 							WHEN P.`uom` = ".\Constants\ASSORTMENT_CONST::KG." THEN 'KGS'
