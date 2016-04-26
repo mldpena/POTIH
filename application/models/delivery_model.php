@@ -997,6 +997,8 @@ class Delivery_Model extends CI_Model {
 
 		$conditions = "";
 
+		$response['print_type'] = $print_type;
+		
 		if ($print_type != 'both') 
 		{
 			switch ($print_type) {
@@ -1039,7 +1041,8 @@ class Delivery_Model extends CI_Model {
 								WHEN P.`uom` = 3 THEN 'ROLL'
 								ELSE ''
 							END AS 'uom',
-							D.`invoice`
+							D.`invoice`,
+							D.`customer_name`
 							FROM stock_delivery_head AS H
 							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`

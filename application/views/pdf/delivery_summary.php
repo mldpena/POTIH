@@ -86,7 +86,13 @@
 		</style>
 	";
 
-	$column_width = array("60px","390px","225px","270px","60px","80px");
+	$column_width = array("60px", "390px", "185px", "200px", "60px", "80px", "110px");
+
+	if ($print_type === 'transfer')
+	{
+		$column_width[2] = '225px;';
+		$column_width[3] = '270px;';
+	}
 
 	while ($is_finished == FALSE) 
 	{
@@ -125,19 +131,26 @@
 		
 		$y+= $linegap * 3;
 
-		$html = <<<EOD
-				$style
-				<table>
-					<tr>
-						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
-						<td style="width:$column_width[4];" class="tdcenter header-border">Unit</td>
-						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
-						<td style="width:$column_width[2];" class="tdcenter header-border">Special Size</td>
-						<td style="width:$column_width[5];" class="tdcenter header-border">Invoice</td>
-						<td style="width:$column_width[3];" class="tdcenter header-border">Note</td>
-					</tr>
-				</table>
-EOD;
+		$html = "
+			$style
+			<table>
+				<tr>
+					<td style=\"width:".$column_width[0].";\" class=\"tdcenter header-border\">Qty</td>
+					<td style=\"width:".$column_width[4].";\" class=\"tdcenter header-border\">Unit</td>
+					<td style=\"width:".$column_width[1].";\" class=\"tdcenter header-border\">Item Description</td>
+					<td style=\"width:".$column_width[2].";\" class=\"tdcenter header-border\">Special Size</td>
+		";
+					
+		if ($print_type != 'transfer')
+			$html .= "<td style=\"width:".$column_width[6].";\" class=\"tdcenter header-border\">Customer</td>";
+
+		$html .= "
+					<td style=\"width:".$column_width[5].";\" class=\"tdcenter header-border\">Invoice</td>
+					<td style=\"width:".$column_width[3].";\" class=\"tdcenter header-border\">Note</td>
+				</tr>
+			</table>
+		";
+
 		$pdf->writeHTMLCell('', '', $x, $y, $html, 0, 1, 0, true, 'C', true);
 
 		$y += 5;
@@ -154,6 +167,12 @@ EOD;
 							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["description"]."</td>
+				";
+				
+				if ($print_type != 'transfer')
+					$html .= "<td style=\"width:".$column_width[6].";\" class=\"tdcenter table-data\">".$detail[$i]['customer_name']."</td>";
+
+				$html .= "			
 							<td style=\"width:".$column_width[5].";\" class=\"tdcenter table-data\">".$detail[$i]["invoice"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdleft table-data\">".$detail[$i]["memo"]."</td>
 						</tr>
@@ -165,10 +184,7 @@ EOD;
 
 				if($y >= 170)
 				{
-					$product_count = $i;
-
-					if (empty($detail[$i]['description'])) 
-						$product_count++;
+					$product_count = $i + 1;
 					
 					if(!$footer_printed)
 					{
