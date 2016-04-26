@@ -562,8 +562,16 @@
 		$('.chktransfer:checked').each(function(index, element){
 			var rowIndex = $(element).parent().parent().index();
 			var currentId = tableHelper.contentProvider.getData(rowIndex, 'id');
-			selectedDetailId.push(currentId);
+
+			if (currentId != 0)
+				selectedDetailId.push(currentId);
 		});
+
+		if ((myjstbl.get_row_count() - 2) == selectedDetailId.length) 
+		{
+			alert('There must be at least 1 remaining product in Sales Invoice!');
+			return;
+		}
 
 		if (selectedDetailId.length == 0)
 		{
