@@ -476,6 +476,12 @@ class Product_Manager
 						continue;
 					}
 
+					/**
+					 * Parse data from csv to utf8
+					 */
+					foreach ($product_csv_data as $key => $value) 
+						$product_csv_data[$key] = utf8_encode($value);
+
 					$with_error 	= FALSE;
 					$material_code 	= trim($product_csv_data[0]);
 					$product_name 	= trim($product_csv_data[1]);
@@ -643,6 +649,12 @@ class Product_Manager
 						continue;
 					}
 
+					/**
+					 * Parse data from csv to utf8
+					 */
+					foreach ($product_csv_data as $key => $value) 
+						$product_csv_data[$key] = utf8_encode($value);
+					
 					$material_code 	= trim($product_csv_data[0]);
 					$product_id 	= 0;
 

@@ -246,6 +246,12 @@ class Customer_Manager
 						continue;
 					}
 
+					/**
+					 * Parse data from csv to utf8
+					 */
+					foreach ($customer_csv_data as $key => $value) 
+						$customer_csv_data[$key] = utf8_encode($value);
+
 					$with_error 	= FALSE;
 					$customer_code 	= trim($customer_csv_data[0]);
 					$customer_name 	= trim($customer_csv_data[1]);
