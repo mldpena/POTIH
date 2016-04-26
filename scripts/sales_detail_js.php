@@ -551,6 +551,12 @@
 
 	$('#transfer').click(function(){
 
+		if ((myjstbl.get_row_count() - 2) == 1) 
+		{
+			alert('Please encode at least one more product!');
+			return;
+		}
+
 		var selectedDetailId = [];
 
 		$('.chktransfer:checked').each(function(index, element){
@@ -559,7 +565,7 @@
 			selectedDetailId.push(currentId);
 		});
 
-		if (selectedDetailId.length == 0 )
+		if (selectedDetailId.length == 0)
 		{
 			alert('Please select at least one product!');
 			return;
