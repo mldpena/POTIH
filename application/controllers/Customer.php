@@ -40,6 +40,12 @@ class Customer extends CI_Controller {
 			exit();
 		}
 
+		if (isset($_FILES['file'])) 
+		{
+			$this->_file_process();
+			exit();
+		}
+
 		$permissions = array();
 
 		switch ($page) 
@@ -67,6 +73,12 @@ class Customer extends CI_Controller {
 					$allow_user = TRUE;
 				
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\Customer_Code::EDIT_CUSTOMER));
+				break;
+
+			case 'logs':
+				$this->load->helper("download");
+				$file_name = $this->uri->segment(3);
+				force_download($file_name.'.txt', file_get_contents(base_url().$file_name.'.txt'));
 				break;
 
 			default:
@@ -161,6 +173,36 @@ class Customer extends CI_Controller {
 			$response['error']  = $e->getMessage();
 		}
 		
+		echo json_encode($response);
+	}
+
+	private function _file_process()
+	{
+		$this->load->helper('file');
+
+		$request_action = $this->input->post('fnc');
+
+		try
+		{
+			switch ($request_action) 
+			{
+				case 'import_customer':
+					$response = $this->_customer_manager->import_customer_from_csv();
+					break;
+			}	
+
+			if (empty($response['error']))
+			{
+				write_logs_to_file($response['logs'], $request_action);
+				unset($response['logs']);
+			}
+
+		}
+		catch (Exception $e) 
+		{
+			$response['error']  = $e->getMessage();
+		}
+
 		echo json_encode($response);
 	}
 }

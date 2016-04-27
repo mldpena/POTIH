@@ -40,20 +40,7 @@ class Product extends CI_Controller {
 
 		if (isset($_FILES['file'])) 
 		{
-			$this->_product_manager = new Services\Product_Manager();
-
-			$upload_method = $this->input->post('fnc');
-
-			if ($upload_method == 'import_product') 
-				$response = $this->_product_manager->import_product_from_csv();
-			else
-				$response = $this->_product_manager->update_beginning_inventory_from_csv();
-
-			if ($response['error'] == '')
-				$this->_product_manager->write_logs_to_file($response['logs'], $upload_method);
-
-			echo json_encode($response);
-
+			$this->_file_process();
 			exit();
 		}
 
@@ -161,7 +148,7 @@ class Product extends CI_Controller {
 		$post_data 	= array();
 		$fnc 		= '';
 
-		$post_data 	= xss_clean(json_decode($this->input->post('data'),true));
+		$post_data 	= xss_clean(json_decode($this->input->post('data'), true));
 		$fnc 		= $post_data['fnc'];
 
 		$response['error'] = '';
@@ -242,6 +229,44 @@ class Product extends CI_Controller {
 		catch (Exception $e)
 		{
 			$response['error'] = $e->getMessage();
+		}
+
+		echo json_encode($response);
+	}
+
+	private function _file_process()
+	{
+		$this->load->helper('file');
+		$this->load->model('product_model');
+		$this->load->service('product_manager');
+		
+		$this->_product_manager = new Services\Product_Manager();
+
+		$request_action = $this->input->post('fnc');
+
+		try
+		{
+			switch ($request_action) 
+			{
+				case 'import_product':
+					$response = $this->_product_manager->import_product_from_csv();
+					break;
+
+				case 'update_beginning_inventory':
+					$response = $this->_product_manager->update_beginning_inventory_from_csv();
+					break;
+			}	
+
+			if (empty($response['error']))
+			{
+				write_logs_to_file($response['logs'], $request_action);
+				unset($response['logs']);
+			}
+
+		}
+		catch (Exception $e) 
+		{
+			$response['error']  = $e->getMessage();
 		}
 
 		echo json_encode($response);

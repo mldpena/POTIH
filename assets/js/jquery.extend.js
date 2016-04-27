@@ -74,11 +74,11 @@
 
     $.dataValidation = function(data){
         var numericReg = /[^0-9-]/;
-        var alphaNumericCharReg = /[^A-Za-z0-9 ,'".\/-]/;
-        var alphaNumericReg = /[^A-Za-z0-9 -]/;
-        var codeReg = /[^A-Za-z0-9]/;
-        var letterReg = /[^A-Za-z ]/;
-        var letterWthCharReg = /[^A-Za-z '".\/-]/;
+        var alphaNumericCharReg = /[^\u00F1\u00D1A-Za-z0-9 ,'".\/-]/;
+        var alphaNumericReg = /[^\u00F1\u00D1A-Za-z0-9 -]/;
+        var codeReg = /[^\u00F1\u00D1A-Za-z0-9]/;
+        var letterReg = /[^\u00F1\u00D1A-Za-z ]/;
+        var letterWthCharReg = /[^\u00F1\u00D1A-Za-z '".\/-]/;
         var credentialReg = /[^A-Za-z0-9_@.!]/;
 
         var error = [];

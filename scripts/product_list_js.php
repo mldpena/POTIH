@@ -229,8 +229,8 @@
 		var uploadFunction = $('#uploadFunction').val();
 
 		formData.append('file', uploadedFile);                         
-		formData.append(tokenName,tokenValue);
-		formData.append('fnc',uploadFunction);
+		formData.append(tokenName, tokenValue);
+		formData.append('fnc', uploadFunction);
 		
 		flag = true;
 
