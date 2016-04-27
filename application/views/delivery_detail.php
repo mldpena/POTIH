@@ -51,7 +51,7 @@
 			</div>
 			<div class="max-row">
 				<center>
-					<div id="tbl" class="tbl max"></div>
+					<div id="tbl" class="tbl max delivertbl-detail"></div>
 				</center>
 			</div>
 			<div class="max-row tbl-total" align="right">

@@ -149,3 +149,15 @@
 	overflow-y: auto;
 	overflow-x: hidden;  
 }
+
+/*TABLE DELIVERY DETAIL*/
+.delivertbl-detail .tdmemo,
+.delivertbl-detail .tdinvoice{
+	width: 140px;
+}
+.delivertbl-detail .tdcustomer{
+	width: 160px;
+}
+.delivertbl-detail .tdqty{
+	width: 80px;
+}
