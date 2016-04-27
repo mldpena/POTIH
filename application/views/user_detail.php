@@ -224,7 +224,7 @@
 						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::ADD_SALES ?>"></td>
 						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::EDIT_SALES ?>"></td>
 						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::DELETE_SALES ?>"></td>
-						<td></td>
+						<td><input type="checkbox" class="check-detail sales-detail salesman-preset encoder-preset" value="<?= \Permission\Sales_Code::TRANSFER_DETAILS ?>"> Transfer Details to New Sales Invoice</td>
 					</tr>
 				</table>
 			</div>

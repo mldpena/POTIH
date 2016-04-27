@@ -19,6 +19,23 @@
 	
 	var colarray = [];
 	
+	var chkchecktransfer = document.createElement('input');
+	chkchecktransfer.setAttribute('type','checkbox');
+	chkchecktransfer.setAttribute('class','chktransfer');
+
+	var chktransferall = document.createElement('input');
+	chktransferall.setAttribute('type','checkbox');
+	chktransferall.setAttribute('id','chktransferall');
+
+	colarray['istransfer'] = { 
+		header_title: chktransferall,
+		edit: [chkchecktransfer],
+		disp: [chkchecktransfer],
+		td_class: "tablerow tdistransfer",
+		headertd_class : "tdistransfer",
+		header_elem: chktransferall
+	};
+
 	var spnid = document.createElement('span');
 	colarray['id'] = { 
 		header_title: "",
@@ -344,7 +361,7 @@
 
 					if (!response.is_saved)
 					{
-						$('#print').hide();
+						$('#print, #transfer').hide();
 						toggleColumn();
 					}
 				}
@@ -361,7 +378,7 @@
 				if (!response.is_editable || (Boolean(<?= $permission_list['allow_to_edit']?>) == false && response.is_saved == true) || (Boolean(<?= $permission_list['allow_to_add']?>) == false && response.is_saved == false))
 				{
 					$('input, textarea, select').not('#print').attr('disabled','disabled');
-					$('.tdupdate, .tddelete, #save').hide();
+					$('.tdupdate, .tddelete, .tdistransfer, #save, #transfer').hide();
 
 					if (response.is_saved && response.is_incomplete && (response.own_branch == response.transaction_branch))
 					{
@@ -371,6 +388,9 @@
 				}	
 				else
 					tableHelper.contentProvider.addRow();
+
+				if (response.is_saved && (Boolean(<?= $permission_list['allow_to_transfer']?>) == false)) 
+					$('.tdistransfer, #transfer').hide();
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductInfo();
@@ -510,6 +530,78 @@
 		}
 
 		
+	});
+
+	$('#chktransferall').live('click', function(){
+		if ($(this).is(':checked')) 
+			$('.chktransfer').attr('checked','checked');
+		else
+			$('.chktransfer').removeAttr('checked');
+	});
+
+	$('.chktransfer').live('click', function(){
+		if ($(this).is(':checked'))
+		{
+			if ($('.chktransfer').length == $('.chktransfer:checked').length) 
+				$('#chktransferall').attr('checked','checked');
+		} 
+		else
+			$('#chktransferall').removeAttr('checked');
+	});
+
+	$('#transfer').click(function(){
+
+		if ((myjstbl.get_row_count() - 2) == 1) 
+		{
+			alert('Please encode at least one more product!');
+			return;
+		}
+
+		var selectedDetailId = [];
+
+		$('.chktransfer:checked').each(function(index, element){
+			var rowIndex = $(element).parent().parent().index();
+			var currentId = tableHelper.contentProvider.getData(rowIndex, 'id');
+
+			if (currentId != 0)
+				selectedDetailId.push(currentId);
+		});
+
+		if ((myjstbl.get_row_count() - 2) == selectedDetailId.length) 
+		{
+			alert('There must be at least 1 remaining product in Sales Invoice!');
+			return;
+		}
+
+		if (selectedDetailId.length == 0)
+		{
+			alert('Please select at least one product!');
+			return;
+		}
+
+		var arr = 	{ 
+						fnc : 'transfer_to_new_sales',
+						selected_detail_id : selectedDetailId 
+					}
+
+		$.ajax
+		(
+			{
+				type: "POST",
+				dataType : 'JSON',
+				data: 'data=' + JSON.stringify(arr) + notificationToken,
+				success: function(response) 
+				{
+					if(response.error != '') 
+						alert(response.error);
+					else
+					{
+						window.open('<?= base_url() ?>sales/view/' + response.id);
+						window.location = '<?= base_url() ?>sales/view/<?= $this->uri->segment(3) ?>';
+					}
+				}
+			}
+		);
 	});
 
 	$('#print').click(function(){
@@ -767,6 +859,6 @@
 	function toggleColumn()
 	{
 		$('#dynamic-css').html('');
-		$('#dynamic-css').html("<style> .tddeliveredqty{ display:none; } </style>");
+		$('#dynamic-css').html("<style> .tddeliveredqty, .tdistransfer { display:none; } </style>");
 	}
 </script>

@@ -522,4 +522,44 @@ class Sales_Model extends CI_Model {
 
 		return $result;
 	}
+
+	public function get_sales_details_with_remaining($select_sales_detail_id)
+	{
+		$this->db->select("
+							`id`, 
+							`quantity`, 
+							`product_id`, 
+							`description`, 
+							`memo`, 
+							`qty_released`,
+							`reservation_detail_id`,
+							`price`
+						")
+				->from("sales_detail")
+				->where("`qty_released` < `quantity`")
+				->where_in("`id`", $select_sales_detail_id);
+
+		$result = $this->db->get();
+
+		return $result;
+	}
+
+	public function transfer_remaining_details_to_new_sales_invoice($old_sales_detail, $new_sales_detail)
+	{
+		$sales_detail_ids = array();
+
+		for ($i=0; $i < count($old_sales_detail); $i++) 
+		{
+			$this->db->where("`id`", $old_sales_detail[$i]['id']);
+			$this->db->update("sales_detail", $old_sales_detail[$i]['detail']);
+
+			array_push($sales_detail_ids, $old_sales_detail[$i]['id']);
+		}
+
+		$this->db->where_in("`id`", $sales_detail_ids)
+					->where("`qty_released`", 0);
+		$this->db->delete("sales_detail");
+
+		$this->db->insert_batch("sales_detail", $new_sales_detail);
+	}
 }
