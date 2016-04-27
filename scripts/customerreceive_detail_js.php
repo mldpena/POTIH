@@ -87,6 +87,14 @@
         td_class: "tablerow column_click column_hover tdqty"
     };
 
+    var spncustomer = document.createElement('span');
+	colarray['customer'] = { 
+        header_title: "Customer",
+        edit: [spncustomer],
+        disp: [spncustomer],
+        td_class: "tablerow column_click column_hover tdcustomer"
+    };
+
     var spnmemo = document.createElement('span');
 	colarray['memo'] = { 
         header_title: "Remarks",

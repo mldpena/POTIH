@@ -136,6 +136,17 @@
 		headertd_class : "tdreceive"
 	};
 
+	var spncustomer = document.createElement('span');
+	var txtcustomer = document.createElement('input');
+	txtcustomer.setAttribute('class','form-control txtcustomer');
+	colarray['customer'] = { 
+		header_title: "Customer",
+		edit: [txtcustomer],
+		disp: [spncustomer],
+		td_class: "tablerow column_click column_hover tdcustomer",
+		headertd_class : "tdcustomer"
+	};
+
 	var spninvoice = document.createElement('span');
 	var txtinvoice = document.createElement('input');
 	txtinvoice.setAttribute('class','form-control txtinvoice');
@@ -275,6 +286,7 @@
 	tableHelper.detailContent.bindAllEvents({ 	
 												saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
+												deleteEventsAfterCallback : checkImportedSales,
 												addInventoryChecker : true
 											});
 
@@ -338,13 +350,7 @@
 				else
 					tableHelper.contentProvider.addRow();
 
-				hideTransferAndReceived();
-
-				if ($.inArray(Number(response.delivery_type),[Number(DeliveryType.Both),Number(DeliveryType.Unsaved)]) == -1)
-				{
-					$('.tdistransfer').hide();
-					hideTransferAndReceived(true);
-				}
+				toggleDeliveryType(false);
 					
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductInfo();
@@ -356,64 +362,8 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('#delivery_type').live('change',function(){
-
-		var delivery_type = $(this).val();
-
-		if (delivery_type == DeliveryType.Sales) 
-		{
-			$('#delivery_to_list').hide();
-			$('#tbl_sales').show();
-			$('.tdistransfer').hide();
-			hideTransferAndReceived(true);
-		}
-		else if (delivery_type == DeliveryType.Transfer) 
-		{
-			$('#delivery_to_list').show();
-			$('#tbl_sales').hide();
-			$('.tdistransfer').hide();
-			
-			alert("Products imported from Sales Invoice will be removed upon changing to transfer.");
-
-			removeImportedSales();
-			hideTransferAndReceived(true);
-		}
-		else if (delivery_type == DeliveryType.Both)
-		{
-			for (var i = 1; i < myjstbl.get_row_count(); i++) 
-			{
-				myjstbl.edit_row(i);
-				tableHelper.contentHelper.descriptionAccessibilty(i);
-			}
-
-			$('#delivery_to_list').show();
-			$('#tbl_sales').show();
-			$('.tdistransfer').show();
-			$('.chktransfer').removeAttr('checked');
-			$('#dynamic-css').html('');
-			hideTransferAndReceived();
-		}
-
-
-		var arr = 	{ 
-						fnc : 'update_delivery_type',
-						delivery_type : delivery_type
-					};
-
-		$.ajax({
-			type: "POST",
-			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + notificationToken,
-			success: function(response) {
-				clear_message_box();
-
-				if (response.error != '')
-				{
-					build_message_box('messagebox_1', response.error, 'danger');
-					window.reload();
-				}
-			}       
-		});
+	$('#delivery_type').live('change', function(){	
+		toggleDeliveryType();
 	});
 
 	$('.chkdetails').live('click',function(){
@@ -532,6 +482,73 @@
 		});
 	}
 
+	function toggleDeliveryType(isUpdateType)
+	{
+		isUpdateType = typeof isUpdateType !== 'undefined' ? isUpdateType : true;
+
+		var delivery_type = $('#delivery_type').val();
+
+		if (delivery_type == DeliveryType.Sales) 
+		{
+			$('#delivery_to_list, .tdistransfer').hide();
+			$('#tbl_sales, .tdcustomer').show();
+			toggleHideColumns({ isTransfer : true, isSales : false });
+		}
+		else if (delivery_type == DeliveryType.Transfer) 
+		{
+			$('#delivery_to_list').show();
+			$('#tbl_sales, .tdistransfer').hide();
+			
+			if (isUpdateType)
+			{
+				alert("Products imported from Sales Invoice will be removed upon changing to transfer.");
+				removeImportedSales();
+			}
+
+			toggleHideColumns({ isTransfer : false, isSales : true });
+		}
+		else if (delivery_type == DeliveryType.Both)
+		{
+			if (isUpdateType)
+			{
+				for (var i = 1; i < myjstbl.get_row_count(); i++) 
+				{
+					myjstbl.edit_row(i);
+					tableHelper.contentHelper.descriptionAccessibilty(i);
+				}
+
+				$('.chktransfer').removeAttr('checked');
+			}
+
+			$('#delivery_to_list, #tbl_sales, .tdcustomer, .tdistransfer').show();
+			toggleHideColumns();
+		}
+
+		if (isUpdateType) 
+		{
+			var arr = 	{ 
+							fnc : 'update_delivery_type',
+							delivery_type : delivery_type
+						};
+
+			$.ajax({
+				type: "POST",
+				dataType : 'JSON',
+				data: 'data=' + JSON.stringify(arr) + notificationToken,
+				success: function(response) 
+				{
+					clear_message_box();
+
+					if (response.error != '')
+					{
+						build_message_box('messagebox_1', response.error, 'danger');
+						window.reload();
+					}
+				}       
+			});	
+		}
+	}
+
 	function getHeadDetailsBeforeSubmit()
 	{
 		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
@@ -541,12 +558,12 @@
 
 		for (var i = 1; i < myjstbl.get_row_count() - 1; i++) 
 		{
-			var isTransfer 	= Number(tableHelper.contentProvider.getData(i,'istransfer'));
-			var memo 		= tableHelper.contentProvider.getData(i,'memo');
+			var isTransfer 	= Number(tableHelper.contentProvider.getData(i, 'istransfer'));
+			var customer 	= tableHelper.contentProvider.getData(i, 'customer');
 
-			if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && memo == '') || (type_val == DeliveryType.Sales && memo == '')) 
+			if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && customer == '') || (type_val == DeliveryType.Sales && customer == '')) 
 			{
-				alert('Please add a customer name in remarks!');
+				alert('Please add a customer name!');
 				return false;
 			}
 		};
@@ -568,7 +585,8 @@
 		var rowIndex 		= $(element).parent().parent().index();
 		var productId 		= tableHelper.contentProvider.getData(rowIndex,'product',1);
 		var qty 			= tableHelper.contentProvider.getData(rowIndex,'qty');
-		var memo 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'memo'));
+		var memo 			= $.sanitize(tableHelper.contentProvider.getData(rowIndex, 'memo'));
+		var customer 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex, 'customer'));
 		var invoice 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'invoice'));
 		var rowId 			= tableHelper.contentProvider.getData(rowIndex,'id');
 		var isTransfer 		= Number(tableHelper.contentProvider.getData(rowIndex,'istransfer'));
@@ -576,7 +594,7 @@
 		var sales_detail_id = tableHelper.contentProvider.getData(rowIndex,'salesid');
 		var actionFunction 	= rowId != 0 ? "update_stock_delivery_detail" : "insert_stock_delivery_detail";
 
-		if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && memo == '') || (type_val == DeliveryType.Sales && memo == '')) 
+		if ((type_val == DeliveryType.Both && isTransfer == TransferState.ForSales && customer == '') || (type_val == DeliveryType.Sales && customer == '')) 
 		{
 			alert('Please add a customer name in remarks!');
 			return false;
@@ -591,6 +609,7 @@
 						istransfer 	: isTransfer,
 						description : description,
 						invoice 	: invoice,
+						customer_name 	: customer,
 						sales_detail_id : sales_detail_id
 					};
 
@@ -655,15 +674,45 @@
 		});
 	}
 
-	function hideTransferAndReceived(isTransfer)
+	function checkImportedSales()
+	{
+		for (var i = 1; i < myjstbl_sales_list.get_row_count(); i++) 
+		{
+			var salesHeadInvoice = salesListTableHelper.contentProvider.getData(i, 'reservation_number');
+			var salesHeadCheckbox = salesListTableHelper.contentProvider.getElement(i, 'check');
+			var instance = 0;
+
+			for (var x = 1; x < myjstbl.length; x++) 
+			{
+				var rowSalesInvoice = tableHelper.contentProvider.getData(i, 'reservationreference');
+
+				if (salesHeadInvoice == rowSalesInvoice) 
+				{
+					instance++;
+					break;
+				}
+			}
+
+			if (instance == 0)
+				$(salesHeadCheckbox).removeAttr('checked');
+		};
+	}
+
+	function toggleHideColumns(columnList)
 	{
 		$('#dynamic-css').html('');
 
 		var css = "<style>";
 		css += ".tdsample" + isUsed;
 
-		if (isTransfer) 
-			css += ", .tdistransfer";
+		if (typeof columnList !== 'undefined') 
+		{
+			if (columnList.isTransfer) 
+				css += ", .tdistransfer";
+
+			if (columnList.isSales) 
+				css += ", .tdcustomer";
+		}
 
 		css += " { display:none; } </style>";
 
