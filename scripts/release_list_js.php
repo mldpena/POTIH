@@ -111,7 +111,7 @@
 	 */
 	
 	$('#tbl').hide();
-	$('#branch_list').chosen();
+	$('#branch_list').select2();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
 	$('#date_from, #date_to').datepicker("setDate", new Date());

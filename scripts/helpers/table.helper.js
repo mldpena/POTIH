@@ -7,23 +7,6 @@
  * Date Created: 6/16/2015
  * Version: 1.0
  */
-
-var ProductType = {
-	Stock : 1,
-	NonStock : 0
-};
-
-var InventoryState = {
-	Sufficient  : 0,
-	Minimum     : 1,
-	Negative    : 2
-}
-
-var InventoryCheckerType = {
-	MaxInv  : 1,
-	MinInv : 0
-}
-
 var TableHelper = function(tableOptions,options) {
 
 	this._flag = 0;

@@ -35,7 +35,6 @@
 									<td>Customer:</td>
 									<td>
 										<select class="form-control" id="customer">
-											<option value="0"></option>
 											<?= $customer_list ?>
 										</select>
 										<input type="text" class="form-control hide-elem" id="walkin-customer">

@@ -19,8 +19,6 @@
 	$writer->setBorder(1);
 
 	$writer->writeSheetHeader($header, 'Sheet1');
-	
-	$writer->writeSheetHeader($header, 'Sheet1');
 
 	for ($i=0; $i < count($data); $i++) 
 	{

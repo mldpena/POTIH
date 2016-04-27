@@ -91,7 +91,12 @@
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 	
 	$('#tbl').hide();
-	$('#for_branch, #customer, #salesman').chosen();
+	$('#for_branch, #salesman').select2();
+	$('#customer').select2({
+		minimumInputLength: 1,
+		maximumSelectionLength: 10
+	});
+
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());

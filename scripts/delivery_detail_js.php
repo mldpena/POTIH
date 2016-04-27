@@ -1,16 +1,5 @@
 <script type="text/javascript">
-	var DeliveryType = {
-		Unsaved 	: 0,
-		Both 		: 1,
-		Sales 		: 2,
-		Transfer 	: 3
-	}
 
-	var TransferState = {
-		ForTransfer : 1,
-		ForSales : 0
-	}
-	
 	var processingFlag = false;
 	var token = '<?= $token ?>';
 	var isUsed = '';

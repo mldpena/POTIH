@@ -1,13 +1,4 @@
 <script type="text/javascript">
-	var CustomerType = {
-		Regular : 1,
-		Walkin : 2
-	};
-
-	var Tax = {
-		Nonvat : 1,
-		Vatable :2 
-	};
 
 	var processingFlag = false;
 
@@ -277,7 +268,8 @@
 		$.toggleOption('customer-type', [
 											{
 												optionValue : 1,
-												elementId : 'customer_chzn'
+												elementId : 'customer',
+												isSelect2 : true
 											},
 											{
 												optionValue : 2,
@@ -285,7 +277,6 @@
 											}
 										]);
 
-		$('#customer, #salesman').chosen();
 		$('#date, #due-date').datepicker();
 		$('#date, #due-date').datepicker("option","dateFormat", "mm-dd-yy");
 		$('#date').datepicker("setDate", new Date());
@@ -314,28 +305,37 @@
 				{
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
-					$('#customer').val(response.customer_id).trigger('liszt:updated');
 					$('#walkin-customer').val(response.walkin_customer_name);
-					$('#salesman').val(response.salesman_id).trigger('liszt:updated');
+					$('#salesman').val(response.salesman_id);
+					$('#customer').val(response.customer_id);
 					$('#address').val(response.address);
 					$('#orderfor').val(response.for_branch);
 					$('#po-number').val(response.ponumber);
 					$('#dr-number').val(response.drnumber);
 					$('#is-vatable').val(response.is_vatable);
 
+					/**
+					 * Declaration should be after the assigning value to select to initialize a default value
+					 */
+					$('#salesman').select2();
+					$('#customer').select2({
+						minimumInputLength: 1,
+						maximumSelectionLength: 10
+					});
+
 					if (response.customer_id == 0)
 					{
-						$('#customer_chzn').hide();
+						$('#customer').next().hide();
 						$('#walkin-customer').show();
 						$('input[name=customer-type][value=' + CustomerType.Walkin + ']').attr('checked', 'checked');
 					}
 					else
 					{
-						$('#customer_chzn').show();
+						$('#customer').next().show();
 						$('#walkin-customer').hide();
 						$('input[name=customer-type][value=' + CustomerType.Regular + ']').attr('checked', 'checked');
 					}
-						
+
 					if (response.entry_date != '')
 					{
 						$('#date').val(response.entry_date);
@@ -407,7 +407,7 @@
 		if (value == CustomerType.Walkin)
 		{
 			$('#is-vatable').val(Tax.Vatable);
-			$('#customer').val(0).trigger('liszt:updated');
+			$('#customer').val(0);
 		}
 		
 		removeImportedReservation();
@@ -679,11 +679,11 @@
 	{
 		alert("Products imported from Sales Reservation will be removed upon changing customer.");
 		
-		var customer_id 	= $('#customer').val();
+		var customer_type 	= $("input[name='customer-type']:checked").val();
+		var customer_id 	= customer_type == CustomerType.Walkin ? 0 : $('#customer').val();
 		var for_branch_id 	= $('#orderfor').val();
 		var is_vatable 		= $('#is-vatable').val();
-		var customer_type 	= $("input[name='customer-type']:checked").val();
-
+		
 		var arr = 	{ 
 						fnc : 'remove_imported_reservation',
 						customer_id : customer_id,

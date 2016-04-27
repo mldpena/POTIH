@@ -72,7 +72,7 @@
 	root.appendChild(myjstbl.mypage.pagingtable);	
 
 	$('#tbl').hide();
-	$('#branch_list').chosen();
+	$('#branch_list').select2();
 	$('#date_from, #date_to, #date_created').datepicker();
 	$('#date_from, #date_to, #date_created').datepicker("option","dateFormat", "mm-dd-yy");
 	$('#date_created').datepicker("setDate", new Date());

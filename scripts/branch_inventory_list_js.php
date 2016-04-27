@@ -102,7 +102,7 @@
 								   
 	$('#tbl').hide();    
 	$('#loadingimg').hide();    
-	$("#branch").chosen();
+	$("#branch").select2();
 
 	$('#export').click(function () {
 
@@ -128,7 +128,7 @@
 		var material_val    = $('#material').val();
 		var datefrom_val    = $('#date_from').val();
 		var dateto_val      = $('#date_to').val();
-		var branch_val      = $('#branch').chosen().val() == null ? '' : $('#branch').chosen().val();
+		var branch_val      = $('#branch').val() == null ? '' : $('#branch').val();
 		var orderby_val     = $('#orderby').val();
 
 		if(branch_val.length == 0)

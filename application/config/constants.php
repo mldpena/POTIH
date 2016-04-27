@@ -42,7 +42,7 @@ define('CSS','assets/css/');
 define('FONTS','assets/fonts/');
 define('IMG','assets/img/');
 define('JS','assets/js/');
-define('BOWER','assets/bower_components/');
+define('BOWER','bower_components/');
 define('CONSTANTS',APPPATH.'constants/');
 define('VERSION', '1.1.0');
 

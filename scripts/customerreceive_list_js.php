@@ -92,7 +92,7 @@
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 	
 	$('#tbl').hide();
-	$('#from_branch, #to_branch').chosen();
+	$('#from_branch, #to_branch').select2();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
 	$('#date_from, #date_to').datepicker("setDate", new Date());
