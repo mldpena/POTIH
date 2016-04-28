@@ -350,7 +350,7 @@ class CI_XLSXWriter
 		$sheet->file_writer->write(    '</headerFooter>');
 		$sheet->file_writer->write('</worksheet>');
 
-		$max_cell = self::xlsCell($sheet->row_count - 1, count($sheet->cell_formats) - 1);
+		$max_cell = self::xlsCell($sheet->row_count - 1, $this->columnCount);
 		$max_cell_tag = '<dimension ref="A1:' . $max_cell . '"/>';
 		$padding_length = $sheet->max_cell_tag_end - $sheet->max_cell_tag_start - strlen($max_cell_tag);
 		$sheet->file_writer->fseek($sheet->max_cell_tag_start);
