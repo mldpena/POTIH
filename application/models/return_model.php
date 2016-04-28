@@ -255,6 +255,12 @@ class Return_Model extends CI_Model {
 		if ($branch != \Constants\RETURN_CONST::ALL_OPTION) 
 			$this->db->where("RD.`branch_id`", (int)$branch);
 
+		if (isset($customer) && $customer != \Constants\RETURN_CONST::ALL_OPTION)
+		{
+			$customer = (int)$customer === \Constants\RETURN_CONST::WALKIN ? 0 : (int)$customer;
+			$this->db->where("RD.`customer_id`", (int)$customer);
+		}
+
 		if (!empty($search_string)) 
 			$this->db->like("CONCAT('RD', RD.`reference_number`,' ', RD.`memo`, ' ', COALESCE(C.`company_name`, RD.`customer`), ' ', RD.`received_by`)", $search_string, "both");
 
@@ -325,6 +331,12 @@ class Return_Model extends CI_Model {
 		if ($branch != \Constants\RETURN_CONST::ALL_OPTION) 
 			$this->db->where("RD.`branch_id`", (int)$branch);
 
+		if (isset($customer) && $customer != \Constants\RETURN_CONST::ALL_OPTION)
+		{
+			$customer = (int)$customer === \Constants\RETURN_CONST::WALKIN ? 0 : (int)$customer;
+			$this->db->where("RD.`customer_id`", (int)$customer);
+		}
+		
 		if (!empty($search_string)) 
 			$this->db->like("CONCAT('RD', RD.`reference_number`,' ', RD.`memo`, ' ', COALESCE(C.`company_name`, RD.`customer`), ' ', RD.`received_by`)", $search_string, "both");
 		
@@ -446,11 +458,17 @@ class Return_Model extends CI_Model {
 	{
 		extract($param);
 		
-		$this->db->select("RH.`id`, COALESCE(B.`name`,'') AS 'location', CONCAT('RD',RH.`reference_number`) AS 'reference_number',
-							COALESCE(DATE(`entry_date`),'') AS 'entry_date', IF(RH.`is_used` = 0, 'Unused', RH.`memo`) AS 'memo', 
-							RH.`customer`, RH.`received_by`")
+		$this->db->select("
+							RH.`id`, COALESCE(B.`name`,'') AS 'location', 
+							CONCAT('RD',RH.`reference_number`) AS 'reference_number',
+							COALESCE(DATE(`entry_date`),'') AS 'entry_date', 
+							IF(RH.`is_used` = 0, 'Unused', RH.`memo`) AS 'memo', 
+							COALESCE(C.`company_name`, RH.`customer`) AS 'customer', 
+							RH.`received_by`
+						")
 				->from("return_head AS RH")
 				->join("branch AS B", "B.`id` = RH.`branch_id` AND B.`is_show` = ".\Constants\RETURN_CONST::ACTIVE, "left")
+				->join("customer AS C", "C.`id` = RH.`customer_id`", "left")
 				->where("RH.`is_show`", \Constants\RETURN_CONST::ACTIVE)
 				->where("RH.`is_used`", \Constants\RETURN_CONST::USED);
 
@@ -462,6 +480,12 @@ class Return_Model extends CI_Model {
 
 		if ($branch != \Constants\RETURN_CONST::ALL_OPTION) 
 			$this->db->where("RH.`branch_id`", $branch);
+
+		if (isset($customer) && $customer != \Constants\RETURN_CONST::ALL_OPTION)
+		{
+			$customer = (int)$customer === \Constants\RETURN_CONST::WALKIN ? 0 : (int)$customer;
+			$this->db->where("RH.`customer_id`", (int)$customer);
+		}
 
 		if (!empty($search_string)) 
 			$this->db->like("CONCAT('RD',RH.`reference_number`,' ',RH.`memo`,' ',RH.`customer`,' ',RH.`received_by`)", $search_string, "both");

@@ -299,6 +299,12 @@ class Assortment_Model extends CI_Model {
 		if ($branch != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
 			$this->db->where("PH.`branch_id`", (int)$branch);
 
+		if (isset($customer) && $customer != \Constants\ASSORTMENT_CONST::ALL_OPTION)
+		{
+			$customer = (int)$customer === \Constants\ASSORTMENT_CONST::WALKIN ? 0 : (int)$customer;
+			$this->db->where("PH.`customer_id`", (int)$customer);
+		}
+
 		if (!empty($search_string)) 
 			$this->db->like("CONCAT('PA', PH.`reference_number`,' ', PH.`memo`, ' ', COALESCE(C.`company_name`, PH.`customer`))", $search_string, "both");
 
@@ -387,6 +393,12 @@ class Assortment_Model extends CI_Model {
 		if ($branch != \Constants\ASSORTMENT_CONST::ALL_OPTION) 
 			$this->db->where("PH.`branch_id`", (int)$branch);
 
+		if (isset($customer) && $customer != \Constants\ASSORTMENT_CONST::ALL_OPTION)
+		{
+			$customer = (int)$customer === \Constants\ASSORTMENT_CONST::WALKIN ? 0 : (int)$customer;
+			$this->db->where("PH.`customer_id`", (int)$customer);
+		}
+		
 		if (!empty($search_string)) 
 			$this->db->like("CONCAT('PA', PH.`reference_number`,' ', PH.`memo`, ' ', COALESCE(C.`company_name`, PH.`customer`))", $search_string, "both");
 

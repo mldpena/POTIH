@@ -13,7 +13,6 @@
 		const COMPLETE = 2;
 		const NO_DELIVERY = 3;
 		const EXCESS = 4;
-		const WALKIN = -1;
 		const TBL_SALES_DETAIL = 'sales_detail';
 		const TBL_SALES_HEAD = 'sales_head';
 		const DAILY_SALES_REPORT = 1;

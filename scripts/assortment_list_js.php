@@ -116,6 +116,12 @@
 	
 	$('#tbl').hide();
 	$('#branch_list').select2();
+
+	$('#customer').select2({
+		minimumInputLength: 1,
+		maximumSelectionLength: 10
+	});
+
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
 	$('#date_from, #date_to').datepicker("setDate", new Date());
@@ -143,6 +149,7 @@
 		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var branch_val 		= $('#branch_list').val();
 		var status_val 		= $('#status').val();
+		var customer_val 	= $('#customer').val();
 
 		if((typeof rowStart === 'undefined') && (typeof rowEnd === 'undefined'))
 			myjstbl.clear_table();
@@ -161,6 +168,7 @@
 								date_from		: date_from_val,
 								date_to 		: date_to_val,
 								branch 			: branch_val,
+								customer 		: customer_val,
 								status 			: status_val,
 								filter_reset 	: filterResetValue,
 								row_start 		: rowStartValue,

@@ -28,4 +28,6 @@
 		const PCS = 1;
 		const KG = 2;
 		const ROLL = 3;
+
+		const WALKIN = -1;
 	}
