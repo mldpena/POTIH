@@ -338,6 +338,7 @@ class Sales_Manager
 			foreach ($result->result() as $row) 
 			{
 				$break_line = ($row->type == \Constants\SALES_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
+				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = $row->id == 0 ? array(0) : array($this->_CI->encrypt->encode($row->id));
 				$response['detail'][$i][] = array($this->_CI->encrypt->encode($row->reservation_detail_id));
 				$response['detail'][$i][] = array($row->reservation_number);
