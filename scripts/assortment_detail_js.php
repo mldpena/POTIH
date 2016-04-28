@@ -1,14 +1,5 @@
 <script type="text/javascript">
-	var CustomerType = {
-		Regular : 1,
-		Walkin : 2
-	};
-
-	var TransactionState = {
-		Saved : 1,
-		Unsaved : 0
-	}
-
+	
 	var processingFlag = false;
 	var token = '<?= $token ?>';
 
@@ -264,7 +255,8 @@
 		$.toggleOption('customer-type', [
 											{
 												optionValue : 1,
-												elementId : 'customer_chzn'
+												elementId : 'customer',
+												isSelect2 : true
 											},
 											{
 												optionValue : 2,
@@ -272,7 +264,6 @@
 											}
 										]);
 
-		$('#customer').chosen();
 		$('#date').datepicker();
 		$('#date').datepicker("option","dateFormat", "mm-dd-yy");
 		$('#date').datepicker("setDate", new Date());
@@ -293,18 +284,26 @@
 				{
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
-					$('#customer').val(response.customer_id).trigger('liszt:updated');
+					$('#customer').val(response.customer_id);
 					$('#walkin-customer').val(response.customer_name);
+
+					/**
+					 * Declaration should be after the assigning value to select to initialize a default value
+					 */
+					$('#customer').select2({
+						minimumInputLength: 1,
+						maximumSelectionLength: 10
+					});
 
 					if (response.customer_id == 0)
 					{
-						$('#customer_chzn').hide();
+						$('#customer').next().hide();
 						$('#walkin-customer').show();
 						$('input[name=customer-type][value=' + CustomerType.Walkin + ']').attr('checked', 'checked');
 					}
 					else
 					{
-						$('#customer_chzn').show();
+						$('#customer').next().show();
 						$('#walkin-customer').hide();
 						$('input[name=customer-type][value=' + CustomerType.Regular + ']').attr('checked', 'checked');
 					}
@@ -341,7 +340,6 @@
 
 				tableHelper.contentProvider.recomputeTotalQuantity();
 				tableHelper.contentHelper.checkProductInfo();
-
 			}       
 		});
 	}
@@ -353,7 +351,7 @@
 		var value = $(this).val();
 
 		if (value == CustomerType.Walkin)
-			$('#customer').val(0).trigger('liszt:updated');
+			$('#customer').val(0);
 		
 		removeImportedSales();
 	});
@@ -540,8 +538,8 @@
 	{
 		alert("Products imported from Sales Invoice will be removed upon changing customer.");
 		
-		var customer_id 	= $('#customer').val();
 		var customer_type 	= $("input[name='customer-type']:checked").val();
+		var customer_id 	= customer_type == CustomerType.Walkin ? 0 : $('#customer').val();
 
 		var arr = 	{ 
 						fnc : 'remove_imported_sales',

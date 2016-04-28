@@ -163,11 +163,42 @@
 
             for (var i = 0; i < optionSelection.length; i++) 
             {
+                var selectedElement = $('#' + optionSelection[i].elementId);
+
+                if (typeof optionSelection[i].isSelect2 !== 'undefined') 
+                    selectedElement = $(selectedElement).next();
+
                 if (value == optionSelection[i].optionValue)
-                    $('#' + optionSelection[i].elementId).show();
+                    $(selectedElement).show();
                 else
-                    $('#' + optionSelection[i].elementId).hide();
+                    $(selectedElement).hide();
             }
+        });
+    };
+
+    $.select2Ajax = function(selector, definedData, token)
+    {
+        var token = typeof notificationToken === 'undefined' ? token : notificationToken;
+        
+        $("#customer").select2({        
+            ajax: {
+                dataType: 'JSON',
+                type : 'POST',
+                delay: 250,
+                data: function (params)
+                {
+                    $.extend(definedData, { search_string : params.term });
+
+                    return 'data=' + JSON.stringify(definedData) + token;
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1
         });
     }
 })(jQuery);

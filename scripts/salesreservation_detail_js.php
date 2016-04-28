@@ -1,8 +1,4 @@
 <script type="text/javascript">
-	var CustomerType = {
-		Regular : 1,
-		Walkin : 2
-	};
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -152,7 +148,8 @@
 		$.toggleOption('customer-type', [
 											{
 												optionValue : 1,
-												elementId : 'customer_chzn'
+												elementId : 'customer',
+												isSelect2 : true
 											},
 											{
 												optionValue : 2,
@@ -160,7 +157,6 @@
 											}
 										]);
 
-		$('#customer, #salesman').chosen();
 		$('#date, #due-date').datepicker();
 		$('#date, #due-date').datepicker("option","dateFormat", "mm-dd-yy");
 		$('#date').datepicker("setDate", new Date());
@@ -188,21 +184,30 @@
 				{
 					$('#reference_no').val(response.reference_number);
 					$('#memo').val(response.memo);
-					$('#customer').val(response.customer_id).trigger('liszt:updated');
+					$('#customer').val(response.customer_id);
 					$('#walkin-customer').val(response.walkin_customer_name);
-					$('#salesman').val(response.salesman_id).trigger('liszt:updated');
+					$('#salesman').val(response.salesman_id);
 					$('#address').val(response.address);
 					$('#orderfor').val(response.for_branch);
 
+					/**
+					 * Declaration should be after the assigning value to select to initialize a default value
+					 */
+					$('#salesman').select2();
+					$('#customer').select2({
+						minimumInputLength: 1,
+						maximumSelectionLength: 10
+					});
+
 					if (response.customer_id == 0)
 					{
-						$('#customer_chzn').hide();
+						$('#customer').next().hide();
 						$('#walkin-customer').show();
 						$('input[name=customer-type][value=' + CustomerType.Walkin + ']').attr('checked', 'checked');
 					}
 					else
 					{
-						$('#customer_chzn').show();
+						$('#customer').next().show();
 						$('#walkin-customer').hide();
 						$('input[name=customer-type][value=' + CustomerType.Regular + ']').attr('checked', 'checked');
 					}

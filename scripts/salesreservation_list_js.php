@@ -123,7 +123,13 @@
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 	
 	$('#tbl').hide();
-	$('#branch_list, #for_branch, #customer').chosen();
+	$('#branch_list, #for_branch').select2();
+
+	$('#customer').select2({
+		minimumInputLength: 1,
+		maximumSelectionLength: 10
+	});
+	
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());

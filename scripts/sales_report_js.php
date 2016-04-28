@@ -1,9 +1,4 @@
 <script type="text/javascript">
-	var ReportType = {
-		DailySales : 1,
-		PeriodicSales : 2,
-		Customer : 3
-	};
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -80,7 +75,13 @@
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 	
 	$('#tbl').hide();
-	$('#for_branch, #customer').chosen();
+	$('#for_branch').select2();
+
+	$('#customer').select2({
+		minimumInputLength: 1,
+		maximumSelectionLength: 10
+	});
+	
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy" );
 	$('#date_from, #date_to').datepicker("setDate", new Date());
@@ -110,7 +111,7 @@
 
 		var queryString = $.objectToQueryString(filterValues);
 
-		if (reportType == ReportType.Customer && filterValues.customer == 0) 
+		if (reportType == SalesReportType.Customer && filterValues.customer == 0) 
 		{
 			alert('Please select a specific customer!');
 			return false;
@@ -172,7 +173,7 @@
 
 		var filterValues = getSearchFilterValues();
 
-		if (reportType == ReportType.Customer && filterValues.customer == 0) 
+		if (reportType == SalesReportType.Customer && filterValues.customer == 0) 
 		{
 			alert('Please select a specific customer!');
 			$('#tbl').hide();
@@ -188,14 +189,14 @@
 	{
 		var reportType = $('#report-type').val();
 
-		if (reportType == ReportType.DailySales)
+		if (reportType == SalesReportType.DailySales)
 		{
 			$('.tdcustomer').show();
 			$('.tddate').hide();
 		}	
-		else if (reportType == ReportType.PeriodicSales) 
+		else if (reportType == SalesReportType.PeriodicSales) 
 			$('.tdcustomer, .tddate').show();
-		else if (reportType == ReportType.Customer) 
+		else if (reportType == SalesReportType.Customer) 
 		{
 			$('.tddate').show();
 			$('.tdcustomer').hide();

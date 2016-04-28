@@ -1,10 +1,4 @@
 <script type="text/javascript">
-	var state = {
-		Pending : { name : "Pending", value : 1 },
-		Approved : { name : "Approved", value : 2 },
-		Declined : { name : "Declined", value : 3 }
-	};
-
 	var flag = 0;
 	var token = '<?= $token ?>';
 	var global_row_index = 0;
@@ -267,7 +261,7 @@
 	{
 		for (var i = 1; i < myjstbl.get_row_count(); i++) {
 			var requestStatus = tableHelper.contentProvider.getData(i,'status');
-			if (requestStatus != state.Pending.name)
+			if (requestStatus != AdjustState.Pending.name)
 			{
 				var updateElement = tableHelper.contentProvider.getElement(i,'update');
 				var deleteElement = tableHelper.contentProvider.getElement(i,'delete');
@@ -291,7 +285,7 @@
 		var oldInventory = tableHelper.contentProvider.getData(rowIndex,'oldinventory');
 		var memo 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'memo'));
 		var adjustId 	= tableHelper.contentProvider.getData(rowIndex,'id');
-		var status 		= $.getEnumValue(state,tableHelper.contentProvider.getData(rowIndex,'status'));
+		var status 		= $.getEnumValue(AdjustState,tableHelper.contentProvider.getData(rowIndex,'status'));
 		var fnc 		= adjustId != 0 ? "update_inventory_adjust" : "insert_inventory_adjust"; 
 
 		var errorList = $.dataValidation([  {   
@@ -349,13 +343,13 @@
 
 	function onAfterAdjustInsert(rowIndex,response)
 	{
-		var message = (response.status == state.Pending.value) ? 'Inventory adjust request successfully submitted!' : 'Inventory successfully adjusted!';
+		var message = (response.status == AdjustState.Pending.value) ? 'Inventory adjust request successfully submitted!' : 'Inventory successfully adjusted!';
 
 		build_message_box('messagebox_1',message,'success');
 
-		tableHelper.contentProvider.setData(rowIndex,'status',[$.getEnumString(state,response.status)]);
+		tableHelper.contentProvider.setData(rowIndex,'status',[$.getEnumString(AdjustState,response.status)]);
 
-		if (response.status != state.Pending.value) {
+		if (response.status != AdjustState.Pending.value) {
 			var updateElement = tableHelper.contentProvider.getElement(rowIndex,'update');
 			var deleteElement = tableHelper.contentProvider.getElement(rowIndex,'delete');
 

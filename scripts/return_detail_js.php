@@ -1,8 +1,4 @@
 <script type="text/javascript">
-	var CustomerType = {
-		Regular : 1,
-		Walkin : 2
-	};
 
 	var token = "<?= $token ?>";
 
@@ -154,7 +150,8 @@
 		$.toggleOption('customer-type', [
 											{
 												optionValue : 1,
-												elementId : 'customer_chzn'
+												elementId : 'customer',
+												isSelect2 : true
 											},
 											{
 												optionValue : 2,
@@ -162,7 +159,6 @@
 											}
 										]);
 
-		$('#customer').chosen();
 		$('#date').datepicker();
     	$('#date').datepicker("option","dateFormat", "mm-dd-yy");
     	$('#date').datepicker("setDate", new Date());
@@ -185,18 +181,23 @@
 					$('#customer_name').val(response.customer_name);
 					$('#received_by').val(response.received_by);
 
-					$('#customer').val(response.customer_id).trigger('liszt:updated');
+					$('#customer').val(response.customer_id);
 					$('#walkin-customer').val(response.customer_name);
+
+					$('#customer').select2({
+						minimumInputLength: 1,
+						maximumSelectionLength: 10
+					});
 
 					if (response.customer_id == 0)
 					{
-						$('#customer_chzn').hide();
+						$('#customer').next().hide();
 						$('#walkin-customer').show();
 						$('input[name=customer-type][value=' + CustomerType.Walkin + ']').attr('checked', 'checked');
 					}
 					else
 					{
-						$('#customer_chzn').show();
+						$('#customer').next().show();
 						$('#walkin-customer').hide();
 						$('input[name=customer-type][value=' + CustomerType.Regular + ']').attr('checked', 'checked');
 					}

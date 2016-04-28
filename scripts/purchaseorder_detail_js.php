@@ -1,9 +1,5 @@
 <script type="text/javascript">
-	var PurchaseType = {
-		Imported : 1,
-		Local : 2
-	}
-
+	
 	var token = '<?= $token ?>';
 
 	var tab = document.createElement('table');

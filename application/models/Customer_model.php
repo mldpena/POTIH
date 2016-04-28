@@ -37,12 +37,11 @@ class Customer_Model extends CI_Model {
 				->from("customer")
 				->where("`is_show`", \Constants\CUSTOMER_CONST::ACTIVE);
 
-		if ($is_vat != \Constants\CUSTOMER_CONST::ALL_OPTION)
+		if (isset($is_vat) && $is_vat != \Constants\CUSTOMER_CONST::ALL_OPTION)
 			$this->db->where("`is_vatable`", $is_vat);
 
-		if (!empty($search_string)) 
+		if (isset($search_string) && !empty($search_string)) 
 			$this->db->like("CONCAT(`code`,' ',`company_name`)", $search_string, "both");
-
 
 		switch ($order_by) 
 		{

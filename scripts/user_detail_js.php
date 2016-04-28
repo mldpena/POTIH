@@ -1,20 +1,8 @@
 <script type="text/javascript">
-	var ProfileStatus = {
-		OwnProfile : 1,
-		OtherProfile : 0
-	};
-
-	var UserType = {
-		SuperAdmin : 1,
-		Admin : 2,
-		NormalUser : 3,
-		Salesman : 4
-	};
 
 	var isOwnProfile = false;
 	var processingFlag = false;
 
-	$('#branches').chosen();
 	$('#user_code').binder('setRule','alphaNumeric');
 	$('#contact').binder('setRule','numeric');
 
@@ -251,13 +239,15 @@
 					if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && response.is_own_profile != ProfileStatus.OwnProfile)
 						$('#save').hide();
 
-					$('#branches').trigger("liszt:updated");
+					$('#branches').select2();
 				}
 
 				processingFlag = false;
 			}       
 		});
-	};
+	}
+	else
+		$('#branches').select2();
 
 	function checkSectionPermission()
 	{
