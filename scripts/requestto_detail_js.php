@@ -153,13 +153,19 @@
 										{ baseURL : "<?= base_url() ?>", controller : 'requestto' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit,
-											 	addInventoryChecker : false} );
+											 	addInventoryChecker : true,
+											 	saveEventsAfterCallback : goToPrintOut } );
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
-		$('#date').datepicker();
-    	$('#date').datepicker("option","dateFormat", "mm-dd-yy");
+		$('#date, #due-date').datepicker();
+    	$('#date, #due-date').datepicker("option", "dateFormat", "mm-dd-yy");
     	$('#date').datepicker("setDate", new Date());
+    	$('#due-date').datepicker("option", "minDate", $('#date').val());
+
+    	$('#date').change(function(){
+    		$('#due-date').datepicker("option", "minDate", $('#date').val());
+    	});
 
 		var arr = 	{ 
 						fnc : 'get_request_details'
@@ -182,8 +188,14 @@
 					if (response.to_branchid != response.own_branch)
 						$("#to_branch option[value="+response.own_branch+"]").remove();
 
-					if (response.entry_date != '') 
-						$('#date').val(response.entry_date);	
+					if (response.entry_date != '')
+					{
+						$('#date').val(response.entry_date);
+						$('#due-date').datepicker("option", "minDate", $('#date').val());	
+					}
+
+					if (response.due_date != '') 
+						$('#due-date').val(response.due_date);	
 
 					if (response.delivery_reference_numbers != '') 
 					{
@@ -225,47 +237,41 @@
 	else
 		$('input, textarea').attr('disabled','disabled');
 
-	$('.print').click(function(){
+	$('#print').click(function(){
 		goToPrintOut($(this));
 	});
 
 	function goToPrintOut(element)
 	{
-		var printType = "both";
-
-		if (element) 
-			printType = $(element).attr('id');
-
-		var arr = 	{ 
-						fnc : 'set_session_delivery',
-						print_type : printType 
-					}
+		var arr = { fnc : 'set_session' }
 
 		$.ajax({
-            type: "POST",
-            dataType : 'JSON',
-            data: 'data=' + JSON.stringify(arr) + token,
-            success: function(response) {
-            	if(response.error != '') 
+			type: "POST",
+			dataType : 'JSON',
+			data: 'data=' + JSON.stringify(arr) + token,
+			success: function(response) {
+				if(response.error != '') 
 					alert(response.error);
 				else
 				{
 					$('#print').show();
-                	window.open('<?= base_url() ?>printout/delivery/Delivery');
+					window.open('<?= base_url() ?>printout/request/Request');
 				}
-            }
-        });
+			}
+		});
 	}
 
 	function getHeadDetailsBeforeSubmit()
 	{
 		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
+		var due_date	= moment($('#due-date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 	= $('#memo').val();
 		var to_branch 	= $('#to_branch').val();
 
 		var arr = 	{ 
 						fnc 	 	: 'save_request_head', 
 						entry_date 	: date_val,
+						due_date 	: due_date,
 						memo 		: memo_val,
 						to_branch 	: to_branch
 					};

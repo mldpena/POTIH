@@ -70,6 +70,7 @@
 					<table>
 						<tr class="tableheader">
 							<td>Particular</td>
+							<td>Sales Reservation</td>
 							<td>Purchase Receive</td>
 							<td>Customer Return</td>
 							<td>Stock Receive</td>

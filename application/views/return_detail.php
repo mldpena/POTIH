@@ -10,28 +10,52 @@
 		<div class="form-header">Customer Return Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
-				<table>
-					<tr>
-						<td>Return #:</td>
-						<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
-					</tr>
-					<tr>
-						<td>Customer:</td>
-						<td><input type="text" class="form-control" id="customer_name"></td>
-					</tr>
-					<tr style="display:none;">
-						<td>Received By:</td>
-						<td><input type="text" class="form-control" id="received_by"></td>
-					</tr>
-					<tr>
-						<td>Date:</td>
-						<td><input type="text" class="form-control" id="date"></td>
-					</tr>
-					<tr>
-						<td valign="top">Reference #:</td>
-						<td><textarea class="form-control" rows="3" id="memo"></textarea></td>
-					</tr>
-				</table>
+				<div class="row">
+					<div class="col-md-12">
+						<label class="form-inline">
+							<input type="radio" name="customer-type" value="2">
+							Walk-in
+						</label>
+						<label class="form-inline margin-left5">
+							<input type="radio" name="customer-type" value="1">
+							Regular
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="pull-left">
+							<table>
+								<tr>
+									<td>Return #:</td>
+									<td style="width:300px;"><input type="text" class="form-control" id="reference_no" disabled></td>
+								</tr>
+								<tr>
+									<td>Customer:</td>
+									<td>
+										<select class="form-control" id="customer">
+											<option value="0"></option>
+											<?= $customer_list ?>
+										</select>
+										<input type="text" class="form-control hide-elem" id="walkin-customer">
+									</td>
+								</tr>
+								<tr style="display:none;">
+									<td>Received By:</td>
+									<td><input type="text" class="form-control" id="received_by"></td>
+								</tr>
+								<tr>
+									<td>Date:</td>
+									<td><input type="text" class="form-control" id="date"></td>
+								</tr>
+								<tr>
+									<td valign="top">Reference #:</td>
+									<td><textarea class="form-control" rows="3" id="memo"></textarea></td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
 			</div>
 			<div class="divider-line"></div>
 			<div class="max-row">

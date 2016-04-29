@@ -59,6 +59,10 @@
 				text-align : center;
 			}
 
+			.tdright {
+				text-align : right;
+			}
+
 			table {
 				border-bottom-style : solid;
 			}
@@ -76,7 +80,7 @@
 		</style>
 	";
 
-	$column_width = array("55px","300px","95px","120px","60px","70px");
+	$column_width = array("55px","300px","95px","110px","60px","80px");
 
 	while ($is_finished == FALSE) 
 	{
@@ -137,7 +141,7 @@ EOD;
 					$style
 					<table>
 						<tr>
-							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
+							<td style=\"width:".$column_width[0].";\" class=\"table-data tdright\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
 							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>

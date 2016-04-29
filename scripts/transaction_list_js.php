@@ -24,7 +24,8 @@
 						{ headerName : 'Customer Delivery', className : 'customerdelivery' },
 						{ headerName : 'Adjust Decrease', className : 'adjustdec' },
 						{ headerName : 'Warehouse Release', className : 'release' },
-						{ headerName : 'Total Inventory', className : 'totalinv' }];
+						{ headerName : 'Total Inventory', className : 'totalinv' },
+						{ headerName : 'Sales Reservation', className : 'reservation' }];
 
 	for (var i = 0; i < tableColumns.length; i++) 
 	{

@@ -11,8 +11,14 @@
 			<div class="max-row tbl-filters" align="center">
 				<table>
 					<tr>
+						<td>Date From:</td>
+						<td><input type="text" class="form-control" id="date_from"></td>
+						<td>Date To:</td>
+						<td><input type="text" class="form-control" id="date_to"></td>
+					</tr>
+					<tr>
 						<td>Location:</td>
-						<td style="width:300px;">
+						<td colspan="3">
 							<select class="form-control" id="branch_list"><?= $branch_list ?></select>
 						</td>
 					</tr>
@@ -27,9 +33,11 @@
 			<?php if($permission_list['allow_to_add']) : ?>
 
 			<div class="max-row">
-				<button class="btn btn-primary" id="create_summary">Create Pick-Up Summary</button>
+				<button class="btn btn-primary" id="create_summary">Create Pick-Up Summary For</button>
 			</div>
-
+			<div class="max-row" style="text-align:center">
+				<input type="text" class="form-control mod" id="date_created" style="text-align:center" readonly>
+			</div>
 			<?php endif; ?>
 
 			<div class="max-row">

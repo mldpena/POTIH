@@ -21,6 +21,10 @@
 						<td><input type="text" class="form-control" id="date"></td>
 					</tr>
 					<tr>
+						<td>Due Date:</td>
+						<td><input type="text" class="form-control" id="due-date"></td>
+					</tr>
+					<tr>
 						<td>Request To:</td>
 						<td colspan="1">
 							<select class="form-control" id="to_branch" ><?= $branch_list ?></select>
@@ -54,7 +58,7 @@
 				</table>
 			</div>
 			<div class="max-row" align="right">
-				<!-- <input type="button" class="btn btn-primary" value="Print" data-toggle="modal" data-target="#printModal" id="print"> -->
+				<input type="button" class="btn btn-primary" value="Print" id="print">
 				<input type="button" class="btn btn-success" value="Save" id="save">
 			</div>
 		</div>

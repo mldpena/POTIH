@@ -3,6 +3,7 @@
 	
 	abstract class Default_Const
 	{
+		const DATE_INTERVAL = 30;
 		const ACTIVE 		= 1;
 		const DELETED 		= 0;
 		const ALL_OPTION 	= 0;
@@ -27,4 +28,6 @@
 		const PCS = 1;
 		const KG = 2;
 		const ROLL = 3;
+
+		const WALKIN = -1;
 	}

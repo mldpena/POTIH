@@ -7,23 +7,6 @@
  * Date Created: 6/16/2015
  * Version: 1.0
  */
-
-var ProductType = {
-	Stock : 1,
-	NonStock : 0
-};
-
-var InventoryState = {
-	Sufficient  : 0,
-	Minimum     : 1,
-	Negative    : 2
-}
-
-var InventoryCheckerType = {
-	MaxInv  : 1,
-	MinInv : 0
-}
-
 var TableHelper = function(tableOptions,options) {
 
 	this._flag = 0;
@@ -67,10 +50,13 @@ var TableHelper = function(tableOptions,options) {
 		$.extend(this._settings,options);
 	}
 
-	if (tableOptions) {
+	if (tableOptions) 
+	{
 		this._jsTable = tableOptions.tableObject;
 		this._jsTableArray = tableOptions.tableArray;
 	};
+
+	this._settings.token = typeof this._settings.token === 'undefined' ? token : this._settings.token;
 
 	//Bind rules to columns
 	$('.' + this._settings.quantityClass).binder('setRule','numeric');
@@ -180,13 +166,13 @@ var TableHelper = function(tableOptions,options) {
 				}
 				else
 				{
-					self.contentProvider.setData(self.globalRowIndex,'product',['',0,'','','']);
+					self.contentProvider.setData(self.globalRowIndex,'product',['', 0, '', '', '', '']);
 					self.contentProvider.setData(self.globalRowIndex,'qty',['']);
 					self.contentProvider.setData(self.globalRowIndex,'memo',['']);
 					self.contentProvider.setData(self.globalRowIndex,'code',['']);
+					self.contentProvider.setData(self.globalRowIndex,'uom', ['']);
 					self.contentProvider.recomputeTotalQuantity();
-					self.contentHelper.descriptionAccessibilty(self.globalRowIndex,true);
-
+					self.contentHelper.descriptionAccessibilty(self.globalRowIndex, true);
 				}
 			});
 
@@ -207,7 +193,7 @@ var TableHelper = function(tableOptions,options) {
 				$.ajax({
 					type: "POST",
 					dataType : 'JSON',
-					data: 'data=' + JSON.stringify(arr) + token,
+					data: 'data=' + JSON.stringify(arr) + self._settings.token,
 					success: function(response) {
 						clear_message_box();
 
@@ -245,7 +231,7 @@ var TableHelper = function(tableOptions,options) {
 
 		bindAutoComplete : function (onAfterSubmit)
 		{
-			my_autocomplete_add(token,"." + self._settings.productClass,self._settings.controller, {
+			my_autocomplete_add(self._settings.token,"." + self._settings.productClass,self._settings.controller, {
 				enable_add : false,
 				fnc_callback : function(x, label, value, ret_datas, error){
 					var rowIndex = $(x).parent().parent().index();
@@ -257,15 +243,21 @@ var TableHelper = function(tableOptions,options) {
 						var descriptionElement = $(x).parent().find('.' + self._settings.nonStackClass);
 
 						if (error.length > 0) {
-							self.contentProvider.setData(rowIndex,'product',['',0,'','','']);
-							self.contentProvider.setData(rowIndex,'code',['']);
-							self.contentProvider.setData(rowIndex,'qty',['']);
-							self.contentProvider.setData(rowIndex,'memo',['']);
-							self.contentProvider.setData(rowIndex,'uom',['']);
+							self.contentProvider.setData(rowIndex,'product',['', 0, '', '', '', '']);
+							self.contentProvider.setData(rowIndex,'code', ['']);
+							self.contentProvider.setData(rowIndex,'qty', ['']);
+							self.contentProvider.setData(rowIndex,'memo', ['']);
+							self.contentProvider.setData(rowIndex,'uom', ['']);
 							
 							if (self._jsTableArray.hasOwnProperty("receivedby")) 
-								self.contentProvider.setData(rowIndex,'receivedby',['']);
+								self.contentProvider.setData(rowIndex, 'receivedby', ['']);
 							
+							if (self._jsTableArray.hasOwnProperty("price")) 
+								self.contentProvider.setData(rowIndex, 'price', ['']);
+
+							if (self._jsTableArray.hasOwnProperty("invoice")) 
+								self.contentProvider.setData(rowIndex, 'invoice', ['']);
+
 							$(descriptionElement).hide();
 						}
 						else
@@ -279,7 +271,7 @@ var TableHelper = function(tableOptions,options) {
 							else
 								$(descriptionElement).val('').hide();
 
-							self.contentProvider.setData(rowIndex,'product',[ret_datas[1],ret_datas[0],ret_datas[3],newLine,'']);
+							self.contentProvider.setData(rowIndex,'product',[ret_datas[1], ret_datas[0], ret_datas[3], newLine, '', 1]);
 							self.contentProvider.setData(rowIndex,'code',[ret_datas[2]]);
 							self.contentProvider.setData(rowIndex,'uom',[ret_datas[4]]);
 						}
@@ -288,7 +280,7 @@ var TableHelper = function(tableOptions,options) {
 				},
 				fnc_render : function(ul, item){
 					return my_autocomplete_render_fnc(ul, item, "code_name", [2,1], 
-						{ width : ["100px","auto"] });
+						{ width : ["100px", "auto"] });
 				}
 			});
 			
@@ -318,7 +310,7 @@ var TableHelper = function(tableOptions,options) {
 
 		bindRecentNameAutoComplete : function ()
 		{
-			my_autocomplete_add(token,"#" + self._settings.recentNameElementId,self._settings.controller, {
+			my_autocomplete_add(self._settings.token,"#" + self._settings.recentNameElementId,self._settings.controller, {
 				enable_add : false,
 				fnc_callback : function(x, label, value, ret_datas, error){
 
@@ -327,7 +319,7 @@ var TableHelper = function(tableOptions,options) {
 				},
 				fnc_render : function(ul, item){
 					return my_autocomplete_render_fnc(ul, item, "code_name", [0], 
-						{ width : ["200px"] });
+						{ width : ["auto"] });
 				}
 			},'recent_name_autocomplete');
 		},
@@ -368,7 +360,7 @@ var TableHelper = function(tableOptions,options) {
 				$.ajax({
 					type: "POST",
 					dataType : 'JSON',
-					data: 'data=' + JSON.stringify(arr) + token,
+					data: 'data=' + JSON.stringify(arr) + self._settings.token,
 					success: function(response) {
 						clear_message_box();
 
@@ -432,7 +424,7 @@ var TableHelper = function(tableOptions,options) {
 				$.ajax({
 					type: "POST",
 					dataType : 'JSON',
-					data: 'data=' + JSON.stringify(arr) + token,
+					data: 'data=' + JSON.stringify(arr) + self._settings.token,
 					success: function(response) {
 						clear_message_box();
 
@@ -520,7 +512,7 @@ var TableHelper = function(tableOptions,options) {
 				$.ajax({
 					type: "POST",
 					dataType : 'JSON',
-					data: 'data=' + JSON.stringify(arr) + token,
+					data: 'data=' + JSON.stringify(arr) + self._settings.token,
 					success: function(response) {
 						clear_message_box();
 
@@ -565,7 +557,7 @@ var TableHelper = function(tableOptions,options) {
 				var qty             = self.contentProvider.getData(rowIndex,'qty');
 				var memo            = $.sanitize(self.contentProvider.getData(rowIndex,'memo'));
 				var rowUniqueId     = self.contentProvider.getData(rowIndex,'id');
-				var nonStackDescription  = self.contentProvider.getData(rowIndex,'product',4);
+				var nonStackDescription  = $.sanitize(self.contentProvider.getData(rowIndex, 'product', 4));
 				var actionFunction  = rowUniqueId != 0 ? self._settings.updateDetailName : self._settings.insertDetailName;
 
 				var errorList = $.dataValidation([  {   
@@ -604,7 +596,7 @@ var TableHelper = function(tableOptions,options) {
 			$.ajax({
 				type: "POST",
 				dataType : 'JSON',
-				data: 'data=' + JSON.stringify(arr) + token,
+				data: 'data=' + JSON.stringify(arr) + self._settings.token,
 				success: function(response) {
 					clear_message_box();
 
@@ -616,9 +608,11 @@ var TableHelper = function(tableOptions,options) {
 
 						self.contentHelper.descriptionAccessibilty(rowIndex);
 						
-						if (arr.detail_id == 0) {
-							self.contentProvider.setData(rowIndex,'id',[response.id]);
-							if (self._settings.isAddRow)
+						if (arr.detail_id == 0) 
+						{
+							self.contentProvider.setData(rowIndex, 'id', [response.id]);
+
+							if (self._settings.isAddRow && rowIndex == (self._jsTable.get_row_count() - 1))
 								self.contentProvider.addRow(self._settings.productClass);
 						}
 
@@ -648,7 +642,7 @@ var TableHelper = function(tableOptions,options) {
 			$.ajax({
 				type: "POST",
 				dataType : 'JSON',
-				data: 'data=' + JSON.stringify(arr) + token,
+				data: 'data=' + JSON.stringify(arr) + self._settings.token,
 				success: function(response) {
 					self._jsTable.clear_table();
 					clear_message_box();
@@ -692,7 +686,7 @@ var TableHelper = function(tableOptions,options) {
 			$.ajax({
 				type: "POST",
 				dataType : 'JSON',
-				data: 'data=' + JSON.stringify(filterValues) + token,
+				data: 'data=' + JSON.stringify(filterValues) + self._settings.token,
 				success: function(response) {
 					
 					if((typeof filterValues.row_start === 'undefined') && (typeof filterValues.row_end === 'undefined'))
@@ -760,10 +754,11 @@ var TableHelper = function(tableOptions,options) {
 		changeRowAccessiblity : function(rowIndex)
 		{
 			var isProductDeleted 	= Number(self.contentProvider.getData(rowIndex,'product', 5));
-			var productElement 		= self.contentProvider.getElement(rowIndex,'product');
+			var rowId 				= Number(self.contentProvider.getData(rowIndex, 'id'));
+			var productElement 		= self.contentProvider.getElement(rowIndex, 'product');
 			var parentRow 			= $(productElement).parent().parent();
 
-			if (isProductDeleted == 0)
+			if (isProductDeleted == 0 && rowId != 0)
 			{
 				$(parentRow).find('input').attr('disabled', 'disabled');
 				$(parentRow).css('background-color', '#ef4543');
@@ -822,20 +817,33 @@ var TableHelper = function(tableOptions,options) {
 			$.ajax({
 				type: "POST",
 				dataType : 'JSON',
-				data: 'data=' + JSON.stringify(arr) + token,
+				data: 'data=' + JSON.stringify(arr) + self._settings.token,
 				success: function(response) {
 					clear_message_box();
 
 					if (response.checker == InventoryCheckerType.MinInv)
 					{
-						if (response.is_insufficient != InventoryState.Sufficient) {
+						if (response.is_insufficient != InventoryState.Sufficient) 
+						{
 							var confirmMessage = (response.is_insufficient == InventoryState.Minimum) ? 'Current inventory is (' + response.current_inventory + ' pcs).  You will reach minimum inventory level. Do you want to continue?' : 'Current inventory is not sufficient (' + response.current_inventory + ' pcs). Do you want to continue?';
 							continueTransaction = confirm(confirmMessage);
-						} 
+						}
+
+						if (response.reservation_list.length > 0) 
+						{
+							var confirmMessage = "";
+
+							for (var i = 0; i < response.reservation_list.length; i++) 
+								confirmMessage += 'The product was reserved from Branch ' + response.reservation_list[i].branch + ', ' + response.reservation_list[i].reference_number + ' by ' + response.reservation_list[i].salesman + ' with a quantity of ' + response.reservation_list[i].quantity_reserved + ' and unsold quantity of ' + response.reservation_list[i].unsold_qty + '\n';
+
+							confirmMessage += "\nDo you want to continue?";
+							continueTransaction = confirm(confirmMessage);
+						}
 					}
 					else
 					{
-						if (response.is_excess) {
+						if (response.is_excess) 
+						{
 							var confirmMessage = 'Current inventory is (' + response.current_inventory + ' pcs).  You will reach maximum inventory level. Do you want to continue?';
 							continueTransaction = confirm(confirmMessage);
 						}

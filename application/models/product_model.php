@@ -345,13 +345,18 @@ class Product_Model extends CI_Model {
 
 	public function get_product_by_term($term, $branch_id, $with_inventory)
 	{
-		$this->db->select("P.`description`, P.`id`, P.`material_code`, P.`type`, 
+		$this->db->select(
+							"P.`description`, 
+							P.`id`, 
+							P.`material_code`,
+							 P.`type`, 
 							CASE
 								WHEN P.`uom` = 1 THEN 'PCS'
 								WHEN P.`uom` = 2 THEN 'KGS'
 								WHEN P.`uom` = 3 THEN 'ROLL'
 								ELSE ''
-							END AS 'uom'");
+							END AS 'uom'
+						");
 
 		if ($with_inventory)
 			$this->db->select("COALESCE(PBI.`inventory`,0) AS 'inventory'");
@@ -403,28 +408,39 @@ class Product_Model extends CI_Model {
 	}
 
 
-	public function get_product_warning_list_by_filter($param, $with_limit = TRUE)
+	public function get_product_warning_list_by_filter($param, $with_limit = TRUE, $inventory_field = "")
 	{
 		extract($param);
 
-		$this->db->select("P.`id`, P.`material_code`, P.`description`,
-							CASE
-								WHEN  PBI.`inventory` < 0 THEN 'Negative'
-								WHEN  PBI.`inventory` < PBI.`min_inv` THEN 'Insufficient'
-								WHEN  PBI.`inventory` > PBI.`max_inv` THEN 'Excess'	 
-							END AS 'status',
+		$inventory_column_list = empty($inventory_field) ? ",COALESCE(PBI.`inventory`,0) AS 'inventory'" : $inventory_field;
+
+		$this->db->select("P.`material_code`, 
+							P.`description`,
 							CASE 
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::NON_STOCK." THEN 'Non - Stock'
 								WHEN P.`type` = ".\Constants\PRODUCT_CONST::STOCK." THEN 'Stock'
 								ELSE ''
 							END AS 'type',
-							COALESCE(M.`name`,'') AS 'material_type', COALESCE(S.`name`,'') AS 'subgroup', 
-							COALESCE(PBI.`inventory`,0) AS 'inventory', PBI.`min_inv`, PBI. `max_inv`")
+							COALESCE(M.`name`,'') AS 'material_type',
+							COALESCE(S.`name`,'') AS 'subgroup', 
+							PBI.`min_inv`, 
+							PBI.`max_inv`,
+							$inventory_column_list
+							,CASE
+								WHEN  PBI.`inventory` < 0 THEN 'Negative'
+								WHEN  PBI.`inventory` < PBI.`min_inv` THEN 'Insufficient'
+								WHEN  PBI.`inventory` > PBI.`max_inv` THEN 'Excess'	 
+							END AS 'status'
+						")
 				->from("product AS P")
 				->join("material_type AS M", "M.`id` = P.`material_type_id` AND M.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
 				->join("subgroup AS S", "S.`id` = P.`subgroup_id` AND S.`is_show` = ".\Constants\PRODUCT_CONST::ACTIVE, "left")
-				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = $branch", "left")
-				->group_start()
+				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = $branch", "left");
+
+		if (!empty($inventory_field)) 
+			$this->db->join("product_branch_inventory AS PBI2", "PBI2.`product_id` = P.`id` AND PBI2.`branch_id` <> $branch", "left");
+
+		$this->db->group_start()
 					->group_start()
 						->where("PBI.`inventory` > PBI.`max_inv`")
 						->where("PBI.`max_inv` <>", 0)
@@ -486,7 +502,8 @@ class Product_Model extends CI_Model {
 				break;
 		}
 
-		$this->db->order_by($order_field,"DESC");
+		$this->db->group_by("P.`id`");
+		$this->db->order_by($order_field, "DESC");
 
 		if ($with_limit) 
 		{
@@ -857,7 +874,8 @@ class Product_Model extends CI_Model {
 						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
 						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
 						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
-						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release',
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation'
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
@@ -1174,7 +1192,8 @@ class Product_Model extends CI_Model {
 						COALESCE(SUM(TS.`stock_delivery`),0) AS 'stock_delivery',
 						COALESCE(SUM(TS.`customer_delivery`),0) AS 'customer_delivery',
 						COALESCE(SUM(TS.`adjust_decrease`),0) AS 'adjust_decrease',
-						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release'
+						COALESCE(SUM(TS.`warehouse_release`),0) AS 'release',
+						COALESCE(SUM(TS.`sales_reservation`),0) AS 'sales_reservation'
 				FROM product AS P
 				$temp_table
 				LEFT JOIN daily_transaction_summary AS TS ON TS.`product_id` = P.`id` $branch_condition $date_condition
@@ -1191,11 +1210,19 @@ class Product_Model extends CI_Model {
 			foreach ($result->result() as $row) 
 			{
 				foreach ($row as $key => $value)
-      				$response['data'][$i][] = array($value);
+				{
+					/**
+					 * Code to rearrange sales reservation data as the last column in view
+					 */
+					if ($key !== 'sales_reservation')
+      					$response['data'][$i][] = array($value);
+				}
 
       			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
       											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
       											- $row->adjust_decrease - $row->release);
+
+      			$response['data'][$i][] = array($row->sales_reservation);
 
 				$i++;
 			}
@@ -1328,6 +1355,14 @@ class Product_Model extends CI_Model {
 					$reference_character = "WR";
 					$link_location 	= "release";
 					break;
+
+				case 'reservation':
+					$head_table 	= "sales_reservation_head";
+					$detail_table 	= "sales_reservation_detail";
+					$reference_character = "SO";
+					$branch_column = "H.`for_branch_id`";
+					$link_location 	= "reservation";
+					break;
 			}
 
 	      	if ($branch != \Constants\PRODUCT_CONST::ALL_OPTION)
@@ -1423,5 +1458,14 @@ class Product_Model extends CI_Model {
 		}
 
 		return $this->db->count_all_results();
+	}
+
+	public function get_product_qty_transaction($row_id, $table_name)
+	{
+		$this->db->select("`quantity`")
+				->from($table_name)
+				->where("`id`", $row_id);
+
+		return $this->db->get();
 	}
 }

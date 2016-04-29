@@ -449,3 +449,25 @@ if ( ! function_exists('octal_permissions'))
 		return substr(sprintf('%o', $perms), -3);
 	}
 }
+
+if ( ! function_exists('write_logs_to_file')) 
+{
+	/**
+	 * File Log
+	 *
+	 * Takes a strong of message and file name if not provided.
+	 * Writes all provided message in a text file.
+	 * 
+	 * @param  array $logs_list
+	 * @param  string $file_name      
+	 */
+	function write_logs_to_file($logs_list, $file_name = 'import_logs')
+	{
+		$string_logs = "";
+
+   		for ($i=0; $i < count($logs_list); $i++)
+   			$string_logs .= $logs_list[$i].PHP_EOL;
+   		
+   		file_put_contents($file_name.".txt", $string_logs);
+	}
+}

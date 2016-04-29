@@ -48,8 +48,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('purchaseorder_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -85,8 +83,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('purchasereturn_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -118,8 +114,6 @@ class Export_Manager
 	public function parse_get_purchase_receive_by_transaction($param)
 	{
 		$this->_CI->load->model('purchasereceive_model');
-
-		$current_invoice = '';
 
 		$response = array();
 
@@ -154,8 +148,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('delivery_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -189,8 +181,6 @@ class Export_Manager
 	public function parse_get_delivery_receive_by_transaction($param, $receive_type)
 	{
 		$this->_CI->load->model('delivery_model');
-
-		$current_invoice = '';
 
 		$response = array();
 
@@ -228,8 +218,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('return_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -261,8 +249,6 @@ class Export_Manager
 	{
 		$this->_CI->load->model('damage_model');
 
-		$current_invoice = '';
-
 		$response = array();
 
 		$response['rowcnt'] = 0;
@@ -292,8 +278,6 @@ class Export_Manager
 	public function parse_get_inventory_adjustment($param)
 	{
 		$this->_CI->load->model('adjust_model');
-
-		$current_invoice = '';
 
 		$response = array();
 
@@ -329,16 +313,38 @@ class Export_Manager
 
 	public function parse_get_inventory_warning($param)
 	{
+		extract($param);		
+
 		$this->_CI->load->constant('product_const');
 		$this->_CI->load->model('product_model');
+		$this->_CI->load->model('branch_model');
 
-		$current_invoice = '';
-
-		$response = array();
-
+		$response = [];
+		$branch_column_list = '';
+		$string_buffer = '';
 		$response['rowcnt'] = 0;
+		$response['branch_name'] = [];
 
-		$result = $this->_CI->product_model->get_product_warning_list_by_filter($param, FALSE);
+		$branch_result = $this->_CI->branch_model->get_branch_list();
+		
+		if($branch_result->num_rows() > 0) 
+		{
+			foreach ($branch_result->result() as $row) 
+			{
+				if ((int)$branch === (int)$row->id) 
+					$string_buffer = ",COALESCE(PBI.`inventory`,0) AS 'inventory'";
+				else
+				{
+					$branch_column_list .= ",SUM(IF(PBI2.`branch_id` = ".$row->id.", PBI2.`inventory`, 0)) AS '".$row->name."'";
+					$response['branch_name'][] = strtoupper($row->name);
+				}
+			}
+
+			$branch_column_list .= $string_buffer;
+			$response['branch_name'][] = 'INVENTORY';
+		}
+
+		$result = $this->_CI->product_model->get_product_warning_list_by_filter($param, FALSE, $branch_column_list);
 
 		if ($result->num_rows() > 0) 
 		{
@@ -347,15 +353,9 @@ class Export_Manager
 
 			foreach ($result->result() as $row) 
 			{
-				$response['data'][$i][] = $row->material_code;
-				$response['data'][$i][] = $row->description;
-				$response['data'][$i][] = $row->type;
-				$response['data'][$i][] = $row->material_type;
-				$response['data'][$i][] = $row->subgroup;
-				$response['data'][$i][] = $row->min_inv;
-				$response['data'][$i][] = $row->max_inv;
-				$response['data'][$i][] = $row->inventory;
-				$response['data'][$i][] = $row->status;
+				foreach ($row as $key => $value) 
+					$response['data'][$i][] = $value;
+
 				$i++;
 			}
 		}
@@ -480,11 +480,16 @@ class Export_Manager
 			foreach ($result->result() as $row) 
 			{		
 				foreach ($row as $key => $value)
-      				$response['data'][$i][] = $value;
+				{
+					if ($key !== 'sales_reservation')
+      					$response['data'][$i][] = $value;
+				}
 
       			$response['data'][$i][] = $row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
       											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
       											- $row->adjust_decrease - $row->release;
+
+      			$response['data'][$i][] = $row->sales_reservation;
 
 				$i++;
 			}
@@ -492,6 +497,178 @@ class Export_Manager
 
 		$result->free_result();
 		
+		return $response;
+	}
+
+	public function parse_generate_sales_report($param)
+	{
+		extract($param);
+
+		$this->_CI->load->model('sales_model');
+
+		$response = [];
+
+		$response['rowcnt'] = 0;
+		$response['customer_name'] = '';
+		$response['date_from'] = date("m/d/Y", strtotime($date_from));
+		$response['date_to'] = date("m/d/Y", strtotime($date_to));
+
+		$total_amount = 0;
+
+		$result = $this->_CI->sales_model->get_sales_list_by_filter($param, FALSE);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{		
+				if ($report_type == \Constants\SALES_CONST::DAILY_SALES_REPORT) 
+					$response['data'][$i][] = $i + 1;
+
+				$response['data'][$i][] = $row->reference_number;
+
+				if ($report_type != \Constants\SALES_CONST::DAILY_SALES_REPORT) 
+					$response['data'][$i][] = date('m-d-Y', strtotime($row->entry_date));
+
+				if ($report_type != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT) 
+					$response['data'][$i][] = $row->customer;
+				else
+				{
+					$response['customer_name'] = $row->customer;
+					$response['customer_address'] = $row->customer_address;
+				}
+
+				$response['data'][$i][] = $row->salesman;
+				$response['data'][$i][] = number_format($row->amount, 2);
+
+				$total_amount += $row->amount;
+
+				$i++;
+			}
+
+			$data_length = count($response['data'][0]);
+
+			for ($x=0; $x < $data_length; $x++) 
+			{ 
+				$value = '';
+
+				if ($x == ($data_length - 2))
+					$value = 'Total';
+				else if ($x == ($data_length - 1))
+ 					$value = number_format($total_amount, 2);
+
+				$response['data'][$i][] = $value;
+			}
+
+			if ($report_type != \Constants\SALES_CONST::CUSTOMER_SALES_REPORT)
+			{
+				$salesman_result = $this->_CI->sales_model->get_salesman_sales_by_filter($param);
+
+				if ($salesman_result->num_rows() > 0) 
+				{
+					$i++;
+
+					for ($x=0; $x < $data_length; $x++) 
+						$response['data'][$i][] = '';
+
+					$i++;
+					
+					if ($report_type == \Constants\SALES_CONST::DAILY_SALES_REPORT) 
+						$response['data'][$i][] = '';
+					
+					$response['data'][$i][] = '';
+
+					if ($report_type == \Constants\SALES_CONST::PERIODIC_SALES_REPORT)
+						$response['data'][$i][] = '';
+
+					$response['data'][$i][] = 'Salesman Breakdown';
+
+					for ($x=count($response['data'][$i]); $x < $data_length; $x++) 
+						$response['data'][$i][] = '';
+
+					foreach ($salesman_result->result() as $row) 
+					{		
+
+						$i++;
+
+						for ($x=0; $x < $data_length; $x++) 
+						{ 
+							$value = '';
+
+							if ($x == ($data_length - 3))
+								$value = $row->salesman;
+							else if ($x == ($data_length - 2))
+								$value = $row->invoice_count.' invoices';
+							else if ($x == ($data_length - 1))
+			 					$value = number_format($row->amount, 2);
+
+							$response['data'][$i][] = $value;
+						}
+					}
+				}
+
+				$salesman_result->free_result();
+			}
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	public function parse_generate_sales_book_report($param)
+	{
+		extract($param);
+
+		$this->_CI->load->model('sales_model');
+
+		$response = [];
+
+		$response['rowcnt'] = 0;
+
+		$total_amount = 0;
+		$total_vatable_amount = 0;
+		$total_vat_amount = 0;
+		$total_vat_exempt_amount = 0;
+
+		$result = $this->_CI->sales_model->get_sales_list_by_filter($param, FALSE);
+
+		if ($result->num_rows() > 0) 
+		{
+			$i = 0;
+			$response['rowcnt'] = $result->num_rows();
+
+			foreach ($result->result() as $row) 
+			{		
+				$response['data'][$i][] = date('m/d/Y', strtotime($row->entry_date));
+				$response['data'][$i][] = $row->reference_number;
+				$response['data'][$i][] = $row->customer;
+				$response['data'][$i][] = $row->amount;
+				$response['data'][$i][] = $row->vatable_amount;
+				$response['data'][$i][] = $row->vat_amount;
+				$response['data'][$i][] = $row->vat_exempt_amount;
+
+				$total_amount += $row->amount;
+				$total_vatable_amount += $row->vatable_amount;
+				$total_vat_amount += $row->vat_amount;
+				$total_vat_exempt_amount += $row->vat_exempt_amount;
+
+				$i++;
+			}
+		}
+
+		$response['branch_name'] = strtoupper($branch_name);
+		$response['date_from'] = date("m/d/Y", strtotime($date_from));
+		$response['date_to'] = date("m/d/Y", strtotime($date_to));
+		$response['total_amount'] = $total_amount;
+		$response['total_vatable_amount'] = $total_vatable_amount;
+		$response['total_vat_amount'] = $total_vat_amount;
+		$response['total_vat_exempt_amount'] = $total_vat_exempt_amount;
+
+		$result->free_result();
+
 		return $response;
 	}
 }

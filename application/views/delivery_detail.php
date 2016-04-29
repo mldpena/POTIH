@@ -11,7 +11,7 @@
 		<div class="form-header">Item Delivery Detail</div>
 		<div class="form-body">
 			<div class="max-row tbl-filters">
-				<table>
+				<table class="pull-left">
 					<tr>
 						<td>Delivery Type:</td>
 						<td style="width:300px;">
@@ -41,6 +41,9 @@
 						<td><textarea class="form-control" rows="3" id='memo'></textarea></td>
 					</tr>
 				</table>
+				<div class="pull-right">
+					<div class="tbl max tbl-sales detail" id="tbl_sales"></div>
+				</div>
 			</div>
 			<div class="divider-line"></div>
 			<div class="max-row">
@@ -48,7 +51,7 @@
 			</div>
 			<div class="max-row">
 				<center>
-					<div id="tbl" class="tbl max"></div>
+					<div id="tbl" class="tbl max delivertbl-detail"></div>
 				</center>
 			</div>
 			<div class="max-row tbl-total" align="right">

@@ -5,6 +5,7 @@ namespace Services;
 class Product_Manager
 {
 	private $_CI;
+	private $_own_sales_reservation_manager;
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
@@ -278,7 +279,7 @@ class Product_Manager
 	public function delete_product($param)
 	{
 		extract($param);
-
+		
 		$product_id = $this->_CI->encrypt->decode($head_id);
 
 		$updated_product_fields = array('is_show' => \Constants\PRODUCT_CONST::DELETED,
@@ -308,7 +309,6 @@ class Product_Manager
 
 			foreach ($result->result() as $row) 
 			{
-				$response['data'][$i][] = array($this->_CI->encrypt->encode($row->id));
 				$response['data'][$i][] = array($row_start + $i + 1);
 				$response['data'][$i][] = array($row->material_code);
 				$response['data'][$i][] = array($row->description);
@@ -348,12 +348,17 @@ class Product_Manager
 				$response['data'][$i][] = array($row_start + $i + 1);
 				
 				foreach ($row as $key => $value)
-      				$response['data'][$i][] = array($value);
+				{
+					if ($key !== 'sales_reservation')
+      					$response['data'][$i][] = array($value);
+				}
 
       			$response['data'][$i][] = array($row->beginv + $row->purchase_receive + $row->customer_return + $row->stock_receive 
       											+ $row->adjust_increase - $row->damage - $row->purchase_return - $row->stock_delivery - $row->customer_delivery 
       											- $row->adjust_decrease - $row->release);
 
+      			$response['data'][$i][] = array($row->sales_reservation);
+      			
 				$i++;
 			}
 		}
@@ -470,6 +475,12 @@ class Product_Manager
 						$response['logs'][] = 'Row #'.$i." : Unable to process current row because of incomplete details!";
 						continue;
 					}
+
+					/**
+					 * Parse data from csv to utf8
+					 */
+					foreach ($product_csv_data as $key => $value) 
+						$product_csv_data[$key] = utf8_encode($value);
 
 					$with_error 	= FALSE;
 					$material_code 	= trim($product_csv_data[0]);
@@ -638,6 +649,12 @@ class Product_Manager
 						continue;
 					}
 
+					/**
+					 * Parse data from csv to utf8
+					 */
+					foreach ($product_csv_data as $key => $value) 
+						$product_csv_data[$key] = utf8_encode($value);
+					
 					$material_code 	= trim($product_csv_data[0]);
 					$product_id 	= 0;
 
@@ -685,16 +702,15 @@ class Product_Manager
 																'memo' => 'Beginning Inventory',
 																'created_by' => $this->_current_user,
 																'date_created' => $this->_current_date));
+
+							$response['logs'][] = 'Row #'.$i." : [$key] Successfully updated beginning inventory!";
 						}
+						else
+							$response['logs'][] = 'Row #'.$i." : [$key] Unable to update beginning inventory!";
 					}
 
 					if (count($adjustment_field_data) > 0)
-					{
 						$this->_CI->adjust_model->insert_batch_adjustment($adjustment_field_data);
-						$response['logs'][] = 'Row #'.$i." : Successfully updated beginning inventory!";
-					} 
-					else
-						$response['logs'][] = 'Row #'.$i." : Unable to update beginning inventory!";
 				}
 			}
 		}
@@ -766,6 +782,120 @@ class Product_Manager
    			$string_logs .= $logs_list[$i].PHP_EOL;
    		
    		file_put_contents($file_name.".txt", $string_logs);
+	}
+
+	/**
+	 * Get the first 10 result of product search based on material code and product name
+	 * @param  array  $param          
+	 * @param  boolean $with_inventory
+	 * @return array $response
+	 */
+	public function get_product_autocomplete($param, $with_inventory = FALSE)
+	{
+		extract($param);
+
+		$response	= [];
+		$branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
+		$result 	= $this->_CI->product_model->get_product_by_term($term, $branch_id, $with_inventory);
+
+		$i = 0;
+		
+		foreach ($result->result() as $row) 
+		{
+			$returned_data = [$row->id, $row->description, $row->material_code, $row->type, $row->uom, 1];
+
+			if ($with_inventory) 
+				$returned_data[3] = $row->inventory;
+
+			$response[$i]['label'] = $row->description;
+			$response[$i]['value'] = $row->id;
+			$response[$i]['ret_datas'] = $returned_data;
+
+			$i++;			
+		}
+
+		$result->free_result();
+
+		return $response;
+	}
+
+	/**
+	 * Check current inventory based from checker type
+	 * @param  array $param      
+	 * @param  int $checker_type [0 - Minimum checker, 1 - Maximum checker]
+	 * @return array $response
+	 */
+	public function check_current_inventory($param, $checker_type, $table_name = '')
+	{
+		extract($param);
+
+		if (!class_exists('Services\SalesReservation_Manager',FALSE)) 
+			$this->_CI->load->service('salesreservation_manager');
+
+		$this->_CI->_own_sales_reservation_manager = new \Services\SalesReservation_Manager();
+
+		$branch_id 	= $this->_CI->encrypt->decode(get_cookie('branch'));
+
+		$response = [];
+		$response['is_insufficient'] = 0;
+		$response['is_excess'] = 0;
+		$response['reservation_list'] = [];
+		$inserted_quantity = 0;
+
+		$result = $this->_CI->product_model->get_product_inventory_info($product_id, $branch_id);
+
+		if ($row_id != 0 && !empty($table_name)) 
+		{
+			$transaction_result = $this->_CI->product_model->get_product_qty_transaction($row_id, $table_name);
+
+			if ($transaction_result->num_rows() == 1)
+			{
+				$row = $transaction_result->row();
+				$inserted_quantity = $row->quantity;
+			}
+
+			$transaction_result->free_result();
+		}
+
+		$row = $result->row();
+
+		if ($checker_type == \Constants\SALESRESERVATION_CONST::MIN_CHECKER) 
+		{
+			/**
+			 * Check if current inventory will reach negative or zero,
+			 * If after deducting the transaction qty and inventory > 0, deduct the unsold qty
+			 */
+			if ((($row->current_inventory + $inserted_quantity) - $qty) < 0 && $row->min_inv != 0) 
+				$response['is_insufficient'] = \Constants\SALESRESERVATION_CONST::NEGATIVE_INV;
+			elseif ((($row->current_inventory + $inserted_quantity) - $qty) >= 0 && (($row->current_inventory + $inserted_quantity) - $qty) <= $row->min_inv && $row->min_inv != 0)
+				$response['is_insufficient'] = \Constants\SALESRESERVATION_CONST::MINIMUM;
+
+			if ($response['is_insufficient'] == 0)
+			{
+				$total_unsold = 0;
+				$reservation_list = $this->_CI->_own_sales_reservation_manager->get_product_sales_reservation($product_id, $branch_id);
+			
+				foreach ($reservation_list as $key => $array)
+					$total_unsold += (int)$array['unsold_qty'];
+
+				if (((($row->current_inventory + $inserted_quantity) - $qty) - $total_unsold) <= 0) 
+					$response['reservation_list'] = $reservation_list;
+			}
+		}
+		else
+		{
+			$inserted_quantity *= -1;
+
+			if ((($row->current_inventory + $inserted_quantity) + $qty) >= $row->max_inv && $row->max_inv != 0) 
+				$response['is_excess'] = TRUE;
+		}
+
+		$response['checker'] = $checker_type;
+		$response['current_inventory'] = $row->current_inventory + $inserted_quantity;
+
+		$result->free_result();
+
+		return $response;
 	}
 
 	/**

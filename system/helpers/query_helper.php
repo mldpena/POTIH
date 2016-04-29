@@ -1,14 +1,19 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 if (!function_exists('get_name_list_from_table')) 
 {
-	function get_name_list_from_table($is_option = false, $table = '', $include_all = false, $default_value = 0)
+	function get_name_list_from_table($is_option = false, $table = '', $include_all = false, $default_value = 0, $field_name = "`name`", $optional_condition = "")
 	{
 		$CI =& get_instance();
 
 		$data_list = (!$is_option) ? array() : '';
 
-		$query = "SELECT CONCAT(`name`) AS 'name', `id`
-					FROM $table WHERE `is_show` = 1"; 
+		$query = "SELECT 
+					CONCAT($field_name) AS 'name', `id`
+					FROM 
+						$table 
+					WHERE 
+						`is_show` = 1
+						$optional_condition"; 
 
 		$result = $CI->db->query($query);
 
@@ -16,7 +21,7 @@ if (!function_exists('get_name_list_from_table'))
 			if (!$is_option) 
 				$data_list[0] = 'ALL';
 			else
-				$data_list .= "<option value='0'>ALL</option>";
+				$data_list .= "<option value='0' selected>ALL</option>";
 		}
 		
 		if ($result->num_rows() > 0) {
@@ -37,7 +42,7 @@ if (!function_exists('get_name_list_from_table'))
 //Temporary
 if (!function_exists('get_next_number')) 
 {
-	function get_next_number($table_name = '', $field = '', $additional_field = array(), $default_value = 100000)
+	function get_next_number($table_name = '', $field = '', $additional_field = array(), $conditions = '', $default_value = 100000)
 	{
 		$CI =& get_instance();
 		$CI->load->library('sql');
@@ -45,17 +50,33 @@ if (!function_exists('get_next_number'))
 		$user_id 	= $CI->encrypt->decode(get_cookie('temp'));
 		$branch_id 	= $CI->encrypt->decode(get_cookie('branch'));
 		$next_value = $default_value + 1;
+
 		$query 		= array();
 		$query_data = array();
 
 		array_push($query,"SET @invoiceno_d = 0;");
 		array_push($query_data,array());
 
-		array_push($query,"SELECT COAlESCE(MAX(`$field` + 0),$default_value) INTO @invoiceno_d FROM `$table_name` WHERE `is_show` = 1 FOR UPDATE;");
-		array_push($query_data,array());
+		$getNextInvoice = sprintf("
+			SELECT 
+				COALESCE(MAX(`%s` + 0), %u) INTO @invoiceno_d 
+			FROM 
+				`%s` 
+			WHERE 
+				`is_show` = 1 
+				%s
+			FOR UPDATE;
+		", 	$field,
+			$default_value,
+			$table_name,
+			$conditions
+		);
+
+		array_push($query, $getNextInvoice);
+		array_push($query_data, array());
 
 		$query_temp 		= "INSERT INTO `$table_name`(`$field`,`date_created`,`created_by`,`last_modified_by`,`branch_id`";
-		$query_temp_values 	= "VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d+1),NOW(),?,?,?";
+		$query_temp_values 	= "VALUES(IF(@invoiceno_d = 0,'$next_value',@invoiceno_d + 1),NOW(),?,?,?";
 		$query_data_temp 	= array($user_id,$user_id,$branch_id);
 
 		foreach ($additional_field as $key => $value) {

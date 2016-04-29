@@ -57,6 +57,17 @@
 
 				<?php endif; ?>
 
+				<?php if($page_permissions['customer']) : ?>
+
+				<a href="<?= base_url() ?>customer/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>customer.png">
+						<div>Customer</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
 				<?php if($page_permissions['branch']) : ?>
 
 				<a href="<?= base_url() ?>branch/list">
@@ -113,6 +124,40 @@
 
 				<?php endif; ?>
 
+			</div>
+		</div>
+
+		<?php endif; ?>
+
+		<?php if($section_permissions['sales']) : ?>
+
+		<div class="sidebar-group" id="sales-group">
+			<div class="header subgroup-toggle">
+				<div>Sales</div>
+				<div><i class="fa fa-plus-square"></i></div>
+			</div>
+			<div class="link-menu">
+				<?php if($page_permissions['sales_reservation']) : ?>
+
+				<a href="<?= base_url() ?>reservation/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>sales-reservation.png">
+						<div>Sales Reservation</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+				<?php if($page_permissions['sales']) : ?>
+
+				<a href="<?= base_url() ?>sales/list">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>sales.png">
+						<div>Sales Invoice</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
 			</div>
 		</div>
 
@@ -343,6 +388,27 @@
 
 				<?php endif; ?>
 
+				<?php if($page_permissions['sales_report']) : ?>
+
+				<a href="<?= base_url() ?>sales/report">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>sales-report.png">
+						<div>Sales Report</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
+
+				<?php if($page_permissions['book_report']) : ?>
+
+				<a href="<?= base_url() ?>sales/book_report">
+					<div class="link">
+						<img src="<?= base_url().IMG ?>sales-book-report.png">
+						<div>Sales Book Report</div>
+					</div>
+				</a>
+
+				<?php endif; ?>
 			</div>
 		</div>
 

@@ -13,7 +13,8 @@ class Recent_Name_Model extends CI_Model {
 		$this->db->select("`name`")
 				->from("`recent_name`")
 				->where("`type`", $type)
-				->like("`name`", $term, "both");
+				->like("`name`", $term, "both")
+				->limit(10);
 
 		$result = $this->db->get();
 

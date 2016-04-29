@@ -141,7 +141,7 @@ class PurchaseReceive_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\PURCHASE_RECEIVE_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\PURCHASE_RECEIVE_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->receive_detail_id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->purchase_detail_id));
 				$response['detail'][$i][] = array($i+1);
@@ -228,7 +228,7 @@ class PurchaseReceive_Model extends CI_Model {
 			$i = 0;
 			foreach ($result->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\PURCHASE_RECEIVE_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\PURCHASE_RECEIVE_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = $row->receive_detail_id == 0 ? array(0) : array($this->encrypt->encode($row->receive_detail_id));
 				$response['detail'][$i][] = array($this->encrypt->encode($row->po_detail_id));
 				$response['detail'][$i][] = array($i+1);

@@ -5,6 +5,7 @@ class ProductReturn extends CI_Controller {
 	private $_authentication_manager;
 	private $_autocomplete_manager;
 	private $_notification_manager;
+	private $_product_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -46,6 +47,7 @@ class ProductReturn extends CI_Controller {
 			case 'list':
 				$page = 'return_list';
 				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
+				$customer_list = get_name_list_from_table(TRUE, 'customer', TRUE, 0, "`code`, ' - ', `company_name`");
 				$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN);
 				$permissions = array('allow_to_add' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::ADD_CUSTOMER_RETURN),
 									'allow_to_view_detail' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN_DETAIL),
@@ -54,6 +56,7 @@ class ProductReturn extends CI_Controller {
 
 			case 'view':
 				$page = 'return_detail';
+				$customer_list = get_name_list_from_table(TRUE, 'customer', FALSE, 0, "`code`, ' - ', `company_name`");
 				$allow_user = $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::VIEW_CUSTOMER_RETURN);
 				$permissions = array('allow_to_edit' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::EDIT_CUSTOMER_RETURN),
 									'allow_to_add' => $this->permission_checker->check_permission(\Permission\CustomerReturn_Code::ADD_CUSTOMER_RETURN));
@@ -74,6 +77,7 @@ class ProductReturn extends CI_Controller {
 						'page' 			=> $page,
 						'script'		=> $page.'_js.php',
 						'branch_list' 	=> $branch_list,
+						'customer_list' 	=> $customer_list,
 						'permission_list' => $permissions,
 						'section_permissions' => $this->permission_checker->get_section_permissions(),
 						'page_permissions' => $this->permission_checker->get_page_permissions());
@@ -103,11 +107,14 @@ class ProductReturn extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('return_model');
+		$this->load->model('product_model');
 		$this->load->service('autocomplete_manager');
 		$this->load->service('notification_manager');
-		
+		$this->load->service('product_manager');
+
 		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
+		$this->_product_manager = new Services\Product_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -129,7 +136,7 @@ class ProductReturn extends CI_Controller {
 					break;
 
 				case 'autocomplete_product':
-					$response = get_product_list_autocomplete($post_data);
+					$response = $this->_product_manager->get_product_autocomplete($post_data);
 					break;
 
 				case 'insert_detail':
@@ -157,7 +164,7 @@ class ProductReturn extends CI_Controller {
 					break;
 
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data,0);
+					$response = $this->_product_manager->check_current_inventory($post_data, \Constants\RETURN_CONST::MAX_CHECKER, 'return_detail');
 					break;
 				
 				case 'set_session':

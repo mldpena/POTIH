@@ -1,4 +1,5 @@
 <script type="text/javascript">
+
 	var token = "<?= $token ?>";
 
 	var tab = document.createElement('table');
@@ -137,7 +138,7 @@
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ baseURL : "<?= base_url() ?>", 
 										  controller : 'return',
-										  recentNameElementId : 'customer_name' });
+										  recentNameElementId : 'walkin-customer' });
 
 	tableHelper.detailContent.bindAllEvents( { 	saveEventsBeforeCallback : getHeadDetailsBeforeSubmit, 
 												updateEventsBeforeCallback : getRowDetailsBeforeSubmit,
@@ -145,6 +146,19 @@
 
 	if ("<?= $this->uri->segment(3) ?>" != '') 
 	{
+
+		$.toggleOption('customer-type', [
+											{
+												optionValue : 1,
+												elementId : 'customer',
+												isSelect2 : true
+											},
+											{
+												optionValue : 2,
+												elementId : 'walkin-customer'
+											}
+										]);
+
 		$('#date').datepicker();
     	$('#date').datepicker("option","dateFormat", "mm-dd-yy");
     	$('#date').datepicker("setDate", new Date());
@@ -167,7 +181,28 @@
 					$('#customer_name').val(response.customer_name);
 					$('#received_by').val(response.received_by);
 
-					if (response.entry_date != '') 
+					$('#customer').val(response.customer_id);
+					$('#walkin-customer').val(response.customer_name);
+
+					$('#customer').select2({
+						minimumInputLength: 1,
+						maximumSelectionLength: 10
+					});
+
+					if (response.customer_id == 0)
+					{
+						$('#customer').next().hide();
+						$('#walkin-customer').show();
+						$('input[name=customer-type][value=' + CustomerType.Walkin + ']').attr('checked', 'checked');
+					}
+					else
+					{
+						$('#customer').next().show();
+						$('#walkin-customer').hide();
+						$('input[name=customer-type][value=' + CustomerType.Regular + ']').attr('checked', 'checked');
+					}
+
+					if (response.entry_date != '')
 						$('#date').val(response.entry_date);
 				}
 				
@@ -229,12 +264,17 @@
 	{
 		var date_val	= moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 	= $('#memo').val();
-		var customer_name_val = $('#customer_name').val();
 		var received_by_val = $('#received_by').val();
+		var customer_type 	= $("input[name='customer-type']:checked").val();
+		var customer_id_val = customer_type == CustomerType.Regular ? $('#customer').val() : 0;
+		var walkin_customer_name_val = customer_type == CustomerType.Regular ? '' : $('#walkin-customer').val();
 
-		if (customer_name_val == '') 
+		if (
+				(customer_type == CustomerType.Regular && customer_id_val == 0) ||
+				(customer_type == CustomerType.Walkin && walkin_customer_name_val == '')
+			) 
 		{
-			alert('Customer Name should no be empty!');
+			alert('Customer should not be empty!');
 			return false;
 		};
 
@@ -242,8 +282,9 @@
 						fnc 	 	: 'save_return_head', 
 						entry_date 	: date_val,
 						memo 		: memo_val,
-						customer_name : customer_name_val,
-						received_by : received_by_val
+						customer_name : walkin_customer_name_val,
+						received_by : received_by_val,
+						customer_id : customer_id_val
 					};
 
 		return arr;
@@ -256,7 +297,7 @@
 	    var qty             = tableHelper.contentProvider.getData(rowIndex,'qty');
 	    var memo            = $.sanitize(tableHelper.contentProvider.getData(rowIndex,'memo'));
 	    var rowUniqueId     = tableHelper.contentProvider.getData(rowIndex,'id');
-	    var nonStackDescription  = tableHelper.contentProvider.getData(rowIndex,'product',4);
+	    var nonStackDescription  = $.sanitize(tableHelper.contentProvider.getData(rowIndex,'product',4));
 	    var receivedBy 		= $.sanitize(tableHelper.contentProvider.getData(rowIndex,'receivedby'));
 	    var actionFunction  = rowUniqueId != 0 ? tableHelper._settings.updateDetailName : tableHelper._settings.insertDetailName;
 

@@ -5,6 +5,7 @@ class Adjust_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_interval_date = '';
 	private $_error_message = array('REQUEST_EXISTS' => 'Cannot submit adjust request! Current product still has a pending request!',
 									'UNABLE_TO_INSERT' => 'Unable to insert inventory adjust!',
 									'UNABLE_TO_UPDATE' => 'Unable to update inventory adjust!',
@@ -21,6 +22,7 @@ class Adjust_Model extends CI_Model {
 		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d H:i:s");
+		$this->_interval_date 		= date('Y-m-d H:i:s', strtotime('-'.\Constants\ADJUST_CONST::DATE_INTERVAL.' day', strtotime($this->_current_date)));
 	}
 
 	public function get_product_adjust_list($param, $with_limit = TRUE)
@@ -759,7 +761,8 @@ class Adjust_Model extends CI_Model {
 	{
 		$this->db->where("`status`", \Constants\ADJUST_CONST::PENDING)
 				->where("`is_show`", \Constants\ADJUST_CONST::ACTIVE)
-				->where("`branch_id`", $this->_current_branch_id);
+				->where("`branch_id`", $this->_current_branch_id)
+				->where("`date_created` >=", $this->_interval_date);
 
 
 		return $this->db->count_all_results('inventory_adjust');

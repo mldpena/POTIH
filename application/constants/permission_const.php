@@ -1,6 +1,14 @@
 <?php
 	namespace Permission;
 
+	class UserType_Code
+	{
+		const SUPERADMIN = 1;
+		const ADMIN = 2;
+		const NORMAL_USER = 3;
+		const SALESMAN = 4;
+	}
+
 	class SuperAdmin_Code
 	{
 		const ADMIN = 100;
@@ -143,19 +151,13 @@
 		const DELETE_RELEASE= 203; 
 	}
 
-	class InventoryWarning_Code
+	class SystemReport_Code
 	{
-		const VIEW_WARNING = 211;
-	}
-
-	class BranchInventory_Code
-	{
+		const VIEW_PRODUCT_WARNING = 211;
 		const VIEW_BRANCH_INVENTORY = 212;
-	}
-
-	class TransactionSummary_Code
-	{
 		const VIEW_TRANSACTION_SUMMARY = 213;
+		const VIEW_SALES_REPORT = 214;
+		const VIEW_BOOK_REPORT = 215;
 	}
 
 	class Assortment_Code
@@ -190,4 +192,31 @@
 		const VIEW_STOCKREQUEST_DETAIL = 240;
 	}
 
+	class Customer_Code
+	{
+		const VIEW_CUSTOMER = 250;
+		const VIEW_CUSTOMER_DETAIL = 251;
+		const ADD_CUSTOMER = 252;
+		const EDIT_CUSTOMER = 253;
+		const DELETE_CUSTOMER = 254;
+	}
+
+	class SalesReservation_Code
+	{
+		const VIEW_SALES_RESERVATION = 260;
+		const VIEW_SALES_RESERVATION_DETAIL = 261;
+		const ADD_SALES_RESERVATION = 262;
+		const EDIT_SALES_RESERVATION = 263;
+		const DELETE_SALES_RESERVATION= 264;
+	}
+
+	class Sales_Code
+	{
+		const VIEW_SALES = 270;
+		const VIEW_SALES_DETAIL = 271;
+		const ADD_SALES = 272;
+		const EDIT_SALES = 273;
+		const DELETE_SALES = 274;
+		const TRANSFER_DETAILS = 275; 
+	}
 ?>

@@ -5,6 +5,7 @@ class PurchaseReturn extends CI_Controller {
 	private $_authentication_manager;
 	private $_autocomplete_manager;
 	private $_notification_manager;
+	private $_product_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -104,11 +105,14 @@ class PurchaseReturn extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('purchasereturn_model');
+		$this->load->model('product_model');
 		$this->load->service('autocomplete_manager');
 		$this->load->service('notification_manager');
-		
+		$this->load->service('product_manager');
+
 		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_autocomplete_manager = new Services\Autocomplete_Manager();
+		$this->_product_manager = new Services\Product_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -130,7 +134,7 @@ class PurchaseReturn extends CI_Controller {
 					break;
 
 				case 'autocomplete_product':
-					$response = get_product_list_autocomplete($post_data);
+					$response = $this->_product_manager->get_product_autocomplete($post_data);
 					break;
 
 				case 'insert_detail':
@@ -158,7 +162,7 @@ class PurchaseReturn extends CI_Controller {
 					break;
 
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data, 0, 'purchase_return_detail');
+					$response = $this->_product_manager->check_current_inventory($post_data, \Constants\PURCHASE_RETURN_CONST::MIN_CHECKER, 'purchase_return_detail');
 					break;
 				
 				case 'set_session':

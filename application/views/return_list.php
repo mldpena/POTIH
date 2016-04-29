@@ -17,6 +17,15 @@
 						<td><input type="text" class="form-control" id="date_to"></td>
 					</tr>
 					<tr>
+						<td>Customer:</td>
+						<td colspan="3">
+							<select class="form-control" id="customer">
+								<?= $customer_list ?>
+								<option value="-1">Walk-in Customer</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
 						<td>Location:</td>
 						<td colspan="3"><select class="form-control" id="branch_list"><?= $branch_list ?></select></td>
 					</tr>

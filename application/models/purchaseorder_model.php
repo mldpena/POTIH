@@ -95,7 +95,7 @@ class PurchaseOrder_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\PURCHASE_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\PURCHASE_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($i+1);

@@ -72,7 +72,10 @@
 	root.appendChild(myjstbl.mypage.pagingtable);	
 
 	$('#tbl').hide();
-	$('#branch_list').chosen();
+	$('#branch_list').select2();
+	$('#date_from, #date_to, #date_created').datepicker();
+	$('#date_from, #date_to, #date_created').datepicker("option","dateFormat", "mm-dd-yy");
+	$('#date_created').datepicker("setDate", new Date());
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
 										{ notFoundMessage : 'No pick-up summary entry found!' });
@@ -84,8 +87,12 @@
 	triggerSearchRequest();
 
 	$('#create_summary').click(function(){
+		var date_created = $('#date_created').val() != '' ? moment($('#date_created').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 
-		var arr = { fnc : 'generate_summary' }
+		var arr = 	{ 
+						fnc : 'generate_summary',
+						date_created : date_created
+					};
 
 		$.ajax({
             type: "POST",
@@ -140,11 +147,15 @@
 	{
 		var search_val 		= $('#search_string').val();
 		var branch_val 		= $('#branch_list').val();
+		var date_from_val 	= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
+		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 
 		var filterValues = 	{ 
 								fnc 	 		: 'get_pickup_summary', 
 								search_string 	: search_val,
-								branch 			: branch_val
+								branch 			: branch_val,
+								date_from		: date_from_val,
+								date_to 		: date_to_val
 							};
 
 		tableHelper.contentHelper.refreshTableWithLimit(filterValues, lockEntriesForPreviousDays);

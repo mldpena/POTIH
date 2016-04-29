@@ -6,6 +6,7 @@ class Request_Model extends CI_Model {
 	private $_current_branch_id = 0;
 	private $_current_user = 0;
 	private $_current_date = '';
+	private $_interval_date = '';
 	private $_error_message = array('UNABLE_TO_INSERT' => 'Unable to insert request detail!',
 									'UNABLE_TO_UPDATE' => 'Unable to update request detail!',
 									'UNABLE_TO_UPDATE_HEAD' => 'Unable to update request head!',
@@ -30,6 +31,7 @@ class Request_Model extends CI_Model {
 		$this->_current_branch_id 	= (int)$this->encrypt->decode(get_cookie('branch'));
 		$this->_current_user 		= (int)$this->encrypt->decode(get_cookie('temp'));
 		$this->_current_date 		= date("Y-m-d H:i:s");
+		$this->_interval_date 		= date('Y-m-d H:i:s', strtotime('-'.\Constants\REQUEST_CONST::DATE_INTERVAL.' day', strtotime($this->_current_date)));
 	}
 
 	public function get_stock_request_details()
@@ -41,15 +43,25 @@ class Request_Model extends CI_Model {
 		$response['detail_error'] 	= ''; 
 		$response['delivery_reference_numbers'] = '';
 
-		$query_head = "SELECT CONCAT('SR',SH.`reference_number`) AS 'reference_number', COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
-					SH.`memo`, SH.`branch_id`, SH.`request_to_branchid`, SUM(SD.`qty_delivered`) AS 'qty_delivered', SH.`is_used`,
-					SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) AS 'remaining_qty'
-					FROM `stock_request_head` AS SH
-					LEFT JOIN stock_request_detail AS SD ON SD.`headid` = SH.`id`
-					WHERE SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE." AND SH.`id` = ?
-					GROUP BY SH.`id`";
+		$query_head = "SELECT 
+							CONCAT('SR',SH.`reference_number`) AS 'reference_number', 
+							COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
+							COALESCE(DATE(SH.`due_date`),'') AS 'due_date', 
+							SH.`memo`, SH.`branch_id`, 
+							SH.`request_to_branchid`, 
+							SUM(SD.`qty_delivered`) AS 'qty_delivered', 
+							SH.`is_used`,
+							SUM(IF(SD.`quantity` - SD.`qty_delivered` < 0, 0, SD.`quantity` - SD.`qty_delivered`)) AS 'remaining_qty'
+						FROM
+							 `stock_request_head` AS SH
+						LEFT JOIN 
+							stock_request_detail AS SD ON SD.`headid` = SH.`id`
+						WHERE 
+							SH.`is_show` = ".\Constants\REQUEST_CONST::ACTIVE." AND 
+							SH.`id` = ?
+						GROUP BY SH.`id`";
 
-		$result_head = $this->db->query($query_head,$this->_request_head_id);
+		$result_head = $this->db->query($query_head, $this->_request_head_id);
 
 		if ($result_head->num_rows() != 1) 
 			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
@@ -59,6 +71,7 @@ class Request_Model extends CI_Model {
 
 			$response['reference_number'] 	= $row->reference_number;
 			$response['entry_date'] 		= date('m-d-Y', strtotime($row->entry_date));
+			$response['due_date'] 			= date('m-d-Y', strtotime($row->due_date));
 			$response['memo'] 				= $row->memo;
 			$response['to_branchid'] 		= $row->request_to_branchid;
 			$response['is_editable'] 		= ($row->qty_delivered == 0 && $row->branch_id == $this->_current_branch_id) ? TRUE : FALSE;
@@ -96,7 +109,7 @@ class Request_Model extends CI_Model {
 			$i = 0;
 			foreach ($result_detail->result() as $row) 
 			{
-				$break_line = $row->type == \Constants\REQUEST_CONST::STOCK ? '' : '<br/>';
+				$break_line = ($row->type == \Constants\REQUEST_CONST::NON_STOCK || !empty($row->description)) ? '<br/>' : '';
 				$response['detail'][$i][] = array($this->encrypt->encode($row->id));
 				$response['detail'][$i][] = array('');
 				$response['detail'][$i][] = array($i+1);
@@ -223,11 +236,12 @@ class Request_Model extends CI_Model {
 		$query_data 		= array();
 		$query 				= array();
 
-		$query_data = array($entry_date,$memo,$to_branch,$this->_current_user,$this->_current_date,$this->_request_head_id); 
+		$query_data = array($entry_date, $due_date, $memo, $to_branch, $this->_current_user, $this->_current_date, $this->_request_head_id); 
 
 		$query = "UPDATE `stock_request_head`
 					SET
 					`entry_date` = ?,
+					`due_date` = ?,
 					`memo` = ?,
 					`request_to_branchid` = ?,
 					`is_used` = ".\Constants\REQUEST_CONST::USED.",
@@ -235,7 +249,7 @@ class Request_Model extends CI_Model {
 					`last_modified_date` = ?
 					WHERE `id` = ?;";
 
-		$result = $this->sql->execute_query($query,$query_data);
+		$result = $this->sql->execute_query($query, $query_data);
 
 		if ($result['error'] != '') 
 			throw new Exception($this->_error_message['UNABLE_TO_UPDATE_HEAD']);
@@ -251,10 +265,15 @@ class Request_Model extends CI_Model {
 
 		$response['rowcnt'] = 0;
 
-		$this->db->select("SH.`id`, COALESCE(B.`name`,'') AS 'from_branch', COALESCE(B2.`name`,'-') AS 'to_branch', 
+		$this->db->select("SH.`id`, 
+							COALESCE(B.`name`,'') AS 'from_branch', 
+							COALESCE(B2.`name`,'-') AS 'to_branch', 
 							CONCAT('SD',SH.`reference_number`) AS 'reference_number',
-							COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
-							COALESCE(SUM(SD.`quantity`),'') AS 'total_qty', SUM(SD.`quantity` - SD.`qty_delivered`) AS 'remaining_qty',
+							COALESCE(DATE(SH.`entry_date`),'') AS 'entry_date', 
+							COALESCE(DATE(SH.`due_date`),'') AS 'due_date', 
+							IF(SH.`is_used` = 0, 'Unused', SH.`memo`) AS 'memo',
+							COALESCE(SUM(SD.`quantity`),'') AS 'total_qty', 
+							SUM(SD.`quantity` - SD.`qty_delivered`) AS 'remaining_qty',
 							IF(SH.`is_used` = ".\Constants\REQUEST_CONST::ACTIVE.",
 								COALESCE(CASE 
 									WHEN SUM(COALESCE(SD.`qty_delivered`,0)) = 0 THEN 'No Received'
@@ -282,6 +301,20 @@ class Request_Model extends CI_Model {
 
 		if (!empty($date_to))
 			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
+
+		if (isset($notification) && $notification != 0) 
+		{
+			switch ($notification) 
+			{
+				case \Constants\REQUEST_CONST::INCOMPLETE_DELIVERY:
+					$this->db->where("DATE_ADD(DATE(SH.`due_date`), INTERVAL -1 DAY) = CURDATE()");
+					break;
+				
+				case \Constants\REQUEST_CONST::NO_DELIVERY:
+					$this->db->where("SH.`due_date` = CURDATE()");
+					break;
+			}
+		}
 
 		if ($from_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
 			$this->db->where("SH.`branch_id`", (int)$from_branch);
@@ -326,6 +359,7 @@ class Request_Model extends CI_Model {
 				$response['data'][$i][] = array($row->from_branch);
 				$response['data'][$i][] = array($row->to_branch);
 				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->entry_date)));
+				$response['data'][$i][] = array(date('m-d-Y', strtotime($row->due_date)));
 				$response['data'][$i][] = array($row->memo);
 				$response['data'][$i][] = array($row->total_qty);
 				$response['data'][$i][] = array($row->status);
@@ -361,6 +395,20 @@ class Request_Model extends CI_Model {
 		if (!empty($date_to))
 			$this->db->where("SH.`entry_date` <=", $date_to." 23:59:59");
 
+		if (isset($notification) && $notification != 0) 
+		{
+			switch ($notification) 
+			{
+				case \Constants\REQUEST_CONST::INCOMPLETE_DELIVERY:
+					$this->db->where("DATE_ADD(DATE(SH.`due_date`), INTERVAL -1 DAY) = CURDATE()");
+					break;
+				
+				case \Constants\REQUEST_CONST::NO_DELIVERY:
+					$this->db->where("SH.`due_date` = CURDATE()");
+					break;
+			}
+		}
+		
 		if ($from_branch != \Constants\REQUEST_CONST::ALL_OPTION) 
 			$this->db->where("SH.`branch_id`", (int)$from_branch);
 
@@ -470,20 +518,49 @@ class Request_Model extends CI_Model {
 		$this->db->insert_batch("stock_delivery_detail", $new_stock_delivery_detail);
 	}
 
-	public function get_stock_request_count_with_no_receive()
+	public function get_stock_request_notification_count($notification_type)
 	{
 		$count = 0;
 
-		$this->db->select("SUM(COALESCE(`qty_delivered`,0)) AS 'qty_delivered'")
+		$this->db->select("SUM(COALESCE(`qty_delivered`,0)) AS 'qty_delivered',
+							SUM(COALESCE(`quantity`,0)) AS 'total_qty'")
 				->from("stock_request_head AS SH")
 				->join("stock_request_detail AS SD", "SD.`headid` = SH.`id`", "left")
-				->where("SH.`is_show`", \Constants\ADJUST_CONST::ACTIVE)
-				->where("SH.`request_to_branchid`", $this->_current_branch_id)
-				->group_by("SH.`id`")
-				->having("qty_delivered", 0);
-		
-		$inner_query = $this->db->get_compiled_select();
+				->where("SH.`is_show`", \Constants\REQUEST_CONST::ACTIVE);
 
+		switch ($notification_type) 
+		{
+			case 'REQUESTED_BY_OTHER_BRANCH_NO_DELIVERY':
+				$this->db->where("SH.`request_to_branchid`", $this->_current_branch_id)
+						->where("SH.`entry_date` >=", $this->_interval_date);
+				break;
+			
+			case 'DUE_INCOMPLETE':
+				$this->db->where("SH.`branch_id`", $this->_current_branch_id)
+						->where("DATE_ADD(DATE(SH.`due_date`), INTERVAL -1 DAY) = CURDATE()");
+				break;
+
+			case 'DUE_NO_DELIVERY':
+				$this->db->where("SH.`branch_id`", $this->_current_branch_id)
+						->where("SH.`due_date` = CURDATE()");
+				break;
+		}
+		
+		$this->db->group_by("SH.`id`");
+
+		switch ($notification_type) {
+			case 'DUE_INCOMPLETE':
+				$this->db->having("qty_delivered >", 0)
+						 ->having("qty_delivered < total_qty");
+				break;
+			
+			default:
+				$this->db->having("qty_delivered", 0);
+				break;
+		}
+
+		$inner_query = $this->db->get_compiled_select();
+		//echo $inner_query;
 		$query_count = "SELECT COUNT(*) AS rowCount FROM ($inner_query)A";
 
 		$result = $this->db->query($query_count);
@@ -493,5 +570,79 @@ class Request_Model extends CI_Model {
 		$result->free_result();
 
 		return $count;
+	}
+
+	public function get_request_printout_details()
+	{
+		$response = array();
+
+		$response['error'] = '';
+
+		$damage_id = $this->encrypt->decode($this->session->userdata('stock_request'));
+
+		$query_head = "SELECT 
+							CONCAT('SR',H.`reference_number`) AS 'reference_number', 
+							DATE(H.`entry_date`) AS 'entry_date', 
+							COALESCE(B.`name`, '') AS 'request_to',
+							H.`memo`
+						FROM 
+							stock_request_head AS H
+						LEFT JOIN
+							branch AS B ON B.`id` = H.`request_to_branchid` AND B.`is_show` = 1
+						WHERE 
+							H.`id` = ?";
+
+		$result_head = $this->db->query($query_head,$damage_id);
+		
+		if ($result_head->num_rows() == 1) 
+		{
+			$row = $result_head->row();
+
+			foreach ($row as $key => $value)
+				$response[$key] = $value;
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_HEAD']);
+			
+		$result_head->free_result();
+
+		$query_detail = "SELECT 
+								D.`quantity` AS 'quantity', 
+								COALESCE(P.`description`,'-') AS 'product', 
+								D.`description`, 
+								COALESCE(P.`material_code`,'-') AS 'item_code', 
+								D.`memo`,
+								CASE
+									WHEN P.`uom` = 1 THEN 'PCS'
+									WHEN P.`uom` = 2 THEN 'KGS'
+									WHEN P.`uom` = 3 THEN 'ROLL'
+								END AS 'uom'
+							FROM 
+								stock_request_head AS H
+							LEFT JOIN 
+								stock_request_detail AS D ON D.`headid` = H.`id`
+							LEFT JOIN 
+								product AS P ON P.`id` = D.`product_id`
+							WHERE H.`id` = ?";
+
+		$result_detail = $this->db->query($query_detail,$damage_id);
+
+		if ($result_detail->num_rows() > 0) 
+		{
+			$i = 0;
+			foreach ($result_detail->result() as $row) 
+			{
+				foreach ($row as $key => $value) 
+					$response['detail'][$i][$key] = $value;
+
+				$i++;
+			}
+		}
+		else
+			throw new Exception($this->_error_message['UNABLE_TO_SELECT_DETAILS']);
+
+		$result_detail->free_result();
+
+		return $response;
 	}
 }

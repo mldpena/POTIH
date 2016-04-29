@@ -56,6 +56,10 @@
 				text-align: center;
 			}
 
+			.td-right{
+				text-align: right;
+			}
+
 			table {
 				border-bottom-style : solid;
 			}
@@ -73,7 +77,7 @@
 		</style>
 	";
 
-	$column_width = array("60px","405px","95px","135px","125px","215px","60px");
+	$column_width = array("60px","405px","95px","230px","125px","215px","60px");
 
 	while ($is_finished == FALSE) 
 	{
@@ -107,9 +111,8 @@
 						<td style="width:$column_width[0];" class="tdcenter header-border">Qty</td>
 						<td style="width:$column_width[6];" class="tdcenter header-border">Unit</td>
 						<td style="width:$column_width[1];" class="tdcenter header-border">Item Description</td>
-						<td style="width:$column_width[2];" class="tdcenter header-border">Item Code</td>
-						<td style="width:$column_width[4];" class="tdcenter header-border">WR #</td>
 						<td style="width:$column_width[3];" class="tdcenter header-border">Remarks</td>
+						<td style="width:$column_width[4];" class="tdcenter header-border">WR #</td>
 					</tr>
 				</table>
 EOD;
@@ -126,12 +129,11 @@ EOD;
 					<table>
 						<tr>
 							<td style=\"width:".$column_width[5].";\" class=\"tdcenter table-data\">".substr($detail[$i]["customer"],0,29)."</td>
-							<td style=\"width:".$column_width[0].";\" class=\"table-data\">".$detail[$i]["quantity"]."</td>
+							<td style=\"width:".$column_width[0].";\" class=\"td-right table-data\">".$detail[$i]["quantity"]."</td>
 							<td style=\"width:".$column_width[6].";\" class=\"tdcenter table-data\">".$detail[$i]["uom"]."</td>
 							<td style=\"width:".$column_width[1].";\" class=\"table-data\">".$detail[$i]["product"]."</td>
-							<td style=\"width:".$column_width[2].";\" class=\"tdcenter table-data\">".$detail[$i]["item_code"]."</td>
-							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["reference_number"]."</td>
 							<td style=\"width:".$column_width[3].";\" class=\"tdcenter table-data\">".$detail[$i]["memo"]."</td>
+							<td style=\"width:".$column_width[4].";\" class=\"tdcenter table-data\">".$detail[$i]["reference_number"]."</td>
 						</tr>
 					</table>";
 
@@ -173,7 +175,7 @@ EOD;
 						<table>
 							<tr>
 								<td colspan = \"3\" style=\"width:335px;\" class=\"table-data\"></td>
-								<td colspan = \"4\" style=\"width:760px;\" class=\"table-data\">".$detail_description."</td>
+								<td colspan = \"3\" style=\"width:760px;\" class=\"table-data\">".$detail_description."</td>
 							</tr>
 						</table>";
 

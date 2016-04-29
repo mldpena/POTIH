@@ -1,14 +1,8 @@
 <script type="text/javascript">
-	var ProfileStatus = {
-		OwnProfile : 1,
-		OtherProfile : 0
-	};
 
 	var isOwnProfile = false;
-	var flag = 0;
-	var token = '<?= $token ?>';
+	var processingFlag = false;
 
-	$('#branches').chosen();
 	$('#user_code').binder('setRule','alphaNumeric');
 	$('#contact').binder('setRule','numeric');
 
@@ -17,7 +11,7 @@
 		var id = $(this).attr('id');
 		id = id.replace('-permission','');
 
-		var presetDetailPermissionClass = (id == 'admin')  ?  'check-detail, .permission-section' : id + '-preset, .' + id + '-preset-section';
+		var presetDetailPermissionClass = (id == 'admin')  ?  'check-detail, .permission-section' : id + '-preset';
 
 		if ($(this).is(':checked'))
 		{
@@ -28,8 +22,11 @@
 		else
 		{
 			$('.' + presetDetailPermissionClass).removeAttr('checked');
+			$('.permission-section').removeAttr('checked');
 			$('.preset').removeAttr('disabled');
 		}
+
+		checkSectionPermission();
 	});
 
 	$('.permission-section').click(function(){
@@ -40,34 +37,15 @@
 		var detailPermissionClass = id + '-detail';
 
 		if ($(this).is(':checked'))
-		{
 			$('.' + detailPermissionClass).attr('checked','checked');
-			if ($('.check-detail').length == $('.check-detail:checked').length)
-				$('#admin-permission').attr('checked','checked');
-		}
 		else
-		{
-			$('#admin-permission').removeAttr('checked');
 			$('.' + detailPermissionClass).removeAttr('checked');
-		}
-
-		//Hard coded entity
-		checkPresetPermission('encoder');
 	});
 
 	$('.check-detail').click(function(){
 		var permissionSection = $(this).attr('class');
 		permissionSection = permissionSection.split(' ');
 		permissionSectionId = permissionSection[1].replace('-detail','');
-
-		//Hard coded entity
-		checkPresetPermission('encoder');
-
-		//For admin preset
-		if ($('.check-detail').length == $('.check-detail:checked').length)
-			$('#admin-permission').attr('checked','checked');
-		else if ($('.check-detail').length != $('.check-detail:checked').length)
-			$('#admin-permission').removeAttr('checked');
 
 		//For section permissions
 		if ($('.' + permissionSection[1]).length == $('.' + permissionSection[1] + ':checked').length)
@@ -89,7 +67,8 @@
 	});
 
 	$('#save').click(function(){
-		if(flag==1)
+
+		if(processingFlag)
 			return;
 
 		var user_code_val	= $("#user_code").val();
@@ -101,6 +80,7 @@
 		var contact_val 	= $("#contact").val();
 		var branches_val    = $('#branches').val() == null ? '' : $('#branches').val();
 		var permission_list = [];
+		var user_type 		= $('.preset:checked').length > 0 ? $('.preset:checked').val() : UserType.NormalUser;
 		var fnc_val 		= "<?= $this->uri->segment(3) ?>" != "" ? "update_user" : "insert_new_user";
 		
 
@@ -161,7 +141,7 @@
 		}
 
 		if ($('#admin-permission').is(':checked'))
-			permission_list.push($('#admin-permission').val());
+			permission_list.push("<?= \Permission\SuperAdmin_Code::ADMIN ?>");
 		else
 		{
 			$('.check-detail:checked').each(function(key,element){
@@ -178,16 +158,17 @@
 						password 	: password_val,
 						contact 	: contact_val,
 						branches 	: branches_val,
+						user_type 	: user_type,
 						permission_list : permission_list
 					};
 
-		flag = 1;
+		processingFlag = true;
 
 		$.ajax({
 			type: "POST",
 			url: "",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
 			success: function(response) {
 				clear_message_box();
 
@@ -200,7 +181,7 @@
 					window.location = "<?= site_url() ?>/" + link;
 				}
 
-				flag = 0;
+				processingFlag = false;
 			}       
 		});
 
@@ -216,7 +197,7 @@
 			type: "POST",
 			url: "",
 			dataType : 'JSON',
-			data: 'data=' + JSON.stringify(arr) + token,
+			data: 'data=' + JSON.stringify(arr) + notificationToken,
 			success: function(response) {
 				clear_message_box();
 
@@ -244,33 +225,29 @@
 						$('#show-info-btn').hide();
 					}
 
-					if (response.permissions.length == 1 && response.permissions[0] == 100)
-					{
-						$('#admin-permission').attr('checked','checked');
-						$('.permission-section').attr('checked','checked');
-						$('.check-detail').attr('checked','checked');
-						$('.preset').not('#admin-permission').attr('disabled','disabled');
-					}
-					else
-					{
-						for (var i = 0; i < response.permissions.length; i++)
-							$('.check-detail[value=' + response.permissions[i] + ']').attr('checked','checked');
+					$(".preset").not(".preset[value='" + response.type + "']").attr('disabled', 'checked');
+					$(".preset[value='" + response.type + "']").attr('checked', 'checked');
 
-						checkPresetPermission('encoder');
-					}
-					
+					for (var i = 0; i < response.permissions.length; i++)
+						$('.check-detail[value=' + response.permissions[i] + ']').attr('checked','checked');
+
+					if (response.type == UserType.Admin) 
+						$('.check-detail').attr('checked','checked');
+
 					checkSectionPermission();
 					
 					if (Boolean(<?= $permission_list['allow_to_edit'] ?>) == false && response.is_own_profile != ProfileStatus.OwnProfile)
 						$('#save').hide();
 
-					$('#branches').trigger("liszt:updated");
+					$('#branches').select2();
 				}
 
-				flag = 0;
+				processingFlag = false;
 			}       
 		});
-	};
+	}
+	else
+		$('#branches').select2();
 
 	function checkSectionPermission()
 	{
@@ -291,21 +268,11 @@
 
 		if ($('.reports-detail').length == $('.reports-detail:checked').length)
 			$('#reports-permission').attr('checked','checked');
-	}
 
-	function checkPresetPermission(presetEntity)
-	{
-		//For additional entity preset
-		if ($('.' + presetEntity + '-preset:checked').length == $('.' + presetEntity + '-preset').length)
-		{
-			$('#' + presetEntity + '-permission').attr('checked','checked');
-			$('.preset').attr('disabled','disabled');
-			$('#' + presetEntity + '-permission').removeAttr('disabled');
-		}
-		else
-		{
-			$('#' + presetEntity + '-permission').removeAttr('checked');
-			$('.preset').removeAttr('disabled');
-		}
+		if ($('.sales-detail').length == $('.sales-detail:checked').length)
+			$('#sales-permission').attr('checked','checked');
+
+		if ($('.pickup-detail').length == $('.pickup-detail:checked').length)
+			$('#pickup-permission').attr('checked','checked');
 	}
 </script>

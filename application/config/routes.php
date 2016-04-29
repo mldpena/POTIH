@@ -46,7 +46,6 @@ $route['return/view/(:any)'] = 'productreturn';
 $route['purchase/(:any)'] = 'purchaseorder';
 $route['purchase/view/(:any)'] = 'purchaseorder';
 
-
 $route['poreceive/(:any)'] = 'purchasereceive';
 $route['poreceive/view/(:any)'] = 'purchasereceive';
 
@@ -77,7 +76,12 @@ $route['requestfrom/view/(:any)'] = 'stockrequest';
 //For notification
 $route['delreceive/list/(:any)'] = 'stockdelivery';
 $route['requestfrom/list/(:any)'] = 'stockrequest';
+$route['requestto/list/(:any)'] = 'stockrequest';
 $route['pending/list/(:any)'] = 'inventoryadjust';
+$route['reservation/list/(:any)'] = 'salesreservation';
+
+$route['reservation/(:any)'] = 'salesreservation';
+$route['reservation/view/(:any)'] = 'salesreservation';
 
 $route['404_override'] = '';
 

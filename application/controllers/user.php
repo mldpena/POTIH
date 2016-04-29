@@ -52,7 +52,7 @@ class User extends CI_Controller {
 			
 			case 'add':
 				$page = 'user_detail';
-				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
+				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
 				$allow_user = $this->permission_checker->check_permission(array(\Permission\User_Code::VIEW_USER,\Permission\User_Code::ADD_USER));
 				$permissions = array('allow_to_edit' => TRUE);
 				break;

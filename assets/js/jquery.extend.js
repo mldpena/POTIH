@@ -67,16 +67,18 @@
 
     $.sanitize = function(string)
     {
-        return encodeURIComponent(string.replace(/\\/g, "\\\\").replace("\"", '\\\"'));
-    };
+        return encodeURIComponent(string.replace(/\n/g, "&#10;")
+                                        .replace(/\\/g, "\\\\")
+                                        .replace(/\"/g, '\\\"'));
+    };  
 
     $.dataValidation = function(data){
         var numericReg = /[^0-9-]/;
-        var alphaNumericCharReg = /[^A-Za-z0-9 '".\/-]/;
-        var alphaNumericReg = /[^A-Za-z0-9 ]/;
-        var codeReg = /[^A-Za-z0-9]/;
-        var letterReg = /[^A-Za-z ]/;
-        var letterWthCharReg = /[^A-Za-z '".\/-]/;
+        var alphaNumericCharReg = /[^\u00F1\u00D1A-Za-z0-9 #&,'".\/-]/;
+        var alphaNumericReg = /[^\u00F1\u00D1A-Za-z0-9 -]/;
+        var codeReg = /[^\u00F1\u00D1A-Za-z0-9]/;
+        var letterReg = /[^\u00F1\u00D1A-Za-z ]/;
+        var letterWthCharReg = /[^\u00F1\u00D1A-Za-z #&'".\/-]/;
         var credentialReg = /[^A-Za-z0-9_@.!]/;
 
         var error = [];
@@ -153,4 +155,50 @@
 
         return error;
     };
+
+    $.toggleOption = function(name, optionSelection)
+    {
+        $("input[name='" + name + "']").click(function(){
+            var value = $(this).val();
+
+            for (var i = 0; i < optionSelection.length; i++) 
+            {
+                var selectedElement = $('#' + optionSelection[i].elementId);
+
+                if (typeof optionSelection[i].isSelect2 !== 'undefined') 
+                    selectedElement = $(selectedElement).next();
+
+                if (value == optionSelection[i].optionValue)
+                    $(selectedElement).show();
+                else
+                    $(selectedElement).hide();
+            }
+        });
+    };
+
+    $.select2Ajax = function(selector, definedData, token)
+    {
+        var token = typeof notificationToken === 'undefined' ? token : notificationToken;
+        
+        $("#customer").select2({        
+            ajax: {
+                dataType: 'JSON',
+                type : 'POST',
+                delay: 250,
+                data: function (params)
+                {
+                    $.extend(definedData, { search_string : params.term });
+
+                    return 'data=' + JSON.stringify(definedData) + token;
+                },
+                processResults: function (data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 1
+        });
+    }
 })(jQuery);

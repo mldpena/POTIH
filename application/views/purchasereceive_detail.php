@@ -25,11 +25,7 @@
 					</tr>
 				</table>
 				<div class="pull-right po-container">
-					<!-- <div class="tbl-checkbtn pull-right po-chkbx" align="center">
-						<input type="checkbox" id="po_for_current_branch">
-						PO for Current Branch
-					</div> -->
-					<div class="tbl single max tbl-po" id="tbl_po"></div>
+					<div class="tbl max tbl-po" id="tbl_po"></div>
 				</div>
 			</div>
 			<div class="divider-line"></div>

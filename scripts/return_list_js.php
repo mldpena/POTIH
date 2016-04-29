@@ -108,7 +108,13 @@
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 	
 	$('#tbl').hide();
-	$('#branch_list').chosen();
+	$('#branch_list').select2();
+
+	$('#customer').select2({
+		minimumInputLength: 1,
+		maximumSelectionLength: 10
+	});
+
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
 	$('#date_from, #date_to').datepicker("setDate", new Date());
@@ -145,6 +151,7 @@
 		var date_from_val 	= $('#date_from').val() != '' ? moment($('#date_from').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var date_to_val 	= $('#date_to').val() != '' ? moment($('#date_to').val(),'MM-DD-YYYY').format('YYYY-MM-DD') : '';
 		var branch_val 		= $('#branch_list').val();
+		var customer_val 	= $('#customer').val();
 
 		var filterValues = 	{ 
 								fnc 	 		: 'search_return_list', 
@@ -153,7 +160,8 @@
 								order_type 		: orde_type_val,
 								date_from		: date_from_val,
 								date_to 		: date_to_val,
-								branch 			: branch_val
+								branch 			: branch_val,
+								customer 		: customer_val
 							};
 
 		return filterValues;

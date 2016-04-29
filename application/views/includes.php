@@ -5,10 +5,11 @@
 <link rel="stylesheet" type="text/css" href="<?= base_url().CSS ?>chosen.css">
 <link rel="stylesheet" type="text/css" href="<?= base_url().CSS ?>jquery-ui.css">
 <link rel="stylesheet" type="text/css" href="<?= base_url().CSS ?>jquery.timepicker.css">
+<link rel="stylesheet" type="text/css" href="<?= base_url().BOWER ?>select2/dist/css/select2.css">
 <?php require_once('internal_css.php'); ?>
 
 <script type="text/javascript"> 
-	var currentURL = "<?= base_url().$this->uri->segment(1).'/' ?><?= (in_array($this->uri->segment(2),array('view','express','record'))) ? 'list' : $this->uri->segment(2)?>";
+	var currentURL = "<?= base_url().$this->uri->segment(1).'/' ?><?= (in_array($this->uri->segment(2),array('view','express','record','add'))) ? 'list' : $this->uri->segment(2)?>";
 	var notificationToken = "<?= $token ?>";
 	var baseURL = "<?= base_url() ?>";
 </script>
@@ -24,6 +25,7 @@
 <script type="text/javascript" src="<?= base_url().JS ?>jquery.extend.js"></script>   
 <script type="text/javascript" src="<?= base_url().JS ?>jquery.binder.js"></script>   
 <script type="text/javascript" src="<?= base_url().JS ?>notification.js"></script>   
-<script type="text/javascript" src="<?= base_url().JS ?>moment.js"></script>   
+<script type="text/javascript" src="<?= base_url().JS ?>moment.js"></script>  
+<script type="text/javascript" src="<?= base_url().BOWER ?>select2/dist/js/select2.js"></script>  
 
 

@@ -1,5 +1,7 @@
 <script type="text/javascript">
+
 	var token = '<?= $token ?>';
+	var fromNotication = Number('<?= $this->uri->segment(3) ?>');
 
 	var tab = document.createElement('table');
 	tab.className = "tblstyle";
@@ -56,6 +58,14 @@
         edit: [spndate],
         disp: [spndate],
         td_class: "tablerow column_click column_hover tddate"
+    };
+
+    var spnduedate = document.createElement('span');
+	colarray['duedate'] = { 
+        header_title: "Due Date",
+        edit: [spnduedate],
+        disp: [spnduedate],
+        td_class: "tablerow column_click column_hover tdduedate"
     };
 
     var spnmemo = document.createElement('span');
@@ -115,11 +125,18 @@
 	myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 	
 	$('#tbl').hide();
-	$('#from_branch, #to_branch').chosen();
+	$('#from_branch, #to_branch').select2();
 	$('#date_from, #date_to').datepicker();
 	$('#date_from, #date_to').datepicker("option","dateFormat", "mm-dd-yy");
 	$('#date_from, #date_to').datepicker("setDate", new Date());
 
+	if (fromNotication != 0) 
+	{
+		var status = fromNotication == NotificationType.NoDelivery ? 3 : 1;
+		$('#date_from').val('');
+		$('#status').val(status);
+	}
+	
 	bind_asc_desc('order_type');
 
 	var tableHelper = new TableHelper(	{ tableObject : myjstbl, tableArray : colarray }, 
@@ -164,9 +181,10 @@
 								from_branch 	: from_branch_val,
 								to_branch 		: to_branch_val,
 								status 			: status_val,
-								filter_reset : filterResetValue,
-								row_start : rowStartValue,
-								row_end : rowEndValue
+								notification 	: fromNotication,
+								filter_reset 	: filterResetValue,
+								row_start 		: rowStartValue,
+								row_end 		: rowEndValue
 							};
 
 		tableHelper.contentHelper.refreshTableWithLimit(objectValues);

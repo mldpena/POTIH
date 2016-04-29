@@ -5,6 +5,7 @@ class StockDelivery extends CI_Controller {
 	private $_authentication_manager;
 	private $_delivery_manager;
 	private $_notification_manager;
+	private $_product_manager;
 
 	/**
 	 * Load needed model or library for the current controller
@@ -164,11 +165,14 @@ class StockDelivery extends CI_Controller {
 	private function _ajax_request()
 	{
 		$this->load->model('delivery_model');
+		$this->load->model('product_model');
 		$this->load->service('delivery_manager');
 		$this->load->service('notification_manager');
-		
+		$this->load->service('product_manager');
+
 		$this->_notification_manager = new Services\Notification_Manager();
 		$this->_delivery_manager = new Services\Delivery_Manager();
+		$this->_product_manager = new Services\Product_Manager();
 
 		$post_data 	= array();
 		$fnc 		= '';
@@ -184,7 +188,8 @@ class StockDelivery extends CI_Controller {
 				case 'create_reference_number':
 					$response = get_next_number('stock_delivery_head','reference_number', array('entry_date' => date("Y-m-d H:i:s"),
 																								'delivery_receive_date' => date("Y-m-d H:i:s"),
-																								'customer_receive_date' => date("Y-m-d H:i:s")));
+																								'customer_receive_date' => date("Y-m-d H:i:s"),
+																								'delivery_type' => \Constants\DELIVERY_CONST::BOTH));
 					break;
 
 				case 'get_stock_delivery_details':
@@ -192,7 +197,7 @@ class StockDelivery extends CI_Controller {
 					break;
 
 				case 'autocomplete_product':
-					$response = get_product_list_autocomplete($post_data);
+					$response = $this->_product_manager->get_product_autocomplete($post_data);
 					break;
 
 				case 'insert_stock_delivery_detail':
@@ -240,7 +245,7 @@ class StockDelivery extends CI_Controller {
 					break;
 					
 				case 'check_product_inventory':
-					$response = check_current_inventory($post_data, 0, 'stock_delivery_detail');
+					$response = $this->_product_manager->check_current_inventory($post_data, \Constants\DELIVERY_CONST::MIN_CHECKER, 'stock_delivery_detail');
 					break;
 
 				case 'update_delivery_receive_head':
@@ -275,7 +280,19 @@ class StockDelivery extends CI_Controller {
 				case 'check_notifications':
 					$response = $this->_notification_manager->get_header_notifications();
 					break;
-					
+				
+				case 'get_sales_details':
+					$response = $this->delivery_model->get_sales_delivery_detail($post_data);
+					break;
+
+				case 'remove_imported_sales':
+					$response = $this->delivery_model->remove_imported_sales_from_delivery();
+					break;
+
+				case 'update_delivery_type':
+					$response = $this->delivery_model->update_delivery_type($post_data);
+					break;
+
 				default:
 					$response['error'] = 'Invalid Arguments!';
 					break;

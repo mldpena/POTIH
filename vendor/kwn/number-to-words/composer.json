@@ -1,0 +1,36 @@
+{
+    "name": "kwn/number-to-words",
+    "description": "Multilanguage standalone PHP number to words converter library. Fully tested, open for extensions and new languages.",
+    "type": "library",
+    "keywords": ["number", "to", "words", "string", "money", "currency", "angle"],
+    "require": {
+        "php": ">=5.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4.6",
+        "phpmd/phpmd": "~2.2",
+        "mockery/mockery": "~0.9",
+        "codeclimate/php-test-reporter": "~0.2",
+        "squizlabs/php_codesniffer": "~2.4"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Karol Wnuk",
+            "email": "k.wnuk@ascetic.pl"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Kwn\\NumberToWords\\": "src"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Kwn\\NumberToWords\\": [
+                "tests",
+                "src-dev"
+            ]
+        }
+    }
+}
