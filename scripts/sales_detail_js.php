@@ -636,7 +636,7 @@
 		var customer_id_val = customer_type == CustomerType.Regular ? $('#customer').val() : 0;
 		var walkin_customer_name_val = customer_type == CustomerType.Regular ? '' : $('#walkin-customer').val();
 		var address_val 	= customer_type == CustomerType.Regular ? '' : $('#address').val();
-		var salesman_val 	= $('#salesman').val();
+		var salesman_val 	= Number($('#salesman').val());
 		var date_val		=  moment($('#date').val(),'MM-DD-YYYY').format('YYYY-MM-DD');
 		var memo_val 		= $('#memo').val();
 		var for_branch_val 	= $('#orderfor').val();
