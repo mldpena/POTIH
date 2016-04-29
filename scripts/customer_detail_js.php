@@ -70,6 +70,11 @@
 											}
 										]);
 
+		var company_name_val 	= $.sanitize(company_name_val);
+		var office_address_val 	= $.sanitize(office_address_val);
+		var plant_address_val 	= $.sanitize(plant_address_val);
+		var business_style_val  = $.sanitize(business_style_val);
+
 		if (errorList.length > 0) 
 		{
 			build_message_box('messagebox_1', build_error_message(errorList),'danger');
