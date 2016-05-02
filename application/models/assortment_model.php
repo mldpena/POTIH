@@ -689,7 +689,7 @@ class Assortment_Model extends CI_Model {
 	{
 		$response['sales_list_error'] = '';
 
-		$query_sales_list_data = array($this->_assortment_head_id, $customer_id, $branch);
+		$query_sales_list_data = array($this->_assortment_head_id, $customer_id);
 		$query_sales_list = "SELECT 
 									SH.`id`,
 									IF(COUNT(RD.`id`) > 0, 1, 0) AS 'is_sold',
@@ -722,8 +722,7 @@ class Assortment_Model extends CI_Model {
 							WHERE
 								SH.`is_show` = ".\Constants\ASSORTMENT_CONST::ACTIVE." AND 
 								SH.`is_used` = ".\Constants\ASSORTMENT_CONST::USED." AND 
-								SH.`customer_id` = ? AND 
-								(SH.`for_branch_id` = ? OR SH.`for_branch_id` = RD.`branch_id`)
+								SH.`customer_id` = ?
 							GROUP BY SH.`id`
 							HAVING 
 								total_remaining_qty > 0 OR is_sold = 1";

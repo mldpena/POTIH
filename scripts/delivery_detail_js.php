@@ -494,7 +494,7 @@
 				removeImportedSales();
 			}
 
-			toggleHideColumns({ isTransfer : false, isSales : true });
+			toggleHideColumns({ isTransfer : true, isSales : true });
 		}
 		else if (delivery_type == DeliveryType.Both)
 		{

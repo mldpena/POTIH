@@ -125,7 +125,7 @@ class Delivery_Model extends CI_Model {
 			}
 		}
 
-		$query_sales_list_data = array($this->_delivery_head_id, $this->_current_branch_id);
+		$query_sales_list_data = array($this->_delivery_head_id);
 		$query_sales_list = "SELECT 
 							    SH.`id`,
 								IF(COUNT(SDD.`id`) > 0, 1, 0) AS 'is_sold',
@@ -157,8 +157,7 @@ class Delivery_Model extends CI_Model {
 						    AS SDD ON SDD.`sales_detail_id` = SD.`id`
 							WHERE
 							    SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND 
-							    SH.`is_used` = ".\Constants\DELIVERY_CONST::USED." AND 
-							    (SH.`for_branch_id` = ? OR SH.`for_branch_id` = SDD.`branch_id`)
+							    SH.`is_used` = ".\Constants\DELIVERY_CONST::USED."
 							GROUP BY SH.`id`
 							HAVING 
 								total_remaining_qty > 0 OR is_sold = 1";
