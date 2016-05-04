@@ -306,10 +306,11 @@
 
 		$grand_total = '
 			<table>
-				<tr><td width="100px" align="right">'.$page_amount.'</td></tr>
+				<tr><td width="115px" align="right">'.$page_amount.'</td></tr>
 			</table>
 		';
-
+		
+		$pdf->SetFont($font, '', 14, '', '', '');
 		$pdf->writeHTMLCell('', '', 180, 226, $grand_total,  0, 1, 0, true, 'L', true);
 	}
 ?>
