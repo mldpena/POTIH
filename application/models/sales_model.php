@@ -281,16 +281,8 @@ class Sales_Model extends CI_Model {
 		$this->db->group_by("SH.`id`")
 				->order_by($order_field, $order_type);
 
-		if (isset($status) && $status != \Constants\SALES_CONST::ALL_OPTION)
-		{
-			if ($status != \Constants\SALES_CONST::INCOMPLETE_NO_DELIVERY)
-				$this->db->having("status_code", $status); 
-			else
-			{
-				$this->db->or_having("status_code", \Constants\SALES_CONST::INCOMPLETE); 
-				$this->db->or_having("status_code", \Constants\SALES_CONST::NO_DELIVERY); 
-			}
-		}
+		if (isset($status) &&  $status != \Constants\SALES_CONST::ALL_OPTION)
+			$this->db->having("status_code", $status);
 		
 		$inner_query = $this->db->get_compiled_select('', TRUE);
 
