@@ -105,7 +105,7 @@ class Sales_Model extends CI_Model {
 							IF(SH.`is_used` = ".\Constants\SALES_CONST::ACTIVE.", SH.`memo`, 'Unused') AS 'memo',
 							IF(SH.`is_used` = ".\Constants\SALES_CONST::ACTIVE.",
 								COALESCE(CASE 
-									WHEN SUM(COALESCE(SD.`qty_released`,0)) = 0 THEN 'No Received'
+									WHEN SUM(COALESCE(SD.`qty_released`,0)) = 0 THEN 'No Delivery'
 									WHEN SUM(IF(SD.`quantity` - SD.`qty_released` < 0, 0, SD.`quantity` - SD.`qty_released`)) > 0 THEN 'Incomplete'
 									WHEN SUM(SD.`quantity`) - SUM(SD.`qty_released`) = 0 THEN 'Complete'
 									ELSE 'Excess'
