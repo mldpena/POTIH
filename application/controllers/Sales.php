@@ -75,7 +75,7 @@ class Sales extends CI_Controller {
 
 			case 'report':
 				$page = 'sales_report';
-				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$customer_list = get_name_list_from_table(TRUE, 'customer', TRUE, 0, "`code`, ' - ', `company_name`");
 				$allow_user = $this->permission_checker->check_permission(\Permission\SystemReport_Code::VIEW_SALES_REPORT);
 				$permissions = [];				
@@ -83,7 +83,7 @@ class Sales extends CI_Controller {
 
 			case 'book_report':
 				$page = 'book_report';
-				$branch_list = get_name_list_from_table(TRUE, 'branch', FALSE, $this->encrypt->decode(get_cookie('branch')));
+				$branch_list = get_name_list_from_table(TRUE, 'branch', TRUE, $this->encrypt->decode(get_cookie('branch')));
 				$customer_list = get_name_list_from_table(TRUE, 'customer', TRUE, 0, "`code`, ' - ', `company_name`");
 				$salesman_list = get_name_list_from_table(TRUE, 'user', TRUE, 0, '`full_name`', " AND `type` = ".\Permission\UserType_Code::SALESMAN);
 				$allow_user = $this->permission_checker->check_permission(\Permission\SystemReport_Code::VIEW_SALES_REPORT);
