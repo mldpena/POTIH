@@ -94,7 +94,8 @@ class Delivery_Model extends CI_Model {
 						LEFT JOIN `sales_detail` AS SSD ON SSD.`id` = SD.`sales_detail_id`
 						LEFT JOIN `sales_head` AS SSH ON SSH.`id` = SSD.`headid` AND SSH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE." AND SSH.`is_used` = ".\Constants\DELIVERY_CONST::USED."
 						LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
-						WHERE SD.`headid` = ?";
+						WHERE SD.`headid` = ?
+						ORDER BY SD.`id` ASC";
 
 		$result_detail = $this->db->query($query_detail, $this->_delivery_head_id);
 
@@ -804,7 +805,8 @@ class Delivery_Model extends CI_Model {
 						FROM `stock_delivery_detail` AS SD
 						LEFT JOIN `stock_delivery_head` AS SH ON SD.`headid` = SH.`id` AND SH.`is_show` = ".\Constants\DELIVERY_CONST::ACTIVE."
 						LEFT JOIN `product` AS P ON P.`id` = SD.`product_id`
-						WHERE SD.`headid` = ? AND SD.`is_for_branch` = $is_transfer";
+						WHERE SD.`headid` = ? AND SD.`is_for_branch` = $is_transfer
+						ORDER BY SD.`id` ASC";
 
 		$result_detail = $this->db->query($query_detail,$this->_delivery_head_id);
 
@@ -1045,7 +1047,8 @@ class Delivery_Model extends CI_Model {
 							FROM stock_delivery_head AS H
 							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
-							WHERE H.`id` = ? $conditions";
+							WHERE H.`id` = ? $conditions
+							ORDER BY D.`id` ASC";
 
 		$result_detail = $this->db->query($query_detail,$delivery_id);
 
@@ -1107,7 +1110,8 @@ class Delivery_Model extends CI_Model {
 							FROM stock_delivery_head AS H
 							LEFT JOIN stock_delivery_detail AS D ON D.`headid` = H.`id`
 							LEFT JOIN product AS P ON P.`id` = D.`product_id`
-							WHERE H.`id` = ? AND D.`is_for_branch` = 0";
+							WHERE H.`id` = ? AND D.`is_for_branch` = 0
+							ORDER BY D.`id` ASC";
 
 		$result_detail = $this->db->query($query_detail,$delivery_id);
 
@@ -1468,7 +1472,8 @@ class Delivery_Model extends CI_Model {
 						SH.`is_used` = ".\Constants\DELIVERY_CONST::USED." AND 
 						SH.`id` = ?
 					HAVING 
-						is_removed = 0";
+						is_removed = 0
+					ORDER BY SD.`id` ASC";
 
 		$result = $this->db->query($query, [$this->_delivery_head_id, $sales_head_id]);
 

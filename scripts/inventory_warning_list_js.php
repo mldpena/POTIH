@@ -101,6 +101,12 @@
     myjstbl.mypage.isOldPaging = true;
     myjstbl.mypage.pass_refresh_filter_page(triggerSearchRequest);
 
+    if ('<?= $this->uri->segment(3) ?>' != '') 
+    {
+        var notificationStatus = Number('<?= $this->uri->segment(3) ?>');
+        $('#invstatus').val(notificationStatus);
+    }
+
     $('#tbl').hide();
 
     $('#date_from, #date_to').datepicker();
@@ -132,6 +138,7 @@
         var datefrom_val    = $('#date_from').val();
         var dateto_val      = $('#date_to').val();
         var branch_val      = $('#branch').val();
+        var invstatus_val   = $('#invstatus').val();
         var orderby_val     = $('#orderby').val();
 
 
@@ -145,7 +152,8 @@
                                 datefrom : datefrom_val,
                                 dateto   : dateto_val,
                                 branch   : branch_val,
-                                orderby  : orderby_val
+                                orderby  : orderby_val,
+                                invstatus : invstatus_val
                             };
 
         return filterValues;
