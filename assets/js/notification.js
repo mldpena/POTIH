@@ -68,21 +68,21 @@ $(function(){
 																	notificationSubject : 'Minimum Inventory Warning',
 																	notificationMessage : 'You have ({0}) item/s that have reached the minimum inventory!',
 																	notificationIcon 	: 'mininventory.png',
-																	notificationLink 	: 'product/warning'
+																	notificationLink 	: 'product/warning/2'
 																},
 																{
 																	notificationSection : 'maxInventory',
 																	notificationSubject : 'Maximum Inventory Warning',
 																	notificationMessage : 'You have ({0}) item/s that have reached the maximum inventory!',
 																	notificationIcon 	: 'maxinventory.png',
-																	notificationLink 	: 'product/warning'
+																	notificationLink 	: 'product/warning/3'
 																},
 																{
 																	notificationSection : 'negativeInventory',
 																	notificationSubject : 'Negative Inventory Warning',
 																	notificationMessage : 'You have ({0}) item/s that have reached negative inventory!',
 																	notificationIcon 	: 'negativeinventory.png',
-																	notificationLink 	: 'product/warning'
+																	notificationLink 	: 'product/warning/1'
 																},
 																{
 																	notificationSection : 'dueIncompleteRequest',
