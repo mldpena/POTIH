@@ -44,7 +44,7 @@ define('IMG','assets/img/');
 define('JS','assets/js/');
 define('BOWER','bower_components/');
 define('CONSTANTS',APPPATH.'constants/');
-define('VERSION', '1.7.3');
+define('VERSION', '1.7.5');
 
 /* ENCRYPTION AND DECRYPTION*/
 define('SALT', 'T!S!D!T_33_HELLO_WORLD');

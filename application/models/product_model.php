@@ -440,7 +440,36 @@ class Product_Model extends CI_Model {
 		if (!empty($inventory_field)) 
 			$this->db->join("product_branch_inventory AS PBI2", "PBI2.`product_id` = P.`id` AND PBI2.`branch_id` <> $branch", "left");
 
-		$this->db->group_start()
+		if ($invstatus != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($invstatus) 
+			{
+				case \Constants\PRODUCT_CONST::NEGATIVE_STATUS_INV:
+					$this->db->group_start()
+								->where("PBI.`inventory` <", 0)
+								->where("PBI.`min_inv` <>", 0)
+							->group_end();
+					break;
+				
+				case \Constants\PRODUCT_CONST::INSUFFICIENT_STATUS_INV:
+					$this->db->group_start()
+								->where("PBI.`inventory` < PBI.`min_inv`")
+								->where("PBI.`min_inv` <>", 0)
+								->where("PBI.`inventory` >", 0)
+							->group_end();
+					break;
+
+				case \Constants\PRODUCT_CONST::EXCESS_STATUS_INV:
+					$this->db->group_start()
+								->where("PBI.`inventory` > PBI.`max_inv`")
+								->where("PBI.`max_inv` <>", 0)
+							->group_end();
+					break;
+			}
+		}
+		else
+		{
+			$this->db->group_start()
 					->group_start()
 						->where("PBI.`inventory` > PBI.`max_inv`")
 						->where("PBI.`max_inv` <>", 0)
@@ -454,8 +483,10 @@ class Product_Model extends CI_Model {
 						->where("PBI.`inventory` <", 0)
 						->where("PBI.`min_inv` <>", 0)
 					->group_end()
-				->group_end()
-				->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
+				->group_end();
+		}
+
+		$this->db->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
 
 		if (!empty($code)) 
 			$this->db->like("P.`material_code`", $code, "both");
@@ -521,8 +552,38 @@ class Product_Model extends CI_Model {
 		extract($param);
 
 		$this->db->from("product AS P")
-				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = $branch", "left")
-				->group_start()
+				->join("product_branch_inventory AS PBI", "PBI.`product_id` = P.`id` AND PBI.`branch_id` = $branch", "left");
+		
+		if ($invstatus != \Constants\PRODUCT_CONST::ALL_OPTION) 
+		{
+			switch ($invstatus) 
+			{
+				case \Constants\PRODUCT_CONST::NEGATIVE_STATUS_INV:
+					$this->db->group_start()
+								->where("PBI.`inventory` <", 0)
+								->where("PBI.`min_inv` <>", 0)
+							->group_end();
+					break;
+				
+				case \Constants\PRODUCT_CONST::INSUFFICIENT_STATUS_INV:
+					$this->db->group_start()
+								->where("PBI.`inventory` < PBI.`min_inv`")
+								->where("PBI.`min_inv` <>", 0)
+								->where("PBI.`inventory` >", 0)
+							->group_end();
+					break;
+
+				case \Constants\PRODUCT_CONST::EXCESS_STATUS_INV:
+					$this->db->group_start()
+								->where("PBI.`inventory` > PBI.`max_inv`")
+								->where("PBI.`max_inv` <>", 0)
+							->group_end();
+					break;
+			}
+		}
+		else
+		{
+			$this->db->group_start()
 					->group_start()
 						->where("PBI.`inventory` > PBI.`max_inv`")
 						->where("PBI.`max_inv` <>", 0)
@@ -536,8 +597,10 @@ class Product_Model extends CI_Model {
 						->where("PBI.`inventory` <", 0)
 						->where("PBI.`min_inv` <>", 0)
 					->group_end()
-				->group_end()
-				->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
+				->group_end();
+		}
+
+		$this->db->where("P.`is_show`", \Constants\PRODUCT_CONST::ACTIVE);
 
 		if (!empty($code)) 
 			$this->db->like("P.`material_code`", $code, "both");

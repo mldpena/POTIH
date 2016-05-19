@@ -40,6 +40,15 @@
 						<td>
 							<select class="form-control" id="subgroup"><?= $subgroup_list ?></select>
 						</td>
+						<td>Inventory Status:</td>
+						<td>
+							<select class="form-control" id="invstatus">
+								<option value="0">ALL</option>
+								<option value="1">Negative</option>
+								<option value="2">Insufficient</option>
+								<option value="3">Excess</option>
+							</select>
+						</td>
 						<td class="hide-elem">Date To:</td>
 						<td class="hide-elem"><input type="text" class="form-control" id="date_from"></td>
 						<td class="hide-elem">Date From:</td>
